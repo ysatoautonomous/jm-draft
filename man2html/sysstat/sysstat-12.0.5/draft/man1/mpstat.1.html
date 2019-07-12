@@ -1,0 +1,612 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MPSTAT</TITLE>
+</HEAD><BODY>
+<H1>MPSTAT</H1>
+Section: Linux User's Manual (1)<BR>Updated: JULY 2018<BR><A HREF="#index">Index</A>
+<A HREF="/man/man2html">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+mpstat - プロセッサ関連の統計をレポートする。
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+<B>mpstat [ -A ] [ --dec={ 0 | 1 | 2 } ] [ -n ] [ -u ] [ -V ] [ -I {</B>
+
+<I>keyword</I>
+
+<B>[,...] | ALL } ] [ -N {</B>
+
+<I>node_list</I>
+
+<B>| ALL } ] [ -o JSON ] [ -P {</B>
+
+<I>cpu_list</I>
+
+<B>| ALL } ] [</B>
+
+<I>interval</I>
+
+<B>[</B>
+
+<I>count</I>
+
+<B>] ]</B>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>mpstat</B>
+
+コマンドは利用可能なプロセッサの活性度を標準出力に書き出す。
+プロセッサ 0 が最初である。
+
+すべてのプロセッサの平均の活性度もレポートされる。
+
+
+
+
+
+<B>mpstat</B>
+
+コマンドは SMP とそれ以上のマシンで利用可能で、後者の場合、
+平均の活性度のみが表示される。
+活性度が選択されていない場合、デフォルトは CPU 利用統計が表示される。
+<P>
+
+
+
+<I>interval</I>
+
+パラメータは各レポート間の秒数を指定する。
+
+
+値が 0 の場合 (またはパラメータが指定されない場合)、
+システムのスタートアップ (ブート) からのプロセッサ統計を表す。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<I>count</I>
+
+パラメータは
+<I>interval</I>
+
+パラメータが 0 に指定されていない場合、一緒に設定できる。
+<I>count</I>
+
+の値で、
+<I>interval</I>
+
+秒間隔で何回レポートを作成するかを決める。
+<I>count</I>
+
+パラメータなしで、
+<I>interval</I>
+
+パラメータを指定すると、
+<B>mpstat</B>
+
+は連続してレポートを生成する。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT>-A<DD>
+
+
+このオプションは
+<B>-n -u -I ALL -N ALL -P ALL</B>
+
+を指定するのと同じである。
+<DT>--dec={ 0 | 1 | 2 }<DD>
+
+使用する小数点の位置を指定する (0 から 2 で、デフォルトは 2 である)。
+<DT>-I { keyword [,...] | ALL }<DD>
+
+割り込みの統計をレポートする。
+<P>
+
+
+
+
+
+指定可能なキーワードは、
+<B>CPU</B>,
+
+<B>SCPU</B>,
+
+<B>SUM</B>
+
+である。
+<P>
+
+
+
+
+
+<B>CPU</B>
+
+キーワードを指定すると、1 秒あたりの各 CPU (群) の割り込みを表示する。
+割り込みは /proc/interrupts ファイルにリストされている。
+<P>
+
+
+
+
+
+
+<B>SCPU</B>
+
+キーワードを指定すると、1 秒あたりの各 CPU (群) のソフトウェア割り込みを表示する。
+このオプションは、カーネル 2.6.31 以降でのみ動作する。
+ソフトウェア割り込みは /proc/softirqs ファイルにリストされている。
+<P>
+
+
+
+
+
+<B>SUM</B>
+
+キーワードを指定すると、プロセッサごとの割り込みの合計をレポートする。
+
+以下の値が表示される。
+<P>
+<B>CPU</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+
+
+
+プロセッサ番号。
+キーワード
+<I>all</I>
+
+は全てのプロセッサの平均が統計として計算される。
+</DL>
+
+<P>
+<B>intr/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりの CPU (群) ごとの割り込みの合計。
+</DL>
+
+<P>
+
+
+
+
+<B>ALL</B>
+
+キーワードは、上記のすべてのキーワードを指定したのと同じであり、
+すべての割り込みの統計が表示される。
+</DL>
+
+
+<DT>-N { node_list | ALL }<DD>
+
+統計をレポートする NUMA ノードを指定する。
+
+
+
+<I>node_list</I>
+
+はカンマ区切りの値または、値の範囲である (例
+<B>0,2,4-7,12-</B>)。
+
+
+
+
+
+
+ノード
+<B>all</B>
+
+は、すべてのノードの平均である点に注意すること。
+<B>ALL</B>
+
+キーワードを指定すると、すべてのノードの統計をレポートする。
+<DT>-n<DD>
+
+
+NUMA ノードの位置に基づいて CPU 統計のサマリをレポートする。
+以下の値が表示される。
+<P>
+<B>NODE</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+
+
+ノード番号。
+<I>all</I>
+
+キーワードを指定すると、すべてのノードの平均を統計としてレポートする。
+</DL>
+
+<P>
+
+
+その他のフィールドは、オプション -u (下記を参照) と同じである。
+</DL>
+
+<DT>-o JSON<DD>
+
+統計を JSON (Javascript Object Notation) 形式で表示する。
+
+
+JSON 出力のフィールド順は定義されておらず、
+将来新しいフィールドが追加されるかもしれない。
+<DT>-P { cpu_list | ALL }<DD>
+
+統計をレポートするプロセッサを指定する。
+
+
+
+<I>cpu_list</I>
+
+はカンマ区切りの値または、値の範囲である (例
+<B>0,2,4-7,12-</B>)。
+
+
+
+
+プロセッサ 0 が最初のプロセッサで、プロセッサ
+<B>all</B>
+
+はすべてのプロセッサの平均である点に注意すること。
+
+
+
+<B>ALL</B>
+
+キーワードを指定すると、すべてのノードの統計をレポートする。
+
+オフラインのプロセッサは表示されない。
+<DT>-u<DD>
+
+CPU 利用状況がレポートされる。以下の値が表示される。
+<P>
+<B>CPU</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+
+
+
+プロセッサ番号。
+キーワード
+<I>all</I>
+
+はすべてのプロセッサの平均の統計を表す。
+</DL>
+
+<P>
+<B>%usr</B>
+
+<DL COMPACT><DT><DD>
+
+
+ユーザレベル (アプリケーション) で実行された CPU 利用の割合。
+</DL>
+
+<P>
+<B>%nice</B>
+
+<DL COMPACT><DT><DD>
+
+
+nice 優先度を付けてユーザレベルで実行された CPU 利用の割合。
+</DL>
+
+<P>
+<B>%sys</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+システムレベル (カーネル) で実行された CPU 利用の割合。
+ハードウェア割り込みとソフトウェア割り込みへのサービスに
+使った時間を含まない点に注意すること。
+</DL>
+
+<P>
+<B>%iowait</B>
+
+<DL COMPACT><DT><DD>
+
+
+システムに目立ったディスク I/O リクエストがあり、
+CPU (群) がアイドル状態であった時間の割合。
+</DL>
+
+<P>
+<B>%irq</B>
+
+<DL COMPACT><DT><DD>
+
+
+CPU (群) がハードウェア割り込みへのサービスに使った時間の割合。
+</DL>
+
+<P>
+<B>%soft</B>
+
+<DL COMPACT><DT><DD>
+
+
+CPU (群) がソフトウェア割り込みへのサービスに使った時間の割合。
+</DL>
+
+<P>
+<B>%steal</B>
+
+<DL COMPACT><DT><DD>
+
+
+ハイパーバイザーが他の仮想プロセッサに
+サービスを行っているために、
+仮想 CPU (群) が不本意に待たされている時間の割合。
+</DL>
+
+<P>
+<B>%guest</B>
+
+<DL COMPACT><DT><DD>
+
+
+CPU (群) が仮想プロセッサを実行するのに使った時間の割合。
+</DL>
+
+<P>
+<B>%gnice</B>
+
+<DL COMPACT><DT><DD>
+
+
+CPU (群) が nice されたゲストを実行するのに使った時間の割合。
+</DL>
+
+<P>
+<B>%idle</B>
+
+<DL COMPACT><DT><DD>
+
+
+CPU (群) がアイドル状態でシステムに目立った
+ディスク I/O リクエストがなかった時間の割合。
+</DL>
+
+</DL>
+
+<DT>-V<DD>
+
+バージョン番号を表示して、終了する。
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>環境変数</H2>
+
+
+
+
+<B>mpstat</B>
+
+コマンドは下記の環境変数を利用する。
+<P>
+<DL COMPACT>
+<DT>S_COLORS<DD>
+
+この環境変数を設定すると、端末上で統計をカラー表示する。
+
+
+
+
+
+
+この環境変数に指定可能な値は、
+<I>never</I>,
+
+<I>always</I>,
+
+<I>auto</I>
+
+である (最後がデフォルトである)。
+<P>
+
+
+
+値を表示する色 (赤、黄、またはその他の色) は、色によって何かの意味を示している訳ではない。
+色は値の範囲を示しているだけである。
+<P>
+<DT>S_COLORS_SGR<DD>
+
+
+
+
+端末で統計を表示する際に、色とその他の属性を指定する。
+この値は、コロン区切りの機能のリストで、デフォルトは
+<B>H=31;1:I=32;22:M=35;1:N=34;1:Z=34;22</B>
+
+である。
+サポートされている機能は以下のとおり。
+<P>
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>H=</B>
+
+<DD>
+
+割合が 75% 以上の場合の SGR (Select Graphic Rendition) 部分文字列。
+<P>
+<DT><B>I=</B>
+
+<DD>
+
+CPU 番号を表示する SGR 部分文字列。
+<P>
+<DT><B>M=</B>
+
+<DD>
+
+割合が 50% から 75% の場合の SGR 部分文字列。
+<P>
+<DT><B>N=</B>
+
+<DD>
+
+0 以外の統計値を表示する SGR 部分文字列。
+<P>
+<DT><B>Z=</B>
+
+<DD>
+
+0 を表示する SGR 部分文字列。
+</DL>
+</DL>
+
+<P>
+<DT>S_TIME_FORMAT<DD>
+
+
+
+この環境変数が存在し、かつ値が
+<B>ISO</B>
+
+の場合、レポートのヘッダの日付を表示する際に、
+現在のロケールを無視する。
+
+
+
+代わりに、
+<B>mpstat</B>
+
+コマンドは ISO 8601 フォーマット (YYYY-MM-DD) を使う。
+
+タイムスタンプも ISO 8601 フォーマットに従う。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+<B>mpstat 2 5</B>
+
+<DL COMPACT><DT><DD>
+
+すべてのプロセッサの全体での統計を 2 秒間隔で 5 回レポートする。
+</DL>
+
+<P>
+<B>mpstat -P ALL 2 5</B>
+
+<DL COMPACT><DT><DD>
+
+すべてのプロセッサの統計を 2 秒間隔で 5 回レポートする。
+<P>
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+
+<B>mpstat</B>
+
+コマンドが動作するためには、
+<I>/proc</I>
+
+ファイルシステムがマウントされていなければならない。
+<P>
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/proc</I>
+
+
+システム統計を含むさまざまなファイルを保持する。
+<P>
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>著者</H2>
+
+Sebastien Godard (sysstat &lt;at&gt; orange.fr)
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="/man/man2html?1+sar">sar</A></B>(1),
+
+<B><A HREF="/man/man2html?1+pidstat">pidstat</A></B>(1),
+
+<B><A HREF="/man/man2html?1+iostat">iostat</A></B>(1),
+
+<B><A HREF="/man/man2html?8+vmstat">vmstat</A></B>(8)
+
+<P>
+<I><A HREF="https://github.com/sysstat/sysstat">https://github.com/sysstat/sysstat</A></I>
+
+<P>
+<I><A HREF="http://pagesperso-orange.fr/sebastien.godard/">http://pagesperso-orange.fr/sebastien.godard/</A></I>
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">環境変数</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">バグ</A><DD>
+<DT><A HREF="#lbAI">ファイル</A><DD>
+<DT><A HREF="#lbAJ">著者</A><DD>
+<DT><A HREF="#lbAK">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 12:22:08 GMT, July 12, 2019
+</BODY>
+</HTML>
