@@ -1,3 +1,9 @@
+.\"
+.\" Japanese Version Copyright (c) 2019 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Jul 13 20:31:16 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
 .TH TAPESTAT 1 "JULY 2018" Linux "Linux User's Manual" -*- nroff -*-
 .\"O .SH NAME
 .SH 名前
@@ -25,7 +31,7 @@ tapestat \- テープの統計をレポートする。
 .\"O .B -y
 .\"O option is used, when this first report is omitted.
 .B tapestat
-コマンドが生成する最初のレポートは、
+コマンドが生成する最初のレポートとして、
 システムがブートしてからの時間の統計が提供される。
 .B -y
 オプションが使われると、最初のレポートが省略される。
@@ -189,7 +195,7 @@ interval の期間に転送された I/O の回数の平均値。
 .\"O This option is mutually exclusive with -k.
 読み書きされたデータ量を、キロバイトではなく、
 メガバイトで表示する。
-このオプションは -m とどちらか一方しか指定できない。
+このオプションは -k とどちらか一方しか指定できない。
 .IP -t
 .\"O Display time stamps. The time stamp format may depend
 .\"O on the value of the S_TIME_FORMAT environment variable (see below).
@@ -211,54 +217,111 @@ interval の期間に転送された I/O の回数の平均値。
 .B tapestat
 に出力を省略させる。
 
-.SH CONSIDERATIONS
-It is possible for a percentage value (read, write, or other) to be greater than 100 percent
-(the
+.\"O .SH CONSIDERATIONS
+.SH 考慮点
+.\"O It is possible for a percentage value (read, write, or other) to be greater than 100 percent
+.\"O (the
+.\"O .B tapestat
+.\"O command will never show a percentage value more than 999).
+割合の値 (読み込み、書き込み、その他) は、100% より大きくなる可能性がある
+.RB ( tapestat
+コマンドは 999% より大きい値を表示しない)。
+.\"O If rewinding a tape takes 40 seconds where the interval time is 5 seconds the %Oa value
+.\"O would show as 0 in the intervals before the rewind completed and then show as approximately
+.\"O 800 percent when the rewind completes.
+テープの巻き戻しに 40 秒かかり、interval 時間が 5 秒の場合、
+巻き戻しが完了するまでの期間では %Oa の値は 0 であり、
+巻き戻しが完了した後では約 800% になる。
+
+.\"O Similar values will be observed for %Rd and %Wr if a tape drive stops reading or writing
+.\"O and then restarts (that is it stopped streaming). In such a case you may see the r/s or w/s drop to zero and the %Rd/%Wr value could be higher than 100 when reading or writing continues
+.\"O (depending on how long it takes to restart writing or reading).
+テープドライブが読み込みや書き込みを止めて、リスタート (つまりストリーミングを停止) した場合、
+同様の値が %Rd と %Wr にも見られる。
+このような場合、読み込みまたは書き込みが引き続いて起こると
+(読み込みや書き込みが再開されるまでにどのくらいかかるかに依存して)、
+r/s または w/s は 0 に落ち込み、
+%Rd/%Wr の値は 100 より大きくなるだろう。
+.\"O This is only an issue if it happens a lot as it may cause tape wear and will impact
+.\"O on the backup times.
+.\"O:
+.\"O: cause tape ware の訳しかたに自信なし。
+.\"O: 
+これは多発する場合にのみ問題になり、テープ摩耗の原因になり、
+バックアップ時間に影響が出る。
+
+.\"O For fast tape drives you may see low percentage wait times.
+速いテープドライブでは待ち時間の割合が低いだろう。
+.\"O This does not indicate an issue with the tape drive. For a slower tape drive (e.g. an older
+.\"O generation DDS drive) the speed of the tape (and tape drive) is much slower than filesystem I/O,
+.\"O percent wait times are likely to be higher. For faster tape drives (e.g. LTO) the percentage
+.\"O wait times are likely to be lower as program writing to or reading from tape is going
+.\"O to be doing a lot more filesystem I/O because of the higher throughput.
+これはテープドライブに問題があることを表している訳ではない。
+遅いテープドライブ (例えば古い世代の DDS ドライブ) では、
+テープ (とテープドライブ) の速度はファイルシステム I/O よりかなり遅く、
+待ち時間の割合は高くなりやすい。
+速いテープドライブ (例えば LTO) では、スループットが高いので、
+テープに対する書き出しまた読み込みは、ファイルシステム I/O より良くなるため、
+待ち時間の割合は低くなる。
+
+.\"O Although tape statistics are implemented in the kernel using atomic variables they cannot be
+.\"O read atomically as a group. All of the statistics values are read from different files under
+.\"O /sys, because of this there may be I/O completions while reading the different files for the
+.\"O one tape drive. This may result in a set of statistics for a device that contain some values
+.\"O before an I/O completed and some after.
+テープの統計はカーネル内のアトミックな値を使って実装されているが、
+グループとしてはアトミックに読み込まれていない。
+全ての統計値は /sys 以下の別々のファイルから読み込まれているため、
+1 つのテープドライブについて別々のファイルを読んでいる間に、
+I/O が完了してしまうことがある。
+これにより、デバイスの統計の値の中には、I/O が完了する前に決まるものと、
+完了した後に決まるものがある。
+
+.\"O This command uses rounding down as the rounding method when calculating per second statistics.
+このコマンドは 1 秒あたりの統計値を計算する際の丸め方法として、切り捨てを行う。
+.\"O If, for example, you are using dd to copy one tape to another and running
+.\"O .B tapestat
+.\"O with an interval of 5 seconds and over the interval there were 3210 writes and 3209 reads
+.\"O then w/s would show 642 and r/s 641 (641.8 rounded down to 641). In such a case if it was
+.\"O a tar archive being copied (with a 10k block size) you would also see a difference between
+.\"O the kB_read/s and kB_wrtn/s of 2 (one I/O 10k in size divided by the interval period of 5
+.\"O seconds). If instead there were 3210 writes and 3211 reads both w/s and r/s would both show
+.\"O 642 but you would still see a difference between the kB_read/s and kB_wrtn/s values of 2 kB/s.
+例えば、dd を使って 1 つのテープから別のテープにコピーする時に、
 .B tapestat
-command will never show a percentage value more than 999).
-If rewinding a tape takes 40 seconds where the interval time is 5 seconds the %Oa value
-would show as 0 in the intervals before the rewind completed and then show as approximately
-800 percent when the rewind completes. 
+を時間間隔 5 秒で動作させた場合に、時間間隔の間に 3210 回の書き込みと
+3209 回の読み込みがとすると、
+w/s は 642、 r/s は 641 となる (641.8 は 641 に切り捨てられる)。
+このような場合に、 tar アーカイブを (10k ブロックサイズで) コピーすると、
+kB_read/s と kB_wrtn/s の差が 2 となるだろう
+(1 回の I/O サイズ 10k が時間間隔 5 秒で割られて 2 となる)。
+3210 回の書き込みと 3211 回の読み込みの場合、w/s と r/s はともに 642 となるが、
+kB_read/s と kB_wrtn/s には 2 kB/s の違いがあることに気づくだろう。
 
-Similar values will be observed for %Rd and %Wr if a tape drive stops reading or writing
-and then restarts (that is it stopped streaming). In such a case you may see the r/s or w/s drop to zero and the %Rd/%Wr value could be higher than 100 when reading or writing continues
-(depending on how long it takes to restart writing or reading).
-This is only an issue if it happens a lot as it may cause tape wear and will impact
-on the backup times.
+.\"O This command is provided with an interval in seconds. However internally the interval is
+.\"O tracked per device and can potentially have an effect on the per second statistics reported.
+このコマンドは時間間隔を秒で指定する。
+しかし内部的には時間間隔はデバイスごとに監視され、
+レポートされる 1 秒ごとの統計に影響を及ぼす可能性がある。
+.\"O The time each set of statistics is captured is kept with those statistics. The difference
+.\"O between the current and previous time is converted to milliseconds for use in calculations.
+各統計のセットがキャプチャされた時刻は、その統計値とともに保存される。
+現在時刻と前の時刻の差分は、計算のためにミリ秒に変換される。
+.\"O We can look at how this can impact the statistics reported if we use an example of a tar
+.\"O archive being copied between two tape drives using dd. If both devices reported 28900 kilobytes
+.\"O transferred and the reading tape drive had an interval of 5001 milliseconds and the writing
+.\"O tape drive 5000 milliseconds that would calculate out as 5778 kB_read/s and 5780 kB_wrtn/s.
+これが統計レポートにどのような影響があるかを、
+tar アーカイブを dd を使って 2 つのテープドライブの間でコピーする例で見てみよう。
+両方のデバイスが 28900 キロバイトを転送し、
+テープドライブからの読み込みに 5001 ミリ秒かかり、
+テープドライブへの書き込みに 5000 ミリ秒かかったとすると、
+計算結果は 5778 kB_read/s と 5780 kB_wrtn/s になる。
 
-For fast tape drives you may see low percentage wait times.
-This does not indicate an issue with the tape drive. For a slower tape drive (e.g. an older
-generation DDS drive) the speed of the tape (and tape drive) is much slower than filesystem I/O,
-percent wait times are likely to be higher. For faster tape drives (e.g. LTO) the percentage
-wait times are likely to be lower as program writing to or reading from tape is going
-to be doing a lot more filesystem I/O because of the higher throughput.
-
-Although tape statistics are implemented in the kernel using atomic variables they cannot be
-read atomically as a group. All of the statistics values are read from different files under
-/sys, because of this there may be I/O completions while reading the different files for the
-one tape drive. This may result in a set of statistics for a device that contain some values
-before an I/O completed and some after.
-
-This command uses rounding down as the rounding method when calculating per second statistics.
-If, for example, you are using dd to copy one tape to another and running
-.B tapestat
-with an interval of 5 seconds and over the interval there were 3210 writes and 3209 reads
-then w/s would show 642 and r/s 641 (641.8 rounded down to 641). In such a case if it was
-a tar archive being copied (with a 10k block size) you would also see a difference between
-the kB_read/s and kB_wrtn/s of 2 (one I/O 10k in size divided by the interval period of 5
-seconds). If instead there were 3210 writes and 3211 reads both w/s and r/s would both show
-642 but you would still see a difference between the kB_read/s and kB_wrtn/s values of 2 kB/s.
-
-This command is provided with an interval in seconds. However internally the interval is
-tracked per device and can potentially have an effect on the per second statistics reported.
-The time each set of statistics is captured is kept with those statistics. The difference
-between the current and previous time is converted to milliseconds for use in calculations.
-We can look at how this can impact the statistics reported if we use an example of a tar
-archive being copied between two tape drives using dd. If both devices reported 28900 kilobytes
-transferred and the reading tape drive had an interval of 5001 milliseconds and the writing
-tape drive 5000 milliseconds that would calculate out as 5778 kB_read/s and 5780 kB_wrtn/s.
-
-The impact of some retrieving statistics during an I/O completion, rounding down, and small differences in the interval period on the statistics calculated should be minimal but may be non-zero.
+.\"O The impact of some retrieving statistics during an I/O completion, rounding down, and small differences in the interval period on the statistics calculated should be minimal but may be non-zero.
+I/O 完了時に取得した統計への影響は、統計値を計算する際の
+切り捨てによる丸めと、時間間隔の小さな差分により、小さいが 0 ではない可能性がある。
 .\"O .SH ENVIRONMENT
 .SH 環境変数
 .\"O The
