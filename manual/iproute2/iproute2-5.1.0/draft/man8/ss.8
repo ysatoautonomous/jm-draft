@@ -1,0 +1,525 @@
+.TH SS 8
+.\"O .SH NAME
+.SH 名前
+.\"O ss \- another utility to investigate sockets
+ss \- ソケットを調査するもう 1 つのユーティリティ
+.\"O .SH SYNOPSIS
+.SH 書式
+.B ss
+.RI [ options ] " [ FILTER ]"
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B ss
+.\"O is used to dump socket statistics. It allows showing information similar
+.\"O to
+.\"O .IR netstat .
+.B ss
+はソケットの統計 (socket statistics) をダンプするのに使われる。
+これは
+.I netstat
+と同様の情報を表示することができる。
+.\"O It can display more TCP and state information than other tools.
+このツールは、他のツールより多くの TCP と状態の情報を表示できる。
+
+.\"O .SH OPTIONS
+.SH オプション
+.\"O When no option is used ss displays a list of open non-listening
+.\"O sockets (e.g. TCP/UNIX/UDP) that have established connection.
+オプションが指定されない場合、ss は接続が確立された
+オープンされてリッスンしていないソケット (例えば、TCP/UNIX/UDP) のリストを表示する。
+.TP
+.B \-h, \-\-help
+.\"O Show summary of options.
+オプションのサマリーを表示する。
+.TP
+.B \-V, \-\-version
+.\"O Output version information.
+バージョン情報を出力する。
+.TP
+.B \-H, \-\-no-header
+.\"O Suppress header line.
+ヘッダ行の出力を抑止する。
+.TP
+.B \-n, \-\-numeric
+.\"O Do not try to resolve service names.
+サービス名の解決を行わない。
+.TP
+.B \-r, \-\-resolve
+.\"O Try to resolve numeric address/ports.
+数値のアドレス/ポートの解決を行う。
+.TP
+.B \-a, \-\-all
+.\"O Display both listening and non-listening (for TCP this means
+.\"O established connections) sockets.
+リッスンしているソケットと、リッスンしていないソケット
+(TCP では接続を確立したことを意味する) の両方を表示する。
+.TP
+.B \-l, \-\-listening
+.\"O Display only listening sockets (these are omitted by default).
+リッスンしているソケットのみを表示する (これはデフォルトでは省略される)。
+.TP
+.B \-o, \-\-options
+.\"O Show timer information. For TCP protocol, the output format is:
+タイマー情報を表示する。
+TCP プロトコルでは出力フォーマットは以下のとおり。
+.RS
+.P
+timer:(<timer_name>,<expire_time>,<retrans>)
+.P
+.TP
+.B <timer_name>
+.\"O the name of the timer, there are five kind of timer names:
+タイマーの名前。
+5 種類のタイマー名がある。
+.RS
+.P
+.B on
+.\"O : means one of these timers: TCP retrans timer, TCP early retrans
+.\"O timer and tail loss probe timer
+: 以下の 3 つのいずれかのタイマー: TCP retrans タイマー,
+TCP early retrans タイマー、tail loss probe タイマー
+.P
+.\"O .BR keepalive ": tcp keep alive timer"
+.BR keepalive ": tcp keep alive タイマー"
+.P
+.\"O .BR timewait ": timewait stage timer"
+.BR timewait ": timewait stage タイマー"
+.P
+.\"O .BR persist ": zero window probe timer"
+.BR persist ": zero window probe タイマー"
+.P
+.\"O .BR unknown ": none of the above timers"
+.BR unknown ": 上記のどのタイマーでもない"
+.RE
+.TP
+.B <expire_time>
+.\"O how long time the timer will expire
+タイマーが期限切れするまでの時間
+.P
+.TP
+.B <retrans>
+.\"O how many times the retransmission occured
+再送信が行われた回数。
+.RE
+.TP
+.B \-e, \-\-extended
+.\"O Show detailed socket information. The output format is:
+詳細なソケット情報を表示する。
+出力フォーマットは以下のとおり。
+.RS
+.P
+uid:<uid_number> ino:<inode_number> sk:<cookie>
+.P
+.TP
+.B <uid_number>
+.\"O the user id the socket belongs to
+ソケットが所属するユーザ ID
+.P
+.TP
+.B <inode_number>
+.\"O the socket's inode number in VFS
+VFS 上のソケットの inode 番号
+.P
+.TP
+.B <cookie>
+.\"O an uuid of the socket
+ソケットの UUID
+.RE
+.TP
+.B \-m, \-\-memory
+.\"O Show socket memory usage. The output format is:
+ソケットのメモリ使用情報。
+出力フォーマットは以下のとおり。
+.RS
+.P
+skmem:(r<rmem_alloc>,rb<rcv_buf>,t<wmem_alloc>,tb<snd_buf>,
+.br
+.RS
+.RS
+f<fwd_alloc>,w<wmem_queued>,
+.RE
+.RE
+.br
+.RS
+.RS
+o<opt_mem>,bl<back_log>)
+.RE
+.RE
+.P
+.TP
+.B <rmem_alloc>
+.\"O the memory allocated for receiving packet
+受信パケットのために確保されたメモリ。
+.P
+.TP
+.B <rcv_buf>
+.\"O the total memory can be allocated for receiving packet
+受信パケットのために確保可能な総メモリ。
+.P
+.TP
+.B <wmem_alloc>
+.\"O the memory used for sending packet (which has been sent to layer 3)
+(レイヤー 3 に送信される) 送信パケットに使われるメモリ。
+.P
+.TP
+.B <snd_buf>
+.\"O the total memory can be allocated for sending packet
+送信パケットのために確保可能な総メモリ。
+.P
+.TP
+.B <fwd_alloc>
+.\"O the memory allocated by the socket as cache, but not used for
+.\"O receiving/sending packet yet. If need memory to send/receive packet,
+.\"O the memory in this cache will be used before allocate additional
+.\"O memory.
+キャッシュとしてソケットのために確保されたが、
+送受信パケットにまだ使われていないメモリ。
+送受信パケットにメモリが必要な場合、追加のメモリを確保する
+前に、このキャッシュのメモリが使われる。
+.P
+.TP
+.B <wmem_queued>
+.\"O The memory allocated for sending packet (which has not been sent to layer 3)
+(レイヤー 3 に送信されない) 送信パケットのために確保されたメモリ。
+.P
+.TP
+.B <ropt_mem>
+.\"O The memory used for storing socket option, e.g., the key for TCP MD5 signature
+ソケットオプションを格納するために使われるメモリ。
+例えば、TCP MD5 シグネチャのキー。
+.P
+.TP
+.B <back_log>
+.\"O The memory used for the sk backlog queue. On a process context, if the
+.\"O process is receiving packet, and a new packet is received, it will be
+.\"O put into the sk backlog queue, so it can be received by the process
+.\"O immediately
+sk バックログキューに使われるメモリ。
+プロセスコンテキストでは、プロセスがパケットを
+受信している時に、
+新しいパケットが受信すると、sk バックログキューに入れられる。
+これにより、プロセスは即座にパケットを受信できる。
+.RE
+.TP
+.B \-p, \-\-processes
+.\"O Show process using socket.
+ソケットを使っているプロセスを表示する。
+.TP
+.B \-i, \-\-info
+.\"O Show internal TCP information. Below fields may appear:
+内部 TCP 情報を表示する。
+以下のフィールドが表示される。
+.RS
+.P
+.TP
+.B ts
+.\"O show string "ts" if the timestamp option is set
+タイムスタンプオプションが設定されている場合、文字列 "ts" が表示される。
+.P
+.TP
+.B sack
+.\"O show string "sack" if the sack option is set
+sack オプションが設定されている場合、文字列 "sack" が表示される。
+.P
+.TP
+.B ecn
+.\"O show string "ecn" if the explicit congestion notification option is set
+明示的な混雑通知 (explicit congestion notification) オプションが設定されている場合、
+文字列 "ecn" が表示される。
+.P
+.TP
+.B ecnseen
+.\"O show string "ecnseen" if the saw ecn flag is found in received packets
+受信パケットに saw ecn フラグが設定されている場合、
+文字列 "ecnseen" が表示される。
+.P
+.TP
+.B fastopen
+.\"O show string "fastopen" if the fastopen option is set
+fastopen オプションが設定されている場合、
+文字列 "fastopen" が表示される。
+.P
+.TP
+.B cong_alg
+.\"O the congestion algorithm name, the default congestion algorithm is "cubic"
+congestion アルゴリズム名。
+デフォルトの congestion アルゴリズム名は、"cubic" である。
+.P
+.TP
+.B wscale:<snd_wscale>:<rcv_wscale>
+.\"O if window scale option is used, this field shows the send scale factor
+.\"O and receive scale factor
+ウィンドウスケールオプションが使われている場合、
+このフィールドには、送信スケールファクターと
+受信スケールファクターが表示される。
+.P
+.TP
+.B rto:<icsk_rto>
+tcp re-transmission timeout value, the unit is millisecond
+.P
+.TP
+.B backoff:<icsk_backoff>
+used for exponential backoff re-transmission, the actual
+re-transmission timeout value is icsk_rto << icsk_backoff
+.P
+.TP
+.B rtt:<rtt>/<rttvar>
+rtt is the average round trip time, rttvar is the mean deviation of
+rtt, their units are millisecond
+.P
+.TP
+.B ato:<ato>
+ack timeout, unit is millisecond, used for delay ack mode
+.P
+.TP
+.B mss:<mss>
+max segment size
+.P
+.TP
+.B cwnd:<cwnd>
+congestion window size
+.P
+.TP
+.B pmtu:<pmtu>
+path MTU value
+.P
+.TP
+.B ssthresh:<ssthresh>
+tcp congestion window slow start threshold
+.P
+.TP
+.B bytes_acked:<bytes_acked>
+bytes acked
+.P
+.TP
+.B bytes_received:<bytes_received>
+bytes received
+.P
+.TP
+.B segs_out:<segs_out>
+segments sent out
+.P
+.TP
+.B segs_in:<segs_in>
+segments received
+.P
+.TP
+.B send <send_bps>bps
+egress bps
+.P
+.TP
+.B lastsnd:<lastsnd>
+how long time since the last packet sent, the unit is millisecond
+.P
+.TP
+.B lastrcv:<lastrcv>
+how long time since the last packet received, the unit is millisecond
+.P
+.TP
+.B lastack:<lastack>
+how long time since the last ack received, the unit is millisecond
+.P
+.TP
+.B pacing_rate <pacing_rate>bps/<max_pacing_rate>bps
+the pacing rate and max pacing rate
+.P
+.TP
+.B rcv_space:<rcv_space>
+a helper variable for TCP internal auto tuning socket receive buffer
+.RE
+.TP
+.B \-\-tos
+Show ToS and priority information. Below fields may appear:
+.RS
+.P
+.TP
+.B tos
+IPv4 Type-of-Service byte
+.P
+.TP
+.B tclass
+IPv6 Traffic Class byte
+.P
+.TP
+.B class_id
+Class id set by net_cls cgroup. If class is zero this shows priority
+set by SO_PRIORITY.
+.RE
+.TP
+.B \-K, \-\-kill
+Attempts to forcibly close sockets. This option displays sockets that are
+successfully closed and silently skips sockets that the kernel does not support
+closing. It supports IPv4 and IPv6 sockets only.
+.TP
+.B \-s, \-\-summary
+Print summary statistics. This option does not parse socket lists obtaining
+summary from various sources. It is useful when amount of sockets is so huge
+that parsing /proc/net/tcp is painful.
+.TP
+.B \-E, \-\-events
+Continually display sockets as they are destroyed
+.TP
+.B \-Z, \-\-context
+As the
+.B \-p
+option but also shows process security context.
+.sp
+For
+.BR netlink (7)
+sockets the initiating process context is displayed as follows:
+.RS
+.RS
+.IP "1." 4
+If valid pid show the process context.
+.IP "2." 4
+If destination is kernel (pid = 0) show kernel initial context.
+.IP "3." 4
+If a unique identifier has been allocated by the kernel or netlink user,
+show context as "unavailable". This will generally indicate that a
+process has more than one netlink socket active.
+.RE
+.RE
+.TP
+.B \-z, \-\-contexts
+As the
+.B \-Z
+option but also shows the socket context. The socket context is
+taken from the associated inode and is not the actual socket
+context held by the kernel. Sockets are typically labeled with the
+context of the creating process, however the context shown will reflect
+any policy role, type and/or range transition rules applied,
+and is therefore a useful reference.
+.TP
+.B \-N NSNAME, \-\-net=NSNAME
+Switch to the specified network namespace name.
+.TP
+.B \-b, \-\-bpf
+Show socket BPF filters (only administrators are allowed to get these
+information).
+.TP
+.B \-4, \-\-ipv4
+Display only IP version 4 sockets (alias for -f inet).
+.TP
+.B \-6, \-\-ipv6
+Display only IP version 6 sockets (alias for -f inet6).
+.TP
+.B \-0, \-\-packet
+Display PACKET sockets (alias for -f link).
+.TP
+.B \-t, \-\-tcp
+Display TCP sockets.
+.TP
+.B \-u, \-\-udp
+Display UDP sockets.
+.TP
+.B \-d, \-\-dccp
+Display DCCP sockets.
+.TP
+.B \-w, \-\-raw
+Display RAW sockets.
+.TP
+.B \-x, \-\-unix
+Display Unix domain sockets (alias for -f unix).
+.TP
+.B \-S, \-\-sctp
+Display SCTP sockets.
+.TP
+.B \-\-vsock
+Display vsock sockets (alias for -f vsock).
+.TP
+.B \-\-xdp
+Display XDP sockets (alias for -f xdp).
+.TP
+.B \-f FAMILY, \-\-family=FAMILY
+Display sockets of type FAMILY.  Currently the following families are
+supported: unix, inet, inet6, link, netlink, vsock, xdp.
+.TP
+.B \-A QUERY, \-\-query=QUERY, \-\-socket=QUERY
+List of socket tables to dump, separated by commas. The following identifiers
+are understood: all, inet, tcp, udp, raw, unix, packet, netlink, unix_dgram,
+unix_stream, unix_seqpacket, packet_raw, packet_dgram, dccp, sctp,
+vsock_stream, vsock_dgram, xdp Any item in the list may optionally be
+prefixed by an exclamation mark
+.RB ( ! )
+to exclude that socket table from being dumped.
+.TP
+.B \-D FILE, \-\-diag=FILE
+Do not display anything, just dump raw information about TCP sockets
+to FILE after applying filters. If FILE is - stdout is used.
+.TP
+.B \-F FILE, \-\-filter=FILE
+Read filter information from FILE.  Each line of FILE is interpreted
+like single command line option. If FILE is - stdin is used.
+.TP
+.B FILTER := [ state STATE-FILTER ] [ EXPRESSION ]
+Please take a look at the official documentation for details regarding filters.
+
+.SH STATE-FILTER
+
+.B STATE-FILTER
+allows to construct arbitrary set of states to match. Its syntax is
+sequence of keywords state and exclude followed by identifier of
+state.
+.TP
+Available identifiers are:
+
+All standard TCP states:
+.BR established ", " syn-sent ", " syn-recv ", " fin-wait-1 ", " fin-wait-2 ", " time-wait ", " closed ", " close-wait ", " last-ack ", "
+.BR  listening " and " closing.
+
+.B all
+- for all the states
+
+.B connected
+- all the states except for
+.BR listening " and " closed
+
+.B synchronized
+- all the
+.B connected
+states except for
+.B syn-sent
+
+.B bucket
+- states, which are maintained as minisockets, i.e.
+.BR time-wait " and " syn-recv
+
+.B big
+- opposite to
+.B bucket
+
+.SH USAGE EXAMPLES
+.TP
+.B ss -t -a
+Display all TCP sockets.
+.TP
+.B ss -t -a -Z
+Display all TCP sockets with process SELinux security contexts.
+.TP
+.B ss -u -a
+Display all UDP sockets.
+.TP
+.B ss -o state established '( dport = :ssh or sport = :ssh )'
+Display all established ssh connections.
+.TP
+.B ss -x src /tmp/.X11-unix/*
+Find all local processes connected to X server.
+.TP
+.B ss -o state fin-wait-1 '( sport = :http or sport = :https )' dst 193.233.7/24
+List all the tcp sockets in state FIN-WAIT-1 for our apache to network
+193.233.7/24 and look at their timers.
+.TP
+.B ss -a -A 'all,!tcp'
+List sockets in all states from all socket tables but TCP.
+.SH SEE ALSO
+.BR ip (8),
+.br
+.BR RFC " 793 "
+- https://tools.ietf.org/rfc/rfc793.txt (TCP states)
+
+.SH AUTHOR
+.I ss
+was written by Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>.
+.PP
+This manual page was written by Michael Prokop <mika@grml.org>
+for the Debian project (but may be used by others).
