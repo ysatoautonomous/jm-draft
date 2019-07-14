@@ -1,0 +1,797 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of IP</TITLE>
+</HEAD><BODY>
+<H1>IP</H1>
+Section: Linux (8)<BR>Updated: 20 Dec 2011<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+ip - ルーティング、ネットワークデバイス、インタフェース、トンネルの
+表示と操作をする。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<P>
+
+
+<BR>
+
+<B>ip</B>
+
+[ <I>OPTIONS</I> ] <I>OBJECT</I> { <I>COMMAND</I> | 
+
+<B>help</B> }
+
+<P>
+<P>
+<BR>
+
+<B>ip</B>
+
+[ <B>-force</B> ] 
+
+<B>-batch </B><I>filename</I>
+
+<P>
+<P>
+<BR>
+
+<I>OBJECT</I> := { 
+
+<B>link</B> | <B>address</B> | <B>addrlabel</B> | <B>route</B> | <B>rule</B> | <B>neigh</B> | <B>ntable</B> | <B>tunnel</B> | <B>tuntap</B> | <B>maddress</B> | <B>mroute</B> | <B>mrule</B> | <B>monitor</B> | <B>xfrm</B> | <B>netns</B> }
+
+<P>
+<P>
+<BR>
+
+<I>OPTIONS</I> := { 
+
+<B>-V</B>[<I>ersion</I>] |
+<B>-h</B>[<I>uman-readable</I>] |
+<B>-s</B>[<I>tatistics</I>] |
+<B>-d</B>[<I>etails</I>] |
+<B>-r</B>[<I>esolve</I>] |
+<B>-iec</B> |
+<B>-f</B>[<I>amily</I>] {
+<B>inet</B> | <B>inet6</B> | <B>link</B> } | 
+
+<B>-4</B> |
+<B>-6</B> |
+<B>-I</B> |
+<B>-D</B> |
+<B>-B</B> |
+<B>-0</B> |
+<B>-l</B>[<I>oops</I>] { <B>maximum-addr-flush-attempts</B> } |
+<B>-o</B>[<I>neline</I>] |
+<B>-rc</B>[<I>vbuf</I>] [<B>size</B>] |
+<B>-t</B>[<I>imestamp</I>] |
+<B>-ts</B>[<I>hort</I>] |
+<B>-n</B>[<I>etns</I>] name |
+<B>-a</B>[<I>ll</I>] |
+<B>-c</B>[<I>olor</I>] |
+<B>-br</B>[<I>ief</I>] |
+<B>-j</B>[son] |
+<B>-p</B>[retty] }
+<P>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>オプション</H2>
+
+<P>
+<DL COMPACT>
+<DT><B>-V</B>,<B> -Version</B>
+
+<DD>
+
+
+
+<B>ip</B>
+
+ユーティリティのバージョンを表示して、終了する。
+<P>
+<DT><B>-h,</B> -human,<B> -human-readable</B>
+
+<DD>
+
+人間が読みやすいように、値の後に (サイズ) 拡張子を付けて統計値を出力する。
+<P>
+<DT><B>-b,</B> -batch <B>&lt;FILENAME&gt;</B>
+
+<DD>
+
+
+指定したファイルまたは標準入力からコマンドを読み込んで起動する。
+最初の失敗で、ip が終了する。
+<P>
+<DT><B>-force</B>
+
+<DD>
+
+
+
+バッチモードでエラーがあっても ip を終了させない。
+コマンドの実行中にエラーがあった場合、アプリケーションの
+リターンコードは 0 以外になる。
+<P>
+<DT><B>-s</B>,<B> -stats</B>,<B> -statistics</B>
+
+<DD>
+
+
+
+より多くの情報を出力する。
+オプションを 2 回以上指定すると、情報量が増える。
+ルールとして、情報は統計値や時間に関する値である。
+<P>
+<DT><B>-d</B>,<B> -details</B>
+
+<DD>
+
+より詳細な情報を出力する。
+<P>
+<DT><B>-l</B>,<B> -loops </B>&lt;COUNT&gt;
+
+<DD>
+
+
+
+'ip address flush' のロジックがギブアップするまでの、
+最大ループ数を指定する。
+デフォルトは 10 である。
+ゼロ (0) はすべてのアドレスが削除されるまでループすることを意味する。
+<P>
+<DT><B>-f</B>,<B> -family </B>&lt;FAMILY&gt;
+
+<DD>
+
+
+
+
+
+使用するプロトコルファミリーを指定する。
+プロトコルファミリーの識別子は、
+<B>inet</B>,<B> inet6</B>,<B> bridge</B>,<B> mpls</B>,<B>link</B>
+
+のいずれかである。
+
+
+
+
+
+
+
+
+
+オプションが指定されない場合、
+他の引数からプロトコルファミリーを推定する。
+他のコマンドラインでファミリーを推定するのに十分な情報が
+与えられない場合、
+<B>ip</B>
+
+はデフォルトのファミリー
+<B>inet</B>
+
+または
+<B>any</B>
+
+を選択する。
+
+
+
+<B>link</B>
+
+は特別なファミリーの識別子で、ネットワークプロトコルが
+含まれていない。
+<P>
+<DT><B>-4</B>
+
+<DD>
+
+
+<B>-family inet</B>
+
+のショートカット。
+<P>
+<DT><B>-6</B>
+
+<DD>
+
+
+<B>-family inet6</B>
+
+のショートカット。
+<P>
+<DT><B>-B</B>
+
+<DD>
+
+
+<B>-family bridge</B>
+
+のショートカット。
+<P>
+<DT><B>-M</B>
+
+<DD>
+
+
+<B>-family mpls</B>
+
+のショートカット。
+<P>
+<DT><B>-0</B>
+
+<DD>
+
+
+<B>-family link</B>
+
+のショートカット。
+<P>
+<DT><B>-o</B>,<B> -oneline</B>
+
+<DD>
+
+
+
+
+
+
+
+
+
+ラインフィードを
+<B>'\'</B>
+
+で置換し、各レコードを 1 行で出力する。
+これはレコードを
+<B><A HREF="../man1/wc.1.html">wc</A></B>(1)
+
+で数えたり、出力を
+<B><A HREF="../man1/grep.1.html">grep</A></B>(1)
+
+したりするのに便利である。
+<P>
+<DT><B>-r</B>,<B> -resolve</B>
+
+<DD>
+
+
+ホストアドレスではなく、DNS 名を表示するのにシステム名のリゾルバーを使う。
+<P>
+<DT><B>-n</B>,<B> -netns </B>&lt;NETNS&gt;
+
+<DD>
+
+
+
+
+ネットワークネームスペース
+<I>NETNS</I>
+
+を指定するように
+<B>ip</B>
+
+を切り替える。
+
+実際にこれは、
+<P>
+<B>ip netns exec</B>
+
+<I>NETNS</I>
+
+<B>ip</B>
+
+[ <I>OPTIONS</I> ] <I>OBJECT</I> { <I>COMMAND</I> | 
+
+<B>help</B> }
+
+<P>
+
+の実行を
+<P>
+<B>ip</B>
+
+-n[etns] <I>NETNS</I> [ <I>OPTIONS</I> ] <I>OBJECT</I> { <I>COMMAND</I> | 
+
+<B>help</B> }
+
+<P>
+のように簡略化する。
+<DT><B>-a</B>,<B> -all</B>
+
+<DD>
+
+
+指定したコマンドをすべてのオブジェクトに実行する。
+これはコマンドがこのオプションをサポートしているかに依存する。
+<P>
+<DT><B>-c</B>[<B>color</B>][<B>=</B>{<B>always</B>|<B>auto</B>|<B>never</B>}
+
+<DD>
+
+
+
+
+
+
+
+
+
+
+
+カラー出力を設定する。
+パラメータが省略されるか
+<B>always</B>
+
+の場合、標準出力の状態に関わらずカラー出力が有効化される。
+パラメータが
+<B>auto</B>
+
+の場合、カラー出力を有効化する前に、標準出力が端末かをチェックする。
+パラメータが
+<B>never</B>
+
+の場合、カラー出力が無効化される。
+複数回指定されると、最後の指定が先に指定されたものより優先される。
+このフラグは
+<B>-json</B>
+
+が指定された場合、無視される。
+<P>
+
+
+
+
+
+カラーパレットは
+<B>COLORFGBG</B>
+
+環境変数に影響される
+(<B>環境変数</B>
+
+を参照すること)。
+<P>
+<DT><B>-t</B>,<B> -timestamp</B>
+
+<DD>
+
+モニターオプションを使う場合、現在時刻を表示する。
+<P>
+<DT><B>-ts</B>,<B> -tshort</B>
+
+<DD>
+
+
+
+<B>-timestamp</B>
+
+と同様であるが、短いフォーマットを使う。
+<P>
+<DT><B>-rc</B>,<B> -rcvbuf</B>&lt;SIZE&gt;
+
+<DD>
+
+netlink ソケットの受信バッファサイズを設定する。
+デフォルトは 1MB である。
+<P>
+<DT><B>-iec</B>
+
+<DD>
+
+人間が読みやすい IEC 単位でレートを出力する (例 1Ki = 1024)。
+<P>
+<DT><B>-br</B>,<B> -brief</B>
+
+<DD>
+
+
+
+基本的な情報のみを読みやすいようにテーブル形式で表示する。
+このオプションは、現在
+<B>ip addr show </B>と<B> ip link show </B>
+
+コマンドでのみサポートされている。
+<P>
+<DT><B>-j,</B> -json
+
+<DD>
+
+結果を JavaScript Object Notation (JSON) で出力する。
+<P>
+<DT><B>-p,</B> -pretty
+
+<DD>
+
+
+
+デフォルトの JSON フォーマットはコンパクトで、パースするには効率的であるが、
+多くのユーザには読みづらい。
+このフラグは、読みやすいようにインデントを追加する。
+<P>
+
+</DL>
+<A NAME="lbAE">&nbsp;</A>
+<H2>IP - コマンド書式</H2>
+
+<P>
+<A NAME="lbAF">&nbsp;</A>
+<H3><I>OBJECT</I>
+
+</H3>
+
+<P>
+<DL COMPACT>
+<DT><B>address</B>
+
+<DD>
+
+- デバイスのプロトコル (IP または IPv6) アドレス
+<P>
+<DT><B>addrlabel</B>
+
+<DD>
+
+- プロトコルアドレスセクションのラベル設定
+<P>
+<DT><B>l2tp</B>
+
+<DD>
+
+- イーサーネットオーバー IP でのトンネル (L2TPv3)
+<P>
+<DT><B>link</B>
+
+<DD>
+
+- ネットワークデバイス
+<P>
+<DT><B>maddress</B>
+
+<DD>
+
+- マルチキャストアドレス
+<P>
+<DT><B>monitor</B>
+
+<DD>
+
+- ネットリンクメッセージの監視
+<P>
+<DT><B>mroute</B>
+
+<DD>
+
+- マルチキャストルーティングのキャッシュエントリ
+<P>
+<DT><B>mrule</B>
+
+<DD>
+
+- マルチキャストルーティングのポリシーデータベース内のルール
+<P>
+<DT><B>neighbour</B>
+
+<DD>
+
+- ARP または NDISC のキャッシュエントリの管理
+<P>
+<DT><B>netns</B>
+
+<DD>
+
+- ネットワークネームスペースの管理
+<P>
+<DT><B>ntable</B>
+
+<DD>
+
+- 近隣 (neighbor) キャッシュの操作の管理
+<P>
+<DT><B>route</B>
+
+<DD>
+
+- ルーティングテーブルのエントリ
+<P>
+<DT><B>rule</B>
+
+<DD>
+
+- ルーティングポリシーのデータベース内のルール
+<P>
+<DT><B>tcp_metrics/tcpmetrics</B>
+
+<DD>
+
+- TCP メトリクスの管理
+<P>
+<DT><B>token</B>
+
+<DD>
+
+- トークン化されたインタフェース識別子の管理
+<P>
+<DT><B>tunnel</B>
+
+<DD>
+
+- トンネルオーバー IP
+<P>
+<DT><B>tuntap</B>
+
+<DD>
+
+- TUN/TAP デバイスの管理
+<P>
+<DT><B>xfrm</B>
+
+<DD>
+
+- IPSec ポリシーの管理
+<P>
+</DL>
+<P>
+
+
+
+
+
+
+
+
+すべてのオブジェクトの名前は、完全に指定することもできるし、
+省略形で指定することもできる。
+例えば
+<B>address</B>
+
+は
+<B>addr</B>
+
+と省略できるし、単に
+<B>a</B>
+
+と省略もできる。
+<P>
+<A NAME="lbAG">&nbsp;</A>
+<H3><I>COMMAND</I>
+
+</H3>
+
+<P>
+
+オブジェクトに対して実行するアクションを指定する。
+
+指定可能なアクションのセットは、オブジェクトタイプに依存する。
+
+
+
+
+
+
+
+
+
+
+
+ルールとして、オブジェクトに対して
+<B>add</B>,<B> delete</B>,<B>show</B>
+
+(または
+<B>list</B>)
+
+が指定可能である。
+しかし、いくつかのオブジェクトでは、これらの操作が許可されておらず、
+他のコマンドがあったりもする。
+<B>help</B>
+
+コマンドはすべてのオブジェクトで利用可能である。
+このコマンドは、指定可能なコマンドと、引数の書式のリストを表示する。
+<P>
+
+
+
+
+
+コマンドが指定されない場合、デフォルトコマンドが仮定される。
+通常は
+<B>list</B>
+
+であるが、指定された種別のオブジェクトがリストできない場合は、
+<B>help</B>
+
+が仮定される。
+<P>
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT><B>COLORFGBG</B>
+
+<DD>
+
+
+この変数が指定されると、バックグラウンドが暗いか明るいかを
+検知して、それと対照的な色を使う。
+<P>
+
+
+
+COLORFGBG 環境変数は、通常 2 つまたは 3 つの値をセミコロンで区切って指定する。
+どの場合でも最後の値を使う。
+この値は 0-6 または 8 であり、暗いバックグラウンドに適切な値を選択する。
+<P>
+COLORFGBG=&quot;;0&quot; ip -c a
+<P>
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+コマンドが成功した場合、返り値は 0 になる。
+書式のエラーがあった場合、1 になる。
+カーネルによってエラーがレポートされた場合、2 になる。
+<P>
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>例</H2>
+
+<P>
+
+ip addr
+<DL COMPACT><DT><DD>
+
+すべてのネットワークインタフェースに割り当てられたアドレスを
+表示する。
+</DL>
+
+<P>
+
+ip neigh
+<DL COMPACT><DT><DD>
+
+カーネル内の現在の近接テーブルを表示する。
+</DL>
+
+<P>
+
+ip link set x up
+<DL COMPACT><DT><DD>
+
+インタフェース x を起動する。
+</DL>
+
+<P>
+
+ip link set x down
+
+<DL COMPACT><DT><DD>
+
+インタフェース x を停止する。
+</DL>
+
+<P>
+
+ip route
+<DL COMPACT><DT><DD>
+
+ルーティングのテーブルを表示する。
+</DL>
+
+<P>
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+<B>ip</B>
+
+は Alexey N. Kuznetsov によって書かれ、Linux 2.2 に追加された。
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/ip-address.8.html">ip-address</A></B>(8),
+
+<B><A HREF="../man8/ip-addrlabel.8.html">ip-addrlabel</A></B>(8),
+
+<B><A HREF="../man8/ip-l2tp.8.html">ip-l2tp</A></B>(8),
+
+<B><A HREF="../man8/ip-link.8.html">ip-link</A></B>(8),
+
+<B><A HREF="../man8/ip-maddress.8.html">ip-maddress</A></B>(8),
+
+<B><A HREF="../man8/ip-monitor.8.html">ip-monitor</A></B>(8),
+
+<B><A HREF="../man8/ip-mroute.8.html">ip-mroute</A></B>(8),
+
+<B><A HREF="../man8/ip-neighbour.8.html">ip-neighbour</A></B>(8),
+
+<B><A HREF="../man8/ip-netns.8.html">ip-netns</A></B>(8),
+
+<B><A HREF="../man8/ip-ntable.8.html">ip-ntable</A></B>(8),
+
+<B><A HREF="../man8/ip-route.8.html">ip-route</A></B>(8),
+
+<B><A HREF="../man8/ip-rule.8.html">ip-rule</A></B>(8),
+
+<B><A HREF="../man8/ip-tcp_metrics.8.html">ip-tcp_metrics</A></B>(8),
+
+<B><A HREF="../man8/ip-token.8.html">ip-token</A></B>(8),
+
+<B><A HREF="../man8/ip-tunnel.8.html">ip-tunnel</A></B>(8),
+
+<B><A HREF="../man8/ip-xfrm.8.html">ip-xfrm</A></B>(8)
+
+<BR>
+
+
+IP コマンドのリファレンス <B>ip-cref.ps</B>
+
+
+<A NAME="lbAM">&nbsp;</A>
+<H2>バグ報告</H2>
+
+
+
+
+
+バグはネットワーク開発者のメーリングリスト
+<B>&lt;<A HREF="mailto:netdev@vger.kernel.org">netdev@vger.kernel.org</A>&gt;</B>
+
+に報告してほしい。
+ここで、主に開発と保守が行われている。
+メッセージを送るためにメーリングリストを購読している必要はない。
+<P>
+
+<A NAME="lbAN">&nbsp;</A>
+<H2>著者</H2>
+
+
+オリジナルのマニュアルは Michail Litvak &lt;<A HREF="mailto:mci@owl.openwall.com">mci@owl.openwall.com</A>&gt; によって書かれた。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">オプション</A><DD>
+<DT><A HREF="#lbAE">IP - コマンド書式</A><DD>
+<DL>
+<DT><A HREF="#lbAF"><I>OBJECT</I>
+
+</A><DD>
+<DT><A HREF="#lbAG"><I>COMMAND</I>
+
+</A><DD>
+</DL>
+<DT><A HREF="#lbAH">環境変数</A><DD>
+<DT><A HREF="#lbAI">返り値</A><DD>
+<DT><A HREF="#lbAJ">例</A><DD>
+<DT><A HREF="#lbAK">履歴</A><DD>
+<DT><A HREF="#lbAL">関連項目</A><DD>
+<DT><A HREF="#lbAM">バグ報告</A><DD>
+<DT><A HREF="#lbAN">著者</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 10:47:07 GMT, July 14, 2019
+</BODY>
+</HTML>
