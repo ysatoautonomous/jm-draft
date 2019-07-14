@@ -1,8 +1,15 @@
+.\"
+.\" Japanese Version Copyright (c) 2019 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun Jul 14 19:39:52 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
 .TH IP 8 "20 Dec 2011" "iproute2" "Linux"
 .\"O .SH NAME
 .SH 名前
 .\"O ip \- show / manipulate routing, network devices, interfaces and tunnels
-ip \- ルーティング、ネットワークデバイス、インタフェース、トンネルの表示と操作をする。
+ip \- ルーティング、ネットワークデバイス、インタフェース、トンネルの
+表示と操作をする。
 .\"O .SH SYNOPSIS
 .SH 書式
 
@@ -340,159 +347,220 @@ netlink ソケットの受信バッファサイズを設定する。
 
 .TP
 .B address
-- protocol (IP or IPv6) address on a device.
+.\"O - protocol (IP or IPv6) address on a device.
+- デバイスのプロトコル (IP または IPv6) アドレス
 
 .TP
 .B addrlabel
-- label configuration for protocol address selection.
+.\"O - label configuration for protocol address selection.
+- プロトコルアドレスセクションのラベル設定
 
 .TP
 .B l2tp
-- tunnel ethernet over IP (L2TPv3).
+.\"O - tunnel ethernet over IP (L2TPv3).
+- イーサーネットオーバー IP でのトンネル (L2TPv3)
 
 .TP
 .B link
-- network device.
+.\"O - network device.
+- ネットワークデバイス
 
 .TP
 .B maddress
-- multicast address.
+.\"O - multicast address.
+- マルチキャストアドレス
 
 .TP
 .B monitor
-- watch for netlink messages.
+.\"O - watch for netlink messages.
+- ネットリンクメッセージの監視
 
 .TP
 .B mroute
-- multicast routing cache entry.
+.\"O - multicast routing cache entry.
+- マルチキャストルーティングのキャッシュエントリ
 
 .TP
 .B mrule
-- rule in multicast routing policy database.
+.\"O - rule in multicast routing policy database.
+- マルチキャストルーティングのポリシーデータベース内のルール
 
 .TP
 .B neighbour
-- manage ARP or NDISC cache entries.
+.\"O - manage ARP or NDISC cache entries.
+- ARP または NDISC のキャッシュエントリの管理
 
 .TP
 .B netns
-- manage network namespaces.
+.\"O - manage network namespaces.
+- ネットワークネームスペースの管理
 
 .TP
 .B ntable
-- manage the neighbor cache's operation.
+.\"O - manage the neighbor cache's operation.
+- 近隣 (neighbor) キャッシュの操作の管理
 
 .TP
 .B route
-- routing table entry.
+.\"O - routing table entry.
+- ルーティングテーブルのエントリ
 
 .TP
 .B rule
-- rule in routing policy database.
+.\"O - rule in routing policy database.
+- ルーティングポリシーのデータベース内のルール
 
 .TP
 .B tcp_metrics/tcpmetrics
-- manage TCP Metrics
+.\"O - manage TCP Metrics
+- TCP メトリクスの管理
 
 .TP
 .B token
-- manage tokenized interface identifiers.
+.\"O - manage tokenized interface identifiers.
+- トークン化されたインタフェース識別子の管理
 
 .TP
 .B tunnel
-- tunnel over IP.
+.\"O - tunnel over IP.
+- トンネルオーバー IP
 
 .TP
 .B tuntap
-- manage TUN/TAP devices.
+.\"O - manage TUN/TAP devices.
+- TUN/TAP デバイスの管理
 
 .TP
 .B xfrm
-- manage IPSec policies.
+.\"O - manage IPSec policies.
+- IPSec ポリシーの管理
 
 .PP
-The names of all objects may be written in full or
-abbreviated form, for example
+.\"O The names of all objects may be written in full or
+.\"O abbreviated form, for example
+.\"O .B address
+.\"O can be abbreviated as
+.\"O .B addr
+.\"O or just
+.\"O .B a.
+すべてのオブジェクトの名前は、完全に指定することもできるし、
+省略形で指定することもできる。
+例えば
 .B address
-can be abbreviated as
+は
 .B addr
-or just
-.B a.
+と省略できるし、単に
+.B a
+と省略もできる。
 
 .SS
 .I COMMAND
 
-Specifies the action to perform on the object.
-The set of possible actions depends on the object type.
-As a rule, it is possible to
-.BR "add" , " delete"
-and
-.B show
-(or
-.B list
-) objects, but some objects do not allow all of these operations
-or have some additional commands. The
+.\"O Specifies the action to perform on the object.
+オブジェクトに対して実行するアクションを指定する。
+.\"O The set of possible actions depends on the object type.
+指定可能なアクションのセットは、オブジェクトタイプに依存する。
+.\"O As a rule, it is possible to
+.\"O .BR "add" , " delete"
+.\"O and
+.\"O .B show
+.\"O (or
+.\"O .B list
+.\"O ) objects, but some objects do not allow all of these operations
+.\"O or have some additional commands. The
+.\"O .B help
+.\"O command is available for all objects. It prints
+.\"O out a list of available commands and argument syntax conventions.
+ルールとして、オブジェクトに対して
+.BR "add" , " delete" , "show"
+(または
+.BR list )
+が指定可能である。
+しかし、いくつかのオブジェクトでは、これらの操作が許可されておらず、
+他のコマンドがあったりもする。
 .B help
-command is available for all objects. It prints
-out a list of available commands and argument syntax conventions.
+コマンドはすべてのオブジェクトで利用可能である。
+このコマンドは、指定可能なコマンドと、引数の書式のリストを表示する。
 .sp
-If no command is given, some default command is assumed.
-Usually it is
+.\"O If no command is given, some default command is assumed.
+.\"O Usually it is
+.\"O .B list
+.\"O or, if the objects of this class cannot be listed,
+.\"O .BR "help" .
+コマンドが指定されない場合、デフォルトコマンドが仮定される。
+通常は
 .B list
-or, if the objects of this class cannot be listed,
-.BR "help" .
+であるが、指定された種別のオブジェクトがリストできない場合は、
+.B help
+が仮定される。
 
 .\"O .SH ENVIRONMENT
 .SH 環境変数
 .TP
 .B COLORFGBG
-If set, it's value is used for detection whether background is dark or
-light and use contrast colors for it.
+.\"O If set, it's value is used for detection whether background is dark or
+.\"O light and use contrast colors for it.
+この変数が指定されると、バックグラウンドが暗いか明るいかを
+検知して、それと対照的な色を使う。
 
-COLORFGBG environment variable usually contains either two or three
-values separated by semicolons; we want the last value in either case.
-If this value is 0-6 or 8, chose colors suitable for dark background:
+.\"O COLORFGBG environment variable usually contains either two or three
+.\"O values separated by semicolons; we want the last value in either case.
+.\"O If this value is 0-6 or 8, chose colors suitable for dark background:
+COLORFGBG 環境変数は、通常 2 つまたは 3 つの値をセミコロンで区切って指定する。
+どの場合でも最後の値を使う。
+この値は 0-6 または 8 であり、暗いバックグラウンドに適切な値を選択する。
 
 COLORFGBG=";0" ip -c a
 
 .\"O .SH EXIT STATUS
 .SH 返り値
-Exit status is 0 if command was successful, and 1 if there is a syntax error.
-If an error was reported by the kernel exit status is 2.
+.\"O Exit status is 0 if command was successful, and 1 if there is a syntax error.
+.\"O If an error was reported by the kernel exit status is 2.
+コマンドが成功した場合、返り値は 0 になる。
+書式のエラーがあった場合、1 になる。
+カーネルによってエラーがレポートされた場合、2 になる。
 
 .\"O .SH "EXAMPLES"
 .SH 例
 .PP
 ip addr
 .RS 4
-Shows addresses assigned to all network interfaces.
+.\"O Shows addresses assigned to all network interfaces.
+すべてのネットワークインタフェースに割り当てられたアドレスを
+表示する。
 .RE
 .PP
 ip neigh
 .RS 4
-Shows the current neighbour table in kernel.
+.\"O Shows the current neighbour table in kernel.
+カーネル内の現在の近接テーブルを表示する。
 .RE
 .PP
 ip link set x up
 .RS 4
-Bring up interface x.
+.\"O Bring up interface x.
+インタフェース x を起動する。
 .RE
 .PP
 ip link set x down
 .RE
 .RS 4
-Bring down interface x.
+.\"O Bring down interface x.
+インタフェース x を停止する。
 .RE
 .PP
 ip route
 .RS 4
-Show table routes.
+.\"O Show table routes.
+ルーティングのテーブルを表示する。
 .RE
 
 .\"O .SH HISTORY
 .SH 履歴
+.\"O .B ip
+.\"O was written by Alexey N. Kuznetsov and added in Linux 2.2.
 .B ip
-was written by Alexey N. Kuznetsov and added in Linux 2.2.
+は Alexey N. Kuznetsov によって書かれ、Linux 2.2 に追加された。
 .\"O .SH SEE ALSO
 .SH 関連項目
 .BR ip-address (8),
@@ -512,14 +580,21 @@ was written by Alexey N. Kuznetsov and added in Linux 2.2.
 .BR ip-tunnel (8),
 .BR ip-xfrm (8)
 .br
-.RB "IP Command reference " ip-cref.ps
+.\"O .RB "IP Command reference " ip-cref.ps
+.RB "IP コマンドのリファレンス " ip-cref.ps
 .\"O .SH REPORTING BUGS
 .SH バグ報告
-Report any bugs to the Network Developers mailing list
+.\"O Report any bugs to the Network Developers mailing list
+.\"O .B <netdev@vger.kernel.org>
+.\"O where the development and maintenance is primarily done.
+.\"O You do not have to be subscribed to the list to send a message there.
+バグはネットワーク開発者のメーリングリスト
 .B <netdev@vger.kernel.org>
-where the development and maintenance is primarily done.
-You do not have to be subscribed to the list to send a message there.
+に報告してほしい。
+ここで、主に開発と保守が行われている。
+メッセージを送るためにメーリングリストを購読している必要はない。
 
 .\"O .SH AUTHOR
 .SH 著者
-Original Manpage by Michail Litvak <mci@owl.openwall.com>
+.\"O Original Manpage by Michail Litvak <mci@owl.openwall.com>
+オリジナルのマニュアルは Michail Litvak <mci@owl.openwall.com> によって書かれた。
