@@ -104,79 +104,125 @@ ip \- ルーティング、ネットワークデバイス、インタフェー�
 
 .TP
 .BR "\-l" , " \-loops " <COUNT>
-Specify maximum number of loops the 'ip address flush' logic
-will attempt before giving up. The default is 10.
-Zero (0) means loop until all addresses are removed.
+.\"O Specify maximum number of loops the 'ip address flush' logic
+.\"O will attempt before giving up. The default is 10.
+.\"O Zero (0) means loop until all addresses are removed.
+\&'ip address flush' のロジックがギブアップするまでの、
+最大ループ数を指定する。
+デフォルトは 10 である。
+ゼロ (0) はすべてのアドレスが削除されるまでループすることを意味する。
 
 .TP
 .BR "\-f" , " \-family " <FAMILY>
-Specifies the protocol family to use. The protocol family identifier
-can be one of
-.BR "inet" , " inet6" , " bridge" ,  " mpls"
-or
-.BR link .
-If this option is not present,
-the protocol family is guessed from other arguments. If the rest
-of the command line does not give enough information to guess the
-family,
+.\"O Specifies the protocol family to use. The protocol family identifier
+.\"O can be one of
+.\"O .BR "inet" , " inet6" , " bridge" ,  " mpls"
+.\"O or
+.\"O .BR link .
+使用するプロトコルファミリーを指定する。
+プロトコルファミリーの識別子は、
+.BR "inet" , " inet6" , " bridge" ,  " mpls" ,  "link"
+のいずれかである。
+.\"O If this option is not present,
+.\"O the protocol family is guessed from other arguments. If the rest
+.\"O of the command line does not give enough information to guess the
+.\"O family,
+.\"O .B ip
+.\"O falls back to the default one, usually
+.\"O .B inet
+.\"O or
+.\"O .BR "any" .
+オプションが指定されない場合、
+他の引数からプロトコルファミリーを推定する。
+他のコマンドラインでファミリーを推定するのに十分な情報が
+与えられない場合、
 .B ip
-falls back to the default one, usually
+はデフォルトのファミリー
 .B inet
-or
-.BR "any" .
+または
+.B "any"
+を選択する。
+.\"O .B link
+.\"O is a special family identifier meaning that no networking protocol
+.\"O is involved.
 .B link
-is a special family identifier meaning that no networking protocol
-is involved.
+は特別なファミリーの識別子で、ネットワークプロトコルが
+含まれていない。
 
 .TP
 .B \-4
-shortcut for
-.BR "-family inet" .
+.\"O shortcut for
+.\"O .BR "-family inet" .
+.B "-family inet"
+のショートカット。
 
 .TP
 .B \-6
-shortcut for
-.BR "\-family inet6" .
+.\"O shortcut for
+.\"O .BR "\-family inet6" .
+.B "\-family inet6"
+のショートカット。
 
 .TP
 .B \-B
-shortcut for
-.BR "\-family bridge" .
+.\"O shortcut for
+.\"O .BR "\-family bridge" .
+.B "\-family bridge"
+のショートカット。
 
 .TP
 .B \-M
-shortcut for
-.BR "\-family mpls" .
+.\"O shortcut for
+.\"O .BR "\-family mpls" .
+.B "\-family mpls"
+のショートカット。
 
 .TP
 .B \-0
-shortcut for
-.BR "\-family link" .
+.\"O shortcut for
+.\"O .BR "\-family link" .
+.B "\-family link"
+のショートカット。
 
 .TP
 .BR "\-o" , " \-oneline"
-output each record on a single line, replacing line feeds
-with the
+.\"O output each record on a single line, replacing line feeds
+.\"O with the
+.\"O .B '\e'
+.\"O character. This is convenient when you want to count records
+.\"O with
+.\"O .BR wc (1)
+.\"O or to
+.\"O .BR grep (1)
+.\"O the output.
+ラインフィードを
 .B '\e'
-character. This is convenient when you want to count records
-with
+で置換し、各レコードを 1 行で出力する。
+これはレコードを
 .BR wc (1)
-or to
+で数えたり、出力を
 .BR grep (1)
-the output.
+したりするのに便利である。
 
 .TP
 .BR "\-r" , " \-resolve"
-use the system's name resolver to print DNS names instead of
-host addresses.
+.\"O use the system's name resolver to print DNS names instead of
+.\"O host addresses.
+ホストアドレスではなく、DNS 名を表示するのにシステム名のリゾルバーを使う。
 
 .TP
 .BR "\-n" , " \-netns " <NETNS>
-switches
+.\"O switches
+.\"O .B ip
+.\"O to the specified network namespace
+.\"O .IR NETNS .
+ネットワークネームスペース
+.I NETNS
+を指定するように
 .B ip
-to the specified network namespace
-.IR NETNS .
-Actually it just simplifies executing of:
+を切り替える。
+.\"O Actually it just simplifies executing of:
+実際にこれは、
 
 .B ip netns exec
 .IR NETNS
@@ -184,72 +230,110 @@ Actually it just simplifies executing of:
 .RI "[ " OPTIONS " ] " OBJECT " { " COMMAND " | "
 .BR help " }"
 
-to
+.\"O to
+の実行を
 
 .B ip
 .RI "-n[etns] " NETNS " [ " OPTIONS " ] " OBJECT " { " COMMAND " | "
 .BR help " }"
 
+のように簡略化する。
 .TP
 .BR "\-a" , " \-all"
-executes specified command over all objects, it depends if command
-supports this option.
+.\"O executes specified command over all objects, it depends if command
+.\"O supports this option.
+指定したコマンドをすべてのオブジェクトに実行する。
+これはコマンドがこのオプションをサポートしているかに依存する。
 
 .TP
 .BR \-c [ color ][ = { always | auto | never }
-Configure color output. If parameter is omitted or
-.BR always ,
-color output is enabled regardless of stdout state. If parameter is
-.BR auto ,
-stdout is checked to be a terminal before enabling color output. If
-parameter is
-.BR never ,
-color output is disabled. If specified multiple times, the last one takes
-precedence. This flag is ignored if
+.\"O Configure color output. If parameter is omitted or
+.\"O .BR always ,
+.\"O color output is enabled regardless of stdout state. If parameter is
+.\"O .BR auto ,
+.\"O stdout is checked to be a terminal before enabling color output. If
+.\"O parameter is
+.\"O .BR never ,
+.\"O color output is disabled. If specified multiple times, the last one takes
+.\"O precedence. This flag is ignored if
+.\"O .B \-json
+.\"O is also given.
+カラー出力を設定する。
+パラメータが省略されるか
+.B always
+の場合、標準出力の状態に関わらずカラー出力が有効化される。
+パラメータが
+.B auto
+の場合、カラー出力を有効化する前に、標準出力が端末かをチェックする。
+パラメータが
+.B never
+の場合、カラー出力が無効化される。
+複数回指定されると、最後の指定が先に指定されたものより優先される。
+このフラグは
 .B \-json
-is also given.
+が指定された場合、無視される。
 
-Used color palette can be influenced by
-.BR COLORFGBG
-environment variable
-(see
-.BR ENVIRONMENT ).
+.\"O Used color palette can be influenced by
+.\"O .BR COLORFGBG
+.\"O environment variable
+.\"O (see
+.\"O .BR ENVIRONMENT ).
+カラーパレットは
+.B COLORFGBG
+環境変数に影響される
+.RB ( 環境変数
+を参照すること)。
 
 .TP
 .BR "\-t" , " \-timestamp"
-display current time when using monitor option.
+.\"O display current time when using monitor option.
+モニターオプションを使う場合、現在時刻を表示する。
 
 .TP
 .BR "\-ts" , " \-tshort"
-Like
-.BR \-timestamp ,
-but use shorter format.
+.\"O Like
+.\"O .BR \-timestamp ,
+.\"O but use shorter format.
+.B \-timestamp
+と同様であるが、短いフォーマットを使う。
 
 .TP
 .BR "\-rc" , " \-rcvbuf" <SIZE>
-Set the netlink socket receive buffer size, defaults to 1MB.
+.\"O Set the netlink socket receive buffer size, defaults to 1MB.
+netlink ソケットの受信バッファサイズを設定する。
+デフォルトは 1MB である。
 
 .TP
 .BR "\-iec"
-print human readable rates in IEC units (e.g. 1Ki = 1024).
+.\"O print human readable rates in IEC units (e.g. 1Ki = 1024).
+人間が読みやすい IEC 単位でレートを出力する (例 1Ki = 1024)。
 
 .TP
 .BR "\-br" , " \-brief"
-Print only basic information in a tabular format for better
-readability. This option is currently only supported by
-.BR "ip addr show " and " ip link show " commands.
+.\"O Print only basic information in a tabular format for better
+.\"O readability. This option is currently only supported by
+.\"O .BR "ip addr show " and " ip link show " commands.
+基本的な情報のみを読みやすいようにテーブル形式で表示する。
+このオプションは、現在
+.BR "ip addr show " と " ip link show "
+コマンドでのみサポートされている。
 
 .TP
 .BR "\-j", " \-json"
-Output results in JavaScript Object Notation (JSON).
+.\"O Output results in JavaScript Object Notation (JSON).
+結果を JavaScript Object Notation (JSON) で出力する。
 
 .TP
 .BR "\-p", " \-pretty"
-The default JSON format is compact and more efficient to parse but
-hard for most users to read.  This flag adds indentation for
-readability.
+.\"O The default JSON format is compact and more efficient to parse but
+.\"O hard for most users to read.  This flag adds indentation for
+.\"O readability.
+デフォルトの JSON フォーマットはコンパクトで、パースするには効率的であるが、
+多くのユーザには読みづらい。
+このフラグは、読みやすいようにインデントを追加する。
 
-.SH IP - COMMAND SYNTAX
+.\"O .SH IP - COMMAND SYNTAX
+.SH IP - コマンド書式
 
 .SS
 .I OBJECT
@@ -358,7 +442,8 @@ Usually it is
 or, if the objects of this class cannot be listed,
 .BR "help" .
 
-.SH ENVIRONMENT
+.\"O .SH ENVIRONMENT
+.SH 環境変数
 .TP
 .B COLORFGBG
 If set, it's value is used for detection whether background is dark or
@@ -370,11 +455,13 @@ If this value is 0-6 or 8, chose colors suitable for dark background:
 
 COLORFGBG=";0" ip -c a
 
-.SH EXIT STATUS
+.\"O .SH EXIT STATUS
+.SH 返り値
 Exit status is 0 if command was successful, and 1 if there is a syntax error.
 If an error was reported by the kernel exit status is 2.
 
-.SH "EXAMPLES"
+.\"O .SH "EXAMPLES"
+.SH 例
 .PP
 ip addr
 .RS 4
@@ -402,10 +489,12 @@ ip route
 Show table routes.
 .RE
 
-.SH HISTORY
+.\"O .SH HISTORY
+.SH 履歴
 .B ip
 was written by Alexey N. Kuznetsov and added in Linux 2.2.
-.SH SEE ALSO
+.\"O .SH SEE ALSO
+.SH 関連項目
 .BR ip-address (8),
 .BR ip-addrlabel (8),
 .BR ip-l2tp (8),
@@ -424,11 +513,13 @@ was written by Alexey N. Kuznetsov and added in Linux 2.2.
 .BR ip-xfrm (8)
 .br
 .RB "IP Command reference " ip-cref.ps
-.SH REPORTING BUGS
+.\"O .SH REPORTING BUGS
+.SH バグ報告
 Report any bugs to the Network Developers mailing list
 .B <netdev@vger.kernel.org>
 where the development and maintenance is primarily done.
 You do not have to be subscribed to the list to send a message there.
 
-.SH AUTHOR
+.\"O .SH AUTHOR
+.SH 著者
 Original Manpage by Michail Litvak <mci@owl.openwall.com>
