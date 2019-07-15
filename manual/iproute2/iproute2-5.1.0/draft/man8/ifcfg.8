@@ -1,0 +1,78 @@
+.\"
+.\" Japanese Version Copyright (c) 2019 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Mon Jul 15 18:54:17 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH IFCFG 8 "September 24 2009" "iproute2" "Linux"
+.\"O .SH NAME
+.SH 名前
+.\"O ifcfg \- simplistic script which replaces ifconfig IP management
+ifcfg \- ifconfig による IP 管理を置き換えるシンプルなスクリプト
+.\"O .SH SYNOPSIS
+.SH 書式
+.ad l
+.in +8
+.ti -8
+.B ifcfg
+.RI "[ " DEVICE " ] [ " command " ] " ADDRESS " [ " PEER " ] "
+.sp
+
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O This manual page documents briefly the
+.\"O .B ifcfg
+.\"O command.
+このマニュアルは
+.B ifcfg
+コマンドを短くドキュメント化している。
+.PP
+.\"O This is a simplistic script replacing one option of
+.\"O .B ifconfig
+.\"O , namely, IP address management. It not only adds
+.\"O addresses, but also carries out Duplicate Address Detection RFC-DHCP,
+.\"O sends unsolicited ARP to update the caches of other hosts sharing
+.\"O the interface, adds some control routes and restarts Router Discovery
+.\"O when it is necessary.
+これは
+.B ifconfig
+の 1 つのオプション、つまり、IP アドレス管理を置き換える簡単なスクリプトである。
+これは、アドレスを追加するだけでなく、必要に応じて、
+重複アドレス検出 (Duplicate Address Detection) RFC-DHCP の実行、
+インタフェースを共有する他のホストのキャッシュをアップデートする
+要求のなかった (unsolicited) ARP の送信、
+制御ルートの追加と Router Discovery の再起動などを行う。
+
+.\"O .SH IFCONFIG - COMMAND SYNTAX
+.SH IFCONFIG - コマンド書式
+
+.SS
+.TP
+.B DEVICE
+.\"O - it may have alias, suffix, separated by colon.
+- エイリアス、サフィックスをコンマで区切って指定できる。
+
+.TP
+.B command
+.\"O - add, delete or stop.
+- add, delete, stop のいずれか。
+
+.TP
+.B ADDRESS
+.\"O - optionally followed by prefix length.
+- オプションとしてプレフィックスの長さを付けることをができる。
+
+.TP
+.B peer
+.\"O - optional peer address for pointpoint interfaces.
+- ポイントポイントインタフェースのオプションのピアアドレス。
+
+.\"O .SH NOTES
+.SH 注意
+.\"O This script is not suitable for use with IPv6.
+このスクリプトは IPv6 で使うのには適していない。
+
+.\"O .SH SEE ALSO
+.SH 関連項目
+.\"O .RB "IP Command reference " ip-cref.ps
+.RB "IP コマンドリファレンス " ip-cref.ps
