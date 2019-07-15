@@ -255,128 +255,179 @@ congestion アルゴリズム名。
 .P
 .TP
 .B rto:<icsk_rto>
-tcp re-transmission timeout value, the unit is millisecond
+.\"O tcp re-transmission timeout value, the unit is millisecond
+tcp 再送信のタイムアウト値。単位はミリ秒。
 .P
 .TP
 .B backoff:<icsk_backoff>
-used for exponential backoff re-transmission, the actual
-re-transmission timeout value is icsk_rto << icsk_backoff
+.\"O used for exponential backoff re-transmission, the actual
+.\"O re-transmission timeout value is icsk_rto << icsk_backoff
+指数関数的に増える再送信タイムアウト (exponential backoff re-transmission)
+として使われる。
+実際の再送信タイムアウト値は、icsk_rto << icsk_backoff である。
 .P
 .TP
 .B rtt:<rtt>/<rttvar>
-rtt is the average round trip time, rttvar is the mean deviation of
-rtt, their units are millisecond
+.\"O rtt is the average round trip time, rttvar is the mean deviation of
+.\"O rtt, their units are millisecond
+rtt はラウンドトリップ時間の平均値であり、rttvar は rrt の平均偏差である。
+単位はミリ秒。
 .P
 .TP
 .B ato:<ato>
-ack timeout, unit is millisecond, used for delay ack mode
+.\"O ack timeout, unit is millisecond, used for delay ack mode
+ack タイムアウト。
+単位はミリ秒。
+遅延 ack モードで使われる。
 .P
 .TP
 .B mss:<mss>
-max segment size
+.\"O max segment size
+最大セグメントサイズ
 .P
 .TP
 .B cwnd:<cwnd>
-congestion window size
+.\"O congestion window size
+congestion ウインドウサイズ
 .P
 .TP
 .B pmtu:<pmtu>
-path MTU value
+.\"O path MTU value
+パス MTU 値
 .P
 .TP
 .B ssthresh:<ssthresh>
-tcp congestion window slow start threshold
+.\"O tcp congestion window slow start threshold
+tcp congestion ウィンドウのスロースタートのしきい値
 .P
 .TP
 .B bytes_acked:<bytes_acked>
-bytes acked
+.\"O bytes acked
+ack されたバイト数
 .P
 .TP
 .B bytes_received:<bytes_received>
-bytes received
+.\"O bytes received
+受信バイト数
 .P
 .TP
 .B segs_out:<segs_out>
-segments sent out
+.\"O segments sent out
+送信セグメント数
 .P
 .TP
 .B segs_in:<segs_in>
-segments received
+.\"O segments received
+受信セグメント数
 .P
 .TP
 .B send <send_bps>bps
-egress bps
+.\"O egress bps
+送信 bps
 .P
 .TP
 .B lastsnd:<lastsnd>
-how long time since the last packet sent, the unit is millisecond
+.\"O how long time since the last packet sent, the unit is millisecond
+最後のパケットを送信してからの時間。単位はミリ秒。
 .P
 .TP
 .B lastrcv:<lastrcv>
-how long time since the last packet received, the unit is millisecond
+.\"O how long time since the last packet received, the unit is millisecond
+最後のパケットを受信してからの時間。単位はミリ秒。
 .P
 .TP
 .B lastack:<lastack>
-how long time since the last ack received, the unit is millisecond
+.\"O how long time since the last ack received, the unit is millisecond
+最後の ack を受信してからの時間。単位はミリ秒。
 .P
 .TP
 .B pacing_rate <pacing_rate>bps/<max_pacing_rate>bps
-the pacing rate and max pacing rate
+.\"O the pacing rate and max pacing rate
+ペーシングレート (pacing rate) と最大ペーシングレート
 .P
 .TP
 .B rcv_space:<rcv_space>
-a helper variable for TCP internal auto tuning socket receive buffer
+.\"O a helper variable for TCP internal auto tuning socket receive buffer
+TCP 内部チューニングソケットの受信バッファのヘルパー変数
 .RE
 .TP
 .B \-\-tos
-Show ToS and priority information. Below fields may appear:
+.\"O Show ToS and priority information. Below fields may appear:
+ToS と優先度情報を表示する。
+以下のフィールドが表示される。
 .RS
 .P
 .TP
 .B tos
-IPv4 Type-of-Service byte
+.\"O IPv4 Type-of-Service byte
+IPv4 Type-of-Service バイト
 .P
 .TP
 .B tclass
-IPv6 Traffic Class byte
+.\"O IPv6 Traffic Class byte
+IPv6 Traffic Class バイト
 .P
 .TP
 .B class_id
-Class id set by net_cls cgroup. If class is zero this shows priority
-set by SO_PRIORITY.
+.\"O Class id set by net_cls cgroup. If class is zero this shows priority
+.\"O set by SO_PRIORITY.
+net_cls cgroup で設定されるクラス ID。
+クラスが 0 の場合、SO_PRIORITY で設定される優先度が表示される。
 .RE
 .TP
 .B \-K, \-\-kill
-Attempts to forcibly close sockets. This option displays sockets that are
-successfully closed and silently skips sockets that the kernel does not support
-closing. It supports IPv4 and IPv6 sockets only.
+.\"O Attempts to forcibly close sockets. This option displays sockets that are
+.\"O successfully closed and silently skips sockets that the kernel does not support
+.\"O closing. It supports IPv4 and IPv6 sockets only.
+ソケットを強制的にクローズする。
+このオプションは、クローズに成功したソケットと、
+カーネルがソケットのクローズをサポートしておらず、
+暗黙のうちにスキップされたソケットを表示する。
+これは IPv4 と IPv6 ソケットのみをサポートする。
 .TP
 .B \-s, \-\-summary
-Print summary statistics. This option does not parse socket lists obtaining
-summary from various sources. It is useful when amount of sockets is so huge
-that parsing /proc/net/tcp is painful.
+.\"O Print summary statistics. This option does not parse socket lists obtaining
+.\"O summary from various sources. It is useful when amount of sockets is so huge
+.\"O that parsing /proc/net/tcp is painful.
+統計のサマリーを表示する。
+このオプションはさまざまな情報源からサマリーを得るために、
+ソケットのリストを解析しない。
+これはソケットの量が膨大で、/proc/net/tcp を解析するのが苦痛な場合に、役に立つ。
 .TP
 .B \-E, \-\-events
-Continually display sockets as they are destroyed
+.\"O Continually display sockets as they are destroyed
+ソケットが破棄 (desctory) されたときに、連続して表示する。
 .TP
 .B \-Z, \-\-context
-As the
+.\"O As the
+.\"O .B \-p
+.\"O option but also shows process security context.
 .B \-p
-option but also shows process security context.
+と同様であるが、プロセスのセキュリティコンテキストを表示する。
 .sp
-For
+.\"O For
+.\"O .BR netlink (7)
+.\"O sockets the initiating process context is displayed as follows:
 .BR netlink (7)
-sockets the initiating process context is displayed as follows:
+ソケットについて、プロセスコンテキストの初期化は、
+以下のように表示される。
 .RS
 .RS
 .IP "1." 4
-If valid pid show the process context.
+.\"O If valid pid show the process context.
+有効な PID がある場合、プロセスコンテキストを表示する。
 .IP "2." 4
-If destination is kernel (pid = 0) show kernel initial context.
+.\"O If destination is kernel (pid = 0) show kernel initial context.
+送信先がカーネル (pid = 0) の場合、
+カーネルの初期コンテキストを表示する。
 .IP "3." 4
-If a unique identifier has been allocated by the kernel or netlink user,
-show context as "unavailable". This will generally indicate that a
-process has more than one netlink socket active.
+.\"O If a unique identifier has been allocated by the kernel or netlink user,
+.\"O show context as "unavailable". This will generally indicate that a
+.\"O process has more than one netlink socket active.
+カーネルまたは netlink ユーザによって一意な識別子が確保された場合、
+コンテキスト "unavailable" を表示する。
+これは一般的にプロセスが 1 つ以上のアクティブな
+netlink ソケットを持っていることを意味する。
 .RE
 .RE
 .TP
