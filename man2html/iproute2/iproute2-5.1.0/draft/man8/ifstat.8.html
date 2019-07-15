@@ -1,0 +1,184 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of IFSTAT</TITLE>
+</HEAD><BODY>
+<H1>IFSTAT</H1>
+Section: Linux (8)<BR>Updated: 28 Oct 2015<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+ifstat - ネットワークインタフェースの統計を読むための手軽なユーティリティ
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+
+<BR>
+
+<B>ifstat</B> [ 
+
+<I>OPTIONS</I> ] [ <I>INTERFACE_LIST</I> ]
+
+<P>
+<BR>
+
+<I>INTERFACE_LIST</I> := <I>INTERFACE_LIST</I> | <I>interface</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+<B>ifstat</B> はネットワークインタフェースの統計を綺麗に表示する。
+
+
+このユーティリティは以前に表示したデータのレコードを履歴ファイルに保持し、
+デフォルトでは、前の呼び出しと現在の呼び出しの差分のみを表示する。
+
+
+
+履歴ファイルのデフォルトの場所は、/tmp/.ifstat.u$UID であるが、
+IFSTAT_HISTORY 環境変数で上書きできる。
+同様に xstat (拡張した stats) の履歴ファイルのデフォルトの場所は
+/tmp/.&lt;xstat name&gt;_ifstat.u$UID である。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-h, --help</B>
+
+<DD>
+
+オプションのサマリーを表示する。
+<DT><B>-V, --version</B>
+
+<DD>
+
+プログラムのバージョンを表示する。
+<DT><B>-a, --ignore</B>
+
+<DD>
+
+履歴ファイルを無視する。
+<DT><B>-d, --scan=SECS</B>
+
+<DD>
+
+SECS 秒ごとに統計のサンプリングを行う。
+<DT><B>-e, --errors</B>
+
+<DD>
+
+エラーを表示する。
+<DT><B>-n, --nooutput</B>
+
+<DD>
+
+何も出力しない。履歴ファイルの更新のみを行う。
+<DT><B>-r, --reset</B>
+
+<DD>
+
+履歴をリセットする。
+<DT><B>-s, --noupdate</B>
+
+<DD>
+
+履歴ファイルの更新を行わない。
+<DT><B>-t, --interval=SECS</B>
+
+<DD>
+
+過去 SECS 秒の平均をレポートする。
+<DT><B>-z, --zeros</B>
+
+<DD>
+
+何も活動がないエントリを表示する。
+<DT><B>-j, --json</B>
+
+<DD>
+
+結果を JSON フォーマットで表示する。
+<DT><B>-p, --pretty</B>
+
+<DD>
+
+
+
+<B>--json</B>
+
+と組み合わせて、出力を綺麗に表示する。
+<DT><B>-x, --extended=TYPE</B>
+
+<DD>
+
+TYPE に指定した拡張の統計を表示する。
+サポートされるタイプは以下のとおり。
+<P>
+
+<B>cpu_hits</B>
+
+
+- CPU を経由したパケットのみをカウントする。
+
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT><B>IFSTAT_HISTORY</B>
+
+<DD>
+
+設定された場合、この値は別の履歴ファイルパスとして解釈される。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/ip.8.html">ip</A></B>(8)
+
+<BR>
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>著者</H2>
+
+
+ifstat は Alexey Kuznetsov &lt;<A HREF="mailto:kuznet@ms2.inr.ac.ru">kuznet@ms2.inr.ac.ru</A>&gt; によって書かれた。
+<P>
+
+
+このマニュアルページは Petr Sabata &lt;<A HREF="mailto:contyk@redhat.com">contyk@redhat.com</A>&gt; によって書かれた。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">環境変数</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:21:43 GMT, July 15, 2019
+</BODY>
+</HTML>
