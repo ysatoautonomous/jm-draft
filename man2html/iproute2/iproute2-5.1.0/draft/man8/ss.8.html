@@ -1,0 +1,972 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SS</TITLE>
+</HEAD><BODY>
+<H1>SS</H1>
+Section: Maintenance Commands (8)<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+ss - ソケットを調査するもう 1 つのユーティリティ
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>ss</B>
+
+[<I>options</I>]<I> [ FILTER ]</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>ss</B>
+
+はソケットの統計 (socket statistics) をダンプするのに使われる。
+これは
+<I>netstat</I>
+
+と同様の情報を表示することができる。
+
+このツールは、他のツールより多くの TCP と状態の情報を表示できる。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+
+オプションが指定されない場合、ss は接続が確立された
+オープンされてリッスンしていないソケット (例えば、TCP/UNIX/UDP) のリストを表示する。
+<DL COMPACT>
+<DT><B>-h, --help</B>
+
+<DD>
+
+オプションのサマリーを表示する。
+<DT><B>-V, --version</B>
+
+<DD>
+
+バージョン情報を出力する。
+<DT><B>-H, --no-header</B>
+
+<DD>
+
+ヘッダ行の出力を抑止する。
+<DT><B>-n, --numeric</B>
+
+<DD>
+
+サービス名の解決を行わない。
+<DT><B>-r, --resolve</B>
+
+<DD>
+
+数値のアドレス/ポートの解決を行う。
+<DT><B>-a, --all</B>
+
+<DD>
+
+
+リッスンしているソケットと、リッスンしていないソケット
+(TCP では接続を確立したことを意味する) の両方を表示する。
+<DT><B>-l, --listening</B>
+
+<DD>
+
+リッスンしているソケットのみを表示する (これはデフォルトでは省略される)。
+<DT><B>-o, --options</B>
+
+<DD>
+
+タイマー情報を表示する。
+TCP プロトコルでは出力フォーマットは以下のとおり。
+<DL COMPACT><DT><DD>
+<P>
+
+timer:(&lt;timer_name&gt;,&lt;expire_time&gt;,&lt;retrans&gt;)
+<P>
+
+<DL COMPACT>
+<DT><B>&lt;timer_name&gt;</B>
+
+<DD>
+
+タイマーの名前。
+5 種類のタイマー名がある。
+<DL COMPACT><DT><DD>
+<P>
+
+<B>on</B>
+
+
+
+: 以下の 3 つのいずれかのタイマー: TCP retrans タイマー,
+TCP early retrans タイマー、tail loss probe タイマー
+<P>
+
+
+<B>keepalive</B>: tcp keep alive タイマー
+
+<P>
+
+
+<B>timewait</B>: timewait stage タイマー
+
+<P>
+
+
+<B>persist</B>: zero window probe タイマー
+
+<P>
+
+
+<B>unknown</B>: 上記のどのタイマーでもない
+
+</DL>
+
+<DT><B>&lt;expire_time&gt;</B>
+
+<DD>
+
+タイマーが期限切れするまでの時間
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>&lt;retrans&gt;</B>
+
+<DD>
+
+再送信が行われた回数。
+</DL>
+</DL>
+
+<DT><B>-e, --extended</B>
+
+<DD>
+
+詳細なソケット情報を表示する。
+出力フォーマットは以下のとおり。
+<DL COMPACT><DT><DD>
+<P>
+
+uid:&lt;uid_number&gt; ino:&lt;inode_number&gt; sk:&lt;cookie&gt;
+<P>
+
+<DL COMPACT>
+<DT><B>&lt;uid_number&gt;</B>
+
+<DD>
+
+ソケットが所属するユーザ ID
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>&lt;inode_number&gt;</B>
+
+<DD>
+
+VFS 上のソケットの inode 番号
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>&lt;cookie&gt;</B>
+
+<DD>
+
+ソケットの UUID
+</DL>
+</DL>
+
+<DT><B>-m, --memory</B>
+
+<DD>
+
+ソケットのメモリ使用情報。
+出力フォーマットは以下のとおり。
+<DL COMPACT><DT><DD>
+<P>
+
+skmem:(r&lt;rmem_alloc&gt;,rb&lt;rcv_buf&gt;,t&lt;wmem_alloc&gt;,tb&lt;snd_buf&gt;,
+<BR>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+f&lt;fwd_alloc&gt;,w&lt;wmem_queued&gt;,
+</DL>
+
+</DL>
+
+<BR>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+o&lt;opt_mem&gt;,bl&lt;back_log&gt;)
+</DL>
+
+</DL>
+
+<P>
+
+<DL COMPACT>
+<DT><B>&lt;rmem_alloc&gt;</B>
+
+<DD>
+
+受信パケットのために確保されたメモリ。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>&lt;rcv_buf&gt;</B>
+
+<DD>
+
+受信パケットのために確保可能な総メモリ。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>&lt;wmem_alloc&gt;</B>
+
+<DD>
+
+(レイヤー 3 に送信される) 送信パケットに使われるメモリ。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>&lt;snd_buf&gt;</B>
+
+<DD>
+
+送信パケットのために確保可能な総メモリ。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>&lt;fwd_alloc&gt;</B>
+
+<DD>
+
+
+
+
+キャッシュとしてソケットのために確保されたが、
+送受信パケットにまだ使われていないメモリ。
+送受信パケットにメモリが必要な場合、追加のメモリを確保する
+前に、このキャッシュのメモリが使われる。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>&lt;wmem_queued&gt;</B>
+
+<DD>
+
+(レイヤー 3 に送信されない) 送信パケットのために確保されたメモリ。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>&lt;ropt_mem&gt;</B>
+
+<DD>
+
+ソケットオプションを格納するために使われるメモリ。
+例えば、TCP MD5 シグネチャのキー。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>&lt;back_log&gt;</B>
+
+<DD>
+
+
+
+
+sk バックログキューに使われるメモリ。
+プロセスコンテキストでは、プロセスがパケットを
+受信している時に、
+新しいパケットが受信すると、sk バックログキューに入れられる。
+これにより、プロセスは即座にパケットを受信できる。
+</DL>
+</DL>
+
+<DT><B>-p, --processes</B>
+
+<DD>
+
+ソケットを使っているプロセスを表示する。
+<DT><B>-i, --info</B>
+
+<DD>
+
+内部 TCP 情報を表示する。
+以下のフィールドが表示される。
+<DL COMPACT><DT><DD>
+<P>
+
+<DL COMPACT>
+<DT><B>ts</B>
+
+<DD>
+
+タイムスタンプオプションが設定されている場合、文字列 &quot;ts&quot; が表示される。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>sack</B>
+
+<DD>
+
+sack オプションが設定されている場合、文字列 &quot;sack&quot; が表示される。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>ecn</B>
+
+<DD>
+
+明示的な混雑通知 (explicit congestion notification) オプションが設定されている場合、
+文字列 &quot;ecn&quot; が表示される。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>ecnseen</B>
+
+<DD>
+
+受信パケットに saw ecn フラグが設定されている場合、
+文字列 &quot;ecnseen&quot; が表示される。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>fastopen</B>
+
+<DD>
+
+fastopen オプションが設定されている場合、
+文字列 &quot;fastopen&quot; が表示される。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>cong_alg</B>
+
+<DD>
+
+congestion アルゴリズム名。
+デフォルトの congestion アルゴリズム名は、&quot;cubic&quot; である。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>wscale:&lt;snd_wscale&gt;:&lt;rcv_wscale&gt;</B>
+
+<DD>
+
+
+ウィンドウスケールオプションが使われている場合、
+このフィールドには、送信スケールファクターと
+受信スケールファクターが表示される。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>rto:&lt;icsk_rto&gt;</B>
+
+<DD>
+
+tcp 再送信のタイムアウト値。単位はミリ秒。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>backoff:&lt;icsk_backoff&gt;</B>
+
+<DD>
+
+
+指数関数的に増える再送信タイムアウト (exponential backoff re-transmission)
+として使われる。
+実際の再送信タイムアウト値は、icsk_rto &lt;&lt; icsk_backoff である。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>rtt:&lt;rtt&gt;/&lt;rttvar&gt;</B>
+
+<DD>
+
+
+rtt はラウンドトリップ時間の平均値であり、rttvar は rrt の平均偏差である。
+単位はミリ秒。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>ato:&lt;ato&gt;</B>
+
+<DD>
+
+ack タイムアウト。
+単位はミリ秒。
+遅延 ack モードで使われる。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>mss:&lt;mss&gt;</B>
+
+<DD>
+
+最大セグメントサイズ
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>cwnd:&lt;cwnd&gt;</B>
+
+<DD>
+
+congestion ウインドウサイズ
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>pmtu:&lt;pmtu&gt;</B>
+
+<DD>
+
+パス MTU 値
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>ssthresh:&lt;ssthresh&gt;</B>
+
+<DD>
+
+tcp congestion ウィンドウのスロースタートのしきい値
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>bytes_acked:&lt;bytes_acked&gt;</B>
+
+<DD>
+
+ack されたバイト数
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>bytes_received:&lt;bytes_received&gt;</B>
+
+<DD>
+
+受信バイト数
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>segs_out:&lt;segs_out&gt;</B>
+
+<DD>
+
+送信セグメント数
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>segs_in:&lt;segs_in&gt;</B>
+
+<DD>
+
+受信セグメント数
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>send &lt;send_bps&gt;bps</B>
+
+<DD>
+
+送信 bps
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>lastsnd:&lt;lastsnd&gt;</B>
+
+<DD>
+
+最後のパケットを送信してからの時間。単位はミリ秒。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>lastrcv:&lt;lastrcv&gt;</B>
+
+<DD>
+
+最後のパケットを受信してからの時間。単位はミリ秒。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>lastack:&lt;lastack&gt;</B>
+
+<DD>
+
+最後の ack を受信してからの時間。単位はミリ秒。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>pacing_rate &lt;pacing_rate&gt;bps/&lt;max_pacing_rate&gt;bps</B>
+
+<DD>
+
+ペーシングレート (pacing rate) と最大ペーシングレート
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>rcv_space:&lt;rcv_space&gt;</B>
+
+<DD>
+
+TCP 内部チューニングソケットの受信バッファのヘルパー変数
+</DL>
+</DL>
+
+<DT><B>--tos</B>
+
+<DD>
+
+ToS と優先度情報を表示する。
+以下のフィールドが表示される。
+<DL COMPACT><DT><DD>
+<P>
+
+<DL COMPACT>
+<DT><B>tos</B>
+
+<DD>
+
+IPv4 Type-of-Service バイト
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>tclass</B>
+
+<DD>
+
+IPv6 Traffic Class バイト
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>class_id</B>
+
+<DD>
+
+
+net_cls cgroup で設定されるクラス ID。
+クラスが 0 の場合、SO_PRIORITY で設定される優先度が表示される。
+</DL>
+</DL>
+
+<DT><B>-K, --kill</B>
+
+<DD>
+
+
+
+ソケットを強制的にクローズする。
+このオプションは、クローズに成功したソケットと、
+カーネルがソケットのクローズをサポートしておらず、
+暗黙のうちにスキップされたソケットを表示する。
+これは IPv4 と IPv6 ソケットのみをサポートする。
+<DT><B>-s, --summary</B>
+
+<DD>
+
+
+
+統計のサマリーを表示する。
+このオプションはさまざまな情報源からサマリーを得るために、
+ソケットのリストを解析しない。
+これはソケットの量が膨大で、/proc/net/tcp を解析するのが苦痛な場合に、役に立つ。
+<DT><B>-E, --events</B>
+
+<DD>
+
+ソケットが破棄 (desctory) されたときに、連続して表示する。
+<DT><B>-Z, --context</B>
+
+<DD>
+
+
+
+<B>-p</B>
+
+と同様であるが、プロセスのセキュリティコンテキストを表示する。
+<P>
+
+
+
+<B><A HREF="../man7/netlink.7.html">netlink</A></B>(7)
+
+ソケットについて、プロセスコンテキストの初期化は、
+以下のように表示される。
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>1.<DD>
+
+有効な PID がある場合、プロセスコンテキストを表示する。
+<DT>2.<DD>
+
+送信先がカーネル (pid = 0) の場合、
+カーネルの初期コンテキストを表示する。
+<DT>3.<DD>
+
+
+
+カーネルまたは netlink ユーザによって一意な識別子が確保された場合、
+コンテキスト &quot;unavailable&quot; を表示する。
+これは一般的にプロセスが 1 つ以上のアクティブな
+netlink ソケットを持っていることを意味する。
+</DL>
+</DL>
+
+</DL>
+
+<DT><B>-z, --contexts</B>
+
+<DD>
+
+
+
+
+
+
+
+
+
+
+
+<B>-Z</B>
+
+と同様であるが、ソケットコンテキストも表示する。
+ソケットコンテキストは、関連する inode から取得され、
+カーネルが保持する実際のソケットコンテキストではない。
+ソケットは生成されたプロセスのコンテキストでラベル付けされる。
+しかし、表示されるコンテキストはポリシールール、
+適用されるトランジションルールのタイプと範囲を反映しており、
+有用な参考情報となる。
+<DT><B>-N NSNAME, --net=NSNAME</B>
+
+<DD>
+
+指定したネットワークネームスペースの名前に切り替える。
+<DT><B>-b, --bpf</B>
+
+<DD>
+
+
+ソケット BPF フィルターを表示する
+(管理者だけがこれらの情報を取得できる)。
+<DT><B>-4, --ipv4</B>
+
+<DD>
+
+IP version 4 ソケットのみを表示する (-f inet のエイリアス)。
+<DT><B>-6, --ipv6</B>
+
+<DD>
+
+IP version 6 ソケットのみを表示する (-f inet6 のエイリアス)。
+<DT><B>-0, --packet</B>
+
+<DD>
+
+PACKET ソケットを表示する (-f link のエイリアス)。
+<DT><B>-t, --tcp</B>
+
+<DD>
+
+TCP ソケットを表示する。
+<DT><B>-u, --udp</B>
+
+<DD>
+
+UDP ソケットを表示する。
+<DT><B>-d, --dccp</B>
+
+<DD>
+
+DCCP ソケットを表示する。
+<DT><B>-w, --raw</B>
+
+<DD>
+
+RAW ソケットを表示する。
+<DT><B>-x, --unix</B>
+
+<DD>
+
+Unix ドメインソケットを表示する (-f unix のエイリアス)。
+<DT><B>-S, --sctp</B>
+
+<DD>
+
+SCTP ソケットを表示する。
+<DT><B>--vsock</B>
+
+<DD>
+
+vsock ソケットを表示する (-f vsock のエイリアス)。
+<DT><B>--xdp</B>
+
+<DD>
+
+XDP ソケットを表示する (-f xdp のエイリアス)。
+<DT><B>-f FAMILY, --family=FAMILY</B>
+
+<DD>
+
+
+タイプ FAMILY のソケットを表示する。
+現在のところ以下のファミリーがサポートされている。
+unix, inet, inet6, link, netlink, vsock, xdp。
+<DT><B>-A QUERY, --query=QUERY, --socket=QUERY</B>
+
+<DD>
+
+
+
+
+
+
+
+ダンプするソケットテーブルのカンマ区切りのリスト。
+以下の識別子が利用できる。
+all, inet, tcp, udp, raw, unix, packet, netlink, unix_dgram,
+unix_stream, unix_seqpacket, packet_raw, packet_dgram, dccp, sctp,
+vsock_stream, vsock_dgram, xdp。
+リスト中のどのアイテムもオプションとしてエクスクラメーションマーク
+(<B>!</B>)
+
+を前に付けて、ダンプするソケットテーブルから除外できる。
+<DT><B>-D FILE, --diag=FILE</B>
+
+<DD>
+
+
+何も表示せず、フィルタを適用した後の TCP ソケットについての生情報を
+FILE にダンプする。
+FILE が - の場合、標準出力が使われる。
+<DT><B>-F FILE, --filter=FILE</B>
+
+<DD>
+
+
+フィルタ情報を FILE から読み込む。
+FILE の各行は 1 つのコマンドラインオプションとして解釈される。
+FILE が - の場合、標準入力が使われる。
+<DT><B>FILTER := [ state STATE-FILTER ] [ EXPRESSION ]</B>
+
+<DD>
+
+フィルターについての詳細は、正式なドキュメントを参照してほしい。
+<P>
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>STATE-FILTER</H2>
+
+<P>
+
+
+
+
+<B>STATE-FILTER</B>
+
+を使うと、マッチングさせる任意の状態のセットを構築できる。
+書式は、キーワード状態と除外の後に、状態の識別子が続く。
+<DL COMPACT>
+<DT>
+<DD>
+指定可能な識別子は以下のとおり。
+<P>
+
+すべての標準的な TCP 状態:
+<B>established</B>, <B>syn-sent</B>, <B>syn-recv</B>, <B>fin-wait-1</B>, <B>fin-wait-2</B>, <B>time-wait</B>, <B>closed</B>, <B>close-wait</B>, <B>last-ack</B>, 
+
+
+<B>listening</B>, <B>closing.</B>
+
+<P>
+<B>all</B>
+
+
+- すべての状態。
+<P>
+<B>connected</B>
+
+
+
+- <B>listening</B> と <B>closed</B>
+
+を除く、すべての状態。
+<P>
+<B>synchronized</B>
+
+
+
+
+
+- <B>connected</B>
+
+から
+<B>syn-sent</B>
+
+を除いたすべての状態。
+<P>
+<B>bucket</B>
+
+
+
+- minisockets として管理されている状態。
+つまり、
+<B>time-wait</B> と <B>syn-recv</B>
+
+<P>
+<B>big</B>
+
+
+
+- <B>bucket</B>
+
+の反対。
+<P>
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>使用例</H2>
+
+<DL COMPACT>
+<DT><B>ss -t -a</B>
+
+<DD>
+
+すべての TCP ソケットを表示する。
+<DT><B>ss -t -a -Z</B>
+
+<DD>
+
+SELinux セキュリティコンテキストのすべての TCP ソケットを表示する。
+<DT><B>ss -u -a</B>
+
+<DD>
+
+すべての UDP ソケットを表示する。
+<DT><B>ss -o state established '( dport = :ssh or sport = :ssh )'</B>
+
+<DD>
+
+確立されたすべての ssh 接続を表示する。
+<DT><B>ss -x src /tmp/.X11-unix/*</B>
+
+<DD>
+
+X サーバーに接続されたすべてのローカルプロセスを見つける。
+<DT><B>ss -o state fin-wait-1 '( sport = :http or sport = :https )' dst 193.233.7/24</B>
+
+<DD>
+
+
+apache からネットワーク 193.233.7/24 への
+状態 FIN-WAIT-1 の TCP ソケットをすべてリスト表示し、タイマーも表示する。
+<DT><B>ss -a -A 'all,!tcp'</B>
+
+<DD>
+
+TCP 以外のすべてのソケットテーブルから、すべての状態の
+ソケットをリスト表示する。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/ip.8.html">ip</A></B>(8),
+
+<BR>
+
+<B>RFC</B> 793 
+
+
+- <A HREF="https://tools.ietf.org/rfc/rfc793.txt">https://tools.ietf.org/rfc/rfc793.txt</A> (TCP 状態)
+<P>
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+
+
+<I>ss</I>
+
+は Alexey Kuznetsov, &lt;<A HREF="mailto:kuznet@ms2.inr.ac.ru">kuznet@ms2.inr.ac.ru</A>&gt; によって書かれた。
+<P>
+
+
+
+このマニュアルは Michael Prokop &lt;<A HREF="mailto:mika@grml.org">mika@grml.org</A>&gt; によって、
+Debian プロジェクトのために書かれた
+(しかし、他のディストリビューションでも使えるだろう)。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">STATE-FILTER</A><DD>
+<DT><A HREF="#lbAG">使用例</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 02:09:54 GMT, July 15, 2019
+</BODY>
+</HTML>
