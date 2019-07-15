@@ -1,3 +1,9 @@
+.\"
+.\" Japanese Version Copyright (c) 2019 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Mon Jul 15 11:06:21 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
 .TH SS 8
 .\"O .SH NAME
 .SH 名前
@@ -432,145 +438,224 @@ netlink ソケットを持っていることを意味する。
 .RE
 .TP
 .B \-z, \-\-contexts
-As the
+.\"O As the
+.\"O .B \-Z
+.\"O option but also shows the socket context. The socket context is
+.\"O taken from the associated inode and is not the actual socket
+.\"O context held by the kernel. Sockets are typically labeled with the
+.\"O context of the creating process, however the context shown will reflect
+.\"O any policy role, type and/or range transition rules applied,
+.\"O and is therefore a useful reference.
+.\"O:
+.\"O: ここの翻訳は自信なし。
+.\"O:
 .B \-Z
-option but also shows the socket context. The socket context is
-taken from the associated inode and is not the actual socket
-context held by the kernel. Sockets are typically labeled with the
-context of the creating process, however the context shown will reflect
-any policy role, type and/or range transition rules applied,
-and is therefore a useful reference.
+と同様であるが、ソケットコンテキストも表示する。
+ソケットコンテキストは、関連する inode から取得され、
+カーネルが保持する実際のソケットコンテキストではない。
+ソケットは生成されたプロセスのコンテキストでラベル付けされる。
+しかし、表示されるコンテキストはポリシールール、
+適用されるトランジションルールのタイプと範囲を反映しており、
+有用な参考情報となる。
 .TP
 .B \-N NSNAME, \-\-net=NSNAME
-Switch to the specified network namespace name.
+.\"O Switch to the specified network namespace name.
+指定したネットワークネームスペースの名前に切り替える。
 .TP
 .B \-b, \-\-bpf
-Show socket BPF filters (only administrators are allowed to get these
-information).
+.\"O Show socket BPF filters (only administrators are allowed to get these
+.\"O information).
+ソケット BPF フィルターを表示する
+(管理者だけがこれらの情報を取得できる)。
 .TP
 .B \-4, \-\-ipv4
-Display only IP version 4 sockets (alias for -f inet).
+.\"O Display only IP version 4 sockets (alias for -f inet).
+IP version 4 ソケットのみを表示する (-f inet のエイリアス)。
 .TP
 .B \-6, \-\-ipv6
-Display only IP version 6 sockets (alias for -f inet6).
+.\"O Display only IP version 6 sockets (alias for -f inet6).
+IP version 6 ソケットのみを表示する (-f inet6 のエイリアス)。
 .TP
 .B \-0, \-\-packet
-Display PACKET sockets (alias for -f link).
+.\"O Display PACKET sockets (alias for -f link).
+PACKET ソケットを表示する (-f link のエイリアス)。
 .TP
 .B \-t, \-\-tcp
-Display TCP sockets.
+.\"O Display TCP sockets.
+TCP ソケットを表示する。
 .TP
 .B \-u, \-\-udp
-Display UDP sockets.
+.\"O Display UDP sockets.
+UDP ソケットを表示する。
 .TP
 .B \-d, \-\-dccp
-Display DCCP sockets.
+.\"O Display DCCP sockets.
+DCCP ソケットを表示する。
 .TP
 .B \-w, \-\-raw
-Display RAW sockets.
+.\"O Display RAW sockets.
+RAW ソケットを表示する。
 .TP
 .B \-x, \-\-unix
-Display Unix domain sockets (alias for -f unix).
+.\"O Display Unix domain sockets (alias for -f unix).
+Unix ドメインソケットを表示する (-f unix のエイリアス)。
 .TP
 .B \-S, \-\-sctp
-Display SCTP sockets.
+.\"O Display SCTP sockets.
+SCTP ソケットを表示する。
 .TP
 .B \-\-vsock
-Display vsock sockets (alias for -f vsock).
+.\"O Display vsock sockets (alias for -f vsock).
+vsock ソケットを表示する (-f vsock のエイリアス)。
 .TP
 .B \-\-xdp
-Display XDP sockets (alias for -f xdp).
+.\"O Display XDP sockets (alias for -f xdp).
+XDP ソケットを表示する (-f xdp のエイリアス)。
 .TP
 .B \-f FAMILY, \-\-family=FAMILY
-Display sockets of type FAMILY.  Currently the following families are
-supported: unix, inet, inet6, link, netlink, vsock, xdp.
+.\"O Display sockets of type FAMILY.  Currently the following families are
+.\"O supported: unix, inet, inet6, link, netlink, vsock, xdp.
+タイプ FAMILY のソケットを表示する。
+現在のところ以下のファミリーがサポートされている。
+unix, inet, inet6, link, netlink, vsock, xdp。
 .TP
 .B \-A QUERY, \-\-query=QUERY, \-\-socket=QUERY
-List of socket tables to dump, separated by commas. The following identifiers
-are understood: all, inet, tcp, udp, raw, unix, packet, netlink, unix_dgram,
+.\"O List of socket tables to dump, separated by commas. The following identifiers
+.\"O are understood: all, inet, tcp, udp, raw, unix, packet, netlink, unix_dgram,
+.\"O unix_stream, unix_seqpacket, packet_raw, packet_dgram, dccp, sctp,
+.\"O vsock_stream, vsock_dgram, xdp Any item in the list may optionally be
+.\"O prefixed by an exclamation mark
+.\"O .RB ( ! )
+.\"O to exclude that socket table from being dumped.
+ダンプするソケットテーブルのカンマ区切りのリスト。
+以下の識別子が利用できる。
+all, inet, tcp, udp, raw, unix, packet, netlink, unix_dgram,
 unix_stream, unix_seqpacket, packet_raw, packet_dgram, dccp, sctp,
-vsock_stream, vsock_dgram, xdp Any item in the list may optionally be
-prefixed by an exclamation mark
+vsock_stream, vsock_dgram, xdp。
+リスト中のどのアイテムもオプションとしてエクスクラメーションマーク
 .RB ( ! )
-to exclude that socket table from being dumped.
+を前に付けて、ダンプするソケットテーブルから除外できる。
 .TP
 .B \-D FILE, \-\-diag=FILE
-Do not display anything, just dump raw information about TCP sockets
-to FILE after applying filters. If FILE is - stdout is used.
+.\"O Do not display anything, just dump raw information about TCP sockets
+.\"O to FILE after applying filters. If FILE is - stdout is used.
+何も表示せず、フィルタを適用した後の TCP ソケットについての生情報を
+FILE にダンプする。
+FILE が - の場合、標準出力が使われる。
 .TP
 .B \-F FILE, \-\-filter=FILE
-Read filter information from FILE.  Each line of FILE is interpreted
-like single command line option. If FILE is - stdin is used.
+.\"O Read filter information from FILE.  Each line of FILE is interpreted
+.\"O like single command line option. If FILE is - stdin is used.
+フィルタ情報を FILE から読み込む。
+FILE の各行は 1 つのコマンドラインオプションとして解釈される。
+FILE が - の場合、標準入力が使われる。
 .TP
 .B FILTER := [ state STATE-FILTER ] [ EXPRESSION ]
-Please take a look at the official documentation for details regarding filters.
+.\"O Please take a look at the official documentation for details regarding filters.
+フィルターについての詳細は、正式なドキュメントを参照してほしい。
 
 .SH STATE-FILTER
 
+.\"O .B STATE-FILTER
+.\"O allows to construct arbitrary set of states to match. Its syntax is
+.\"O sequence of keywords state and exclude followed by identifier of
+.\"O state.
 .B STATE-FILTER
-allows to construct arbitrary set of states to match. Its syntax is
-sequence of keywords state and exclude followed by identifier of
-state.
+を使うと、マッチングさせる任意の状態のセットを構築できる。
+書式は、キーワード状態と除外の後に、状態の識別子が続く。
 .TP
-Available identifiers are:
+.\"O Available identifiers are:
+指定可能な識別子は以下のとおり。
 
-All standard TCP states:
+.\"O All standard TCP states:
+すべての標準的な TCP 状態:
 .BR established ", " syn-sent ", " syn-recv ", " fin-wait-1 ", " fin-wait-2 ", " time-wait ", " closed ", " close-wait ", " last-ack ", "
-.BR  listening " and " closing.
+.\"O .BR  listening " and " closing.
+.BR  listening ", " closing.
 
 .B all
-- for all the states
+.\"O - for all the states
+- すべての状態。
 
 .B connected
-- all the states except for
-.BR listening " and " closed
+.\"O - all the states except for
+.\"O .BR listening " and " closed
+.RB "- " listening " と " closed
+を除く、すべての状態。
 
 .B synchronized
-- all the
-.B connected
-states except for
+.\"O - all the
+.\"O .B connected
+.\"O states except for
+.\"O .B syn-sent
+.RB "- " connected
+から
 .B syn-sent
+を除いたすべての状態。
 
 .B bucket
-- states, which are maintained as minisockets, i.e.
-.BR time-wait " and " syn-recv
+.\"O - states, which are maintained as minisockets, i.e.
+.\"O .BR time-wait " and " syn-recv
+- minisockets として管理されている状態。
+つまり、
+.BR time-wait " と " syn-recv
 
 .B big
-- opposite to
-.B bucket
+.\"O - opposite to
+.\"O .B bucket
+.RB "- " bucket
+の反対。
 
-.SH USAGE EXAMPLES
+.\"O .SH USAGE EXAMPLES
+.SH 使用例
 .TP
 .B ss -t -a
-Display all TCP sockets.
+.\"O Display all TCP sockets.
+すべての TCP ソケットを表示する。
 .TP
 .B ss -t -a -Z
-Display all TCP sockets with process SELinux security contexts.
+.\"O Display all TCP sockets with process SELinux security contexts.
+SELinux セキュリティコンテキストのすべての TCP ソケットを表示する。
 .TP
 .B ss -u -a
-Display all UDP sockets.
+.\"O Display all UDP sockets.
+すべての UDP ソケットを表示する。
 .TP
 .B ss -o state established '( dport = :ssh or sport = :ssh )'
-Display all established ssh connections.
+.\"O Display all established ssh connections.
+確立されたすべての ssh 接続を表示する。
 .TP
 .B ss -x src /tmp/.X11-unix/*
-Find all local processes connected to X server.
+.\"O Find all local processes connected to X server.
+X サーバーに接続されたすべてのローカルプロセスを見つける。
 .TP
 .B ss -o state fin-wait-1 '( sport = :http or sport = :https )' dst 193.233.7/24
-List all the tcp sockets in state FIN-WAIT-1 for our apache to network
-193.233.7/24 and look at their timers.
+.\"O List all the tcp sockets in state FIN-WAIT-1 for our apache to network
+.\"O 193.233.7/24 and look at their timers.
+apache からネットワーク 193.233.7/24 への
+状態 FIN-WAIT-1 の TCP ソケットをすべてリスト表示し、タイマーも表示する。
 .TP
 .B ss -a -A 'all,!tcp'
-List sockets in all states from all socket tables but TCP.
-.SH SEE ALSO
+.\"O List sockets in all states from all socket tables but TCP.
+TCP 以外のすべてのソケットテーブルから、すべての状態の
+ソケットをリスト表示する。
+.\"O .SH SEE ALSO
+.SH 関連項目
 .BR ip (8),
 .br
 .BR RFC " 793 "
-- https://tools.ietf.org/rfc/rfc793.txt (TCP states)
+.\"O - https://tools.ietf.org/rfc/rfc793.txt (TCP states)
+- https://tools.ietf.org/rfc/rfc793.txt (TCP 状態)
 
-.SH AUTHOR
+.\"O .SH AUTHOR
+.SH 著者
+.\"O .I ss
+.\"O was written by Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>.
 .I ss
-was written by Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>.
+は Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru> によって書かれた。
 .PP
-This manual page was written by Michael Prokop <mika@grml.org>
-for the Debian project (but may be used by others).
+.\"O This manual page was written by Michael Prokop <mika@grml.org>
+.\"O for the Debian project (but may be used by others).
+このマニュアルは Michael Prokop <mika@grml.org> によって、
+Debian プロジェクトのために書かれた
+(しかし、他のディストリビューションでも使えるだろう)。
