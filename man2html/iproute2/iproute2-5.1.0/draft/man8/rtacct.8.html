@@ -1,0 +1,138 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of RTACCT</TITLE>
+</HEAD><BODY>
+<H1>RTACCT</H1>
+Section: Maintenance Commands (8)<BR>Updated: 27 June, 2007<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<P>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+nstat, rtacct - ネットワーク統計ツール
+<P>
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+Usage: nstat [ -h?vVzrnasd:t:jp ] [ PATTERN [ PATTERN ] ]
+<BR>
+
+Usage: rtacct [ -h?vVzrnasd:t: ] [ ListOfRealms ]
+<P>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>nstat</B>
+
+と
+<B>rtacct</B>
+
+はカーネルの snmp カウンターとネットワークインタフェース統計をモニターする
+簡単なツールである。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<B>-h, --help</B>
+
+
+ヘルプを表示する。
+<DL COMPACT>
+<DT><B>-V, --version</B>
+
+<DD>
+
+バージョンを表示する。
+<DT><B>-z, --zeros</B>
+
+<DD>
+
+ゼロのカウンターもダンプする。
+デフォルトでは表示されない。
+<DT><B>-r, --reset</B>
+
+<DD>
+
+履歴をリセットする。
+<DT><B>-n, --nooutput</B>
+
+<DD>
+
+何も表示せず、履歴の更新だけを行う。
+<DT><B>-a, --ignore</B>
+
+<DD>
+
+カウンターの絶対値をダンプする。
+デフォルトでは、前回使用されたときからの増分が計算される。
+<DT><B>-s, --noupdate</B>
+
+<DD>
+
+履歴を更新しない。
+次回の表示では、今回の値を含めた累計が表示される。
+<DT><B>-j, --json</B>
+
+<DD>
+
+JSON フォーマットで表示する。
+<DT><B>-p, --pretty</B>
+
+<DD>
+
+
+
+<B>--json</B>
+
+と組み合わせて、綺麗に表示する。
+<DT><B>-d, --scan &lt;INTERVAL&gt;</B>
+
+<DD>
+
+デーモンモードで統計を収集する。
+&lt;INTERVAL&gt; は計測間隔で、 秒単位である。
+<DT><B>-t, --interval &lt;INTERVAL&gt;</B>
+
+<DD>
+
+平均値を計算する時間間隔。
+デフォルトは 60 秒である。
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>関連項目</H2>
+
+<A HREF="../man8/lnstat.8.html">lnstat</A>(8)
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:13:22 GMT, July 17, 2019
+</BODY>
+</HTML>
