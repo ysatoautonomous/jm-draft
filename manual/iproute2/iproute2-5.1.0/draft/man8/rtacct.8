@@ -1,0 +1,88 @@
+.\"
+.\" Japanese Version Copyright (c) 2019 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Wed Jul 17 20:09:01 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH RTACCT 8 "27 June, 2007"
+
+.\"O .SH NAME
+.SH 名前
+.\"O nstat, rtacct - network statistics tools.
+nstat, rtacct - ネットワーク統計ツール
+
+.\"O .SH SYNOPSIS
+.SH 書式
+Usage: nstat [ -h?vVzrnasd:t:jp ] [ PATTERN [ PATTERN ] ]
+.br
+Usage: rtacct [ -h?vVzrnasd:t: ] [ ListOfRealms ]
+
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B nstat
+.\"O and
+.\"O .B rtacct
+.\"O are simple tools to monitor kernel snmp counters and network interface statistics.
+.B nstat
+と
+.B rtacct
+はカーネルの snmp カウンターとネットワークインタフェース統計をモニターする
+簡単なツールである。
+
+.\"O .SH OPTIONS
+.SH オプション
+.B \-h, \-\-help
+.\"O Print help
+ヘルプを表示する。
+.TP
+.B \-V, \-\-version
+.\"O Print version
+バージョンを表示する。
+.TP
+.B \-z, \-\-zeros
+.\"O Dump zero counters too. By default they are not shown.
+ゼロのカウンターもダンプする。
+デフォルトでは表示されない。
+.TP
+.B \-r, \-\-reset
+.\"O Reset history.
+履歴をリセットする。
+.TP
+.B \-n, \-\-nooutput
+.\"O Do not display anything, only update history.
+何も表示せず、履歴の更新だけを行う。
+.TP
+.B \-a, \-\-ignore
+.\"O Dump absolute values of counters. The default is to calculate increments since the previous use.
+カウンターの絶対値をダンプする。
+デフォルトでは、前回使用されたときからの増分が計算される。
+.TP
+.B \-s, \-\-noupdate
+.\"O Do not update history, so that the next time you will see counters including values accumulated to the moment of this measurement too.
+履歴を更新しない。
+次回の表示では、今回の値を含めた累計が表示される。
+.TP
+.B \-j, \-\-json
+.\"O Display results in JSON format.
+JSON フォーマットで表示する。
+.TP
+.B \-p, \-\-pretty
+.\"O When combined with
+.\"O .BR \-\-json ,
+.\"O pretty print the output.
+.B \-\-json
+と組み合わせて、綺麗に表示する。
+.TP
+.B \-d, \-\-scan <INTERVAL>
+.\"O Run in daemon mode collecting statistics. <INTERVAL> is interval between measurements in seconds.
+デーモンモードで統計を収集する。
+<INTERVAL> は計測間隔で、 秒単位である。
+.TP
+.B \-t, \-\-interval <INTERVAL>
+.\"O Time interval to average rates. Default value is 60 seconds.
+平均値を計算する時間間隔。
+デフォルトは 60 秒である。
+
+.\"O .SH SEE ALSO
+.SH 関連項目
+lnstat(8)
