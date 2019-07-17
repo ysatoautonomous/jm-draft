@@ -45,40 +45,59 @@ Linux カーネルが /proc/net/stat/ 内のファイルにエクスポートし
 .\"O parameters. By default, all columns of all files are printed.
 ファイルと列は、\fB-f\fP と \fB-k\fP パラメータを使って選択できる。
 デフォルトでは、すべてのファイルのすべての列が表示される。
-.SH OPTIONS
-lnstat supports the following options.
+.\"O .SH OPTIONS
+.SH オプション
+.\"O lnstat supports the following options.
+lnstat は以下のオプションをサポートしている。
 .TP
 .B \-h, \-\-help
-Show summary of options.
+.\"O Show summary of options.
+オプションのサマリーを表示する。
 .TP
 .B \-V, \-\-version
-Show version of program.
+.\"O Show version of program.
+プログラムのバージョンを表示する。
 .TP
 .B \-c, \-\-count <count>
-Print <count> number of intervals.
+.\"O Print <count> number of intervals.
+指定された時間間隔で <count> 回表示する。
 .TP
 .B \-d, \-\-dump
-Dump list of available files/keys.
+.\"O Dump list of available files/keys.
+指定可能なファイルとキーのリストをダンプする。
 .TP
 .B \-f, \-\-file <file>
-Statistics file to use, may be specified multiple times. By default all files in /proc/net/stat are scanned.
+.\"O Statistics file to use, may be specified multiple times. By default all files in /proc/net/stat are scanned.
+使用する統計ファイル。複数回指定できる。
+デフォルトでは /proc/net/stat 内のすべてのファイルがスキャンされる。
 .TP
 .B \-i, \-\-interval <intv>
-Set interval to 'intv' seconds.
+.\"O Set interval to 'intv' seconds.
+時間間隔を 'intv' 秒に設定する。
 .TP
 .B \-j, \-\-json
-Display results in JSON format
+.\"O Display results in JSON format
+結果を JSON フォーマットで表示する。
 .TP
 .B \-k, \-\-keys k,k,k,...
-Display only keys specified. Each key \fBk\fP is of the form \fB[file:]key\fP. If \fB<file>\fP
-is given, the search for the given key is limited to that file. Otherwise the first file containing
-the searched key is being used.
+.\"O Display only keys specified. Each key \fBk\fP is of the form \fB[file:]key\fP. If \fB<file>\fP
+.\"O is given, the search for the given key is limited to that file. Otherwise the first file containing
+.\"O the searched key is being used.
+指定したキーのみを表示する。
+各キー \fBk\fP は \fB[file:]key\fP の形式である。
+\fB<file>\fP が指定された場合、指定されたキーはそのファイルからのみ検索される。
+\fB<file>\fP が指定されない場合、検索キーが最初に見つかったファイルが使われる。
 .TP
 .B \-s, \-\-subject [0-2]
-Specify display of subject/header. '0' means no header at all, '1' prints a header only at start of the program and '2' prints a header every 20 lines.
+.\"O Specify display of subject/header. '0' means no header at all, '1' prints a header only at start of the program and '2' prints a header every 20 lines.
+サブジェクトヘッダの表示を指定する。
+\&'0' を指定すると、ヘッダを表示しない。
+\&'1' を指定すると、プログラムの開始時にのみヘッダを表示する。
+\&'2' を指定すると、20 行ごとにヘッダを表示する。
 .TP
 .B \-w, \-\-width n,n,n,...
-Width for each field.
+.\"O Width for each field.
+各フィールドの幅を指定する。
 .SH USAGE EXAMPLES
 .TP
 .B # lnstat -d
