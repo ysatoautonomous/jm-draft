@@ -98,110 +98,151 @@ lnstat は以下のオプションをサポートしている。
 .B \-w, \-\-width n,n,n,...
 .\"O Width for each field.
 各フィールドの幅を指定する。
-.SH USAGE EXAMPLES
+.\"O .SH USAGE EXAMPLES
+.SH 使用例
 .TP
 .B # lnstat -d
-Get a list of supported statistics files.
+.\"O Get a list of supported statistics files.
+サポートされる統計ファイルのリストを取得する。
 .TP
 .B # lnstat -k arp_cache:entries,rt_cache:in_hit,arp_cache:destroys
-Select the specified files and keys.
+.\"O Select the specified files and keys.
+指定されたファイルとキーを選択する。
 .TP
 .B # lnstat -i 10
-Use an interval of 10 seconds.
+.\"O Use an interval of 10 seconds.
+時間間隔 10 秒を使う。
 .TP
 .B # lnstat -f ip_conntrack
-Use only the specified file for statistics.
+.\"O Use only the specified file for statistics.
+指定したファイルのみを使って統計を表示する。
 .TP
 .B # lnstat -s 0
-Do not print a header at all.
+.\"O Do not print a header at all.
+ヘッダを全く表示しない。
 .TP
 .B # lnstat -s 20
-Print a header at start and every 20 lines.
+.\"O Print a header at start and every 20 lines.
+ヘッダを開始時と 20 行ごとに表示する。
 .TP
 .B # lnstat -c -1 -i 1 -f rt_cache -k entries,in_hit,in_slow_tot
-Display statistics for keys entries, in_hit and in_slow_tot of field rt_cache every second.
+.\"O Display statistics for keys entries, in_hit and in_slow_tot of field rt_cache every second.
+フィールド rt_cache のキー entries, in_hit, in_slow_tot の統計を毎秒表示する。
 
-.SH FILES
+.\"O .SH FILES
+.SH ファイル
 .TP
 .B /proc/net/stat/arp_cache, /proc/net/stat/ndisc_cache
-Statistics around neighbor cache and ARP. \fBarp_cache\fP is for IPv4, \fBndisc_cache\fP is the same for IPv6.
+.\"O Statistics around neighbor cache and ARP. \fBarp_cache\fP is for IPv4, \fBndisc_cache\fP is the same for IPv6.
+近傍キャッシュ (neighbor cache) と ARP の統計。
+IPv4 については \fBarp_cache\fP、IPv6 については \fBndisc_cache\fP である。
 .sp
 .B entries
-Number of entries in the neighbor table.
+.\"O Number of entries in the neighbor table.
+近傍テーブルのエントリー数。
 .sp
 .B allocs
-How many neighbor entries have been allocated.
+.\"O How many neighbor entries have been allocated.
+近傍エントリーがいくつ確保されたか。
 .sp
 .B destroys
-How many neighbor entries have been removed.
+.\"O How many neighbor entries have been removed.
+近傍エントリーがいくつ削除されたか。
 .sp
 .B hash_grows
-How often the neighbor (hash) table was increased.
+.\"O How often the neighbor (hash) table was increased.
+近傍 (ハッシュ) テーブルが何回増加したか。
 .sp
 .B lookups
-How many lookups were performed.
+.\"O How many lookups were performed.
+検索が何回行われたか。
 .sp
 .B hits
-How many \fBlookups\fP were successful.
+.\"O How many \fBlookups\fP were successful.
+\fBlookups\fP が何回成功したか。
 .sp
 .B res_failed
-How many neighbor lookups failed.
+.\"O How many neighbor lookups failed.
+近傍の検索が何回失敗したか。
 .sp
 .B rcv_probes_mcast
-How many multicast neighbor solicitations were received. (IPv6 only.)
+.\"O How many multicast neighbor solicitations were received. (IPv6 only.)
+マルチキャスト近傍要請 (neighbor solicitations) を何回受信したか (IPv6 のみ)。
 .sp
 .B rcv_probes_ucast
-How many unicast neighbor solicitations were received. (IPv6 only.)
+.\"O How many unicast neighbor solicitations were received. (IPv6 only.)
+ユニキャスト近傍要請を何回受信したか (IPv6 のみ)。
 .sp
 .B periodic_gc_runs
-How many garbage collection runs were executed.
+.\"O How many garbage collection runs were executed.
+ガベージコレクション実行が何回行われたか。
 .sp
 .B forced_gc_runs
-How many forced garbage collection runs were executed. Happens when adding an
-entry and the table is too full.
+.\"O How many forced garbage collection runs were executed. Happens when adding an
+.\"O entry and the table is too full.
+強制ガベージコレクション実行が何回行われたか。
+エントリを追加する際に、テーブルがいっぱいであると実行される。
 .sp
 .B unresolved_discards
-How many neighbor table entries were discarded due to lookup failure.
+.\"O How many neighbor table entries were discarded due to lookup failure.
+検索の失敗により、近傍テーブルエントリーがいくつ破棄されたか。
 .sp
 .B table_fulls
-Number of table overflows. Happens if table is full and forced GC run (see
-\fBforced_gc_runs\fP) has failed.
+.\"O Number of table overflows. Happens if table is full and forced GC run (see
+.\"O \fBforced_gc_runs\fP) has failed.
+テーブルオーバーフローの回数。
+テーブルがいっぱいで、かつ強制 GC 実行 (\fBforced_gc_runs\fP を参照) が
+失敗した場合に起こる。
 
 .TP
 .B /proc/net/stat/ip_conntrack, /proc/net/stat/nf_conntrack
-Conntrack related counters. \fBip_conntrack\fP is for backwards compatibility
-with older userspace only and shows the same data as \fBnf_conntrack\fP.
+.\"O Conntrack related counters. \fBip_conntrack\fP is for backwards compatibility
+.\"O with older userspace only and shows the same data as \fBnf_conntrack\fP.
+conntrack (コネクション追跡) に関連するカウンター。
+\fBip_conntrack\fP は古いユーザースペースの後方互換のためにあり、
+\fBnf_conntrack\fP と同じデータを表示する。
 .sp
 .B entries
-Number of entries in conntrack table.
+.\"O Number of entries in conntrack table.
+conntrack テーブルのエントリー数。
 .sp
 .B searched
-Number of conntrack table lookups performed.
+.\"O Number of conntrack table lookups performed.
+conntrack テーブルの検索が何回行われたか。
 .sp
 .B found
-Number of \fBsearched\fP entries which were successful.
+.\"O Number of \fBsearched\fP entries which were successful.
+\fBsearched\fP エントリーが何回成功したか。
 .sp
 .B new
-Number of conntrack entries added which were not expected before.
+.\"O Number of conntrack entries added which were not expected before.
+conntrack エントリーが要求される前に何回追加されたか。
 .sp
 .B invalid
-Number of packets seen which can not be tracked.
+.\"O Number of packets seen which can not be tracked.
+追跡できなかったパケットの数。
 .sp
 .B ignore
-Number of packets seen which are already connected to a conntrack entry.
+.\"O Number of packets seen which are already connected to a conntrack entry.
+conntrack エントリーに既に紐付けられたパケットの数。
 .sp
 .B delete
-Number of conntrack entries which were removed.
+.\"O Number of conntrack entries which were removed.
+削除された conntrack エントリーの数。
 .sp
 .B delete_list
-Number of conntrack entries which were put to dying list.
+.\"O Number of conntrack entries which were put to dying list.
+削除予定 (dying) リストに入れられた conntrack エントリーの数。
 .sp
 .B insert
-Number of entries inserted into the list.
+.\"O Number of entries inserted into the list.
+リストに入れられたエントリーの数。
 .sp
 .B insert_failed
-Number of entries for which list insertion was attempted but failed (happens if
-the same entry is already present).
+.\"O Number of entries for which list insertion was attempted but failed (happens if
+.\"O the same entry is already present).
+リストに入れようとして失敗したエントリーの数
+(同じエントリーが既に存在する場合に起こる)。
 .sp
 .B drop
 Number of packets dropped due to conntrack failure. Either new conntrack entry
