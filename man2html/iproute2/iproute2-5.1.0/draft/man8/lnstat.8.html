@@ -1,0 +1,523 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LNSTAT</TITLE>
+</HEAD><BODY>
+<H1>LNSTAT</H1>
+Section: Maintenance Commands (8)<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+lnstat - 統合された Linux ネットワーク統計
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>lnstat</B>
+
+[<I>options</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+このマニュアルページは
+<B>lnstat</B>
+
+コマンドを短くドキュメント化している。
+<P>
+
+
+
+
+<B>lnstat</B> は古い rtstat プログラムを汎化して多くの特性を満たした代替である。
+このプログラムは一般的に、カーネルによってエクスポートされた選択された
+統計値を、定期的に表示するのに使われる。
+
+
+ルーティングキャッシュの統計に加え、
+Linux カーネルが /proc/net/stat/ 内のファイルにエクスポートした
+すべての種類の統計をサポートしている。
+<P>
+
+
+/proc/net/stat/ の各ファイルは、列名をリストするヘッダ行を含む。
+
+
+
+
+
+この列名は <B>lnstat</B> によって表示される統計を選択するキーとして使われる。
+ファイルの各行には、システムにあるすべての CPU について、
+実際の値をリストする行が続いている。
+<B>lnstat</B> は表示を行う前に、この値 (実際にはカウンター) を合計する。
+各時間間隔の後には、最後の値からの差分のみが表示される。
+<P>
+
+
+
+ファイルと列は、<B>-f</B> と <B>-k</B> パラメータを使って選択できる。
+デフォルトでは、すべてのファイルのすべての列が表示される。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+lnstat は以下のオプションをサポートしている。
+<DL COMPACT>
+<DT><B>-h, --help</B>
+
+<DD>
+
+オプションのサマリーを表示する。
+<DT><B>-V, --version</B>
+
+<DD>
+
+プログラムのバージョンを表示する。
+<DT><B>-c, --count &lt;count&gt;</B>
+
+<DD>
+
+指定された時間間隔で &lt;count&gt; 回表示する。
+<DT><B>-d, --dump</B>
+
+<DD>
+
+指定可能なファイルとキーのリストをダンプする。
+<DT><B>-f, --file &lt;file&gt;</B>
+
+<DD>
+
+使用する統計ファイル。複数回指定できる。
+デフォルトでは /proc/net/stat 内のすべてのファイルがスキャンされる。
+<DT><B>-i, --interval &lt;intv&gt;</B>
+
+<DD>
+
+時間間隔を 'intv' 秒に設定する。
+<DT><B>-j, --json</B>
+
+<DD>
+
+結果を JSON フォーマットで表示する。
+<DT><B>-k, --keys k,k,k,...</B>
+
+<DD>
+
+
+
+指定したキーのみを表示する。
+各キー <B>k</B> は <B>[file:]key</B> の形式である。
+<B>&lt;file&gt;</B> が指定された場合、指定されたキーはそのファイルからのみ検索される。
+<B>&lt;file&gt;</B> が指定されない場合、検索キーが最初に見つかったファイルが使われる。
+<DT><B>-s, --subject [0-2]</B>
+
+<DD>
+
+サブジェクトヘッダの表示を指定する。
+'0' を指定すると、ヘッダを表示しない。
+'1' を指定すると、プログラムの開始時にのみヘッダを表示する。
+'2' を指定すると、20 行ごとにヘッダを表示する。
+<DT><B>-w, --width n,n,n,...</B>
+
+<DD>
+
+各フィールドの幅を指定する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>使用例</H2>
+
+<DL COMPACT>
+<DT><B># lnstat -d</B>
+
+<DD>
+
+サポートされる統計ファイルのリストを取得する。
+<DT><B># lnstat -k arp_cache:entries,rt_cache:in_hit,arp_cache:destroys</B>
+
+<DD>
+
+指定されたファイルとキーを選択する。
+<DT><B># lnstat -i 10</B>
+
+<DD>
+
+時間間隔 10 秒を使う。
+<DT><B># lnstat -f ip_conntrack</B>
+
+<DD>
+
+指定したファイルのみを使って統計を表示する。
+<DT><B># lnstat -s 0</B>
+
+<DD>
+
+ヘッダを全く表示しない。
+<DT><B># lnstat -s 20</B>
+
+<DD>
+
+ヘッダを開始時と 20 行ごとに表示する。
+<DT><B># lnstat -c -1 -i 1 -f rt_cache -k entries,in_hit,in_slow_tot</B>
+
+<DD>
+
+フィールド rt_cache のキー entries, in_hit, in_slow_tot の統計を毎秒表示する。
+<P>
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>ファイル</H2>
+
+<DL COMPACT>
+<DT><B>/proc/net/stat/arp_cache, /proc/net/stat/ndisc_cache</B>
+
+<DD>
+
+近傍キャッシュ (neighbor cache) と ARP の統計。
+IPv4 については <B>arp_cache</B>、IPv6 については <B>ndisc_cache</B> である。
+<P>
+<B>entries</B>
+
+
+近傍テーブルのエントリー数。
+<P>
+<B>allocs</B>
+
+
+近傍エントリーがいくつ確保されたか。
+<P>
+<B>destroys</B>
+
+
+近傍エントリーがいくつ削除されたか。
+<P>
+<B>hash_grows</B>
+
+
+近傍 (ハッシュ) テーブルが何回増加したか。
+<P>
+<B>lookups</B>
+
+
+検索が何回行われたか。
+<P>
+<B>hits</B>
+
+
+<B>lookups</B> が何回成功したか。
+<P>
+<B>res_failed</B>
+
+
+近傍の検索が何回失敗したか。
+<P>
+<B>rcv_probes_mcast</B>
+
+
+マルチキャスト近傍要請 (neighbor solicitations) を何回受信したか (IPv6 のみ)。
+<P>
+<B>rcv_probes_ucast</B>
+
+
+ユニキャスト近傍要請を何回受信したか (IPv6 のみ)。
+<P>
+<B>periodic_gc_runs</B>
+
+
+ガベージコレクション実行が何回行われたか。
+<P>
+<B>forced_gc_runs</B>
+
+
+
+強制ガベージコレクション実行が何回行われたか。
+エントリーを追加する際に、テーブルがいっぱいであると実行される。
+<P>
+<B>unresolved_discards</B>
+
+
+検索の失敗により、近傍テーブルエントリーがいくつ破棄されたか。
+<P>
+<B>table_fulls</B>
+
+
+
+テーブルオーバーフローの回数。
+テーブルがいっぱいで、かつ強制 GC 実行 (<B>forced_gc_runs</B> を参照) が
+失敗した場合に起こる。
+<P>
+<DT><B>/proc/net/stat/ip_conntrack, /proc/net/stat/nf_conntrack</B>
+
+<DD>
+
+
+conntrack (コネクション追跡) に関連するカウンター。
+<B>ip_conntrack</B> は古いユーザースペースの後方互換のためにあり、
+<B>nf_conntrack</B> と同じデータを表示する。
+<P>
+<B>entries</B>
+
+
+conntrack テーブルのエントリー数。
+<P>
+<B>searched</B>
+
+
+conntrack テーブルの検索が何回行われたか。
+<P>
+<B>found</B>
+
+
+<B>searched</B> エントリーが何回成功したか。
+<P>
+<B>new</B>
+
+
+conntrack エントリーが予測されないうちに何回追加されたか。
+<P>
+<B>invalid</B>
+
+
+追跡できなかったパケットの数。
+<P>
+<B>ignore</B>
+
+
+conntrack エントリーに既に紐付けられたパケットの数。
+<P>
+<B>delete</B>
+
+
+削除された conntrack エントリーの数。
+<P>
+<B>delete_list</B>
+
+
+削除予定 (dying) リストに入れられた conntrack エントリーの数。
+<P>
+<B>insert</B>
+
+
+リストに入れられたエントリーの数。
+<P>
+<B>insert_failed</B>
+
+
+
+リストに入れようとして失敗したエントリーの数
+(同じエントリーが既に存在する場合に起こる)。
+<P>
+<B>drop</B>
+
+
+
+conntrack の失敗により、ドロップされたパケット数。
+新しい conntrack エントリーの確保に失敗したか、プロトコルヘルパーがパケットを
+ドロップした。
+<P>
+<B>early_drop</B>
+
+
+
+最大テーブルサイズに達していて、新しい conntrack エントリーのための
+場所を確保するためにドロップされた conntrack エントリーの数。
+<P>
+<B>icmp_error</B>
+
+
+
+エラー状況のために追跡できなかったパケット数。
+これは <B>invalid</B> の一部である。
+<P>
+<B>expect_new</B>
+
+
+
+conntrack エントリーが予測された後で、何個追加されたか。
+<P>
+<B>expect_create</B>
+
+
+追加された予測エントリーの数。
+<P>
+<B>expect_delete</B>
+
+
+削除された予測エントリーの数。
+<P>
+<B>search_restart</B>
+
+
+
+ハッシュテーブルのリサイズで、リスタートしなければならなかった
+conntrack テーブル検索の回数。
+<P>
+<DT><B>/proc/net/stat/rt_cache</B>
+
+<DD>
+
+ルーティングキャッシュの統計。
+<P>
+<B>entries</B>
+
+
+ルーティングキャッシュ内のエントリー数。
+<P>
+<B>in_hit</B>
+
+
+
+流入パケットに対するルートキャッシュのヒット数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
+<P>
+<B>in_slow_tot</B>
+
+
+入力トラフィックに対して追加されたルーティングキャッシュ
+エントリーの数。
+<P>
+<B>in_slow_mc</B>
+
+
+入力トラフィックに対して追加されたマルチキャストルーティング
+キャッシュエントリーの数。
+<P>
+<B>in_no_route</B>
+
+
+ルーティングテーブルエントリーが見つからなかった入力パケット数。
+<P>
+<B>in_brd</B>
+
+
+マッチした入力ブロードキャストパケットの数。
+<P>
+<B>in_martian_dst</B>
+
+
+流入した異質な (martian) 宛先パケットの数。
+<P>
+<B>in_martian_src</B>
+
+
+流入した異質な (martian) 送信元パケットの数。
+<P>
+<B>out_hit</B>
+
+
+
+送出パケットに対するルートキャッシュのヒット数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
+<P>
+<B>out_slow_tot</B>
+
+
+出力トラフィックに対して追加されたルーティングキャッシュ
+エントリー数。
+<P>
+<B>out_slow_mc</B>
+
+
+出力トラフィックに対して追加されたマルチキャストルーティング
+キャッシュエントリーの数。
+<P>
+<B>gc_total</B>
+
+
+
+ガベージコレクション実行の回数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
+<P>
+<B>gc_ignored</B>
+
+
+
+
+最小ガベージコレクション間隔に達しておらず、
+ルーティングキャッシュがいっぱいでなかったため、
+無視されたガベージコレクション実行の回数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
+<P>
+<B>gc_goal_miss</B>
+
+
+
+ガベージコレクションのゴールに達しなかった回数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
+<P>
+<B>gc_dst_overflow</B>
+
+
+
+宛先キャッシュのオーバーフローの回数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
+<P>
+<B>in_hlist_search</B>
+
+
+
+入力トラフィックに対するハッシュテーブルリストの巡回の回数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
+<P>
+<B>out_hlist_search</B>
+
+
+
+出力トラフィックに対するハッシュテーブルリストの巡回の回数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
+<P>
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/ip.8.html">ip</A></B>(8)
+
+<BR>
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+
+lnstat は Harald Welte &lt;<A HREF="mailto:laforge@gnumonks.org">laforge@gnumonks.org</A>&gt; によって書かれた。
+<P>
+
+
+このマニュアルは Michael Prokop &lt;<A HREF="mailto:mika@grml.org">mika@grml.org</A>&gt; によって、
+Debian プロジェクトのために書かれた
+(しかし、他のディストリビューションでも使えるだろう)。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">使用例</A><DD>
+<DT><A HREF="#lbAG">ファイル</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:49:57 GMT, July 19, 2019
+</BODY>
+</HTML>
