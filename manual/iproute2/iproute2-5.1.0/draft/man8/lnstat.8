@@ -1,3 +1,9 @@
+.\"
+.\" Japanese Version Copyright (c) 2019 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Fri Jul 19 20:46:38 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
 .TH LNSTAT 8
 .\"O .SH NAME
 .SH 名前
@@ -181,7 +187,7 @@ IPv4 については \fBarp_cache\fP、IPv6 については \fBndisc_cache\fP �
 .\"O How many forced garbage collection runs were executed. Happens when adding an
 .\"O entry and the table is too full.
 強制ガベージコレクション実行が何回行われたか。
-エントリを追加する際に、テーブルがいっぱいであると実行される。
+エントリーを追加する際に、テーブルがいっぱいであると実行される。
 .sp
 .B unresolved_discards
 .\"O How many neighbor table entries were discarded due to lookup failure.
@@ -216,7 +222,7 @@ conntrack テーブルの検索が何回行われたか。
 .sp
 .B new
 .\"O Number of conntrack entries added which were not expected before.
-conntrack エントリーが要求される前に何回追加されたか。
+conntrack エントリーが予測されないうちに何回追加されたか。
 .sp
 .B invalid
 .\"O Number of packets seen which can not be tracked.
@@ -245,99 +251,149 @@ conntrack エントリーに既に紐付けられたパケットの数。
 (同じエントリーが既に存在する場合に起こる)。
 .sp
 .B drop
-Number of packets dropped due to conntrack failure. Either new conntrack entry
-allocation failed, or protocol helper dropped the packet.
+.\"O Number of packets dropped due to conntrack failure. Either new conntrack entry
+.\"O allocation failed, or protocol helper dropped the packet.
+conntrack の失敗により、ドロップされたパケット数。
+新しい conntrack エントリーの確保に失敗したか、プロトコルヘルパーがパケットを
+ドロップした。
 .sp
 .B early_drop
-Number of dropped conntrack entries to make room for new ones, if maximum table
-size was reached.
+.\"O Number of dropped conntrack entries to make room for new ones, if maximum table
+.\"O size was reached.
+最大テーブルサイズに達していて、新しい conntrack エントリーのための
+場所を確保するためにドロップされた conntrack エントリーの数。
 .sp
 .B icmp_error
-Number of packets which could not be tracked due to error situation. This is a
-subset of \fBinvalid\fP.
+.\"O Number of packets which could not be tracked due to error situation. This is a
+.\"O subset of \fBinvalid\fP.
+エラー状況のために追跡できなかったパケット数。
+これは \fBinvalid\fP の一部である。
 .sp
 .B expect_new
-Number of conntrack entries added after an expectation for them was already
-present.
+.\"O Number of conntrack entries added after an expectation for them was already
+.\"O present.
+conntrack エントリーが予測された後で、何個追加されたか。
 .sp
 .B expect_create
-Number of expectations added.
+.\"O Number of expectations added.
+追加された予測エントリーの数。
 .sp
 .B expect_delete
-Number of expectations deleted.
+.\"O Number of expectations deleted.
+削除された予測エントリーの数。
 .sp
 .B search_restart
-Number of conntrack table lookups which had to be restarted due to hashtable
-resizes.
+.\"O Number of conntrack table lookups which had to be restarted due to hashtable
+.\"O resizes.
+ハッシュテーブルのリサイズで、リスタートしなければならなかった
+conntrack テーブル検索の回数。
 
 .TP
 .B /proc/net/stat/rt_cache
-Routing cache statistics.
+.\"O Routing cache statistics.
+ルーティングキャッシュの統計。
 .sp
 .B entries
-Number of entries in routing cache.
+.\"O Number of entries in routing cache.
+ルーティングキャッシュ内のエントリー数。
 .sp
 .B in_hit
-Number of route cache hits for incoming packets. Deprecated since IP route
-cache removal, therefore always zero.
+.\"O Number of route cache hits for incoming packets. Deprecated since IP route
+.\"O cache removal, therefore always zero.
+流入パケットに対するルートキャッシュのヒット数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
 .sp
 .B in_slow_tot
-Number of routing cache entries added for input traffic.
+.\"O Number of routing cache entries added for input traffic.
+入力トラフィックに対して追加されたルーティングキャッシュ
+エントリーの数。
 .sp
 .B in_slow_mc
-Number of multicast routing cache entries added for input traffic.
+.\"O Number of multicast routing cache entries added for input traffic.
+入力トラフィックに対して追加されたマルチキャストルーティング
+キャッシュエントリーの数。
 .sp
 .B in_no_route
-Number of input packets for which no routing table entry was found.
+.\"O Number of input packets for which no routing table entry was found.
+ルーティングテーブルエントリーが見つからなかった入力パケット数。
 .sp
 .B in_brd
-Number of matched input broadcast packets.
+.\"O Number of matched input broadcast packets.
+マッチした入力ブロードキャストパケットの数。
 .sp
 .B in_martian_dst
-Number of incoming martian destination packets.
+.\"O Number of incoming martian destination packets.
+流入した異質な (martian) 宛先パケットの数。
 .sp
 .B in_martian_src
-Number of incoming martian source packets.
+.\"O Number of incoming martian source packets.
+流入した異質な (martian) 送信元パケットの数。
 .sp
 .B out_hit
-Number of route cache hits for outgoing packets. Deprecated since IP route
-cache removal, therefore always zero.
+.\"O Number of route cache hits for outgoing packets. Deprecated since IP route
+.\"O cache removal, therefore always zero.
+送出パケットに対するルートキャッシュのヒット数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
 .sp
 .B out_slow_tot
-Number of routing cache entries added for output traffic.
+.\"O Number of routing cache entries added for output traffic.
+出力トラフィックに対して追加されたルーティングキャッシュ
+エントリー数。
 .sp
 .B out_slow_mc
-Number of multicast routing cache entries added for output traffic.
+.\"O Number of multicast routing cache entries added for output traffic.
+出力トラフィックに対して追加されたマルチキャストルーティング
+キャッシュエントリーの数。
 .sp
 .B gc_total
-Total number of garbage collection runs. Deprecated since IP route cache
-removal, therefore always zero.
+.\"O Total number of garbage collection runs. Deprecated since IP route cache
+.\"O removal, therefore always zero.
+ガベージコレクション実行の回数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
 .sp
 .B gc_ignored
-Number of ignored garbage collection runs due to minimum GC interval not
-reached and routing cache not full. Deprecated since IP route cache removal,
-therefore always zero.
+.\"O Number of ignored garbage collection runs due to minimum GC interval not
+.\"O reached and routing cache not full. Deprecated since IP route cache removal,
+.\"O therefore always zero.
+最小ガベージコレクション間隔に達しておらず、
+ルーティングキャッシュがいっぱいでなかったため、
+無視されたガベージコレクション実行の回数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
 .sp
 .B gc_goal_miss
-Number of garbage collector goal misses. Deprecated since IP route cache
-removal, therefore always zero.
+.\"O Number of garbage collector goal misses. Deprecated since IP route cache
+.\"O removal, therefore always zero.
+ガベージコレクションのゴールに達しなかった回数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
 .sp
 .B gc_dst_overflow
-Number of destination cache overflows. Deprecated since IP route cache removal,
-therefore always zero.
+.\"O Number of destination cache overflows. Deprecated since IP route cache removal,
+.\"O therefore always zero.
+宛先キャッシュのオーバーフローの回数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
 .sp
 .B in_hlist_search
-Number of hash table list traversals for input traffic. Deprecated since IP
-route cache removal, therefore always zero.
+.\"O Number of hash table list traversals for input traffic. Deprecated since IP
+.\"O route cache removal, therefore always zero.
+入力トラフィックに対するハッシュテーブルリストの巡回の回数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
 .sp
 .B out_hlist_search
-Number of hash table list traversals for output traffic. Deprecated since IP
-route cache removal, therefore always zero.
+.\"O Number of hash table list traversals for output traffic. Deprecated since IP
+.\"O route cache removal, therefore always zero.
+出力トラフィックに対するハッシュテーブルリストの巡回の回数。
+IP ルートキャッシュが削除されて廃止されたため、常に 0 になる。
 
-.SH SEE ALSO
+.\"O .SH SEE ALSO
+.SH 関連項目
 .BR ip (8)
 .br
-.SH AUTHOR
-lnstat was written by Harald Welte <laforge@gnumonks.org>.
+.\"O .SH AUTHOR
+.SH 著者
+.\"O lnstat was written by Harald Welte <laforge@gnumonks.org>.
+lnstat は Harald Welte <laforge@gnumonks.org> によって書かれた。
 .PP
-This manual page was written by Michael Prokop <mika@grml.org> for the Debian project (but may be used by others).
+.\"O This manual page was written by Michael Prokop <mika@grml.org> for the Debian project (but may be used by others).
+このマニュアルは Michael Prokop <mika@grml.org> によって、
+Debian プロジェクトのために書かれた
+(しかし、他のディストリビューションでも使えるだろう)。
