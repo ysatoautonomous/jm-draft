@@ -1,0 +1,168 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of CHSH</TITLE>
+</HEAD><BODY>
+<H1>CHSH</H1>
+Section: User Commands (1)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+chsh - ログインシェルを変更する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>chsh</B>
+
+[<B>-s</B>
+
+<I>shell</I>]
+
+[<B>-l</B>]
+
+[<B>-h</B>]
+
+[<B>-v</B>]
+
+[<I>username</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B>chsh</B>
+
+はログインシェルを変更するために使用する。
+
+
+
+シェルがコマンド行で指定されなかった場合
+<B>chsh</B>
+
+はシェルをたずねてくる。
+<P>
+
+
+
+
+<B>chfn</B>
+
+は libuser とリンクされていると、ローカルでないエントリ
+(kerberos, LDAP など) をサポートする。
+リンクされていない場合は、<B>ypchsh</B>, <B>lchsh</B>
+またはその他のローカルでないエントリの実装を使うこと。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-s</B>,<B> --shell </B><I>shell</I>
+
+<DD>
+
+ログインシェルを指定する。
+<DT><B>-l</B>,<B> --list-shells</B>
+
+<DD>
+
+
+
+<I>/etc/shells</I>
+
+に記載されているシェルの一覧を出力し、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-v</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>有効なシェル</H2>
+
+
+
+
+
+
+<B>chsh</B>
+
+はシステム上のどのような実行ファイルのフルパス名も受け付ける。
+しかし、シェルが
+<I>/etc/shells</I>
+
+ファイルに記載されていない場合は警告を発する。
+
+
+一方で、ルートでない限り、このファイルに記載されているシェルだけを
+受け付けるように設定することもできる。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>返り値</H2>
+
+
+操作が成功した場合、0 を返す。
+操作が失敗した場合、またはコマンド書式が無効な場合、1を返す。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/login.1.html">login</A></B>(1),
+
+<B><A HREF="../man5/login.defs.5.html">login.defs</A></B>(5),
+
+<B><A HREF="../man5/passwd.5.html">passwd</A></B>(5),
+
+<B><A HREF="../man5/shells.5.html">shells</A></B>(5)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+Salvatore Valente &lt;<A HREF="mailto:svalente@mit.edu">svalente@mit.edu</A>&gt;
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+chsh コマンドは、util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">有効なシェル</A><DD>
+<DT><A HREF="#lbAG">返り値</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 09:35:10 GMT, July 20, 2019
+</BODY>
+</HTML>
