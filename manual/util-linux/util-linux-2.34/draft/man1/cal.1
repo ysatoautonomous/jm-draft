@@ -39,6 +39,8 @@
 .\" Updated Fri 16 Feb 2001 by Nakano Takeo
 .\" Updated & Modified Tue May  7 01:05:42 JST 2002
 .\"         by Yuichi SATO <ysato@h4.dion.ne.jp>
+.\" Updated & Modified Sat Jul 20 14:12:26 JST 2019
+.\"         by Yuichi SATO <ysato@ybb.ne.jp>
 .\"
 .TH CAL 1 "January 2018" "util-linux" "User Commands"
 .\"O .SH NAME
@@ -87,7 +89,8 @@ cal \- カレンダーを表示する
 デフォルトでは、
 .B cal
 は適用日として 1752 年 9 月 3 日を使う。
-この日以降グレゴリオ歴が表示され、この日より前はユリウス歴を使う。
+この日以降グレゴリオ歴体系で表示され、
+この日より前はユリウス歴体系を使う。
 グレゴリオ歴の適用に当たって太陽のイベントと同期させるために、
 11 日間が削除された。
 そのため、1752 年 9 月はユリウス歴とグレゴリオ歴が混ざっていて、
@@ -98,7 +101,9 @@ cal \- カレンダーを表示する
 オプションとして先発 (proleptic) グレゴリオ歴、またはユリウス歴の
 いずれかを使うことができる。
 .\"O .RB See\  \-\-reform\  below.
-下記の \fB\-\-reform\fR を参照。
+下記の
+.B \-\-reform
+を参照。
 .\"O .SH OPTIONS
 .SH オプション
 .TP
@@ -131,57 +136,111 @@ cal \- カレンダーを表示する
 .\"O Display the proleptic Gregorian calendar exclusively.
 先発グレゴリオ歴のみを表示する。
 .\"O .RB See\  \-\-reform\  below.
-下記の \fB\-\-reform\fR を参照。
+下記の
+.B \-\-reform
+を参照。
 .TP
 \fB\-j\fR, \fB\-\-julian\fR
-Use day-of-year numbering for all calendars.  These are also called ordinal
-days.  Ordinal days range from 1 to 366.  This option does not switch from the
-Gregorian to the Julian calendar system, that is controlled by the
-.BR \-\-reform\  option.
+.\"O Use day-of-year numbering for all calendars.  These are also called ordinal
+.\"O days.  Ordinal days range from 1 to 366.  This option does not switch from the
+.\"O Gregorian to the Julian calendar system, that is controlled by the
+.\"O .BR \-\-reform\  option.
+すべてのカレンダーで年内日付を使う。
+これは通算日 (ordinal days) とも呼ばれる。
+通算日は 1 から 366 の範囲である。
+このオプションを使うと、
+.B \-\-reform
+オプションで制御される
+グレゴリオ歴体系からユリウス歴体系への切り替えを行わない。
 .sp
-Sometimes Gregorian calendars using ordinal dates are referred to as Julian
-calendars.  This can be confusing due to the many date related conventions that
-use Julian in their name: (ordinal) julian date, julian (calendar) date,
-(astronomical) julian date, (modified) julian date, and more.  This option is
-named julian, because ordinal days are identified as julian by the POSIX
-standard.  However, be aware that
+.\"O Sometimes Gregorian calendars using ordinal dates are referred to as Julian
+.\"O calendars.  This can be confusing due to the many date related conventions that
+.\"O use Julian in their name: (ordinal) julian date, julian (calendar) date,
+.\"O (astronomical) julian date, (modified) julian date, and more.  This option is
+.\"O named julian, because ordinal days are identified as julian by the POSIX
+.\"O standard.  However, be aware that
+.\"O .B cal
+.\"O also uses the Julian calendar system.
+通算日を使ったグレゴリオ歴が、ユリウス歴と呼ばれることがある。
+これは名前にユリウスを使う日付についての慣習で混乱を
+起こすかもしれない。
+(通算) ユリウス日付、ユリウス (歴) 日付、
+(天文学的) ユリウス日付、(修正) ユリウス日付などがある。
+POSIX 標準で通算日を julian と定義しているので、
+このオプションは julian という名前にしている。
+しかし、
 .B cal
-also uses the Julian calendar system.
-.RB See\  DESCRIPTION\  above.
+はユリウス歴体系も使うことを注意してほしい。
+.\"O .RB See\  DESCRIPTION\  above.
+上記の
+.RB 「  説明 」
+のセクションを参照。
 .TP
 .BI \-\-reform\  val
-This option sets the adoption date of the Gregorian calendar reform.  Calendar
-dates previous to reform use the Julian calendar system.  Calendar dates
-after reform use the Gregorian calendar system.  The argument
+.\"O This option sets the adoption date of the Gregorian calendar reform.  Calendar
+.\"O dates previous to reform use the Julian calendar system.  Calendar dates
+.\"O after reform use the Gregorian calendar system.  The argument
+.\"O .I val
+.\"O can be:
+このオプションはグレゴリオ歴切り替えの適用日を設定する。
+切り替え前はユリウス歴体系を使い、
+切り替え後はグレゴリオ歴体系を使う。
+引数
 .I val
-can be:
+は以下のとおり。
 .RS
 .IP \(bu 2
 .I 1752
-- sets 3 September 1752 as the reform date (default).
-This is when the Gregorian calendar reform was adopted by the British Empire.
+.\"O - sets 3 September 1752 as the reform date (default).
+.\"O This is when the Gregorian calendar reform was adopted by the British Empire.
+- 1752 年 9 月 3 日を切り替え日とする (デフォルト)。
+これは大英帝国でグレゴリオ歴の切り替えが適用された日である。
 .IP \(bu 2
 .I gregorian
-- display Gregorian calendars exclusively.  This special placeholder sets the
-reform date below the smallest year that
+.\"O - display Gregorian calendars exclusively.  This special placeholder sets the
+.\"O reform date below the smallest year that
+.\"O .B cal
+.\"O can use; meaning all calendar output uses the Gregorian calendar system.  This
+.\"O is called the proleptic Gregorian calendar, because dates prior to the calendar
+.\"O system's creation use extrapolated values.
+.\"O:sato
+.\"O:sato 2 文目の訳に自信なし。
+.\"O:sato
+- グレゴリオ歴のみを表示する。
+これは
 .B cal
-can use; meaning all calendar output uses the Gregorian calendar system.  This
-is called the proleptic Gregorian calendar, because dates prior to the calendar
-system's creation use extrapolated values.
+が使用できる最小の年を、切り替え日以前に設定する
+特別な代替物である。
+つまり、すべてのカレンダー出力はグレゴリオ歴体系を使う。
+これは、カレンダー体系の開始日以前では外挿値 (extrapolated value) を使うので、
+先発グレゴリオ歴と呼ばれる。
 .IP \(bu 2
 .I iso
-- alias of
-.IR gregorian .
-The ISO 8601 standard for the representation of dates and times in information
-interchange requires using the proleptic Gregorian calendar.
+.\"O - alias of
+.\"O .IR gregorian .
+.\"O The ISO 8601 standard for the representation of dates and times in information
+.\"O interchange requires using the proleptic Gregorian calendar.
+.RI -\  gregorian
+の別名。
+情報交換における日付と時刻の表記に関する ISO 8601 規格では、
+先発グレゴリオ歴を使う必要がある。
 .IP \(bu 2
 .I julian
-- display Julian calendars exclusively.  This special placeholder sets the reform date above the largest year that
+.\"O - display Julian calendars exclusively.  This special placeholder sets the reform date above the largest year that
+.\"O .B cal
+.\"O can use; meaning all
+.\"O calendar output uses the Julian calendar system.
+- ユリウス歴のみを表示する。
+これは
 .B cal
-can use; meaning all
-calendar output uses the Julian calendar system.
+が使用できる最大の年を、切り替え日以降に設定する
+特別な代替物である。
+つまり、すべてのカレンダー出力でユリウス歴体系を使う。
 .PP
-.RB See\  \%DESCRIPTION\  above.
+.\"O .RB See\  \%DESCRIPTION\  above.
+上記の
+.RB 「  説明 」
+のセクションを参照。
 .RE
 .TP
 \fB\-y\fR, \fB\-\-year\fR
@@ -189,62 +248,112 @@ calendar output uses the Julian calendar system.
 今年 1 年のカレンダーを表示する。
 .TP
 \fB\-Y, \fB\-\-twelve\fR
-Display a calendar for the next twelve months.
+.\"O Display a calendar for the next twelve months.
+次の 12 ヶ月のカレンダーを表示する。
 .TP
 \fB\-w\fR, \fB\-\-week\fR[=\fInumber\fR]
-Display week numbers in the calendar (US or ISO-8601).
+.\"O Display week numbers in the calendar (US or ISO-8601).
+カレンダーに週番号を表示する (US または ISO-8601)。
 .TP
 \fB\-\-color\fR[=\fIwhen\fR]
-Colorize the output.  The optional argument \fIwhen\fP
-can be \fBauto\fR, \fBnever\fR or \fBalways\fR.  If the \fIwhen\fR argument is omitted,
-it defaults to \fBauto\fR.  The colors can be disabled; for the current built-in default
-see the \fB\-\-help\fR output.  See also the \fBCOLORS\fR section.
+.\"O Colorize the output.  The optional argument \fIwhen\fP
+.\"O can be \fBauto\fR, \fBnever\fR or \fBalways\fR.  If the \fIwhen\fR argument is omitted,
+.\"O it defaults to \fBauto\fR.  The colors can be disabled; for the current built-in default
+.\"O see the \fB\-\-help\fR output.  See also the \fBCOLORS\fR section.
+出力をカラー表示にする。
+オプションの引数 \fIwhen\fP は、
+\fBauto\fR, \fBnever\fR, \fBalways\fR のいずれかである。
+\fIwhen\fR 引数が省略された場合、デフォルトは \fBauto\fR である。
+カラー表示を無効化することもできる。
+現在の組み込みのデフォルトは、 \fB\-\-help\fR の出力を参照すること。
+「\fBカラー表示\fR」のセクションも参照すること。
 .TP
 \fB\-V\fR, \fB\-\-version\fR
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .TP
 \fB\-h\fR, \fB\-\-help\fR
-Display help text and exit.
-.SH PARAMETERS
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH PARAMETERS
+.SH 引数
 .TP
-\fBSingle digits-only parameter (e.g. 'cal 2020')\fR
-Specifies the \fIyear\fR to be displayed; note the year must be fully specified:
+.\"O \fBSingle digits-only parameter (e.g. 'cal 2020')\fR
+.\"O Specifies the \fIyear\fR to be displayed; note the year must be fully specified:
+.\"O .B "cal 89"
+.\"O will not display a calendar for 1989.
+\fB1 つの数字のみの引数 (例 'cal 2020')\fR
+表示したい \fI年\fR を指定する。
+年を表す数字は全桁指定する必要がある。
 .B "cal 89"
-will not display a calendar for 1989.
+と指定しても 1989 のカレンダーは表示されない。
 .TP
-\fBSingle string parameter (e.g. 'cal tomorrow' or 'cal August')\fR
-Specifies \fItimestamp\fR or a \fImonth name\fR (or abbreviated name) according to the current
-locales.
+.\"O \fBSingle string parameter (e.g. 'cal tomorrow' or 'cal August')\fR
+.\"O Specifies \fItimestamp\fR or a \fImonth name\fR (or abbreviated name) according to the current
+.\"O locales.
+\fB1 つの文字列の引数 (例 'cal tomorrow' または 'cal August')\fR
+現在のロケールに基づいて、\fIタイムスタンプ\fR または
+\fI月名\fR (または月の省略名) を指定する。
 .sp
-The special placeholders are accepted when parsing timestamp, "now" may be used
-to refer to the current time, "today", "yesterday", "tomorrow" refer to of the
-current day, the day before or the next day, respectively.
+.\"O The special placeholders are accepted when parsing timestamp, "now" may be used
+.\"O to refer to the current time, "today", "yesterday", "tomorrow" refer to of the
+.\"O current day, the day before or the next day, respectively.
+タイムスタンプを解析する際に、特別な別名も指定することができる。
+"now" は現在時刻を指定するのに使われる。
+"today", "yesterday", "tomorrow" は、
+それぞれ、当日、前日、明日を指定する。
 .sp
-The relative date specifications are also accepted, in this case "+" is
-evaluated to the current time plus the specified time span. Correspondingly, a
-time span that is prefixed with "-" is evaluated to the current time minus the
-specified time span, for example '+2days'. Instead of prefixing the time span
-with "+" or "-", it may also be suffixed with a space and the word "left" or
-"ago" (for example '1 week ago').
+.\"O The relative date specifications are also accepted, in this case "+" is
+.\"O evaluated to the current time plus the specified time span. Correspondingly, a
+.\"O time span that is prefixed with "-" is evaluated to the current time minus the
+.\"O specified time span, for example '+2days'. Instead of prefixing the time span
+.\"O with "+" or "-", it may also be suffixed with a space and the word "left" or
+.\"O "ago" (for example '1 week ago').
+相対日付指定もできる。
+この場合、 "+" は現在時刻に指定した時間を足す。
+同様に、"-" は現在時刻から指定した時間を引く。
+例えば、 '+2days' のように指定できる。
+時間の前に "+" または "-" を置く代わりに、
+空白と "left" または "ago" を後ろに付けることもできる
+(例 '1 week ago')。
 .TP
-\fBTwo parameters (e.g. 'cal 11 2020')\fR
-Denote the \fImonth\fR (1 - 12) and \fIyear\fR.
+.\"O \fBTwo parameters (e.g. 'cal 11 2020')\fR
+\fB2 つの引数 (例 'cal 11 2020')\fR
+.\"O Denote the \fImonth\fR (1 - 12) and \fIyear\fR.
+\fI月\fR (1 - 12) と \fI年\fR を指定する。
 .TP
-\fBThree parameters (e.g. 'cal 25 11 2020')\fR
-Denote the \fIday\fR (1-31), \fImonth and \fIyear\fR, and the day will be
-highlighted if the calendar is displayed on a terminal.  If no parameters are
-specified, the current month's calendar is displayed.
-.SH NOTES
-A year starts on January 1.  The first day of the week is determined by the
-locale or the
-.BR \-\-sunday \ and \ \-\-monday \ options.
+.\"O \fBThree parameters (e.g. 'cal 25 11 2020')\fR
+\fB3 つの引数 (例 'cal 25 11 2020')\fR
+.\"O Denote the \fIday\fR (1-31), \fImonth and \fIyear\fR, and the day will be
+.\"O highlighted if the calendar is displayed on a terminal.  If no parameters are
+.\"O specified, the current month's calendar is displayed.
+
+\fI日\fR (1-31)、\fI月\fR、\fI年\fR を指定する。
+カレンダーを端末上で表示した場合、当日はハイライトされる。
+引数を指定しない場合、当月のカレンダーが表示される。
+.\"O .SH NOTES
+.SH 注意
+.\"O A year starts on January 1.  The first day of the week is determined by the
+.\"O locale or the
+.\"O .BR \-\-sunday \ and \ \-\-monday \ options.
+年は 1 月 1 日から始まる。
+週の初めの日は、ロケールまたは
+.BR \-\-sunday \ と \ \-\-monday
+オプションで決まる。
 .PP
-The week numbering depends on the choice of the first day of the week.  If it
-is Sunday then the customary North American numbering is used, where 1 January
-is in week number 1.  If it is Monday then the ISO 8601 standard week numbering
-is used, where the first Thursday is in week number 1.
-.SH COLORS
-Implicit coloring can be disabled as follows:
+.\"O The week numbering depends on the choice of the first day of the week.  If it
+.\"O is Sunday then the customary North American numbering is used, where 1 January
+.\"O is in week number 1.  If it is Monday then the ISO 8601 standard week numbering
+.\"O is used, where the first Thursday is in week number 1.
+週の番号付けは、週の初めの日の選択に依存する。
+日曜を週の初めの日として、慣例的な北アメリカの番号付けを使っている場合、
+1 月 1 日が週番号 1 となる。
+月曜を週の初めの日として、ISO 8601 規格の番号付けを使っている場合、
+最初の木曜日が週番号 1 となる。
+.\"O .SH COLORS
+.SH カラー表示
+.\"O Implicit coloring can be disabled as follows:
+暗黙のカラー表示は、以下のようにして無効化できる。
 .RS
 
 .br
@@ -252,19 +361,31 @@ Implicit coloring can be disabled as follows:
 .br
 
 .RE
-See
+.\"O See
+.\"O .BR terminal-colors.d (5)
+.\"O for more details about colorization configuration.
+カラー設定の詳細は
 .BR terminal-colors.d (5)
-for more details about colorization configuration.
-.SH BUGS
+を参照すること。
+.\"O .SH BUGS
+.SH バグ
 .PP
-The default
+.\"O The default
+.\"O .B cal
+.\"O output uses 3 September 1752 as the Gregorian calendar reform date.  The
+.\"O historical reform  dates for the other locales, including its introduction in
+.\"O October 1582, are not implemented.
+デフォルトの
 .B cal
-output uses 3 September 1752 as the Gregorian calendar reform date.  The
-historical reform  dates for the other locales, including its introduction in
-October 1582, are not implemented.
+出力は 1752 年 9 月 3 日をグレゴリオ歴切り替え日とする。
+1582 年 10 月の切り替えの開始を含む、他のロケールでの歴史的な切り替え日は
+実装されていない。
 .PP
-Alternative calendars, such as the Umm al-Qura, the Solar Hijri, the Ge'ez,
-or the lunisolar Hindu, are not supported.
+.\"O Alternative calendars, such as the Umm al-Qura, the Solar Hijri, the Ge'ez,
+.\"O or the lunisolar Hindu, are not supported.
+ウンム・アルクアラー歴、太陽ヒジュラ歴、ゲエズ歴、
+太陰太陽ヒンドゥー歴といった
+他のカレンダーはサポートされていない。
 .\"O .SH HISTORY
 .SH 履歴
 .\"O A cal command appeared in Version 6 AT&T UNIX.
