@@ -1,0 +1,276 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of COL</TITLE>
+</HEAD><BODY>
+<H1>COL</H1>
+Section: User Commands (1)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+col - 入力中にある逆改行コードを処理するフィルタ
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>col</B>
+
+[options]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+<B>col</B>
+
+は、逆方向への改行および半改行を取り除き、
+通常の改行方向だけで出力可能なものに変換する。
+同時に、可能な限り空白文字部分をタブに置き換える処理をする。
+これは、
+<B><A HREF="../man1/nroff.1.html">nroff</A></B>(1)
+
+や
+<B><A HREF="../man1/tbl.1.html">tbl</A></B>(1)
+
+の出力を処理するのに役立つ。
+<P>
+
+
+
+<B>col</B>
+
+は、データを標準入力から読み込み、標準出力に書き出す。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-b</B>, <B>--no-backspaces</B><DD>
+
+
+バックスペースを出力しないようにする。
+(訳註: 同じ箇所に複数の文字が書かれる場合は)
+行中のその箇所に最後に書かれた文字だけを表示する。
+<DT><B>-f</B>, <B>--fine</B><DD>
+
+
+
+半改行を含めることを許可する。
+通常、行と行の境界に表示されることになる文字は、
+次の行に表示される。
+<DT><B>-h</B>, <B>--tabs</B><DD>
+
+複数個の空白文字のかわりにタブを出力する。
+<DT><B>-l</B>, <B>--lines</B> <I>number</I><DD>
+
+
+
+メモリ上に、少なくとも
+<I>number</I>
+
+行分をバッファする。
+デフォルトでは 128 行分がバッファされる。
+<DT><B>-p</B>, <B>--pass</B><DD>
+
+
+
+
+不明なコントロール文字を変更せずに表示する。
+通常
+<B>col</B>
+
+は、以下に挙げるような認識・解釈できる
+コントロール文字でなければ、その文字を入力から取り除く。
+<DT><B>-x</B>, <B>--spaces</B><DD>
+
+タブのかわりに複数個の空白文字を出力する。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-H</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+<B>col</B>
+
+が認識する復帰動作のためのコントロール文字と、
+その文字の 10 進数での値を以下の表に示す:
+<P>
+
+<DL COMPACT><DT><DD>
+
+<DL COMPACT>
+<DT><B>ESC-7</B>
+
+<DD>
+
+逆方向に改行する (エスケープの後に 7)
+<DT><B>ESC-8</B>
+
+<DD>
+
+逆方向に半改行する (エスケープの後に 8)
+<DT><B>ESC-9</B>
+
+<DD>
+
+通常方向に半改行する (エスケープの後に 9)
+<DT><B>backspace</B>
+
+<DD>
+
+逆方向に 1 カラム分戻す (8)。最初のカラムでは無視される
+<DT><B>newline</B>
+
+<DD>
+
+通常方向に改行する (10)。行頭への復帰も行う
+<DT><B>carriage return</B>
+
+<DD>
+
+行頭に復帰する (13)
+<DT><B>shift in</B>
+
+<DD>
+
+通常の文字セットを選択する (15)
+<DT><B>shift out</B>
+
+<DD>
+
+特別な文字セットを選択する (14)
+<DT><B>space</B>
+
+<DD>
+
+通常方向に 1 カラム分に移動する (32)
+<DT><B>tab</B>
+
+<DD>
+
+次のタブ位置へ移動する (9)
+<DT><B>vertical tab</B>
+
+<DD>
+
+逆方向に改行する (11)
+
+</DL>
+</DL>
+
+<P>
+
+
+col が認識できないコントロール文字およびエスケープシーケンスは削除される。
+<P>
+
+
+
+
+<B>col</B>
+
+は文字列を読み込みながら追って行き、
+出力する際に正しいかを確認する。
+<P>
+
+
+
+
+すでに出力してしまった行を超えて戻るような逆改行の処理が入った場合、
+<B>col</B>
+
+は警告メッセージを表示する。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/expand.1.html">expand</A></B>(1),
+
+<B><A HREF="../man1/nroff.1.html">nroff</A></B>(1),
+
+<B><A HREF="../man1/tbl.1.html">tbl</A></B>(1)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>準拠</H2>
+
+
+
+
+
+
+<B>col</B>
+
+ユーティリティは Single UNIX Specification, Version 2 に従う。
+<B>-l</B>
+
+オプションは、この規格を拡張したものである。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+<B>col</B>
+
+コマンドは
+Version 6 AT&amp;T UNIX
+から登場した。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+chfn コマンドは、util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">注意</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">準拠</A><DD>
+<DT><A HREF="#lbAI">履歴</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 10:59:49 GMT, July 20, 2019
+</BODY>
+</HTML>
