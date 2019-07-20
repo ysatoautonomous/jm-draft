@@ -1,0 +1,109 @@
+.\"
+.\"  chsh.1 -- change your login shell
+.\"  (c) 1994 by salvatore valente <svalente@athena.mit.edu>
+.\"
+.\"  This program is free software.  You can redistribute it and
+.\"  modify it under the terms of the GNU General Public License.
+.\"  There is no warranty.
+.\"
+.\" Japanese Version Copyright (c) 2001 Maki KURODA
+.\"  all rights reserved.
+.\" Translated Wed Jan 24 18:46:38 JST 2001
+.\"  by Maki KURODA <mkuroda@mail.tsagrp.co.jp>
+.\" Updated & Modified Sat Jul 20 18:25:03 JST 2019
+.\"         by Yuichi SATO <ysato@ybb.ne.jp>
+.\"
+.TH CHSH 1 "July 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O chsh \- change your login shell
+chsh \- ログインシェルを変更する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B chsh
+.RB [ \-s
+.IR shell ]
+.RB [ \-l ]
+.RB [ \-h ]
+.RB [ \-v ]
+.RI [ username ]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B chsh
+.\"O is used to change your login shell.
+.B chsh
+はログインシェルを変更するために使用する。
+.\"O If a shell is not given on the command line,
+.\"O .B chsh
+.\"O prompts for one.
+シェルがコマンド行で指定されなかった場合
+.B chsh
+はシェルをたずねてくる。
+
+.\"O .B chsh
+.\"O supports non-local entries (kerberos, LDAP, etc.\&) if linked with libuser,
+.\"O otherwise use \fBypchsh\fR, \fBlchsh\fR or any other implementation for
+.\"O non-local entries.
+.B chfn
+は libuser とリンクされていると、ローカルでないエントリ
+(kerberos, LDAP など) をサポートする。
+リンクされていない場合は、\fBypchsh\fR, \fBlchsh\fR
+またはその他のローカルでないエントリの実装を使うこと。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-s , " \-\-shell " \fIshell
+.\"O Specify your login shell.
+ログインシェルを指定する。
+.TP
+.BR \-l , " \-\-list\-shells"
+.\"O Print the list of shells listed in
+.\"O .I /etc/shells
+.\"O and exit.
+.I /etc/shells
+に記載されているシェルの一覧を出力し、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+.BR \-v , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.\"O .SH "VALID SHELLS"
+.SH 有効なシェル
+.\"O .B chsh
+.\"O will accept the full pathname of any executable file on the system.
+.\"O However, it will issue a warning if the shell is not listed in the
+.\"O .I /etc/shells
+.\"O file.
+.B chsh
+はシステム上のどのような実行ファイルのフルパス名も受け付ける。
+しかし、シェルが
+.I /etc/shells
+ファイルに記載されていない場合は警告を発する。
+.\"O On the other hand, it can also be configured such that it will
+.\"O only accept shells listed in this file, unless you are root.
+一方で、ルートでない限り、このファイルに記載されているシェルだけを
+受け付けるように設定することもできる。
+.\"O .SH "EXIT STATUS"
+.SH 返り値
+.\"O Returns 0 if operation was successful, 1 if operation failed or command syntax was not valid.
+操作が成功した場合、0 を返す。
+操作が失敗した場合、またはコマンド書式が無効な場合、1を返す。
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR login (1),
+.BR login.defs (5),
+.BR passwd (5),
+.BR shells (5)
+.\"O .SH AUTHOR
+.SH 著者
+Salvatore Valente <svalente@mit.edu>
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The chsh command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+chsh コマンドは、util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
