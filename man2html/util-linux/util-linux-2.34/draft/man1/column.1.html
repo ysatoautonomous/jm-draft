@@ -1,0 +1,346 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of COLUMN</TITLE>
+</HEAD><BODY>
+<H1>COLUMN</H1>
+Section: User Commands (1)<BR>Updated: February 2019<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+column - 入力を複数列に整形する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>column</B> [options]
+
+[<I>file</I>...]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>column</B>
+
+ユーティリティは、入力を複数カラムに分けて整形する。
+このユーティリティは 3 つのモードをサポートする。
+<DL COMPACT>
+<DT>
+<DD>
+<B>行より先に列を埋める。</B>
+
+
+これがデフォルトのモードである (後方互換のため必要である)。
+<DT>
+<DD>
+<B>列より先に行を埋める。</B>
+
+
+このモードはオプション <B>-x, --fillrows</B> で有効にされる。
+<DT>
+<DD>
+<B>テーブル</B>
+
+
+
+
+入力が含まれる列数を決めて、テーブルを作成する。
+このモードはオプション <B>-t, --table</B> で有効にされ、
+列のフォーマットは <B>--table-*</B> オプションで修正できる。
+使い方が良く分からない場合、このモードを使うこと。
+</DL>
+<P>
+
+
+
+入力は <I>file</I> から取得される。
+<I>file</I> が指定されない場合、標準入力から取得される。
+空行は無視され、無効なマルチバイトシーケンスは、\x&lt;hex&gt; 形式にエンコードされる。
+<P>
+
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+
+
+<B>--table-*</B> オプションの引数 <I>columns</I> は
+カンマ区切りで、<B>--table-columns</B> で定義される列名リスト、
+または入力で指定された列番号のリストである。
+列名と列番号を混ぜて使うこともできる。
+<P>
+
+<DL COMPACT>
+<DT><B>-J, --json</B><DD>
+
+
+テーブルの表示に、JSON 出力フォーマットを使う。
+オプション <B>--table-columns</B> が必要で、
+オプション <B>--table-name</B> が推奨される。
+<DT><B>-c, --output-width</B> <I>width</I><DD>
+
+
+
+指定した文字数の幅で出力をフォーマットする。
+このオプションの元の名前は、--columns であった。
+この名前は v2.30 から廃止された。
+<I>width</I> より長い入力はデフォルトでは切り詰められる点に注意すること。
+<DT><B>-d, --table-noheadings</B><DD>
+
+ヘッダを表示しない。
+このオプションは、コマンドラインでは論理的な列名を使い、
+テーブルの表示時にはヘッダを隠すことができる。
+<DT><B>-o, --output-separator</B> <I>string</I><DD>
+
+テーブル出力の列の区切り文字を指定する
+(デフォルトはスペース 2 個である)。
+<DT><B>-s, --separator</B> <I>separators</I><DD>
+
+入力アイテムの区切り文字を指定する
+(デフォルトは空白である)。
+<DT><B>-t, --table</B><DD>
+
+入力が含まれる列数を決めて、テーブルを作成する。
+
+
+デフォルトでは列は空白で区切られる。
+<B>--output-separator</B> オプションを使って、
+指定した文字で区切ることもできる。
+
+テーブル出力は綺麗に表示するのに便利である。
+<DT><B>-N, --table-columns</B> <I>names</I><DD>
+
+
+列名をカンマ区切りの名前のリストで指定する。
+この名前はテーブルヘッダに使われたり、オプション引数の列を
+示すために使われる。
+<DT><B>-R, --table-right</B> <I>columns</I><DD>
+
+指定した列を右詰めテキストにする。
+<DT><B>-T, --table-truncate</B> <I>columns</I><DD>
+
+
+指定した列について、必要な場合は切り詰めを許可する。
+指定しない場合、とても長いテーブルのエントリは、
+複数行に表示される。
+<DT><B>-E, --table-noextreme</B> <I>columns</I><DD>
+
+
+
+列幅を計算する際に、通常ではなく長い (平均より長い) セルとして、
+無視可能な列を指定する。
+このオプションは、幅の計算とテーブルの整形に影響するが、
+表示されるテキストには影響しない。
+<P>
+
+このオプションは、デフォルトでは、最後の (訳注: 一番右の) 表示列に使われる。
+<P>
+<DT><B>-e, --table-header-repeat</B><DD>
+
+各ページにヘッダ行を表示する。
+<DT><B>-W, --table-wrap</B> <I>columns</I><DD>
+
+
+長いテキストの表示に必要な場合に、複数行のセルを使ってもよい列を
+指定する。
+<DT><B>-H, --table-hide</B> <I>columns</I><DD>
+
+
+指定した列を表示しない。
+名前のない列をすべて隠す場合、特別な代用文字 '-' を使うことができる。
+<DT><B>-O, --table-order</B> <I>columns</I><DD>
+
+出力される列の順番を指定する。
+<DT><B>-n, --table-name</B> <I>name</I><DD>
+
+JSON 出力で使われるテーブル名を指定する。
+デフォルトは &quot;table&quot; である。
+<DT><B>-L, --table-empty-lines</B><DD>
+
+
+入力の空行について、テーブルに空行を挿入する。
+デフォルトでは空行を無視する。
+<DT><B>-r, --tree</B> <I>column</I><DD>
+
+
+ツリー状の出力に使う列を指定する。
+親子関係における循環依存やその他の例外は、暗黙のうちに無視される。
+<DT><B>-i, --tree-id</B> <I>column</I><DD>
+
+親子関係を生成するために、行 ID が含まれる列を指定する。
+<DT><B>-p, --tree-parent</B> <I>column</I><DD>
+
+親子関係を生成するために、親 ID が含まれる列を指定する。
+</DL>
+<P>
+
+<DL COMPACT>
+<DT><B>-x, --fillrows</B><DD>
+
+列を埋める前に行を埋める。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h, --help</B><DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>環境変数</H2>
+
+
+
+他に情報が得られない場合、画面の幅を決定するために環境変数 <B>COLUMNS</B> が使われる。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+
+fstab をヘッダ行付けて、数値を右詰めで表示する。
+
+<B>sed 's/#.*//' /etc/fstab | column --table --table-columns SOURCE,TARGET,TYPE,OPTIONS,PASS,FREQ --table-right PASS,FREQ</B>
+
+<P>
+
+
+名前なしの列は隠して、fstab を表示する。
+
+<B>sed 's/#.*//' /etc/fstab | column --table --table-columns SOURCE,TARGET,TYPE --table-hide -</B>
+
+<P>
+
+<P>
+<P>
+
+
+ツリーを表示する。
+
+<B>echo -e '1 0 A\n2 1 AA\n3 1 AB\n4 2 AAA\n5 2 AAB' | column --tree-id 1 --tree-parent 2 --tree 3</B>
+1  0  A
+2  1  |-AA
+4  2  | |-AAA
+5  2  | `-AAB
+3  1  `-AB
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+バージョン 2.23 で
+<B>-s</B>
+
+オプションの動作を、欲張りでなくした (non-greedy)
+(訳注: 値が指定されない場合に、後続の値を利用しないようにした)。
+例:
+<P>
+
+
+<B>printf &quot;a:b:c\n1::3\n&quot; | column  -t -s ':'</B>
+
+<P>
+
+
+昔の出力:
+
+a  b  c
+1  3
+
+<P>
+
+
+新しい出力 (util-linux 2.23 以降):
+
+a  b  c
+1     3
+
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+このツールの歴史的なバージョンでは、デフォルトでは
+「列より先に行を埋める」ことになっており、
+<B>-x</B>
+
+オプションで動作を逆にすることになっている。
+しかし、この言葉は実際の動作を反映していなかったので、
+修正を行った (上記を参照)。
+他の
+<B>column</B>
+
+実装は古いドキュメントを使い続けているかもしれないが、
+動作はどの場合でも同じである。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/colrm.1.html">colrm</A></B>(1),
+
+<B><A HREF="../man1/ls.1.html">ls</A></B>(1),
+
+<B><A HREF="../man1/paste.1.html">paste</A></B>(1),
+
+<B><A HREF="../man1/sort.1.html">sort</A></B>(1)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>履歴</H2>
+
+
+column コマンドは 4.3BSD-Reno から登場した。
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+column コマンドは、util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">環境変数</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">バグ</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">履歴</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:44:59 GMT, July 22, 2019
+</BODY>
+</HTML>
