@@ -34,6 +34,9 @@
 .\" %FreeBSD: src/usr.bin/column/column.1,v 1.5.2.4 2001/08/16 13:16:46 ru Exp %
 .\" $FreeBSD: doc/ja_JP.eucJP/man/man1/column.1,v 1.9 2001/08/19 10:25:03 horikawa Exp $
 .\"
+.\" Updated & Modified Mon Jul 22 20:37:15 JST 2019
+.\"         by Yuichi SATO <ysato@ybb.ne.jp>
+.\"
 .TH COLUMN 1 "February 2019" "util-linux" "User Commands"
 .\"O .SH NAME
 .SH 名前
@@ -110,75 +113,117 @@ column \- 入力を複数列に整形する
 .IP "\fB\-o, \-\-output\-separator\fP \fIstring\fP"
 .\"O Specify the columns delimiter for table output (default is two spaces).
 テーブル出力の列の区切り文字を指定する
-(デフォルトは空白 2 個である)。
+(デフォルトはスペース 2 個である)。
 .IP "\fB\-s, \-\-separator\fP \fIseparators\fP"
-Specify the possible input item delimiters (default is whitespace).
+.\"O Specify the possible input item delimiters (default is whitespace).
+入力アイテムの区切り文字を指定する
+(デフォルトは空白である)。
 .IP "\fB\-t, \-\-table\fP"
-Determine the number of columns the input contains and create a table.
-Columns are delimited with whitespace, by default, or with the characters
-supplied using the \fB\-\-output\-separator\fP option.
-Table output is useful for pretty-printing.
+.\"O Determine the number of columns the input contains and create a table.
+入力が含まれる列数を決めて、テーブルを作成する。
+.\"O Columns are delimited with whitespace, by default, or with the characters
+.\"O supplied using the \fB\-\-output\-separator\fP option.
+デフォルトでは列は空白で区切られる。
+\fB\-\-output\-separator\fP オプションを使って、
+指定した文字で区切ることもできる。
+.\"O Table output is useful for pretty-printing.
+テーブル出力は綺麗に表示するのに便利である。
 .IP "\fB\-N, \-\-table-columns\fP \fInames\fP"
-Specify the columns names by comma separated list of names. The names are used
-for the table header or to address column in option arguments.
+.\"O Specify the columns names by comma separated list of names. The names are used
+.\"O for the table header or to address column in option arguments.
+列名をカンマ区切りの名前のリストで指定する。
+この名前はテーブルヘッダに使われたり、オプション引数の列を
+示すために使われる。
 .IP "\fB\-R, \-\-table-right\fP \fIcolumns\fP"
-Right align text in the specified columns.
+.\"O Right align text in the specified columns.
+指定した列を右詰めテキストにする。
 .IP "\fB\-T, \-\-table-truncate\fP \fIcolumns\fP"
-Specify columns where is allowed to truncate text when necessary, otherwise
-very long table entries may be printed on multiple lines.
+.\"O Specify columns where is allowed to truncate text when necessary, otherwise
+.\"O very long table entries may be printed on multiple lines.
+指定した列について、必要な場合は切り詰めを許可する。
+指定しない場合、とても長いテーブルのエントリは、
+複数行に表示される。
 .IP "\fB\-E, \-\-table-noextreme\fP \fIcolumns\fP"
-Specify columns where is possible to ignore unusually long (longer than
-average) cells when calculate column width.  The option has impact to the width
-calculation and table formatting, but the printed text is not affected.
+.\"O Specify columns where is possible to ignore unusually long (longer than
+.\"O average) cells when calculate column width.  The option has impact to the width
+.\"O calculation and table formatting, but the printed text is not affected.
+列幅を計算する際に、通常ではなく長い (平均より長い) セルとして、
+無視可能な列を指定する。
+このオプションは、幅の計算とテーブルの整形に影響するが、
+表示されるテキストには影響しない。
 
-The option is used for the last visible column by default.
+.\"O The option is used for the last visible column by default.
+このオプションは、デフォルトでは、最後の (訳注: 一番右の) 表示列に使われる。
 
 .IP "\fB\-e, \-\-table\-header\-repeat\fP"
-Print header line for each page.
+.\"O Print header line for each page.
+各ページにヘッダ行を表示する。
 .IP "\fB\-W, \-\-table-wrap\fP \fIcolumns\fP"
-Specify columns where is possible to use multi-line cell for long text when
-necessary.
+.\"O Specify columns where is possible to use multi-line cell for long text when
+.\"O necessary.
+長いテキストの表示に必要な場合に、複数行のセルを使ってもよい列を
+指定する。
 .IP "\fB\-H, \-\-table-hide\fP \fIcolumns\fP"
-Don't print specified columns. The special placeholder '-' may be used to
-hide all unnamed columns (see --table-columns).
+.\"O Don't print specified columns. The special placeholder '-' may be used to
+.\"O hide all unnamed columns (see --table-columns).
+指定した列を表示しない。
+名前のない列をすべて隠す場合、特別な代用文字 '-' を使うことができる。
 .IP "\fB\-O, \-\-table-order\fP \fIcolumns\fP"
-Specify columns order on output.
+.\"O Specify columns order on output.
+出力される列の順番を指定する。
 .IP "\fB\-n, \-\-table-name\fP \fIname\fP"
-Specify the table name used for JSON output. The default is "table".
+.\"O Specify the table name used for JSON output. The default is "table".
+JSON 出力で使われるテーブル名を指定する。
+デフォルトは "table" である。
 .IP "\fB\-L, \-\-table\-empty\-lines\fP"
-Insert empty line to the table for each empty line on input. The default
-is ignore empty lines at all.
+.\"O Insert empty line to the table for each empty line on input. The default
+.\"O is ignore empty lines at all.
+入力の空行について、テーブルに空行を挿入する。
+デフォルトでは空行を無視する。
 .IP "\fB\-r, \-\-tree\fP \fIcolumn\fP"
-Specify column to use tree-like output. Note that the circular dependencies and
-another anomalies in child and parent relation are silently ignored.
+.\"O Specify column to use tree-like output. Note that the circular dependencies and
+.\"O another anomalies in child and parent relation are silently ignored.
+ツリー状の出力に使う列を指定する。
+親子関係における循環依存やその他の例外は、暗黙のうちに無視される。
 .IP "\fB\-i, \-\-tree\-id\fP \fIcolumn\fP"
-Specify column with line ID to create child-parent relation.
+.\"O Specify column with line ID to create child-parent relation.
+親子関係を生成するために、行 ID が含まれる列を指定する。
 .IP "\fB\-p, \-\-tree\-parent\fP \fIcolumn\fP"
-Specify column with parent ID to create child-parent relation.
+.\"O Specify column with parent ID to create child-parent relation.
+親子関係を生成するために、親 ID が含まれる列を指定する。
 .PP
 .IP "\fB\-x, \-\-fillrows\fP"
-Fill rows before filling columns.
+.\"O Fill rows before filling columns.
+列を埋める前に行を埋める。
 .IP "\fB\-V\fR, \fB\-\-version\fR"
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .IP "\fB\-h, \-\-help\fP"
-Display help text and exit.
-.SH ENVIRONMENT
-The environment variable \fBCOLUMNS\fR is used to determine the size of
-the screen if no other information is available.
-.SH EXAMPLES
-Print fstab with header line and align number to the right:
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.\"O The environment variable \fBCOLUMNS\fR is used to determine the size of
+.\"O the screen if no other information is available.
+他に情報が得られない場合、画面の幅を決定するために環境変数 \fBCOLUMNS\fR が使われる。
+.\"O .SH EXAMPLES
+.SH 例
+.\"O Print fstab with header line and align number to the right:
+fstab をヘッダ行付けて、数値を右詰めで表示する。
 .EX
 \fBsed 's/#.*//' /etc/fstab | column --table --table-columns SOURCE,TARGET,TYPE,OPTIONS,PASS,FREQ --table-right PASS,FREQ\fR
 .EE
 .PP
-Print fstab and hide unnamed columns:
+.\"O Print fstab and hide unnamed columns:
+名前なしの列は隠して、fstab を表示する。
 .EX
 \fBsed 's/#.*//' /etc/fstab | column --table --table-columns SOURCE,TARGET,TYPE --table-hide -\fR
 .EE
 .PP
 
 .PP
-Print a tree:
+.\"O Print a tree:
+ツリーを表示する。
 .EX
 \fBecho -e '1 0 A\\n2 1 AA\\n3 1 AB\\n4 2 AAA\\n5 2 AAB' | column --tree-id 1 --tree-parent 2 --tree 3\fR
 1  0  A
@@ -187,42 +232,70 @@ Print a tree:
 5  2  | `-AAB
 3  1  `-AB
 .EE
-.SH BUGS
-Version 2.23 changed the
+.\"O .SH BUGS
+.SH バグ
+.\"O Version 2.23 changed the
+.\"O .B \-s
+.\"O option to be non-greedy, for example:
+バージョン 2.23 で
 .B \-s
-option to be non-greedy, for example:
+オプションの動作を、欲張りでなくした (non-greedy)
+(訳注: 値が指定されない場合に、後続の値を利用しないようにした)。
+例:
 .PP
 .EX
 \fBprintf "a:b:c\\n1::3\\n" | column  -t -s ':'\fR
 .EE
 .PP
-Old output:
+.\"O Old output:
+昔の出力:
 .EX
 a  b  c
 1  3
 .EE
 .PP
-New output (since util-linux 2.23):
+.\"O New output (since util-linux 2.23):
+新しい出力 (util-linux 2.23 以降):
 .EX
 a  b  c
 1     3
 .EE
 .PP
-Historical versions of this tool indicated that "rows are filled before
-columns" by default, and that the
+.\"O Historical versions of this tool indicated that "rows are filled before
+.\"O columns" by default, and that the
+.\"O .B \-x
+.\"O option reverses this. This wording did not reflect the actual behavior, and it
+.\"O has since been corrected (see above). Other implementations of
+.\"O .B column
+.\"O may continue to use the older documentation, but the behavior should be
+.\"O identical in any case.
+.\"Osato:
+.\"Osato: この訳文はあまり自信がない。
+.\"Osato: 
+このツールの歴史的なバージョンでは、デフォルトでは
+「列より先に行を埋める」ことになっており、
 .B \-x
-option reverses this. This wording did not reflect the actual behavior, and it
-has since been corrected (see above). Other implementations of
+オプションで動作を逆にすることになっている。
+しかし、この言葉は実際の動作を反映していなかったので、
+修正を行った (上記を参照)。
+他の
 .B column
-may continue to use the older documentation, but the behavior should be
-identical in any case.
-.SH "SEE ALSO"
+実装は古いドキュメントを使い続けているかもしれないが、
+動作はどの場合でも同じである。
+.\"O .SH "SEE ALSO"
+.SH 関連項目
 .BR colrm (1),
 .BR ls (1),
 .BR paste (1),
 .BR sort (1)
-.SH HISTORY
-The column command appeared in 4.3BSD-Reno.
-.SH AVAILABILITY
-The column command is part of the util-linux package and is available from
-https://www.kernel.org/pub/linux/utils/util-linux/.
+.\"O .SH HISTORY
+.SH 履歴
+.\"O The column command appeared in 4.3BSD-Reno.
+column コマンドは 4.3BSD-Reno から登場した。
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The column command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+column コマンドは、util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
