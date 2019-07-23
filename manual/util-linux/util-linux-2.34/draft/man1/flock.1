@@ -1,0 +1,295 @@
+.\" -----------------------------------------------------------------------
+.\"
+.\"   Copyright 2003-2006 H. Peter Anvin - All Rights Reserved
+.\"
+.\"   Permission is hereby granted, free of charge, to any person
+.\"   obtaining a copy of this software and associated documentation
+.\"   files (the "Software"), to deal in the Software without
+.\"   restriction, including without limitation the rights to use,
+.\"   copy, modify, merge, publish, distribute, sublicense, and/or
+.\"   sell copies of the Software, and to permit persons to whom
+.\"   the Software is furnished to do so, subject to the following
+.\"   conditions:
+.\"
+.\"   The above copyright notice and this permission notice shall
+.\"   be included in all copies or substantial portions of the Software.
+.\"
+.\"   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+.\"   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+.\"   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+.\"   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+.\"   HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+.\"   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+.\"   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+.\"   OTHER DEALINGS IN THE SOFTWARE.
+.\"
+.\" -----------------------------------------------------------------------
+.TH FLOCK 1 "July 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O flock \- manage locks from shell scripts
+flock \- シェルスクリプトからロックを管理する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B flock
+[options]
+.IR file | "directory command " [ arguments ]
+.br
+.B flock
+[options]
+.IR file | directory
+.BI \-c " command"
+.br
+.B flock
+.RI [options] " number"
+.\"O .SH DESCRIPTION
+.SH 説明
+.PP
+.\"O This utility manages
+.\"O .BR flock (2)
+.\"O locks from within shell scripts or from the command line.
+このユーティリティは
+.BR flock (2)
+のロックをシェルスクリプト内、またはコマンドラインから管理する。
+.PP
+.\"O The first and second of the above forms wrap the lock around the execution of a
+.\"O .IR command ,
+.\"O in a manner similar to
+.\"O .BR su (1)
+.\"O or
+.\"O .BR newgrp (1).
+上記の 1 番目と 2 番目の形式は、
+.BR su (1)
+または
+.BR newgrp (1)
+と同じような方式で、
+.I command
+実行時のロックの取得をラップする。
+.\"O They lock a specified \fIfile\fR or \fIdirectory\fR, which is created (assuming
+.\"O appropriate permissions) if it does not already exist.  By default, if the
+.\"O lock cannot be immediately acquired,
+.\"O .B flock
+.\"O waits until the lock is available.
+これらのコマンドは指定された \fIfile\fR または \fIdirectory\fR を、
+もし存在しない場合は (適切な権限があれば) 作成を行ってから、ロックする。
+デフォルトでは、
+.B flock
+はロックを即時に取得するのではなく、ロックが可能になるまで待つ。
+.PP
+.\"O The third form uses an open file by its file descriptor \fInumber\fR.
+3 番目の形式では、ファイルディスクリプター \fInumber\fR の
+オープンされたファイルを使う。
+.\"O See the examples below for how that can be used.
+どのように使うかは、下記の例を参照すること。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-c , " \-\-command " \fIcommand
+.\"O Pass a single \fIcommand\fR, without arguments, to the shell with
+.\"O .BR \-c .
+引数なしの 1 つの \fIcommand\fR を、シェルに
+.B \-c
+オプションを付けて渡す。
+.TP
+.BR \-E , " \-\-conflict\-exit\-code " \fInumber
+.\"O The exit code used when the \fB\-n\fP option is in use, and the
+.\"O conflicting lock exists, or the \fB\-w\fP option is in use,
+.\"O and the timeout is reached.  The default value is \fB1\fR.
+\fB\-n\fP オプションが使われて、ロック競合が起こった場合、
+または、\fB\-w\fP オプションが使われて、タイムアウトに達した場合、
+指定した返り値を使う。
+デフォルトの値は \fB1\fR である。
+.TP
+.BR \-F , " \-\-no\-fork"
+.\"O Do not fork before executing
+.\"O .IR command .
+.I command
+を実行する前にフォークしない。
+.\"O Upon execution the flock process is replaced by
+.\"O .I command
+.\"O which continues to hold the lock. This option is incompatible with
+.\"O \fB\-\-close\fR as there would otherwise be nothing left to hold the lock.
+実行時に、flock プロセスは
+.I command
+に置き換えられて、
+.I command
+がロックの保持を継続する。
+このオプションは、ロックを保持するものが何も残らない
+\fB\-\-close\fR とは互換性がない。
+.TP
+.BR \-e , " \-x" , " \-\-exclusive"
+.\"O Obtain an exclusive lock, sometimes called a write lock.  This is the
+.\"O default.
+排他ロック (書き込みロックとも呼ばれる) を取得する。
+これがデフォルトである。
+.TP
+.BR \-n , " \-\-nb" , " \-\-nonblock"
+.\"O Fail rather than wait if the lock cannot be
+.\"O immediately acquired.
+ロックが即時に取得できない場合、待たずに失敗する。
+.\"O See the
+.\"O .B \-E
+.\"O option for the exit code used.
+使用される返り値は、
+.B \-E
+オプションを参照すること。
+.TP
+.BR \-o , " \-\-close"
+.\"O Close the file descriptor on which the lock is held before executing
+.\"O .IR command .
+.I command
+を実行する前に、ロックを保持するファイルディスクリプターを
+クローズする。
+.\"O This is useful if
+.\"O .I command
+.\"O spawns a child process which should not be holding the lock.
+これは、ロックを保持させたくない子プロセスを、
+.I command
+が生成する場合に役立つ。
+.TP
+.BR \-s , " \-\-shared"
+.\"O Obtain a shared lock, sometimes called a read lock.
+共有ロック (読み込みロックとも呼ばれる) を取得する。
+.TP
+.BR \-u , " \-\-unlock"
+.\"O Drop a lock.  This is usually not required, since a lock is automatically
+.\"O dropped when the file is closed.  However, it may be required in special
+.\"O cases, for example if the enclosed command group may have forked a background
+.\"O process which should not be holding the lock.
+ロックを解放する。
+ロックはファイルがクローズされるときに自動的に解放されるので、
+通常は必要ない。
+しかし、例えばコマンドグループがロックを保持させたくない
+バックグランドプロセスをフォークさせるといった、特別なケースで
+必要となることがある。
+.TP
+.BR \-w , " \-\-wait" , " \-\-timeout " \fIseconds
+.\"O Fail if the lock cannot be acquired within
+.\"O .IR seconds .
+.I seconds
+以内にロックが取得できない場合、失敗する。
+.\"O Decimal fractional values are allowed.
+小数値を指定することができる。
+.\"O See the
+.\"O .B \-E
+.\"O option for the exit code used. The zero number of
+.\"O .I seconds
+.\"O is interpreted as \fB\-\-nonblock\fR.
+使用される返り値は
+.B \-E
+オプションを参照すること。
+.I seconds
+を 0 に指定すると、\fB\-\-nonblock\fR と解釈される。
+.TP
+.B \-\-verbose
+.\"O Report how long it took to acquire the lock, or why the lock could not be
+.\"O obtained.
+ロックを取得するのにかかった時間、またはロックが取得できなかった
+理由をレポートする。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH EXAMPLES
+.SH 例
+.TP
+shell1> flock /tmp -c cat
+.TQ
+shell2> flock -w .007 /tmp -c echo; /bin/echo $?
+.\"O Set exclusive lock to directory /tmp and the second command will fail.
+ディレクトリ /tmp の排他ロックを設定し、2 番目のコマンドは失敗する。
+.TP
+shell1> flock -s /tmp -c cat
+.TQ
+shell2> flock -s -w .007 /tmp -c echo; /bin/echo $?
+.\"O Set shared lock to directory /tmp and the second command will not fail.
+ディレクトリ /tmp の共有ロックを設定し、2 番目のコマンドは失敗しない。
+.\"O Notice that attempting to get exclusive lock with second command would fail.
+共有ロックを取得しようとすると、2 番目のコマンドは失敗する点に注意すること。
+.TP
+shell> flock -x local-lock-file echo 'a b c'
+.\"O Grab the exclusive lock "local-lock-file" before running echo with 'a b c'.
+\&'a b c' を echo する前に、排他ロック "local-lock-file" を取得する。
+.TP
+(
+.TQ
+  flock -n 9 || exit 1
+.TQ
+  # ... commands executed under lock ...
+.TQ
+) 9>/var/lock/mylockfile
+.\"O The form is convenient inside shell scripts.  The mode used to open the file
+.\"O doesn't matter to
+.\"O .BR flock ;
+.\"O using
+.\"O .I >
+.\"O or
+.\"O .I >>
+.\"O allows the lockfile to be created if it does not already exist, however,
+.\"O write permission is required.  Using
+.\"O .I <
+.\"O requires that the file already exists but only read permission is required.
+この形式はシェルスクリプト内で使うのに便利である。
+ファイルをオープンするモードは、
+.B flock
+には関係しない。
+.I >
+または
+.I >>
+を使うと、ロックファイルが存在しない場合に、
+ロックファイルを作成することができる。
+ただし、書き込み許可が必要である。
+.I <
+を使う場合、ファイルは既に存在している必要があるが、
+読み込み許可だけが必要である。
+.TP
+[ "${FLOCKER}" != "$0" ] && exec env FLOCKER="$0" flock -en "$0" "$0" "$@" || :
+This is useful boilerplate code for shell scripts.  Put it at the top of the
+shell script you want to lock and it'll automatically lock itself on the first
+run.  If the env var $FLOCKER is not set to the shell script that is being run,
+then execute flock and grab an exclusive non-blocking lock (using the script
+itself as the lock file) before re-execing itself with the right arguments.  It
+also sets the FLOCKER env var to the right value so it doesn't run again.
+.\"O .SH "EXIT STATUS"
+.SH 返り値
+The command uses
+.B sysexits.h
+return values for everything, except when using either of the options
+.B \-n
+or
+.B \-w
+which report a failure to acquire the lock with a return value given by the
+.B \-E
+option, or 1 by default.
+.PP
+When using the \fIcommand\fR variant, and executing the child worked, then
+the exit status is that of the child command.
+.\"O .SH AUTHOR
+.SH 著者
+.UR hpa@zytor.com
+H. Peter Anvin
+.UE
+.\"O .SH COPYRIGHT
+.SH 著作権
+Copyright \(co 2003\-2006 H. Peter Anvin.
+.br
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR flock (2)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The flock command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+flock コマンドは、util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
