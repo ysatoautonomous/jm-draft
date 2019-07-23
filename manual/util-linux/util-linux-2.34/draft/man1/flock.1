@@ -24,6 +24,14 @@
 .\"   OTHER DEALINGS IN THE SOFTWARE.
 .\"
 .\" -----------------------------------------------------------------------
+.\"
+.\" Japanese Version Copyright (c) 2005 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Tue May 10 04:32:35 JST 2005
+.\"         by Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated & Modified Tue Jul 23 23:49:20 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
 .TH FLOCK 1 "July 2014" "util-linux" "User Commands"
 .\"O .SH NAME
 .SH 名前
@@ -219,7 +227,8 @@ shell> flock -x local-lock-file echo 'a b c'
 .TQ
   flock -n 9 || exit 1
 .TQ
-  # ... commands executed under lock ...
+.\"O   # ... commands executed under lock ...
+  # ... ロックの元で実行するコマンド ...
 .TQ
 ) 9>/var/lock/mylockfile
 .\"O The form is convenient inside shell scripts.  The mode used to open the file
@@ -248,26 +257,49 @@ shell> flock -x local-lock-file echo 'a b c'
 読み込み許可だけが必要である。
 .TP
 [ "${FLOCKER}" != "$0" ] && exec env FLOCKER="$0" flock -en "$0" "$0" "$@" || :
-This is useful boilerplate code for shell scripts.  Put it at the top of the
-shell script you want to lock and it'll automatically lock itself on the first
-run.  If the env var $FLOCKER is not set to the shell script that is being run,
-then execute flock and grab an exclusive non-blocking lock (using the script
-itself as the lock file) before re-execing itself with the right arguments.  It
-also sets the FLOCKER env var to the right value so it doesn't run again.
+.\"O This is useful boilerplate code for shell scripts.  Put it at the top of the
+.\"O shell script you want to lock and it'll automatically lock itself on the first
+.\"O run.  If the env var $FLOCKER is not set to the shell script that is being run,
+.\"O then execute flock and grab an exclusive non-blocking lock (using the script
+.\"O itself as the lock file) before re-execing itself with the right arguments.  It
+.\"O also sets the FLOCKER env var to the right value so it doesn't run again.
+.\"Osato:
+.\"Osato: right の訳が自信ない。
+.\"Osato: 
+これはシェルスクリプトの有用な定型コードである。
+これをロックしたいシェルスクリプトの先頭に置くと、
+最初の実行時に自動的にロックが行われる。
+実行されるシェルスクリプトに環境変数 $FLOCKER が設定されていない場合、
+右側の引数で再実行する前に、
+flock を実行して排他的なブロックされないロックを取得する
+(スクリプト自体をロックファイルとして使う)。
+これは、環境変数 FLOCKER を右側の値として設定するので、再度実行されない。
 .\"O .SH "EXIT STATUS"
 .SH 返り値
-The command uses
+.\"O The command uses
+.\"O .B sysexits.h
+.\"O return values for everything, except when using either of the options
+.\"O .B \-n
+.\"O or
+.\"O .B \-w
+.\"O which report a failure to acquire the lock with a return value given by the
+.\"O .B \-E
+.\"O option, or 1 by default.
+このコマンドは
 .B sysexits.h
-return values for everything, except when using either of the options
+の返り値をすべてにおいて使用する。
+ただし、オプション
 .B \-n
-or
+または
 .B \-w
-which report a failure to acquire the lock with a return value given by the
+が使われた場合は、ロックの取得の失敗を
 .B \-E
-option, or 1 by default.
+オプションで指定された返り値 (デフォルトは 1) を使ってレポートする。
 .PP
-When using the \fIcommand\fR variant, and executing the child worked, then
-the exit status is that of the child command.
+.\"O When using the \fIcommand\fR variant, and executing the child worked, then
+.\"O the exit status is that of the child command.
+\fIcommand\fR 引数が使われて、かつ子のコマンドが実行された場合、
+返り値は子のコマンドの返り値となる。
 .\"O .SH AUTHOR
 .SH 著者
 .UR hpa@zytor.com
