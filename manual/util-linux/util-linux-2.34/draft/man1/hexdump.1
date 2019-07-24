@@ -1,0 +1,594 @@
+.\" Copyright (c) 1989, 1990, 1993
+.\"	The Regents of the University of California.  All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by the University of
+.\"	California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"	@(#)hexdump.1	8.2 (Berkeley) 4/18/94
+.\"
+.\" Japanese Version Copyright (c) 2001-2002 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Tue 11 Jan 1994
+.\"         by NetBSD jman proj. <jman@spa.is.uec.ac.jp>
+.\" Updated Sun Jan 14 00:49:38 JST 2001
+.\"         by Yuichi SATO <sato@complex.eng.hokudai.ac.jp>
+.\" Updated Sun Mar 24 11:54:42 JST 2002
+.\"         by Yuichi SATO <ysato@h4.dion.ne.jp>
+.\"
+.TH HEXDUMP "1" "April 2013" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O hexdump \- display file contents in hexadecimal, decimal, octal, or ascii
+hexdump \- ファイルの内容を 16 進, 10 進, 8 進, ASCII で表示する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B hexdump
+.RI [options] " file" ...
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The
+.\"O .B hexdump
+.\"O utility is a filter which displays the specified files, or
+.\"O standard input if no files are specified, in a user-specified
+.\"O format.
+.B hexdump
+ユーティリティは、指定したファイルを
+ユーザーが指定したフォーマットで表示するフィルタである。
+ファイルが指定されていない場合は、標準入力を読み込んでフォーマットする。
+.\"O .SH OPTIONS
+.SH オプション
+Below, the \fIlength\fR and \fIoffset\fR arguments may be followed by the multiplicative
+suffixes KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
+(the "iB" is optional, e.g. "K" has the same meaning as "KiB"), or the suffixes
+KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+.TP
+\fB\-b\fR, \fB\-\-one\-byte\-octal\fR
+.\"O \fIOne-byte octal display\fR.  Display the input offset in hexadecimal,
+.\"O followed by sixteen space-separated, three-column, zero-filled bytes of input
+.\"O data, in octal, per line.
+\fI1 バイト単位の 8 進数表示\fR。
+入力オフセットを 16 進数で表示し、
+その後に、入力データ 1 バイトずつを
+0 で字詰めした 3 桁の 8 進数で表現し、
+それを 1 行当たり 16 個、空白で区切って表示する。
+.TP
+\fB\-c\fR, \fB\-\-one\-byte\-char\fR
+.\"O \fIOne-byte character display\fR.  Display the input offset in hexadecimal,
+.\"O followed by sixteen space-separated, three-column, space-filled characters of
+.\"O input data per line.
+\fI1 バイト単位のキャラクタ表示\fR。
+入力オフセットを 16 進数で表示し、
+その後に、入力データのキャラクタを
+空白で字詰めした 3 桁 (の ASCII 文字) で表現し、
+それを 1 行当たり 16 個、空白で区切って表示する。
+.TP
+\fB\-C\fR, \fB\-\-canonical\fR
+.\"O \fICanonical hex+ASCII display\fR.  Display the input offset in hexadecimal,
+.\"O followed by sixteen space-separated, two-column, hexadecimal bytes, followed
+.\"O by the same sixteen bytes in
+.\"O .B %_p
+.\"O format enclosed in
+.\"O .RB ' | '
+.\"O characters.
+\fI標準的な 16進数 + ASCII での表示\fR。
+入力オフセットを 16 進数で表示し、
+その後に、入力データのキャラクタを 2 桁の 16 進数で表現し、
+それを 1 行当たり 16 個、空白で区切って表示する。
+その後に、
+.RB ' | '
+で囲まれた中に同じ 16 バイトを
+.B %_p
+フォーマットで表示する。
+.TP
+\fB\-d\fR, \fB\-\-two\-bytes\-decimal\fR
+.\"O \fITwo-byte decimal display\fR.  Display the input offset in hexadecimal,
+.\"O followed by eight space-separated, five-column, zero-filled, two-byte units
+.\"O of input data, in unsigned decimal, per line.
+\fI2 バイト単位の 10 進数表示\fR。
+入力オフセットを 16 進数で表示し、
+その後に、入力データ 2 バイト単位を
+0 で字詰めした 5 桁の符号なし 10 進数で表現し、
+それを 1 行当たり 8 個、空白で区切って表示する。
+.TP
+\fB\-e\fR, \fB\-\-format\fR \fIformat_string\fR
+.\"O Specify a format string to be used for displaying data.
+データを表示するために使われるフォーマット文字列を指定する。
+.TP
+\fB\-f\fR, \fB\-\-format\-file\fR \fIfile\fR
+.\"O Specify a file that contains one or more newline-separated format strings.
+.\"O Empty lines and lines whose first non-blank character is a hash mark (\&#)
+.\"O are ignored.
+1 個以上のフォーマット文字列 (改行で区切る) の書かれたファイルを指定する。
+空行、または空白を除いた最初の文字がハッシュマーク
+(\&#)
+である行は無視される。
+.TP
+\fB\-L\fR, \fB\-\-color\fR[=\fIwhen\fR]
+Accept color units for the output.  The optional argument \fIwhen\fP
+can be \fBauto\fR, \fBnever\fR or \fBalways\fR.  If the \fIwhen\fR argument is omitted,
+it defaults to \fBauto\fR.  The colors can be disabled; for the current built-in default
+see the \fB\-\-help\fR output.  See also the \fBColors\fR subsection and
+the \fBCOLORS\fR section below.
+.TP
+\fB\-n\fR, \fB\-\-length\fR \fIlength\fR
+.\"O Interpret only
+.\"O .I length
+.\"O bytes of input.
+入力の
+.I length
+バイト分だけを処理する。
+.TP
+\fB\-o\fR, \fB\-\-two\-bytes\-octal\fR
+.\"O \fITwo-byte octal display\fR.  Display the input offset in hexadecimal,
+.\"O followed by eight space-separated, six-column, zero-filled, two-byte
+.\"O quantities of input data, in octal, per line.
+\fI2 バイト単位の 8 進数表示\fR。
+入力オフセットを 16 進数で表示し、
+その後に、入力 2 バイト単位を
+0 で字詰めした 6 桁の 8 進数で表現し、
+それを 1 行当たり 8 個、空白で区切って表示する。
+.TP
+\fB\-s\fR, \fB\-\-skip\fR \fIoffset\fR
+.\"O Skip
+.\"O .I offset
+.\"O bytes from the beginning of the input.
+入力の先頭から
+.I offset
+バイトを読み飛ばす。
+.TP
+\fB\-v\fR, \fB\-\-no\-squeezing\fR
+.\"O The
+.\"O .B \-v
+.\"O option causes
+.\"O .B hexdump
+.\"O to display all input data.  Without the
+.\"O .B \-v
+.\"O option, any number of groups of output lines which would be identical to the
+.\"O immediately preceding group of output lines (except for the input offsets),
+.\"O are replaced with a line comprised of a single asterisk.
+.B \-v
+オプションを指定すると、
+.B hexdump
+に対して全ての入力データを表示させる。
+.B \-v
+オプションを指定しない場合、
+直前の出力行と同じ内容の行 (ただし、入力オフセットは除く) は、
+何行であっても、
+1 個のアスタリスクが書かれた行で置き換えられる。
+.TP
+\fB\-x\fR, \fB\-\-two\-bytes\-hex\fR
+.\"O \fITwo-byte hexadecimal display\fR.  Display the input offset in hexadecimal,
+.\"O followed by eight space-separated, four-column, zero-filled, two-byte
+.\"O quantities of input data, in hexadecimal, per line.
+\fI2 バイト単位の 16 進数表示\fR。
+入力オフセットが 16 進数で表示し、
+その後に、入力 2 バイト単位を
+0 で字詰めした 4 桁の 16 進数で表現し、
+それを 1 行当たり 8 個、空白で区切って表示する。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.PP
+.\"O For each input file,
+.\"O .B hexdump
+.\"O sequentially copies the input to standard output, transforming the data
+.\"O according to the format strings specified by the
+.\"O .B \-e
+.\"O and
+.\"O .B \-f
+.\"O options, in the order that they were specified.
+各入力ファイルに対して、
+.B hexdump
+は、入力ファイルが指定された順番で、
+.B \-e
+や
+.B \-f
+オプションで指定されたフォーマット文字列に基づいて変換しながら
+続けて標準出力に書き出していく。
+.\"O .SH FORMATS
+.SH フォーマット
+.\"O A format string contains any number of format units, separated by whitespace.
+.\"O A format unit contains up to three items: an iteration count, a byte count,
+.\"O and a format.
+フォーマット文字列は、空白で区切られた任意の個数の
+フォーマット単位を含んでいる。
+フォーマット単位は最大 3 個の要素、つまり、
+繰り返し回数・バイト数・フォーマットを含んでいる。
+.PP
+.\"O The iteration count is an optional positive integer, which defaults to one.
+.\"O Each format is applied iteration count times.
+繰り返し回数は、オプションとして指定される正の整数である。
+デフォルトは 1 である。
+各フォーマットは繰り返し回数だけ適用される。
+.PP
+.\"O The byte count is an optional positive integer.  If specified it defines the
+.\"O number of bytes to be interpreted by each iteration of the format.
+バイト数は、オプションとして指定される正の整数である。
+これが指定された場合、
+1 つのフォーマットで処理されるバイト数を示す。
+.PP
+.\"O If an iteration count and/or a byte count is specified, a single slash must
+.\"O be placed after the iteration count and/or before the byte count to
+.\"O disambiguate them.  Any whitespace before or after the slash is ignored.
+繰り返し回数とバイト数 (の両方、もしくはどちらか一方) が指定された場合、
+どちらの数字かを区別するために、
+繰り返し回数の後とバイト数の前にスラッシュを 1 個置かなければならない。
+スラッシュの前後の空白は無視される。
+.PP
+.\"O The format is required and must be surrounded by double quote (" ") marks.
+.\"O It is interpreted as a fprintf-style format string (see
+.\"O .BR fprintf (3),
+.\"O with the following exceptions:
+フォーマットは必須で、ダブルクォートマーク (" ") で囲まなければならない。
+このフォーマットは、fprintf 形式のフォーマット文字列
+.BR fprintf (3),
+を参照) として解釈されるが、
+以下のような例外がある:
+.TP
+1.
+.\"O An asterisk (*) may not be used as a field width or precision.
+フィールドの幅や精度としてアスタリスク (*) を使えない。
+.TP
+2.
+.\"O A byte count or field precision
+.\"O .I is
+.\"O required for each
+.\"O .B s
+.\"O conversion character (unlike the
+.\"O .BR fprintf (3)
+.\"O default which prints the entire string if the precision is unspecified).
+個々の変換文字
+.B s
+について、バイト数やフィールド精度が必須である
+(精度が指定されていない場合に全ての文字列を表示する
+.BR fprintf (3)
+のデフォルトとは異なる)。
+.TP
+3.
+.\"O The conversion characters
+.\"O .BR h , \ l , \ n , \ p ,
+.\"O .RB  and \ q
+.\"O are not supported.
+変換文字
+.BR h , \ l , \ n , \ p , \ q
+がサポートされていない。
+.TP
+4.
+.\"O The single character escape sequences described in the C standard are
+.\"O supported:
+C 言語の標準規格で記述されている
+1 文字のエスケープシーケンスがサポートされている:
+.PP
+.RS 13
+.PD 0
+.TP 21
+NULL
+\e0
+.TP
+.\"O <alert character>
+<アラート文字>
+\ea
+.TP
+.\"O <backspace>
+<バックスペース>
+\eb
+.TP
+.\"O <form-feed>
+<フォームフィード>
+\ef
+.TP
+.\"O <newline>
+<改行>
+\en
+.TP
+.\"O <carriage return>
+<復帰>
+\er
+.TP
+.\"O <tab>
+<タブ>
+\et
+.TP
+.\"O <vertical tab>
+<垂直タブ>
+\ev
+.PD
+.RE
+.PP
+.\"O .SS Conversion strings
+.SS 変換文字列
+.\"O The
+.\"O .B hexdump
+.\"O utility also supports the following additional conversion strings.
+.B hexdump
+ユーティリティは、他にも以下の変換文字列をサポートする:
+.TP
+.B \&_a[dox]
+.\"O Display the input offset, cumulative across input files, of the next byte to
+.\"O be displayed.  The appended characters
+.\"O .BR d ,
+.\"O .BR o ,
+.\"O and
+.\"O .B x
+.\"O specify the display base as decimal, octal or hexadecimal respectively.
+次に表示されるバイトのオフセット
+(複数の入力ファイルで通算した値) を表示する。
+文字
+.BR d ,
+.BR o ,
+.B x
+を後ろに付加すると、表示の際の基数がそれぞれ 10, 8, 16 進数に指定される。
+.TP
+.B \&_A[dox]
+.\"O Identical to the
+.\"O .B \&_a
+.\"O conversion string except that it is only performed once, when all of the
+.\"O input data has been processed.
+変換文字列
+.B \&_a
+とほぼ同じ。
+ただし、この変換は全ての入力データが処理された後で 1 回だけ実行される。
+.TP
+.B \&_c
+.\"O Output characters in the default character set.  Non-printing characters are
+.\"O displayed in three-character, zero-padded octal, except for those
+.\"O representable by standard escape notation (see above), which are displayed as
+.\"O two-character strings.
+デフォルト文字セットの文字で出力する。
+表示不能な文字は、0 で字詰めした 3 桁の 8 進数で表示される。
+ただし、標準エスケープ表記で表現される文字 (上記を参照) は、
+その 2 文字の文字列で表示される。
+.TP
+.B \&_p
+.\"O Output characters in the default character set.  Non-printing characters are
+.\"O displayed as a single
+.\"O .RB ' \&. '.
+デフォルト文字セットの文字で出力する。
+表示不能な文字は、1 個の
+.RB ' \&. '
+として表示される。
+.TP
+.B \&_u
+.\"O Output US ASCII characters, with the exception that control characters are
+.\"O displayed using the following, lower-case, names.  Characters greater than
+.\"O 0xff, hexadecimal, are displayed as hexadecimal strings.
+US ASCII 文字で出力する。
+ただし、制御文字は以下のような小文字の名前を使って表示される。
+16 進数で 0xff より大きい文字は、
+16 進数の文字列として表示される。
+.RS 10
+.TS
+tab(|);
+l l l l l l.
+000 nul|001 soh|002 stx|003 etx|004 eot|005 enq
+006 ack|007 bel|008 bs|009 ht|00A lf|00B vt
+00C ff|00D cr|00E so|00F si|010 dle|011 dc1
+012 dc2|013 dc3|014 dc4|015 nak|016 syn|017 etb
+018 can|019 em|01A sub|01B esc|01C fs|01D gs
+01E rs|01F us|0FF del
+.TE
+.SS Colors
+When put at the end of a format specifier, hexdump highlights the
+respective string with the color specified.  Conditions, if present, are
+evaluated prior to highlighting.
+.PP
+.B \&_L[color_unit_1,\:color_unit_2,\:...,\:color_unit_n]
+.PP
+The full syntax of a color unit is as follows:
+.PP
+.B [!]COLOR\:[:VALUE]\:[@OFFSET_START[-END]]
+.TP
+.B !
+Negate the condition.  Please note that it only makes sense to negate a
+unit if both a value/\:string and an offset are specified.  In that case
+the respective output string will be highlighted if and only if the
+value/\:string does not match the one at the offset.
+.TP
+.B COLOR
+One of the 8 basic shell colors.
+.TP
+.B VALUE
+A value to be matched specified in hexadecimal, or octal base, or as a
+string.  Please note that the usual C escape sequences are not
+interpreted by hexdump inside the color_units.
+.TP
+.B OFFSET
+An offset or an offset range at which to check for a match.  Please note
+that lone OFFSET_START uses the same value as END offset.
+.\"O .SS Counters
+.SS カウンター
+.\"O The default and supported byte counts for the conversion characters
+.\"O are as follows:
+変換文字列で使われるデフォルトのバイト数とサポートされるバイト数は、
+以下の通りである。
+.TP
+.BR \&%_c , \ \&%_p , \ \&%_u , \ \&%c
+.\"O One byte counts only.
+1 バイトのみ。
+.TP
+.BR \&%d , \ \&%i , \ \&%o , \ \&%u , \ \&%X , \ \&%x
+.\"O Four byte default, one, two and four byte counts supported.
+4 バイトがデフォルト。1, 2, 4 バイトがサポートされている。
+.TP
+.BR \&%E , \ \&%e , \ \&%f , \ \&%G , \ \&%g
+.\"O Eight byte default, four byte counts supported.
+8 バイトがデフォルト。4 バイトがサポートされている。
+.PP
+.\"O The amount of data interpreted by each format string is the sum of the data
+.\"O required by each format unit, which is the iteration count times the byte
+.\"O count, or the iteration count times the number of bytes required by the
+.\"O format if the byte count is not specified.
+各フォーマット文字列によって処理されるデータの量は、
+各フォーマット単位で必要とされるデータの合計である。
+この合計は (繰り返し回数)×(バイト数) である。
+また、バイト数が指定されていない場合は、
+(繰り返し回数)×(フォーマットが必要としているバイト数) である。
+.PP
+.\"O The input is manipulated in
+.\"O .IR blocks ,
+.\"O where a block is defined as the largest amount of data specified by any
+.\"O format string.  Format strings interpreting less than an input block's worth
+.\"O of data, whose last format unit both interprets some number of bytes and does
+.\"O not have a specified iteration count, have the iteration count incremented
+.\"O until the entire input block has been processed or there is not enough data
+.\"O remaining in the block to satisfy the format string.
+入力は\fIブロック\fRごとに操作される。
+ブロックは、フォーマット文字列で指定される
+データの塊のうちで最大のもの、と定義される。
+入力ブロックのデータより少ないバイト数しか処理していない
+フォーマット文字列で、その中の最後のフォーマット単位で数バイトを処理し、
+かつ繰り返し回数が指定されていない場合、
+入力ブロック全体が処理されるか、
+フォーマット文字列に合致するデータがブロックになくなるまで、
+繰り返し回数を増加させる。
+.PP
+.\"O If, either as a result of user specification or
+.\"O 
+.\"O modifying the iteration count as described above, an iteration count is
+.\"O greater than one, no trailing whitespace characters are output during the
+.\"O last iteration.
+ユーザーの指定、または
+.B hexdump
+が上で説明したように繰り返し回数を変更した結果、
+繰り返し回数が 2 回以上になった場合、
+最後の繰り返しにおける末尾の空白は出力されない。
+.PP
+.\"O It is an error to specify a byte count as well as multiple conversion
+.\"O characters or strings unless all but one of the conversion characters or
+.\"O strings is
+.\"O .B \&_a
+.\"O or
+.\"O .BR \&_A .
+バイト数を複数の変換文字と共に指定すると、
+1 つを除いた全ての変換文字が
+.B \&_a
+または
+.B \&_A
+である場合以外は、エラーになる。
+.PP
+.\"O If, as a result of the specification of the
+.\"O .B \-n
+.\"O option or end-of-file being reached, input data only partially satisfies a
+.\"O format string, the input block is zero-padded sufficiently to display all
+.\"O available data (i.e. any format units overlapping the end of data will
+.\"O display some number of the zero bytes).
+.B \-n
+オプションで指定したバイト数分、またはファイル終端に達したときに、
+入力データがフォーマット文字列の一部分にしか満たさない場合、
+有効なデータを全て表示するために、入力ブロックには適切な数の 0 が補われる
+(すなわち、データの終端にまたがっているフォーマット単位は、
+何個かの 0 のバイトを表示する)。
+.PP
+.\"O Further output by such format strings is replaced by an equivalent number of
+.\"O spaces.  An equivalent number of spaces is defined as the number of spaces
+.\"O output by an
+.\"O .B s
+.\"O conversion character with the same field width and precision as the original
+.\"O conversion character or conversion string but with any
+.\"O .RB ' \&+ ',
+.\"O \' \',
+.\"O .RB ' \&# '
+.\"O conversion flag characters removed, and referencing a NULL string.
+このようなフォーマット文字列によるさらなる出力は、
+等数の空白で置き換えられる。
+等数の空白とは、元々の変換文字とフィールド幅と精度は同じで、
+変換フラグ文字
+.RB ' \&+ ',
+\' \',
+.RB ' \&# '
+を取り除いた
+.B s
+変換文字が NULL 文字列を参照した場合に出力される数の空白である。
+.PP
+.\"O If no format strings are specified, the default display is very similar to
+.\"O the \fB\-x\fR output format (the \fB\-x\fR option causes more space to be
+.\"O used between format units than in the default output).
+フォーマット文字列が指定されない場合、
+デフォルトの表示は　\fB\-x\fR の出力フォーマットと同様である。
+(\fB\-x\fR オプションはデフォルト出力より出力単位の間のスペースが大きい)。
+.\"O .SH "EXIT STATUS"
+.SH 返り値
+.\"O .B hexdump
+.\"O exits 0 on success and >0 if an error occurred.
+.B hexdump
+は成功すると 0 を返して終了する。
+エラーが起こった場合は、1 以上を返して終了する。
+.\"O .SH EXAMPLES
+.SH 例
+.\"O Display the input in perusal format:
+入力を perusal (詳しく閲覧する) フォーマットで表示する:
+.nf
+   "%06.6_ao "  12/1 "%3_u "
+   "\et\et" "%_p "
+   "\en"
+.nf
+.PP
+.\"O Implement the \-x option:
+\-x オプションを実装する:
+.nf
+   "%07.7_Ax\en"
+   "%07.7_ax  " 8/2 "%04x " "\en"
+.nf
+.PP
+MBR Boot Signature example: Highlight the addresses cyan and the bytes at
+offsets 510 and 511 green if their value is 0xAA55, red otherwise.
+.nf
+   "%07.7_Ax_L[cyan]\en"
+   "%07.7_ax_L[cyan]  " 8/2 "   %04x_L[green:0xAA55@510-511,!red:0xAA55@510-511] " "\en"
+.nf
+.SH COLORS
+Implicit coloring can be disabled by an empty file \fI/etc/terminal-colors.d/hexdump.disable\fR.
+
+See
+.BR terminal-colors.d (5)
+for more details about colorization configuration.
+.\"O .SH STANDARDS
+.SH 準拠
+.\"O The
+.\"O .B hexdump
+.\"O utility is expected to be IEEE Std 1003.2 ("POSIX.2") compatible.
+.B hexdump
+ユーティリティは
+IEEE Std 1003.2 ("POSIX.2") 
+に適合しているはずである。
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The hexdump command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+hexdump コマンドは、util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
