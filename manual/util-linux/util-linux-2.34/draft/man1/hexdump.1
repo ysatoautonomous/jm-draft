@@ -39,6 +39,8 @@
 .\"         by Yuichi SATO <sato@complex.eng.hokudai.ac.jp>
 .\" Updated Sun Mar 24 11:54:42 JST 2002
 .\"         by Yuichi SATO <ysato@h4.dion.ne.jp>
+.\" Updated & Modified Wed Jul 24 18:51:47 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH HEXDUMP "1" "April 2013" "util-linux" "User Commands"
 .\"O .SH NAME
@@ -62,10 +64,17 @@ hexdump \- ファイルの内容を 16 進, 10 進, 8 進, ASCII で表示する
 ファイルが指定されていない場合は、標準入力を読み込んでフォーマットする。
 .\"O .SH OPTIONS
 .SH オプション
-Below, the \fIlength\fR and \fIoffset\fR arguments may be followed by the multiplicative
-suffixes KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
-(the "iB" is optional, e.g. "K" has the same meaning as "KiB"), or the suffixes
-KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+.\"O Below, the \fIlength\fR and \fIoffset\fR arguments may be followed by the multiplicative
+.\"O suffixes KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
+.\"O (the "iB" is optional, e.g. "K" has the same meaning as "KiB"), or the suffixes
+.\"O KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+以下の \fIlength\fR と \fIoffset\fR 引数の後ろに倍数の拡張子
+KiB (=1024), MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB を
+付けることができる
+("iB" はオプションであり、つまり "K" は "KiB" と同じ意味である)。
+また、拡張子
+KB (=1000), MB (=1000*1000), GB, TB, PB, EB, ZB, YB
+を付けることもできる。
 .TP
 \fB\-b\fR, \fB\-\-one\-byte\-octal\fR
 .\"O \fIOne-byte octal display\fR.  Display the input offset in hexadecimal,
@@ -129,11 +138,19 @@ KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
 である行は無視される。
 .TP
 \fB\-L\fR, \fB\-\-color\fR[=\fIwhen\fR]
-Accept color units for the output.  The optional argument \fIwhen\fP
-can be \fBauto\fR, \fBnever\fR or \fBalways\fR.  If the \fIwhen\fR argument is omitted,
-it defaults to \fBauto\fR.  The colors can be disabled; for the current built-in default
-see the \fB\-\-help\fR output.  See also the \fBColors\fR subsection and
-the \fBCOLORS\fR section below.
+.\"O Accept color units for the output.  The optional argument \fIwhen\fP
+.\"O can be \fBauto\fR, \fBnever\fR or \fBalways\fR.  If the \fIwhen\fR argument is omitted,
+.\"O it defaults to \fBauto\fR.  The colors can be disabled; for the current built-in default
+.\"O see the \fB\-\-help\fR output.  See also the \fBColors\fR subsection and
+.\"O the \fBCOLORS\fR section below.
+出力でのカラー設定を行う。
+オプションの引数 \fIwhen\fP は、
+\fBauto\fR, \fBnever\fR, \fBalways\fR のいずれかである。
+\fIwhen\fR 引数を省略した場合、デフォルトは \fBauto\fR である。
+カラー表示を無効化することもできる。
+現在の組み込みのデフォルトは \fB\-\-help\fR の出力を参照すること。
+以下の\fB「カラー表示」\fRサブセクションと\fB「カラー表示」\fRセクションを
+参照すること。
 .TP
 \fB\-n\fR, \fB\-\-length\fR \fIlength\fR
 .\"O Interpret only
@@ -397,34 +414,51 @@ l l l l l l.
 018 can|019 em|01A sub|01B esc|01C fs|01D gs
 01E rs|01F us|0FF del
 .TE
-.SS Colors
-When put at the end of a format specifier, hexdump highlights the
-respective string with the color specified.  Conditions, if present, are
-evaluated prior to highlighting.
+.\"O .SS Colors
+.SS カラー表示
+.\"O When put at the end of a format specifier, hexdump highlights the
+.\"O respective string with the color specified.  Conditions, if present, are
+.\"O evaluated prior to highlighting.
+フォーマット指定の最後にカラー指定をすることで、
+hexdump は対応する文字列をハイライトすることができる。
+条件が存在する場合、ハイライトする前に評価される。
 .PP
 .B \&_L[color_unit_1,\:color_unit_2,\:...,\:color_unit_n]
 .PP
-The full syntax of a color unit is as follows:
+.\"O The full syntax of a color unit is as follows:
+カラー指定の単位の完全な書式は以下のとおりである:
 .PP
 .B [!]COLOR\:[:VALUE]\:[@OFFSET_START[-END]]
 .TP
 .B !
-Negate the condition.  Please note that it only makes sense to negate a
-unit if both a value/\:string and an offset are specified.  In that case
-the respective output string will be highlighted if and only if the
-value/\:string does not match the one at the offset.
+.\"O Negate the condition.  Please note that it only makes sense to negate a
+.\"O unit if both a value/\:string and an offset are specified.  In that case
+.\"O the respective output string will be highlighted if and only if the
+.\"O value/\:string does not match the one at the offset.
+条件を否定する。
+値/\:文字列とオフセットの両方が指定されている場合にのみ、
+否定が意味を持つ点に注意してほしい。
+この場合、そのオフセットにおいて、対応する出力文字列が、
+指定された値/\:文字列でない場合にのみ、ハイライトされる。
 .TP
 .B COLOR
-One of the 8 basic shell colors.
+.\"O One of the 8 basic shell colors.
+シェルで使われる 8 色のうちの 1 つ。
 .TP
 .B VALUE
-A value to be matched specified in hexadecimal, or octal base, or as a
-string.  Please note that the usual C escape sequences are not
-interpreted by hexdump inside the color_units.
+.\"O A value to be matched specified in hexadecimal, or octal base, or as a
+.\"O string.  Please note that the usual C escape sequences are not
+.\"O interpreted by hexdump inside the color_units.
+指定した 16 進数、8 進数、文字列の値にマッチさせる。
+hexdump は色指定単位のなかでは、通常の C 言語のエスケープシーケンスを
+解釈しない点に注意してほしい。
 .TP
 .B OFFSET
-An offset or an offset range at which to check for a match.  Please note
-that lone OFFSET_START uses the same value as END offset.
+.\"O An offset or an offset range at which to check for a match.  Please note
+.\"O that lone OFFSET_START uses the same value as END offset.
+マッチするかをチェックするオフセットまたはオフセットの範囲。
+OFFSET_START だけを指定すると、END オフセットは同じ値とされる点に
+注意してほしい。
 .\"O .SS Counters
 .SS カウンター
 .\"O The default and supported byte counts for the conversion characters
@@ -560,18 +594,26 @@ that lone OFFSET_START uses the same value as END offset.
    "%07.7_ax  " 8/2 "%04x " "\en"
 .nf
 .PP
-MBR Boot Signature example: Highlight the addresses cyan and the bytes at
-offsets 510 and 511 green if their value is 0xAA55, red otherwise.
+.\"O MBR Boot Signature example: Highlight the addresses cyan and the bytes at
+.\"O offsets 510 and 511 green if their value is 0xAA55, red otherwise.
+MBR ブートシグネチャの例: アドレスをシアン、バイトオフセット
+510 と 511 が値 0xAA55 の場合は緑、その他の場合は赤でハイライトする。
 .nf
    "%07.7_Ax_L[cyan]\en"
    "%07.7_ax_L[cyan]  " 8/2 "   %04x_L[green:0xAA55@510-511,!red:0xAA55@510-511] " "\en"
 .nf
-.SH COLORS
-Implicit coloring can be disabled by an empty file \fI/etc/terminal-colors.d/hexdump.disable\fR.
+.\"O .SH COLORS
+.SH カラー表示
+.\"O Implicit coloring can be disabled by an empty file \fI/etc/terminal-colors.d/hexdump.disable\fR.
+空ファイル \fI/etc/terminal-colors.d/hexdump.disable\fR を置くことで、
+暗黙のカラー表示を無効化できる。
 
-See
+.\"O See
+.\"O .BR terminal-colors.d (5)
+.\"O for more details about colorization configuration.
+カラー設定の詳細は
 .BR terminal-colors.d (5)
-for more details about colorization configuration.
+を参照すること。
 .\"O .SH STANDARDS
 .SH 準拠
 .\"O The
@@ -592,3 +634,7 @@ hexdump コマンドは、util-linux パッケージの一部であり、
 Linux Kernel Archive
 .UE
 から入手できる。
+.SH 翻訳者謝辞
+この man ページの翻訳にあたり、
+FreeBSD jpman project <http://www.jp.freebsd.org/man-jp/>
+による翻訳を参考にさせていただいた。
