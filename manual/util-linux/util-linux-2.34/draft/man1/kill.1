@@ -7,6 +7,8 @@
 .\" Translated Sat Dec  2 22:52:40 JST 2000
 .\"         by Asakawa Satoshi <rod@i.am>
 .\" Updated Tue Arg 21 JST 2001 by Kentaro Shirakata <argrath@ub32.org>
+.\" UPdated & Modified Thu Jul 25 20:31:43 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\" 
 .TH KILL 1 "July 2014" "util-linux" "User Commands"
 .\"O .SH NAME
@@ -37,15 +39,23 @@ kill \- プロセスを終了させる
 .PP
 .\"O If no signal is specified, the TERM signal is sent.
 シグナルが指定されない場合、TERMシグナルを送る。
-The default action for this signal is to terminate the process.
-This signal should be used in preference to the
-KILL signal (number 9), since a process may install a handler for the
-TERM signal in order to perform clean-up steps before terminating in
-an orderly fashion.
-If a process does not terminate after a TERM signal has been sent,
-then the KILL signal may be used; be aware that the latter signal
-cannot be caught, and so does not give the target process the opportunity
-to perform any clean-up before terminating.
+.\"O The default action for this signal is to terminate the process.
+このシグナルのデフォルトの挙動は、プロセスの終了である。
+.\"O This signal should be used in preference to the
+.\"O KILL signal (number 9), since a process may install a handler for the
+.\"O TERM signal in order to perform clean-up steps before terminating in
+.\"O an orderly fashion.
+このシグナルは、Kill シグナル (数値 9) より優先して使うべきである。
+なぜなら、プロセスは TERM シグナルに対するハンドラーを実装しており、
+通常のやり方では、終了の前にクリーンアップのステップを実行するためである。
+.\"O If a process does not terminate after a TERM signal has been sent,
+.\"O then the KILL signal may be used; be aware that the latter signal
+.\"O cannot be caught, and so does not give the target process the opportunity
+.\"O to perform any clean-up before terminating.
+TERM シグナルを送った後にプロセスが終了しない場合、
+KILL シグナルを使うことができる。
+KILL シグナルはキャッチされないので、対象プロセスの終了前に
+クリーンアップを実行する機会を与えない点に注意すること。
 .PP
 .\"O Most modern shells have a builtin kill command, with a usage rather similar to
 .\"O that of the command described here.  The
@@ -60,44 +70,66 @@ to perform any clean-up before terminating.
 .B \-\-queue
 オプション、そしてコマンド名で PID を指定する方法はローカルな拡張である。
 .PP
-If \fIsignal\fR is 0, then no actual signal is sent, but error checking is still performed.
+.\"O If \fIsignal\fR is 0, then no actual signal is sent, but error checking is still performed.
+\fIsignal\fR が 0 の場合、実際のシグナルは送られないが、
+エラーチェックは実行される。
 
 .\"O .SH ARGUMENTS
 .SH 引数
-The list of processes to be signaled can be a mixture of names and PIDs.
+.\"O The list of processes to be signaled can be a mixture of names and PIDs.
+シグナルを送るプロセスのリストは、
+名前と PID を混ぜることができる。
 .TP
 .I pid
-Each
+.\"O Each
+.\"O .I pid
+.\"O can be one of four things:
+各
 .I pid
-can be one of four things:
+は以下の 4 つのいずれかである:
 .RS
 .TP
 .I n
-where
+.\"O where
+.\"O .I n
+.\"O is larger than 0.  The process with PID
+.\"O .I n
+.\"O is signaled.
 .I n
-is larger than 0.  The process with PID
+が 0 より大きい場合、PID
 .I n
-is signaled.
+にシグナルが送られる。
 .TP
 .B 0
-All processes in the current process group are signaled.
+.\"O All processes in the current process group are signaled.
+現在のプロセスグループのすべてのプロセスにシグナルが
+送られる。
 .TP
 .B -1
-All processes with a PID larger than 1 are signaled.
+.\"O All processes with a PID larger than 1 are signaled.
+PID が 1 より大きいすべてのプロセスにシグナルが送られる。
 .TP
 .BI - n
-where
+.\"O where
+.\"O .I n
+.\"O is larger than 1.  All processes in process group
+.\"O .I n
+.\"O are signaled.  When an argument of the form '-n' is given, and it is meant to
+.\"O denote a process group, either a signal must be specified first, or the
+.\"O argument must be preceded by a '--' option, otherwise it will be taken as the
+.\"O signal to send.
 .I n
-is larger than 1.  All processes in process group
+が 1 より大きい場合、プロセスグループ
 .I n
-are signaled.  When an argument of the form '-n' is given, and it is meant to
-denote a process group, either a signal must be specified first, or the
-argument must be preceded by a '--' option, otherwise it will be taken as the
-signal to send.
+のすべてのプロセスにシグナルが送られる。
+シグナルを最初に指定した場合、または、この引数の前に '--' オプションを指定した場合、
+引数を '-n' の形式で指定すると、プロセスグループを使うことを意味する。
+そのようにしない場合、送るシグナルとして解釈される。
 .RE
 .TP
 .I name
-All processes invoked using this \fIname\fR will be signaled.
+.\"O All processes invoked using this \fIname\fR will be signaled.
+この \fIname\fR を使って起動されたすべてのプロセスにシグナルが送られる。
 
 .\"O .SH OPTIONS
 .SH オプション
@@ -117,8 +149,9 @@ All processes invoked using this \fIname\fR will be signaled.
 の中で定義されている。
 .TP
 \fB\-L\fR, \fB\-\-table\fR
-Similar to \fB\-l\fR, but it will print signal names and their corresponding
-numbers.
+.\"O Similar to \fB\-l\fR, but it will print signal names and their corresponding
+.\"O numbers.
+\fB\-l\fR と同様であるが、シグナル名と対応する数値を表示する。
 .TP
 \fB\-a\fR, \fB\-\-all\fR
 .\"O Do not restrict the command-name-to-PID conversion to processes with the same
@@ -134,58 +167,96 @@ numbers.
 何のシグナルも送らない。
 .TP
 \fB\-\-verbose\fR
-Print PID(s) that will be signaled with kill along with the signal.
+.\"O Print PID(s) that will be signaled with kill along with the signal.
+kill でシグナルが送られる PID を表示する。
 .TP
 \fB\-q\fR, \fB\-\-queue\fR \fIvalue\fR
-Use
+.\"O Use
+.\"O .BR sigqueue (3)
+.\"O rather than
+.\"O .BR kill (2).
+.BR kill (2)
+ではなく
 .BR sigqueue (3)
-rather than
-.BR kill (2).
-The
+を使う。
+.\"O The
+.\"O .I value
+.\"O argument is an integer that is sent along with the signal.  If the
+.\"O receiving process has installed a handler for this signal using the
+.\"O .B SA_SIGINFO
+.\"O flag to
+.\"O .BR sigaction (2),
+.\"O then it can obtain this data via the
+.\"O .I si_sigval
+.\"O field of the
+.\"O .I siginfo_t
+.\"O structure.
 .I value
-argument is an integer that is sent along with the signal.  If the
-receiving process has installed a handler for this signal using the
+引数は、シグナルとして送られる整数値である。
+シグナルを受け取るプロセスが、
+.BR sigaction (2)
+に対する
 .B SA_SIGINFO
-flag to
-.BR sigaction (2),
-then it can obtain this data via the
-.I si_sigval
-field of the
+フラグを使ってシグナルに対するハンドラーを実装している場合、
 .I siginfo_t
-structure.
+構造体の
+.I si_sigval
+フィールドを使ってデータを取得できる。
 
 .\"O .SH NOTES
 .SH 注意
-Although it is possible to specify the TID (thread ID, see
-.BR gettid (2))
-of one of the threads in a multithreaded process as the argument of
-.BR kill ,
-the signal is nevertheless directed to the process
-(i.e., the entire thread group).
-In other words, it is not possible to send a signal to an
-explicitly selected thread in a multithreaded process.
-The signal will be delivered to an arbitrarily selected thread
-in the target process that is not blocking the signal.
-For more details, see
+.\"O Although it is possible to specify the TID (thread ID, see
+.\"O .BR gettid (2))
+.\"O of one of the threads in a multithreaded process as the argument of
+.\"O .BR kill ,
+.\"O the signal is nevertheless directed to the process
+.\"O (i.e., the entire thread group).
+マルチスレッドプロセスの 1 つのスレッドの TID (スレッド ID
+.BR gettid (2)
+を参照) を
+.B kill
+の引数として指定することができるにも関わらず、
+シグナルはプロセス (つまり、スレッドグループ全体) に向けられる。
+.\"O In other words, it is not possible to send a signal to an
+.\"O explicitly selected thread in a multithreaded process.
+言い換えると、マルチスレッドプロセスの明示的に選択したスレッドには
+シグナルを送ることはできない。
+.\"O The signal will be delivered to an arbitrarily selected thread
+.\"O in the target process that is not blocking the signal.
+シグナルは、対象プロセスの中のシグナルをブロックしない
+任意の選択されたスレッドに送られる。
+.\"O For more details, see
+.\"O .BR signal (7)
+.\"O and the description of
+.\"O .B CLONE_THREAD
+.\"O in
+.\"O .BR clone (2).
+より詳細は、
 .BR signal (7)
-and the description of
+と
+.BR clone (2)
+の
 .B CLONE_THREAD
-in
-.BR clone (2).
+の説明を参照すること。
 
 .\"O .SH RETURN CODES
 .SH 返り値
+.\"O .B kill
+.\"O has the following return codes:
 .B kill
-has the following return codes:
+には以下の返り値がある:
 .TP
 .B 0
-success
+.\"O success
+成功
 .TP
 .B 1
-failure
+.\"O failure
+失敗
 .TP
 .B 64
-partial success (when more than one process specified)
+.\"O partial success (when more than one process specified)
+部分的に成功 (2 個以上のプロセスが指定された場合)
 
 .\"O .SH SEE ALSO
 .SH 関連項目
