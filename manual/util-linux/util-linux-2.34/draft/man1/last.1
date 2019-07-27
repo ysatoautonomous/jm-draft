@@ -17,7 +17,9 @@
 .\" Japanese Version Copyright (c) 2001 Maki KURODA
 .\"     all right reserved,
 .\" Translated Tue Nov  10 18:28:49 JST 2001
-.\" by Maki KURODA <mkuroda@aisys-jp.com>
+.\"         by Maki KURODA <mkuroda@aisys-jp.com>
+.\" Updated & Modified Sat Jul 27 16:06:14 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH "LAST, LASTB" "1" "October 2013" "util-linux" "User Commands"
 .\"O .SH NAME
@@ -160,58 +162,98 @@ IP アドレスも記録する。
 .BI \- number
 .TQ
 .BR \-n , " -\-limit " \fInumber\fR
-Tell
+.\"O Tell
+.\"O .B last
+.\"O how many lines to show.
 .B last
-how many lines to show.
+に何行表示させるかを指定する。
 .TP
 .BR \-p , " \-\-present " \fItime\fR
-Display the users who were present at the specified time.  This is
-like using the options
-.BR \-\-since " and " \-\-until
-together with the same \fItime\fR.
+.\"O Display the users who were present at the specified time.  This is
+.\"O like using the options
+.\"O .BR \-\-since " and " \-\-until
+.\"O together with the same \fItime\fR.
+指定した時刻にログインしていたユーザを表示する。
+これはオプション
+.BR \-\-since " と " \-\-until
+に同じ \fItime\fR を指定したのと同様である。
 .TP
 .BR \-R , " \-\-nohostname"
-Suppresses the display of the hostname field.
+.\"O Suppresses the display of the hostname field.
+ホスト名フィールドの表示を抑止する。
 .TP
 .BR \-s , " \-\-since " \fItime\fR
-Display the state of logins since the specified
-.IR time .
-This is useful, e.g., to easily determine who was logged in at a
-particular time.  The option is often combined with
-.BR \-\-until .
+.\"O Display the state of logins since the specified
+.\"O .IR time .
+.\"O This is useful, e.g., to easily determine who was logged in at a
+.\"O particular time.  The option is often combined with
+.\"O .BR \-\-until .
+指定した
+.I time
+以降のログイン状態を表示する。
+これは、例えば特定の時間に誰がログインしていたかを特定するのに
+役立つ。
+このオプションは
+.B \-\-until
+と組み合わせて使うことが多い。
 .TP
 .BR \-t , " \-\-until " \fItime\fR
-Display the state of logins until the specified
-.IR time .
+.\"O Display the state of logins until the specified
+.\"O .IR time .
+指定した
+.I time
+までのログイン状態を表示する。
 .TP
 .BI \-\-time\-format " format"
-Define the output timestamp
+.\"O Define the output timestamp
+.\"O .I format
+.\"O to be one of
+.\"O .IR notime ,
+.\"O .IR short ,
+.\"O .IR full ,
+.\"O or
+.\"O .IR iso .
+出力タイムスタンプ
 .I format
-to be one of
+を
 .IR notime ,
 .IR short ,
 .IR full ,
-or
-.IR iso .
-The
+.IR iso
+のいずれかに指定する。
+.\"O The
+.\"O .I notime
+.\"O variant will not print any timestamps at all,
+.\"O .I short
+.\"O is the default, and
+.\"O .I full
+.\"O is the same as the
+.\"O .B \-\-fulltimes
+.\"O option.  The
+.\"O .I iso
+.\"O variant will display the timestamp in ISO-8601 format.  The ISO format
+.\"O contains timezone information, making it preferable when printouts are
+.\"O investigated outside of the system.
 .I notime
-variant will not print any timestamps at all,
+変数を指定すると、タイムスタンプを全く表示しない。
 .I short
-is the default, and
+がデフォルトである。
 .I full
-is the same as the
+は
 .B \-\-fulltimes
-option.  The
+オプションと同じである。
 .I iso
-variant will display the timestamp in ISO-8601 format.  The ISO format
-contains timezone information, making it preferable when printouts are
-investigated outside of the system.
+変数を指定すると、タイムスタンプを ISO-8601 形式で表示する。
+ISO 形式はタイムゾーン情報を含んでおり、
+出力をシステム外で調査する時に適している。
 .TP
 .BR \-w , " \-\-fullnames"
-Display full user names and domain names in the output.
+.\"O Display full user names and domain names in the output.
+完全なユーザ名とドメイン名を出力に表示する。
 .TP
 .BR \-x , " \-\-system"
-Display the system shutdown entries and run level changes.
+.\"O Display the system shutdown entries and run level changes.
+システムシャットダウンのエントリと、ランレベルの変更を表示する。
 .\"O .SH TIME FORMATS
 .SH 時間の形式
 .\"O The options that take the
