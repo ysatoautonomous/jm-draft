@@ -1,0 +1,429 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LAST, LASTB</TITLE>
+</HEAD><BODY>
+<H1>LAST, LASTB</H1>
+Section: User Commands (1)<BR>Updated: October 2013<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+last, lastb - 最後にログインしたユーザのリストを表示する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>last</B>
+
+[options]
+[<I>username</I>...] [<I>tty</I>...]
+
+<BR>
+
+<B>lastb</B>
+
+[options]
+[<I>username</I>...] [<I>tty</I>...]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B>last</B>
+
+は
+<I>/var/log/wtmp</I>
+
+ファイル (または
+<B>-f</B>
+
+オプションで指定されたファイル) を検索し、ファイルが作られてからの、
+すべてのユーザのログイン (ログアウト) のリストを表示する。
+1 つ以上の
+<I>ユーザ名</I> と/または <I>端末 (tty)</I>
+
+を指定可能で、この場合
+<B>last</B>
+
+は引数にマッチしたエントリのみを表示する。
+<I>端末 (tty)</I>
+
+の名前は省略可能であり、
+<B>last 0</B>
+
+は
+<B>last tty0</B>
+
+と同じである。
+<P>
+
+
+
+
+
+
+
+
+SIGINT シグナル (割り込みキー、通常は control-C で生成される)、
+または SIGQUIT シグナルをキャッチすると、
+<B>last</B>
+
+はファイルをどこまで検索したかを表示する。
+そして、SIGINT シグナルの場合、
+<B>last</B>
+
+は終了する。
+<P>
+
+
+
+
+
+
+擬似ユーザ (pseudo user)
+<B>reboot</B>
+
+がシステムがリブートしたときにログインする。
+よって
+<B>last reboot</B>
+
+でログファイルが作られてからのすべてのリブートが表示される。
+<P>
+
+
+
+
+
+
+
+<B>lastb</B>
+
+は
+<B>last</B>
+
+と同様であるが、デフォルトでは
+<I>/var/log/btmp</I>
+
+ファイルのログを表示する。
+これには不正なログインの試みが記録されている。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-a</B>,<B> --hostlast</B>
+
+<DD>
+
+
+
+ホスト名を最後の列に表示する。
+<B>--dns</B>
+
+オプションと組み合わせて使うと便利である。
+<DT><B>-d</B>,<B> --dns</B>
+
+<DD>
+
+
+
+ローカルからのログインでない場合、Linux はリモートホストのホスト名だけではなく、
+IP アドレスも記録する。
+このオプションは、IP アドレスをホスト名に変換する。
+<DT><B>-f</B>,<B> --file </B><I>file</I>
+
+<DD>
+
+
+
+
+<B>last</B>
+
+に
+<I>/var/log/wtmp</I>
+
+の代わりに <I>file</I> を使用させる。
+
+
+
+
+<B>--file</B>
+
+オプションは複数回指定できて、指定されたすべてのファイルが
+処理される。
+<DT><B>-F</B>,<B> --fulltimes</B>
+
+<DD>
+
+ログインとログアウトの時刻と日付を完全な形で表示する。
+<DT><B>-i</B>,<B> --ip</B>
+
+<DD>
+
+
+
+<B>--dns</B>
+
+と似ているが、ホスト名ではなく、IP アドレスを表示する。
+<DT><B>-</B><I>number</I>
+
+<DD>
+
+<B>-n</B>,<B> --limit </B><I>number</I>
+
+
+
+
+<B>last</B>
+
+に何行表示させるかを指定する。
+<DT><B>-p</B>,<B> --present </B><I>time</I>
+
+<DD>
+
+
+
+
+指定した時刻にログインしていたユーザを表示する。
+これはオプション
+<B>--since</B> と <B>--until</B>
+
+に同じ <I>time</I> を指定したのと同様である。
+<DT><B>-R</B>,<B> --nohostname</B>
+
+<DD>
+
+ホスト名フィールドの表示を抑止する。
+<DT><B>-s</B>,<B> --since </B><I>time</I>
+
+<DD>
+
+
+
+
+
+指定した
+<I>time</I>
+
+以降のログイン状態を表示する。
+これは、例えば特定の時間に誰がログインしていたかを特定するのに
+役立つ。
+このオプションは
+<B>--until</B>
+
+と組み合わせて使うことが多い。
+<DT><B>-t</B>,<B> --until </B><I>time</I>
+
+<DD>
+
+
+指定した
+<I>time</I>
+
+までのログイン状態を表示する。
+<DT><B>--time-format</B><I> format</I>
+
+<DD>
+
+
+
+
+
+
+
+
+出力タイムスタンプ
+<I>format</I>
+
+を
+<I>notime</I>,
+
+<I>short</I>,
+
+<I>full</I>,
+
+<I>iso</I>
+
+のいずれかに指定する。
+
+
+
+
+
+
+
+
+
+
+
+
+
+<I>notime</I>
+
+変数を指定すると、タイムスタンプを全く表示しない。
+<I>short</I>
+
+がデフォルトである。
+<I>full</I>
+
+は
+<B>--fulltimes</B>
+
+オプションと同じである。
+<I>iso</I>
+
+変数を指定すると、タイムスタンプを ISO-8601 形式で表示する。
+ISO 形式はタイムゾーン情報を含んでおり、
+出力をシステム外で調査する時に適している。
+<DT><B>-w</B>,<B> --fullnames</B>
+
+<DD>
+
+完全なユーザ名とドメイン名を出力に表示する。
+<DT><B>-x</B>,<B> --system</B>
+
+<DD>
+
+システムシャットダウンのエントリと、ランレベルの変更を表示する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>時間の形式</H2>
+
+
+
+
+<I>time</I>
+
+引数を取るオプションでは、以下の形式が使用できる。
+<TABLE>
+<TR VALIGN=top><TD>YYYYMMDDhhmmss&nbsp;&nbsp;</TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD>YYYY-MM-DD hh:mm:ss&nbsp;&nbsp;</TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD>YYYY-MM-DD hh:mm&nbsp;&nbsp;</TD><TD>(秒は 00 に設定される)<BR></TD></TR>
+<TR VALIGN=top><TD>YYYY-MM-DD&nbsp;&nbsp;</TD><TD>(時分秒は 00:00:00 に設定される)<BR></TD></TR>
+<TR VALIGN=top><TD>hh:mm:ss&nbsp;&nbsp;</TD><TD>(日付は今日に設定される)<BR></TD></TR>
+<TR VALIGN=top><TD>hh:mm&nbsp;&nbsp;</TD><TD>(日付は今日に設定され、秒は 00 に設定される)<BR></TD></TR>
+<TR VALIGN=top><TD>now&nbsp;&nbsp;</TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD>yesterday&nbsp;&nbsp;</TD><TD>(時分秒は 00:00:00 に設定される)<BR></TD></TR>
+<TR VALIGN=top><TD>today&nbsp;&nbsp;</TD><TD>(時分秒は 00:00:00 に設定される)<BR></TD></TR>
+<TR VALIGN=top><TD>tomorrow&nbsp;&nbsp;</TD><TD>(時分秒は 00:00:00 に設定される)<BR></TD></TR>
+<TR VALIGN=top><TD>+5min&nbsp;&nbsp;</TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD>-5days&nbsp;&nbsp;</TD><TD><BR></TD></TR>
+</TABLE>
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+
+
+
+
+
+
+ファイル
+<I>wtmp</I>
+
+と
+<I>btmp</I>
+
+が見つからないかもしれない。
+システムはこれらのファイルがある場合にのみ、情報を記録する。
+これはローカルの設定の問題である。
+これらのファイルを使いたい場合、単純に
+<B><A HREF="../man1/touch.1.html">touch</A></B>(1)
+
+コマンドで作成すればよい
+(例
+<I>touch /var/log/wtmp</I>)。
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>ファイル</H2>
+
+/var/log/wtmp
+<BR>
+
+/var/log/btmp
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+
+Miquel van Smoorenburg
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+last コマンドは、util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/login.1.html">login</A></B>(1),
+
+<B><A HREF="../man5/wtmp.5.html">wtmp</A></B>(5),
+
+<B><A HREF="../man8/init.8.html">init</A></B>(8),
+
+<B><A HREF="../man8/shutdown.8.html">shutdown</A></B>(8)
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">時間の形式</A><DD>
+<DT><A HREF="#lbAG">注意</A><DD>
+<DT><A HREF="#lbAH">ファイル</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+<DT><A HREF="#lbAK">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 07:09:31 GMT, July 27, 2019
+</BODY>
+</HTML>
