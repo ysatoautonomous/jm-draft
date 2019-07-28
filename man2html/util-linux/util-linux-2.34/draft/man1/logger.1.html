@@ -1,0 +1,687 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LOGGER</TITLE>
+</HEAD><BODY>
+<H1>LOGGER</H1>
+Section: User Commands (1)<BR>Updated: November 2015<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+logger - システムログにメッセージを入れる。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>logger</B>
+
+[options]
+[<I>message</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B>logger</B>
+
+はシステムログにエントリを作成する。
+<P>
+
+
+
+オプションの <I>message</I> 引数が指定されると、
+ログに書き込まれる。
+<I>message</I> 引数が指定されない場合、
+かつ <B>-f</B> オプションも指定されない場合、
+標準入力がログに書き込まれる。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-d</B>,<B> --udp</B>
+
+<DD>
+
+
+データグラム (UDP) のみを使う。
+デフォルトでは、接続は /etc/services に定義された
+syslog ポート (多くの場合 514) に行われる。
+<P>
+
+どこに接続するかの指定は、<B>--server</B> と <B>--socket</B> も参照すること。
+<DT><B>-e</B>,<B> --skip-empty</B>
+
+<DD>
+
+
+
+ファイルを処理する際に空行を無視する。
+空行は何も文字がない行と定義される。
+よって、空白のみを含む行は空とは「判断されない」。
+
+
+
+<B>--prio-prefix</B> オプションが指定された場合、
+優先度は行の一部としては判断されない点に注意すること。
+よって、このモードでの空行は、
+優先度のプレフィックス (つまり <B>&lt;13&gt;</B>) の後の、
+何も文字を含まない行である。
+<DT><B>-f</B>,<B> --file </B><I>file</I>
+
+<DD>
+
+
+指定した <I>file</I> の内容を記録する。
+このオプションはコマンドラインメッセージと組み合わせて
+使うことはできない。
+<DT><B>-i</B>
+
+<DD>
+
+各行に logger プロセスの PID を記録する。
+<DT><B>--id</B>[<B>=</B><I>id</I>]
+
+<DD>
+
+
+
+
+各行に logger プロセスの PID を記録する。
+オプションの引数 <I>id</I> が指定された場合、
+logger コマンドの PID の代わりに使われる。
+メッセージを送るスクリプトでは、
+<B>--id=$$</B> (PPID) を使うことが推奨される。
+<P>
+
+
+
+システムロギングの基盤 (例えば <B>systemd</B> が /dev/log をリッスンする場合) は、
+メッセージに指定された PID をローカルソケットのクレデンシャルで
+上書きするようにしなければならない点に注意すること。
+
+
+
+
+root の権限があり、指定された PID のプロセスが存在する場合にのみ、
+<B><A HREF="../man1/logger.1.html">logger</A></B>(1)
+
+は指定された <I>id</I> でソケットのクレデンシャルを設定できる。
+そうでない場合、ソケットのクレデンシャルは修正されず、
+暗黙裡に無視される。
+<DT><B>--journald</B>[<B>=</B><I>file</I>]
+
+<DD>
+
+
+systemd ジャーナルエントリを書き込む。
+エントリは <I>file</I> が指定された場合は、ファイルから読み込まれる。
+指定されない場合は、標準入力から読み込まれる。
+
+
+
+
+各行は journald が受け付けるフィールドで始める必要がある。
+詳細は
+<B><A HREF="../man7/systemd.journal-fields.7.html">systemd.journal-fields</A></B>(7)
+
+を参照すること。
+MESSAGE_ID フィールドを使うのが一般にはよい考えである。
+これによりエントリを見つけやすくなる。
+例:
+<DT><DD>
+<PRE>
+<B>    logger --journald &lt;&lt;end
+    MESSAGE_ID=67feb6ffbaf24c5cbec13c008dd72309
+    MESSAGE=The dogs bark, but the caravan goes on.
+    DOGS=bark
+    CARAVAN=goes on
+    end
+<DT><DD>    logger --journald=entry.txt
+</B></PRE>
+
+<DT><DD>
+
+
+
+
+
+
+
+
+
+<B>--journald</B>
+
+は優先度のような他のオプションを無視する点に注意すること。
+優先度が必要な場合、入力に含める必要があり、
+PRIORITY フィールドを使うこと。
+<B>journalctl</B>
+
+を単純に実行すると、MESSAGE フィールドを表示する。
+残りのフィールドを見るには、
+<B>journalctl --output json-pretty</B>
+
+を使うこと。
+<P>
+
+
+
+MESSAGE に改行を入れるためには、MESSAGE を複数回指定すること。
+これは特殊なケースとして扱われ、他のフィールドが複数回指定されると、
+ジャーナル内の配列として格納される。
+<DT>
+<DD>
+<B>--msgid</B> <I>msgid</I>
+
+
+
+
+RFC5424 MSGID フィールドを設定する。
+<I>msgid</I> 内に特殊文字は許可されていない点に注意すること。
+このオプションは、<B>--rfc5424</B> も指定された場合にのみ使われる。
+指定されない場合は、暗黙裡に無視される。
+<DT><B>-n</B>,<B> --server </B><I>server</I>
+
+<DD>
+
+
+
+
+
+システムログソケットではなく、
+指定したリモートの syslog <I>server</I> に書き込む。
+<B>--udp</B> または <B>--tcp</B> が
+指定されない場合、<B>logger</B> は最初に UDP を使おうとする。
+UDP が失敗した場合、TCP 接続を試みる。
+<DT><B>--no-act</B>
+
+<DD>
+
+
+
+システムログにログメッセージを書き込み、接続またはジャーナルを
+削除する以外は、すべてを実行する。
+このオプションは、テストの目的で、<B>--stderr</B> とともに使うことができる。
+<DT><B>--octet-count</B>
+
+<DD>
+
+
+
+メッセージの送信に RFC 6587 オクテットカウンティングフレーミングの方法を使う。
+このオプションを使わない場合、デフォルトでは UDP ではフレーミングなし、
+TCP では RFC6587 非トランスペアレントフレーミング
+(オクテットスタッフィング (stuffing) とも呼ばれる) を使う。 
+<DT><B>-P</B>,<B> --port </B><I>port</I>
+
+<DD>
+
+
+指定した <I>port</I> を使う。
+このオプションを指定しない場合、ポートのデフォルトは、
+udp では syslog、tcp 接続では syslog-conn となる。
+<DT><B>-p</B>,<B> --priority </B><I>priority</I>
+
+<DD>
+
+
+
+
+メッセージを指定した優先度 (<I>priority</I>) で登録する。
+湯鮮度は数値もしくは
+<I>機能分類</I>.<I>重要度</I>
+
+の組で指定する。
+
+
+
+例えば、<B>-p local3.info</B> は、重要度 informational
+機能分類 local3 としてメッセージを記録する。
+デフォルトは <B>user.notice</B> である。
+<DT><B>--prio-prefix</B>
+
+<DD>
+
+
+
+
+
+標準入力を読み込むときに各行で syslog プレフィックスを探す。
+プレフィックスは機能分類と重要度をエンコードした数値を山括弧の
+中に書く。
+数値は、機能分類に 8 を掛けて、重要度を足して作る。
+例えば、<B>local0.info</B> は、機能分類=16 重要度=6 なので、<B>&lt;134&gt;</B> となる。
+<P>
+
+
+
+プレフィックスに機能分類が含まれない場合、
+機能分類は <B>-p</B> オプションで指定した値が使われる。
+同様に、プレフィックスが指定されない場合、
+その行は <B>-p</B> オプションで指定された重要度 <I>priority</I> で記録される。
+<P>
+
+このオプションはコマンドラインメッセージには影響しない。
+<DT><B>--rfc3164</B>
+
+<DD>
+
+リモートサーバーにメッセージを送信するために、RFC 3164 BSD syslog プロトコルを使う。
+<DT><B>--rfc5424</B>[<B>=</B><I>without</I>]
+
+<DD>
+
+
+
+リモートサーバーにメッセージを送信するために、RFC 5424 syslog プロトコルを使う。
+オプションの <I>without</I> 引数は、以下の値のカンマ区切りのリストである:
+<B>notq</B>, <B>notime</B>, <B>nohost</B>.
+<P>
+
+
+
+
+
+値 <B>notq</B> を指定すると、送信されるメッセージから
+時間品質 (time-quality) 構造データを抑止する。
+時間品質情報は、ローカルクロックが同期しているかと、
+タイムスタンプのマイクロ秒の最大値がオフにされているかを表す。
+時間品質は、<B>--sd-id timeQuality</B> が指定されていると、
+自動的に抑止される。
+<P>
+
+
+
+値 <B>notime</B> を指定すると (<B>notq</B> が暗黙裡に指定され)、
+マイクロ秒とタイムゾーンを含む ISO-8601 形式での
+完了時の送信者タイムスタンプ (complete sender timestamp) を抑止する。
+<P>
+
+
+
+値 <B>nohost</B> を指定すると、
+<B><A HREF="../man2/gethostname.2.html">gethostname</A></B>(2)
+
+情報をメッセージヘッダから抑止する。
+<DT><DD>
+
+
+
+RFC 5424 プロトコルはバージョン 2.26 以降で
+<B>logger</B>
+
+のデフォルトになった。
+<DT><B>-s</B>,<B> --stderr</B>
+
+<DD>
+
+システムログに記録したメッセージを標準エラー出力にも出力する。
+<DT><B>--sd-id </B><I>name</I>[<B>@</B><I>digits</I>]
+
+<DD>
+
+
+RFC 5424 メッセージヘッダの構造データ要素 ID を指定する。
+このオプションは、<B>--sd-param</B> で新しい要素を導入する前に指定する必要がある。
+
+
+
+
+
+構造データ要素の数は限定されていない。
+ID (<I>name</I> とオプションの <B>@</B><I>digits</I>) は、
+大文字小文字が関係あり、要素のタイプと目的を一意に識別する。
+同じ ID はメッセージに 1 回しか存在できない。
+<B>@</B><I>digits</I> パートは、ユーザ定義の標準ではない ID で必要とされる。
+<P>
+
+
+
+
+
+<B>logger</B> は現在のところ <B>timeQuality</B> 標準要素のみを生成する。
+RFC 5424 には要素 <B>origin</B>
+(ip, enterpriseId, software, swVersion パラメータ付き) と
+<B>meta</B> (sequenceId, sysUpTime, language パラメータ付き) についても
+記述されている。
+これらの要素 ID は <B>@</B><I>digits</I> 拡張子なしで指定できる。
+<P>
+<DT><B>--sd-param </B><I>name</I><B>=</B><I>value</I><B></B>
+
+<DD>
+
+
+
+
+構造データ要素のパラメータ (名前と値の組) を指定する。
+このオプションは <B>--sd-id</B> の後に使わなければならず、
+同じ要素に対して 1 回以上指定できる。
+<I>value</I> を囲むクォーテーションが必要で、
+かつコマンドラインをエスケープする必要がある点に注意すること。
+<DT><DD>
+<PRE>
+<B>    logger --rfc5424 --sd-id zoo@123               \
+                     --sd-param tiger=\&quot;hungry\&quot;   \
+                     --sd-param zebra=\&quot;running\&quot;  \
+                     --sd-id manager@123           \
+                     --sd-param onMeeting=\&quot;yes\&quot;  \
+                     &quot;this is message&quot;
+</B></PRE>
+
+<DT><DD>
+
+により、以下が生成される:
+<DT><DD>
+<PRE>
+<B>  &lt;13&gt;1 2015-10-01T14:07:59.168662+02:00 ws kzak - - [timeQuality tzKnown=&quot;1&quot; isSynced=&quot;1&quot; syncAccuracy=&quot;218616&quot;][zoo@123 tiger=&quot;hungry&quot; zebra=&quot;running&quot;][manager@123 onMeeting=&quot;yes&quot;] this is message
+</B></PRE>
+
+<DT><DD>
+<DT><B>-S</B>,<B> --size </B><I>size</I>
+
+<DD>
+
+
+
+
+メッセージの最大許可サイズを <I>size</I> にする。
+デフォルトは 1KiB 文字である。これは、昔から制限として使われており、
+RFC 3164 で指定されている。
+RFC 5424 で制限は融通が効くようになった。
+RFC 5424 では少なくとも 4KiB のメッセージを受信できるので、
+これを仮定に置いておくのがよい。
+<P>
+
+
+
+多くの受信プログラムは、syslog プロトコルのタイプによらず、
+1KiB 以上のメッセージを受け付ける。
+(<B>--rfc5424</B> が指定された時に限らず)
+<B>--size</B> オプションは logger に影響を与える。
+<P>
+
+
+
+
+
+
+
+注意: メッセージサイズの制限は、syslog ヘッダーを含むメッセージ全体の制限である。
+ヘッダーサイズは選択したオプションとホスト名の長さによって変わる。
+経験則として、ヘッダーは 50 から 80 文字以下である。
+最大メッセージサイズを選択する場合、受信プログラムが最大サイズを
+サポートしているかを確認するのが重要である。
+そうしないと、メッセージが切り詰められる。
+また、経験則であるが、2 から 4 KiB のメッセージサイズが一般には問題ないが、
+大きなメッセージについては動作するかを確かめた方がよい。
+<DT><B>--socket-errors</B>[<B>=</B><I>mode</I>]
+
+<DD>
+
+
+
+
+
+
+
+
+
+
+Unix ソケット接続のエラーを表示する。
+<I>mode</I> の値は、<B>off</B>, <B>on</B>, <B>auto</B> のいずれかである。
+mode が auto の場合、logger は init プロセスが systemd であるかを検知し、
+もしそうであれば、ブートの早い段階で /dev/log が使えるという仮定をする。
+/dev/log が存在しない他の init システムは、
+<B><A HREF="../man3/openlog.3.html">openlog</A></B>(3)
+
+システムコールを使って同様のメッセージングをするので、
+エラーにならない。
+openlog を使うバージョン 2.26 以前の
+<B><A HREF="../man1/logger.1.html">logger</A></B>(1)
+
+は、Unix ソケットを使って送ったメッセージの消失を検知できない。
+<DT><DD>
+
+
+
+
+デフォルトの mode は <B>auto</B> である。
+エラー表示が有効になっていない場合、消失したメッセージは通信されず、
+<B><A HREF="../man1/logger.1.html">logger</A></B>(1)
+
+の起動で成功した返り値が返される。
+<DT><B>-T</B>,<B> --tcp</B>
+
+<DD>
+
+
+
+
+ストリーム (TCP) のみを使う。
+デフォルトでは、接続は /etc/services に定義された
+<I>syslog-conn</I>
+
+ポート (多くの場合
+<I>601</I>)
+
+に行われる。
+<P>
+
+どこに接続するかの指定は、<B>--server</B> と <B>--socket</B> も参照すること。
+<DT><B>-t</B>,<B> --tag </B><I>tag</I>
+
+<DD>
+
+
+ログを出力する各行に、指定した
+<I>tag</I>
+
+を共に記録する。
+
+
+デフォルトのタグは、端末にログインしているユーザの名前
+(または、実効ユーザ ID に基づくユーザ名) である。
+<DT><B>-u</B>,<B> --socket </B><I>socket</I>
+
+<DD>
+
+
+
+システムログのソケットではなく、指定した
+<I>socket</I>
+
+に書き込む。
+<DT><B>--</B>
+
+<DD>
+
+
+引数の終わり。
+<I>message</I> をハイフン (-) で始められるようにする。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+
+<B>logger</B>
+
+ユーティリティは成功した場合 0 を返し、エラーの場合は 0 より大きい値を返す。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>機能分類と重要度</H2>
+
+
+有効な機能分類は以下のとおり:
+<DL COMPACT>
+<DT><DD>
+
+<TABLE>
+<TR VALIGN=top><TD><B>auth</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>authpriv</B></TD><TD>機密に関わる種類のセキュリティ情報<BR></TD></TR>
+<TR VALIGN=top><TD><B>cron</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>daemon</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>ftp</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>kern</B></TD><TD>
+ユーザ空間プロセスでは生成されない。自動的に <B>user</B> に変換される。
+<BR></TD></TR>
+<TR VALIGN=top><TD><B>lpr</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>mail</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>news</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>syslog</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>user</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>uucp</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>local0</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><BR>&nbsp;&nbsp;〜</TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>local7</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>security</B></TD><TD><B>auth</B> の同義語。使わない方が良い。<BR></TD></TR>
+</TABLE>
+
+</DL>
+<P>
+
+
+有効な重要度は以下のとおり:
+<DL COMPACT>
+<DT><DD>
+<TABLE>
+<TR VALIGN=top><TD><B>emerg</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>alert</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>crit</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>err</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>warning</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>notice</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>info</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>debug</B></TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD><B>panic</B></TD><TD><B>emerg</B> の同義語。使わない方が良い。<BR></TD></TR>
+<TR VALIGN=top><TD><B>error</B></TD><TD><B>err</B> の同義語。使わない方が良い。<BR></TD></TR>
+<TR VALIGN=top><TD><B>warn</B></TD><TD><B>warning</B> の同義語。使わない方が良い。<BR></TD></TR>
+</TABLE>
+
+</DL>
+<P>
+
+
+
+これらの機能分類と重要度の優先順位と意図する目的については、
+<B><A HREF="../man3/syslog.3.html">syslog</A></B>(3)
+
+を参照すること。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>例</H2>
+
+<B>logger System rebooted</B>
+
+<BR>
+
+<B>logger -p local0.notice -t HOSTIDM -f /dev/idmc</B>
+
+<BR>
+
+<B>logger -n loghost.example.com System rebooted</B>
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/journalctl.1.html">journalctl</A></B>(1),
+
+<B><A HREF="../man3/syslog.3.html">syslog</A></B>(3),
+
+<B><A HREF="../man7/systemd.journal-fields.7.html">systemd.journal-fields</A></B>(7)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>準拠</H2>
+
+
+
+
+<B>logger</B>
+
+コマンドは IEEE Std 1003.2 (&quot;POSIX.2&quot;) 互換のはずである。
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>著者</H2>
+
+
+
+
+
+
+<B>logger</B>
+
+コマンドは元々カリフォルニア大学で 1983-1993 年に書かれた。
+その後
+
+Karel Zak
+
+
+Rainer Gerhards
+
+
+
+
+Sami Kerola
+
+
+によって書き直された。
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+logger コマンドは、util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">機能分類と重要度</A><DD>
+<DT><A HREF="#lbAH">例</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">準拠</A><DD>
+<DT><A HREF="#lbAK">著者</A><DD>
+<DT><A HREF="#lbAL">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 06:05:50 GMT, July 28, 2019
+</BODY>
+</HTML>
