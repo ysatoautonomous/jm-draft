@@ -38,6 +38,8 @@
 .\" Updated Sat Nov 17 15:05:36 JST 2001
 .\"      by Yuichi SATO <ysato@h4.dion.ne.jp>
 .\" Updated & Modified Sun Mar  2 16:39:57 JST 2003 by Yuichi SATO
+.\" Updated & Modified Sun Jul 28 14:58:25 JST 2019
+.\"      by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH LOGGER "1" "November 2015" "util-linux" "User Commands"
 .\"O .SH NAME
@@ -271,56 +273,93 @@ udp では syslog、tcp 接続では syslog-conn となる。
 このオプションはコマンドラインメッセージには影響しない。
 .TP
 .B \-\-rfc3164
-Use the RFC 3164 BSD syslog protocol to submit messages to a remote server.
+.\"O Use the RFC 3164 BSD syslog protocol to submit messages to a remote server.
+リモートサーバーにメッセージを送信するために、RFC 3164 BSD syslog プロトコルを使う。
 .TP
 .BR \-\-rfc5424 [ =\fIwithout ]
-Use the RFC 5424 syslog protocol to submit messages to a remote server.
-The optional \fIwithout\fR argument can be a comma-separated list of
-the following values: \fBnotq\fR, \fBnotime\fR, \fBnohost\fR.
+.\"O Use the RFC 5424 syslog protocol to submit messages to a remote server.
+.\"O The optional \fIwithout\fR argument can be a comma-separated list of
+.\"O the following values: \fBnotq\fR, \fBnotime\fR, \fBnohost\fR.
+リモートサーバーにメッセージを送信するために、RFC 5424 syslog プロトコルを使う。
+オプションの \fIwithout\fR 引数は、以下の値のカンマ区切りのリストである:
+\fBnotq\fR, \fBnotime\fR, \fBnohost\fR.
 
-The \fBnotq\fR value suppresses the time-quality structured data
-from the submitted message.  The time-quality information shows whether
-the local clock was synchronized plus the maximum number of microseconds
-the timestamp might be off.  The time quality is also automatically
-suppressed when \fB\-\-sd\-id timeQuality\fR is specified.
+.\"O The \fBnotq\fR value suppresses the time-quality structured data
+.\"O from the submitted message.  The time-quality information shows whether
+.\"O the local clock was synchronized plus the maximum number of microseconds
+.\"O the timestamp might be off.  The time quality is also automatically
+.\"O suppressed when \fB\-\-sd\-id timeQuality\fR is specified.
+値 \fBnotq\fR を指定すると、送信されるメッセージから
+時間品質 (time-quality) 構造データを抑止する。
+時間品質情報は、ローカルクロックが同期しているかと、
+タイムスタンプのマイクロ秒の最大値がオフにされているかを表す。
+時間品質は、\fB\-\-sd\-id timeQuality\fR が指定されていると、
+自動的に抑止される。
 
-The \fBnotime\fR value (which implies \fBnotq\fR)
-suppresses the complete sender timestamp that is in
-ISO-8601 format, including microseconds and timezone.
+.\"O The \fBnotime\fR value (which implies \fBnotq\fR)
+.\"O suppresses the complete sender timestamp that is in
+.\"O ISO-8601 format, including microseconds and timezone.
+値 \fBnotime\fR を指定すると (\fBnotq\fR が暗黙裡に指定され)、
+マイクロ秒とタイムゾーンを含む ISO-8601 形式での
+完了時の送信者タイムスタンプ (complete sender timestamp) を抑止する。
 
-The \fBnohost\fR value suppresses
+.\"O The \fBnohost\fR value suppresses
+.\"O .BR gethostname (2)
+.\"O information from the message header.
+値 \fBnohost\fR を指定すると、
 .BR gethostname (2)
-information from the message header.
+情報をメッセージヘッダから抑止する。
 .IP
-The RFC 5424 protocol has been the default for
+.\"O The RFC 5424 protocol has been the default for
+.\"O .B logger
+.\"O since version 2.26.
+RFC 5424 プロトコルはバージョン 2.26 以降で
 .B logger
-since version 2.26.
+のデフォルトになった。
 .TP
 .BR \-s , " \-\-stderr"
 .\"O Output the message to standard error as well as to the system log.
 システムログに記録したメッセージを標準エラー出力にも出力する。
 .TP
 .BR "\-\-sd\-id \fIname" [ @\fIdigits ]
-Specifies a structured data element ID for an RFC 5424 message header.  The
-option has to be used before \fB\-\-sd\-param\fR to introduce a new element.
-The number of structured data elements is unlimited.  The ID (\fIname\fR plus
-possibly \fB@\fIdigits\fR) is case-sensitive and uniquely identifies the type
-and purpose of the element.  The same ID must not exist more than once in
-a message.  The \fB@\fIdigits\fR part is required for user-defined
-non-standardized IDs.
+.\"O Specifies a structured data element ID for an RFC 5424 message header.  The
+.\"O option has to be used before \fB\-\-sd\-param\fR to introduce a new element.
+RFC 5424 メッセージヘッダの構造データ要素 ID を指定する。
+このオプションは、\fB\-\-sd\-param\fR で新しい要素を導入する前に指定する必要がある。
+.\"O The number of structured data elements is unlimited.  The ID (\fIname\fR plus
+.\"O possibly \fB@\fIdigits\fR) is case-sensitive and uniquely identifies the type
+.\"O and purpose of the element.  The same ID must not exist more than once in
+.\"O a message.  The \fB@\fIdigits\fR part is required for user-defined
+.\"O non-standardized IDs.
+構造データ要素の数は限定されていない。
+ID (\fIname\fR とオプションの \fB@\fIdigits\fR) は、
+大文字小文字が関係あり、要素のタイプと目的を一意に識別する。
+同じ ID はメッセージに 1 回しか存在できない。
+\fB@\fIdigits\fR パートは、ユーザ定義の標準ではない ID で必要とされる。
 
-\fBlogger\fR currently generates the \fBtimeQuality\fR standardized element
-only.  RFC 5424 also describes the elements \fBorigin\fR (with parameters
-ip, enterpriseId, software and swVersion) and \fBmeta\fR (with parameters
-sequenceId, sysUpTime and language).
-These element IDs may be specified without the \fB@\fIdigits\fR suffix.
+.\"O \fBlogger\fR currently generates the \fBtimeQuality\fR standardized element
+.\"O only.  RFC 5424 also describes the elements \fBorigin\fR (with parameters
+.\"O ip, enterpriseId, software and swVersion) and \fBmeta\fR (with parameters
+.\"O sequenceId, sysUpTime and language).
+.\"O These element IDs may be specified without the \fB@\fIdigits\fR suffix.
+\fBlogger\fR は現在のところ \fBtimeQuality\fR 標準要素のみを生成する。
+RFC 5424 には要素 \fBorigin\fR
+(ip, enterpriseId, software, swVersion パラメータ付き) と
+\fBmeta\fR (sequenceId, sysUpTime, language パラメータ付き) についても
+記述されている。
+これらの要素 ID は \fB@\fIdigits\fR 拡張子なしで指定できる。
 
 .TP
 .BR "\-\-sd\-param " \fIname ="\fIvalue\fB"
-Specifies a structured data element parameter, a name and value pair.
-The option has to be used after \fB\-\-sd\-id\fR and may be specified more
-than once for the same element.  Note that the quotation marks around
-\fIvalue\fR are required and must be escaped on the command line.
+.\"O Specifies a structured data element parameter, a name and value pair.
+.\"O The option has to be used after \fB\-\-sd\-id\fR and may be specified more
+.\"O than once for the same element.  Note that the quotation marks around
+.\"O \fIvalue\fR are required and must be escaped on the command line.
+構造データ要素のパラメータ (名前と値の組) を指定する。
+このオプションは \fB\-\-sd\-id\fR の後に使わなければならず、
+同じ要素に対して 1 回以上指定できる。
+\fIvalue\fR を囲むクォーテーションが必要で、
+かつコマンドラインをエスケープする必要がある点に注意すること。
 .IP
 .nf
 \fB    logger \-\-rfc5424 \-\-sd-id zoo@123               \\
@@ -331,7 +370,8 @@ than once for the same element.  Note that the quotation marks around
 \fB                     "this is message"
 .fi
 .IP
-produces:
+.\"O produces:
+により、以下が生成される:
 .IP
 .nf
 \fB  <13>1 2015-10-01T14:07:59.168662+02:00 ws kzak - - [timeQuality tzKnown="1" isSynced="1" syncAccuracy="218616"][zoo@123 tiger="hungry" zebra="running"][manager@123 onMeeting="yes"] this is message
@@ -339,48 +379,87 @@ produces:
 .IP
 .TP
 .BR \-S , " -\-size " \fIsize
-Sets the maximum permitted message size to \fIsize\fR.  The default
-is 1KiB characters, which is the limit traditionally used and specified
-in RFC 3164.  With RFC 5424, this limit has become flexible.  A good assumption
-is that RFC 5424 receivers can at least process 4KiB messages.
+.\"O Sets the maximum permitted message size to \fIsize\fR.  The default
+.\"O is 1KiB characters, which is the limit traditionally used and specified
+.\"O in RFC 3164.  With RFC 5424, this limit has become flexible.  A good assumption
+.\"O is that RFC 5424 receivers can at least process 4KiB messages.
+メッセージの最大許可サイズを \fIsize\fR にする。
+デフォルトは 1KiB 文字である。これは、昔から制限として使われており、
+RFC 3164 で指定されている。
+RFC 5424 で制限は融通が効くようになった。
+RFC 5424 では少なくとも 4KiB のメッセージを受信できるので、
+これを仮定に置いておくのがよい。
 
-Most receivers accept messages larger than 1KiB over any type of syslog
-protocol.  As such, the \fB\-\-size\fR option affects logger in
-all cases (not only when \fB\-\-rfc5424\fR was used).
+.\"O Most receivers accept messages larger than 1KiB over any type of syslog
+.\"O protocol.  As such, the \fB\-\-size\fR option affects logger in
+.\"O all cases (not only when \fB\-\-rfc5424\fR was used).
+多くの受信プログラムは、syslog プロトコルのタイプによらず、
+1KiB 以上のメッセージを受け付ける。
+(\fB\-\-rfc5424\fR が指定された時に限らず)
+\fB\-\-size\fR オプションは logger に影響を与える。
 
-Note: the message-size limit limits the overall message size, including
-the syslog header.  Header sizes vary depending on the selected options and
-the hostname length.  As a rule of thumb, headers are usually not longer than
-50 to 80 characters.  When selecting a maximum message size, it is important
-to ensure that the receiver supports the max size as well, otherwise messages
-may become truncated.  Again, as a rule of thumb two to four KiB message size
-should generally be OK, whereas anything larger should be verified to work.
-
+.\"O Note: the message-size limit limits the overall message size, including
+.\"O the syslog header.  Header sizes vary depending on the selected options and
+.\"O the hostname length.  As a rule of thumb, headers are usually not longer than
+.\"O 50 to 80 characters.  When selecting a maximum message size, it is important
+.\"O to ensure that the receiver supports the max size as well, otherwise messages
+.\"O may become truncated.  Again, as a rule of thumb two to four KiB message size
+.\"O should generally be OK, whereas anything larger should be verified to work.
+注意: メッセージサイズの制限は、syslog ヘッダーを含むメッセージ全体の制限である。
+ヘッダーサイズは選択したオプションとホスト名の長さによって変わる。
+経験則として、ヘッダーは 50 から 80 文字以下である。
+最大メッセージサイズを選択する場合、受信プログラムが最大サイズを
+サポートしているかを確認するのが重要である。
+そうしないと、メッセージが切り詰められる。
+また、経験則であるが、2 から 4 KiB のメッセージサイズが一般には問題ないが、
+大きなメッセージについては動作するかを確かめた方がよい。
 .TP
 .BR \-\-socket\-errors [ =\fImode ]
-Print errors about Unix socket connections.  The \fImode\fR can be a value of
-\fBoff\fR, \fBon\fR, or \fBauto\fR.  When the mode is auto logger will detect
-if the init process is systemd, and if so assumption is made /dev/log can be
-used early at boot.  Other init systems lack of /dev/log will not cause errors
-that is identical with messaging using
+.\"O Print errors about Unix socket connections.  The \fImode\fR can be a value of
+.\"O \fBoff\fR, \fBon\fR, or \fBauto\fR.  When the mode is auto logger will detect
+.\"O if the init process is systemd, and if so assumption is made /dev/log can be
+.\"O used early at boot.  Other init systems lack of /dev/log will not cause errors
+.\"O that is identical with messaging using
+.\"O .BR openlog (3)
+.\"O system call.  The
+.\"O .BR logger (1)
+.\"O before version 2.26 used openlog, and hence was unable to detected loss of
+.\"O messages sent to Unix sockets.
+Unix ソケット接続のエラーを表示する。
+\fImode\fR の値は、\fBoff\fR, \fBon\fR, \fBauto\fR のいずれかである。
+mode が auto の場合、logger は init プロセスが systemd であるかを検知し、
+もしそうであれば、ブートの早い段階で /dev/log が使えるという仮定をする。
+/dev/log が存在しない他の init システムは、
 .BR openlog (3)
-system call.  The
+システムコールを使って同様のメッセージングをするので、
+エラーにならない。
+openlog を使うバージョン 2.26 以前の
 .BR logger (1)
-before version 2.26 used openlog, and hence was unable to detected loss of
-messages sent to Unix sockets.
+は、Unix ソケットを使って送ったメッセージの消失を検知できない。
 .IP
-The default mode is \fBauto\fR.  When errors are not enabled lost messages are
-not communicated and will result to successful return value of
+.\"O The default mode is \fBauto\fR.  When errors are not enabled lost messages are
+.\"O not communicated and will result to successful return value of
+.\"O .BR logger (1)
+.\"O invocation.
+デフォルトの mode は \fBauto\fR である。
+エラー表示が有効になっていない場合、消失したメッセージは通信されず、
 .BR logger (1)
-invocation.
+の起動で成功した返り値が返される。
 .TP
 .BR \-T , " \-\-tcp"
-Use stream (TCP) only.  By default the connection is tried to the
+.\"O Use stream (TCP) only.  By default the connection is tried to the
+.\"O .I syslog-conn
+.\"O port defined in /etc/services, which is often
+.\"O .IR 601 .
+ストリーム (TCP) のみを使う。
+デフォルトでは、接続は /etc/services に定義された
 .I syslog-conn
-port defined in /etc/services, which is often
-.IR 601 .
+ポート (多くの場合
+.IR 601 )
+に行われる。
 .sp
-See also \fB\-\-server\fR and \fB\-\-socket\fR to specify where to connect.
+.\"O See also \fB\-\-server\fR and \fB\-\-socket\fR to specify where to connect.
+どこに接続するかの指定は、\fB\-\-server\fR と \fB\-\-socket\fR も参照すること。
 .TP
 .BR \-t , " \-\-tag " \fItag
 .\"O Mark every line to be logged with the specified
@@ -388,13 +467,18 @@ See also \fB\-\-server\fR and \fB\-\-socket\fR to specify where to connect.
 ログを出力する各行に、指定した
 .I tag
 を共に記録する。
-The default tag is the name of the user logged in on the terminal (or a user
-name based on effective user ID).
+.\"O The default tag is the name of the user logged in on the terminal (or a user
+.\"O name based on effective user ID).
+デフォルトのタグは、端末にログインしているユーザの名前
+(または、実効ユーザ ID に基づくユーザ名) である。
 .TP
 .BR \-u , " \-\-socket " \fIsocket
-Write to the specified
+.\"O Write to the specified
+.\"O .I socket
+.\"O instead of to the system log socket.
+システムログのソケットではなく、指定した
 .I socket
-instead of to the system log socket.
+に書き込む。
 .TP
 .B \-\-
 .\"O End the argument list.  This allows the \fImessage\fR
@@ -505,7 +589,7 @@ l l.
 .\"O was originally written by University of California in 1983-1993 and later
 .\"O rewritten by
 .B logger
-コマンドは元々カリフォルニア大学で 1983-1993 に書かれた。
+コマンドは元々カリフォルニア大学で 1983-1993 年に書かれた。
 その後
 .MT kzak@redhat.com
 Karel Zak
