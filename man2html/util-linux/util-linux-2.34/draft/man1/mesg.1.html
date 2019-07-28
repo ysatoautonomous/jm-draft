@@ -1,0 +1,228 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MESG</TITLE>
+</HEAD><BODY>
+<H1>MESG</H1>
+Section: User Commands (1)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+mesg - 他ユーザからのメッセージを表示する (表示しない)
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>mesg</B>
+
+[option]
+[<B>n</B>|<B>y</B>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+
+<B>mesg</B>
+
+は、他ユーザからのメッセージの書き込みを許すかどうかを
+決めるためのユーティリティである。
+メッセージは、標準エラー出力と結びついている端末デバイスに出力される。
+書き込みが許可されていれば、
+<B><A HREF="../man1/talk.1.html">talk</A></B>(1)
+
+や
+<B><A HREF="../man1/write.1.html">write</A></B>(1)
+
+などのプログラムを使って端末にメッセージを送ることができる。
+<P>
+
+
+
+
+
+
+
+伝統的に、デフォルトでは書き込みは許可されている。
+しかし、ユーザーが様々なセキュリティリスクに敏感になるにつれ、
+少なくとも最初のログインシェルではデフォルトでは書き込みを許可しない
+傾向がある。
+自分の端末の設定を確実に行うためには、
+<B>mesg</B>
+
+をログインスクリプトで実行するべきである。
+<P>
+
+
+
+
+
+
+
+
+
+<B>mesg</B>
+
+ユーティリティは、端末で実行されない場合、エラーステータス 2 で黙って終了する。
+この場合、
+<B>mesg</B>
+
+の実行は意味がない。
+コマンドラインオプション <B>--verbose</B> を指定すると、
+このような状況で、mesg に警告を出させる。
+この挙動は、バージョン 2.33 で導入された。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>引数</H2>
+
+<DL COMPACT>
+<DT><B>n</B>
+
+<DD>
+
+メッセージを表示しない。
+<DT><B>y</B>
+
+<DD>
+
+メッセージを表示する。
+</DL>
+<P>
+
+
+
+
+引数なしで起動された場合、
+<B>mesg</B>
+
+は現在のメッセージ表示の許可・不許可についての設定を、
+標準エラー出力に出力する。
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-v</B>,<B> --verbose</B>
+
+<DD>
+
+実行していることを表示する。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+
+<B>mesg</B>
+
+は以下のうちのいずれかを返り値として返す。
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>&nbsp;0</B>
+
+<DD>
+
+メッセージを表示する。
+<DT><B>&nbsp;1</B>
+
+<DD>
+
+メッセージを表示しない。
+<DT><B>&gt;1</B>
+
+<DD>
+
+エラーが発生した。
+</DL>
+</DL>
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/dev/[pt]ty[pq]?</I>
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/login.1.html">login</A></B>(1),
+
+<B><A HREF="../man1/talk.1.html">talk</A></B>(1),
+
+<B><A HREF="../man1/write.1.html">write</A></B>(1),
+
+<B><A HREF="../man1/wall.1.html">wall</A></B>(1),
+
+<B><A HREF="../man1/xterm.1.html">xterm</A></B>(1)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+<B>mesg</B>
+
+コマンドは Version 6 AT&amp;T UNIX から登場した。
+<P>
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+mesg コマンドは、util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">引数</A><DD>
+<DT><A HREF="#lbAF">オプション</A><DD>
+<DT><A HREF="#lbAG">返り値</A><DD>
+<DT><A HREF="#lbAH">ファイル</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">履歴</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:25:42 GMT, July 28, 2019
+</BODY>
+</HTML>
