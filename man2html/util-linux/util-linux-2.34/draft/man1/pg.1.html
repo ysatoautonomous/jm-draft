@@ -1,0 +1,550 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of PG</TITLE>
+</HEAD><BODY>
+<H1>PG</H1>
+Section: User Commands (1)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+pg - テキストファイルをページ単位で閲覧する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>pg</B>
+
+[<B>-</B><I>amount</I>]
+
+[<B>-p</B>
+
+<I>prompt</I>]
+
+[<B>-cefnrs</B>]
+
+[<B>+</B><I>line</I>]
+
+[<B>+/</B><I>pattern</I>/]
+
+[<I>file</I>...]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>pg</B>
+
+はテキストファイルを
+<FONT SIZE="-1">CRT</FONT>
+上で一度に 1 つのスクリーンいっぱいに表示する。
+
+
+各ページの終わりにプロンプトが表示される。
+ユーザは改行 (newline) キーを入力して次のページを閲覧することも、
+以下で説明する何れかのキーを入力することもできる。
+<P>
+
+
+
+
+コマンドラインでファイル名が指定されない場合、
+<B>pg</B>
+
+は標準入力から読み込む。
+
+
+
+
+
+標準出力が端末でない場合、
+<B>pg</B>
+
+は
+<B><A HREF="../man1/cat.1.html">cat</A></B>(1)
+
+のように動作するが、ファイルが複数あるときには、
+ファイルの内容より先にファイル名を出力する。
+<P>
+
+
+
+
+
+パイプから入力された場合、
+<B>pg</B>
+
+は読み込んでいる間にデータをバッファファイルに格納し、
+ナビゲーションを可能にする。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+
+<B>pg</B>
+
+は以下のオプションを受け付ける:
+<DL COMPACT>
+<DT><B>+</B><I>number</I>
+
+<DD>
+
+指定された行番号から開始する。
+<DT><B>+/</B><I>pattern</I><B>/</B>
+
+<DD>
+
+
+
+指定された基本正規表現 (Basic Regular Expression)
+<I>pattern</I>
+
+を含む行から開始する。
+<DT><B>-</B><I>number</I>
+
+<DD>
+
+
+
+1 ページ当りの行数。
+デフォルトでは
+<FONT SIZE="-1">CRT</FONT>
+の行数から 1 を引いた数である。 
+<DT><B>-c</B>
+
+<DD>
+
+
+ページが表示される前にスクリーンをクリアする。
+ただし、端末の terminfo エントリでこの機能が提供されている場合。
+<DT><B>-e</B>
+
+<DD>
+
+
+
+ファイルの末尾において、停止せず、かつ
+<FONT SIZE="-1">(EOF)</FONT>
+を表示しない。
+<DT><B>-f</B>
+
+<DD>
+
+長い行を分割しない。
+<DT><B>-n</B>
+
+<DD>
+
+
+
+
+このオプションが指定されない場合、
+コマンドは改行文字で終端されなければならない。
+このオプションが指定された場合、
+コマンド文字が打ち込まれると
+<B>pg</B>
+
+はすぐに実行する。
+<DT><B>-p</B><I>&nbsp;string</I>
+
+<DD>
+
+
+
+
+プロンプト
+<I> :</I>
+
+の代わりに、
+<I>string</I>
+
+が表示される。
+
+
+
+
+
+<I>string</I>
+
+に
+<B>%d</B>
+
+が含まれる場合、最初に出現する
+<B>%d</B>
+
+は現在のページ番号で置き換えられる。
+<DT><B>-r</B>
+
+<DD>
+
+シェルエスケープを無効にする。
+<DT><B>-s</B>
+
+<DD>
+
+
+
+
+メッセージを強調
+(<I>standout</I>)
+
+モードで表示する。
+ただし、端末の terminfo エントリでこの機能が提供されている場合。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>コマンド</H2>
+
+
+
+
+以下のコマンドをプロンプトから入力することができる。
+このドキュメントで
+<I>i</I>
+
+が前に付いているコマンドは、正または負の数を引き数として受け付ける。
+
+
+
+
+
+
+この引き数が
+<B>+</B>
+
+または
+<B>-</B>
+
+で始まる場合、入力ファイルにおける現在の位置から相対位置として解釈される。
+それ以外の場合は、ファイルの先頭からの相対位置として解釈される。
+<DL COMPACT>
+<DT><I>i</I><B>&lt;Enter&gt;</B>
+
+<DD>
+
+次のページまたは指定されたページを表示する。
+<DT>
+<DD>
+<I>i</I><B>d</B> または <B>^D</B>
+
+
+
+半ページ前方を表示する。
+<I>i</I>
+
+が指定された場合、常に現在の位置からの相対位置として解釈される。
+<DT><I>i</I><B>l</B>
+
+<DD>
+
+次の行または指定された行を表示する。
+<DT><I>i</I><B>f</B>
+
+<DD>
+
+前方に 1 ページ分スキップする。
+
+
+
+<I>i</I>
+
+は正の数でなければならず、
+常に現在の位置からの相対位置として解釈される。
+<DT>
+<DD>
+<I>i</I><B>w</B> または <I>i</I><B>z</B>
+
+
+
+
+
+<B>&lt;Enter&gt;</B>
+
+と同じように動作するが、
+<I>i</I>
+
+が新しいページサイズになる。
+<DT>
+<DD>
+<B>.</B> または <B>^L</B>
+
+
+スクリーンを再描画する。
+<DT><B>$</B>
+
+<DD>
+
+入力ファイルの最終行に進む。
+<DT><I>i</I><B>/</B><I>pattern</I><B>/</B>
+
+<DD>
+
+
+
+
+
+
+基本正規表現
+<I>pattern</I>
+
+が最初または <I>i</I> 番目に見つかるまで前方に検索する。
+検索は現在のページの後から始まり、ファイルの末尾で終了する。
+折り返し (wrap-around) 検索は行われない。
+
+
+<I>i</I>
+
+は正でなければならない。
+<DT>
+<DD>
+<I>i</I><B>?</B><I>pattern</I><B>?</B> または <I>i</I><B>^</B><I>pattern</I><B>^</B>
+
+
+
+
+
+
+基本正規表現
+<I>pattern</I>
+
+が最初または <I>i</I> 番目に見つかるまで後方に検索する。
+検索は現在のページの前から始まり、ファイルの先頭で終了する。
+折り返し (wrap-around) 検索は行われない。
+
+
+<I>i</I>
+
+は正でなければならない。
+</DL>
+<P>
+
+
+
+
+
+検索コマンドは付加的な文字を受け付ける。
+<B>t</B>
+
+が指定された場合、pattern を含む行はスクリーンの一番上に表示される。
+これがデフォルトである。
+
+
+
+
+<B>m</B>
+
+を指定するとスクリーンの真ん中の行に表示され、
+<B>b</B>
+
+を指定するとスクリーンの一番下の行に表示される。
+
+ここで選択された表示位置は、その後の検索でも使用される。
+<DL COMPACT>
+<DT><I>i</I><B>n</B>
+
+<DD>
+
+
+
+次のファイルまたは
+<I>i</I>
+
+個先のファイルに移動する。
+<DT><I>i</I><B>p</B>
+
+<DD>
+
+
+
+前のファイルまたは
+<I>i</I>
+
+個前のファイルを再び読み込む。
+<DT><B>s</B><I>&nbsp;filename</I>
+
+<DD>
+
+
+指定されたファイル名
+<I>filename</I>
+
+で、現在のファイルを保存する。
+<DT><B>h</B>
+
+<DD>
+
+コマンドの概要を表示する。
+<DT><B>!</B><I>command</I>
+
+<DD>
+
+
+
+シェルを使って
+<I>command</I>
+
+を実行する。
+<DT>
+<DD>
+<B>q</B> または <B>Q</B>
+
+
+終了する。
+</DL>
+<P>
+
+
+
+
+
+
+
+<B>pg</B>
+
+が入力ファイルを読み込んでいる間や
+端末上に書き出している間に、
+ユーザが中止 (interrupt) や終了のキーを押すと、
+<B>pg</B>
+
+はすぐにプロンプトを出す。
+
+
+その他の場合にこれらのキーを押すと、
+<B>pg</B>
+
+を終了する。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>環境変数</H2>
+
+
+
+
+以下の環境変数は
+<B>pg</B>
+
+の動作に影響を与える:
+<DL COMPACT>
+<DT><B>COLUMNS</B>
+
+<DD>
+
+この環境変数を指定すると、システムが提供するカラム数を上書きする。
+<DT><B>LANG</B>,&nbsp;<B>LC_ALL</B>,&nbsp;<B>LC_COLLATE</B>,&nbsp;<B>LC_CTYPE</B>,&nbsp;<B>LC_MESSAGES</B>
+
+<DD>
+
+
+<B><A HREF="../man7/locale.7.html">locale</A></B>(7)
+
+を参照すること。
+<DT><B>LINES</B>
+
+<DD>
+
+この環境変数を指定すると、システムが提供する行数を上書きする。
+<DT><B>SHELL</B>
+
+<DD>
+
+
+<B>!</B>
+
+コマンドで使用される。
+<DT><B>TERM</B>
+
+<DD>
+
+端末タイプを決定する。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/cat.1.html">cat</A></B>(1),
+
+<B><A HREF="../man1/more.1.html">more</A></B>(1),
+
+<B><A HREF="../man1/sh.1.html">sh</A></B>(1),
+
+<B><A HREF="../man5/terminfo.5.html">terminfo</A></B>(5),
+
+<B><A HREF="../man7/locale.7.html">locale</A></B>(7),
+
+<B><A HREF="../man7/regex.7.html">regex</A></B>(7),
+
+<B><A HREF="../man7/term.7.html">term</A></B>(7)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+<B>pg</B>
+
+は端末のタブが 8 であると想定している。
+<P>
+
+
+
+
+
+<FONT SIZE="-1">NUL</FONT>
+文字を含むファイルは、
+<B>pg</B>
+
+で表示できない。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+pg コマンドは、util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">コマンド</A><DD>
+<DT><A HREF="#lbAG">環境変数</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">注意</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 09:47:33 GMT, July 30, 2019
+</BODY>
+</HTML>
