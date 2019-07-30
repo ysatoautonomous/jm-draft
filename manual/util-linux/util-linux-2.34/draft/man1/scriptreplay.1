@@ -1,0 +1,166 @@
+.\"
+.\" Japanese Version Copyright (c) 2001-2002 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Mon Nov 19 21:46:46 JST 2001
+.\"         by Yuichi SATO <ysato@h4.dion.ne.jp>
+.\" Updated & Modified Sun Mar 24 02:43:47 JST 2002 by Yuichi SATO
+.\"
+.\"WORD:	typescript	写し
+.\"WORD:	divisor		除数
+.\"
+.TH SCRIPTREPLAY 1 "September 2011" "util-linux" "User Commands"
+.\"O .SH "NAME"
+.SH 名前
+.\"O scriptreplay \- play back typescripts, using timing information
+scriptreplay \- タイミング情報を使って写し (typescript) を再生する
+.\"O .SH "SYNOPSIS"
+.SH 書式
+.B scriptreplay
+[options]
+.RB [ \-t ]
+.I timingfile
+.RI [ typescript
+.RI [ divisor ]]
+.\"O .SH "DESCRIPTION"
+.SH 説明
+.\"O This program replays a typescript, using timing information to ensure that
+.\"O output happens in the same rhythm as it originally appeared when the script
+.\"O was recorded.
+このプログラムはタイミング情報を使って写しを再生する。
+このタイミング情報により、以前に script で記録したときと
+同じリズムで出力が行われることが保証される。
+.PP
+The replay simply displays the information again; the programs
+that were run when the typescript was being recorded are not run again.
+Since the same information is simply being displayed,
+.B scriptreplay
+is only guaranteed to work properly if run on the same type of
+terminal the typescript was recorded on.  Otherwise, any escape characters
+in the typescript may be interpreted differently by the terminal to
+which
+.B scriptreplay
+is sending its output.
+.PP
+.\"O The timing information is what
+.\"O .BR script (1)
+.\"O outputs to standard error if it is
+.\"O run with the
+.\"O .B \-t
+.\"O parameter.
+タイミング情報は、
+.B \-t
+パラメータをつけて
+.BR script (1)
+を実行したときに、標準エラーに出力される。
+.PP
+.\"O By default, the typescript to display is assumed to be named
+.\"O .BR typescript ,
+.\"O but other filenames may be specified, as the second parameter or with option
+.\"O .BR \-s .
+デフォルトでは、表示される写しは
+.B typescript
+という名前であると仮定されるが、
+第 2 パラメータまたはオプション
+.B \-s
+で他のファイルを指定することもできる。
+.PP
+.\"O If the third parameter is specified, it is used as a speed-up multiplier.
+.\"O For example, a speed-up of 2 makes
+.\"O .B scriptreplay
+.\"O go twice as fast, and a speed-up of 0.1 makes it go ten times slower
+.\"O than the original session.
+第 3 パラメータが指定された場合は、スピードアップの倍数として使われる。
+例えばスピードアップ 2 を指定すると、
+.B scriptreplay
+は元のセッションの 2 倍の速度で再生する。
+スピードアップ 0.1 を指定すると、10 倍遅く再生する。
+.\"O .SH OPTIONS
+.SH オプション
+The first three options will override old-style arguments.
+.TP
+.BR \-t , " \-\-timing " \fIfile\fR
+File containing \fBscript\fR's timing output.
+.TP
+.BR \-s , " \-\-typescript " \fIfile\fR
+File containing \fBscript\fR's terminal output.
+.TP
+.BR \-d , " \-\-divisor " \fInumber\fR
+Speed up the replay displaying this
+.I number
+of times.  The argument is a floating point number.  It's called divisor
+because it divides the timings by this factor.
+.TP
+.BR \-m , " \-\-maxdelay " \fInumber\fR
+Set the maximum delay between transcript updates to
+.I number
+of seconds.  The argument is a floating point number.  This can be used to
+avoid long pauses in the transcript replay.
+.TP
+.BR \-V , " \-\-version"
+Display version information and exit.
+.TP
+.BR \-h , " \-\-help"
+Display help text and exit.
+.\"O .SH "EXAMPLE"
+.SH 例
+.nf
+% script --timing=file.tm script.out
+.\"O Script started, file is script.out
+スクリプトを開始しました、ファイルは script.out です
+% ls
+<etc, etc>
+% exit
+.\"O Script done, file is script.out
+スクリプトを終了しました、ファイルは script.out です
+% scriptreplay --timing file.tm --typescript script.out
+.nf
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR script (1)
+.\"O .SH "COPYRIGHT"
+.SH 著作権
+Copyright \(co 2008 James Youngman
+.br
+Copyright \(co 2008 Karel Zak
+.PP
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
+.PP
+Released under the GNU General Public License version 2 or later.
+.\"O .SH "AUTHOR"
+.SH 著者
+.\"O The original
+.\"O .B scriptreplay
+.\"O program was written by
+元々の
+.B scriptreplay
+プログラムは
+.MT joey@\:kitenet.net
+Joey Hess
+.\"O .ME .
+.ME
+によって書かれた。
+.\"O The program was re-written in C by
+このプログラムは
+.MT jay@\:gnu.org
+James Youngman
+.ME
+.\"O and
+と
+.MT kzak@\:redhat.com
+Karel Zak
+.\"O .ME .
+.ME
+によって C 言語で書き直された。
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The scriptreplay command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+scriptreplay コマンドは、util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
