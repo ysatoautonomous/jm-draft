@@ -1,0 +1,83 @@
+.\" Copyright (c) 1985, 1992 The Regents of the University of California.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by the University of
+.\"	California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"	@(#)rev.1	6.3 (Berkeley) 3/21/92
+.\"
+.\" Translated Sun Aug 1 JST 1993 by NetBSD jman proj. <jman@spa.is.uec.ac.jp>
+.\" Updated Wed Apr 5 JST 2000 by Kentaro Shirakata <argrath@ub32.org>
+.\" Updated & Modified Tue Jul 30 20:30:06 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH REV "1" "September 2011" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O rev \- reverse lines characterwise
+rev \- 各行ごとに、入力された文字を逆に並べたものを出力する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B rev
+[option]
+.RI [ file ...]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The
+.\"O .B rev
+.\"O utility copies the specified files to standard output, reversing the order of
+.\"O characters in every line.  If no files are specified, standard input is read.
+.B rev
+ユーティリティは、
+.I file
+が指定されていればそのファイルを、指定されていなければ標準入力を読み込み、
+各行ごとに文字の並びを逆にして出力する。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR tac (1)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The rev command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+rev コマンドは、util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
