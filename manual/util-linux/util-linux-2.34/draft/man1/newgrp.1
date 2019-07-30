@@ -1,0 +1,69 @@
+.\" Original author unknown.  This man page is in the public domain.
+.\" Modified Sat Oct  9 17:46:48 1993 by faith@cs.unc.edu
+.\"
+.\"
+.\" Japanese Version Copyright (c) 2001 Maki KURODA
+.\"  all right reserved,
+.\" Translated Tue Feb 27 10:52:16 JST 2001
+.\"  by Maki KURODA <mkuroda@mail.tsagrp.co.jp>
+.\" Updated & Modified Tue Jul 30 15:14:50 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH NEWGRP 1 "October 1993" "util-linux" "User Commands"
+.\"O .SH NAME
+.\"O newgrp \- log in to a new group
+.SH 名前
+newgrp \-　新たなグループへのログイン
+.\"O .SH SYNOPSIS
+.SH 書式
+.B newgrp
+.RI [ group ]
+.\"O .SH DESCRIPTION
+.\"O .B newgrp
+.\"O changes the group identification of its caller, analogously to
+.\"O .BR login (1).
+.\"O The same person remains logged in, and the current directory
+.\"O is unchanged, but calculations of access permissions to files are performed
+.\"O with respect to the new group ID.
+.\"O .LP
+.\"O If no group is specified, the GID is changed to the login GID.
+.\"O .LP
+.SH 説明
+.B newgrp
+は呼出し側のグループ ID を変更する、
+.BR login (1)
+に類似している。
+同じ人がログイン状態のままであり、またカレントディレクトリも変わらない。
+しかしファイルのアクセス権の計算は新しいグループ ID について実行される。
+.LP
+グループが指定されなかった場合、GID はログイン時の GID を変更する。
+.LP
+.\"O .SH FILES
+.\"O .I /etc/group
+.\"O .br
+.\"O .I /etc/passwd
+.\"O 
+.SH ファイル
+.I /etc/group
+.br
+.I /etc/passwd
+
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR login (1),
+.BR group (5)
+
+.\"O .SH AUTHOR
+.\"O Originally by Michael Haardt. Currently maintained by 
+.\"O Peter Orbaek (poe@daimi.aau.dk).
+.SH 著者
+原文は Michael Haardt による。
+現在のメンテナンスは Peter Orbaek (poe@daimi.aau.dk) による。
+
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The newgrp command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+newgrp コマンドは、util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
