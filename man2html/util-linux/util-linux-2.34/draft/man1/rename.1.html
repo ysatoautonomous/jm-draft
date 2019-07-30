@@ -1,0 +1,290 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of RENAME</TITLE>
+</HEAD><BODY>
+<H1>RENAME</H1>
+Section: User Commands (1)<BR>Updated: June 2011<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+rename - ファイル名を変更する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>rename</B>
+
+[options]
+<I>expression replacement file</I>...
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+<B>rename</B>
+
+は、指定したファイル名において
+<I>expression</I>
+
+に最初にマッチする部分を
+<I>replacement</I>
+
+で置き換える。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-s</B>,<B> --symlink</B>
+
+<DD>
+
+シンボリックリンクではなく、シンボリックリンクの参照先を変更する。
+<DT><B>-v</B>,<B> --verbose</B>
+
+<DD>
+
+対象が存在する場合、どのファイルが変更されるかを表示する。
+<DT><B>-n</B>,<B> --no-act</B>
+
+<DD>
+
+
+
+変更を行わない。
+<B>--verbose</B>
+
+と組み合わせて何が行われるかを見ることができる。
+<DT><B>-o</B>,<B> --no-overwrite</B>
+
+<DD>
+
+
+
+既存のファイルを上書きしない。
+<B>--symlink</B>
+
+が指定された場合、シンボリックリンクに既存の参照先があるときは、
+上書きしない。
+<DT><B>-i</B>,<B> --interactive</B>
+
+<DD>
+
+既存のファイルを上書きする前に尋ねる。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>例</H2>
+
+
+
+
+ファイル
+<I>foo1</I>, ..., <I>foo9</I>, <I>foo10</I>, ..., <I>foo278</I>
+
+を与えると、
+<DL COMPACT><DT><DD>
+<P>
+
+<PRE>
+rename foo foo00 foo?
+rename foo foo0 foo??
+</PRE>
+
+<P>
+
+</DL>
+
+
+
+というコマンドは、ファイル名を
+<I>foo001</I>, ..., <I>foo009</I>, <I>foo010</I>, ..., <I>foo278</I>
+
+に変換する。
+<P>
+
+そして、
+<DL COMPACT><DT><DD>
+<P>
+
+<PRE>
+rename .htm .html *.htm
+</PRE>
+
+<P>
+
+</DL>
+
+
+というコマンドは、html ファイルの拡張子を修正する。
+<P>
+
+名前を短くするために空文字列を指定する:
+<DL COMPACT><DT><DD>
+<P>
+
+<PRE>
+rename '_with_long_name' '' file_with_long_name.*
+</PRE>
+
+<P>
+
+</DL>
+
+
+というコマンドは、ファイル名から部分文字列を削除する。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>警告</H2>
+
+
+
+
+
+
+デフォルトでは名前の変更には安全策はない。
+安全に使うためには、
+<B>--no-overwrite</B>,
+
+<B>--interactive</B>,
+
+<B>--no-act</B>
+
+のいずれかを使うこと。
+
+
+
+
+
+ユーザがファイル名を書き換える権限がある場合、
+このコマンドは何も質問せずに実行される。
+例えば、このコマンドを root で /lib ディレクトリで実行した場合、
+結果はとても強烈なことになるだろう。
+自分が何をやっているか本当に分かっていない場合、
+コマンドを実行する前に常にバックアップを取ること。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>対話モード</H2>
+
+
+
+
+
+
+
+
+
+最も標準的なユーティリティとして、rename は端末デバイス (tty と省略される) で
+正式な方法で使うことができる。
+行は tty でバッファされ、ユーザ入力を確かめるために ENTER を入力することができる。
+一方で、tty を cbreak モードにした場合、
+rename はプロンプトに応答するのにキー 1 つで済む。
+cbreak モードにするには、例えば以下のように実行すること:
+<DL COMPACT><DT><DD>
+<P>
+
+<PRE>
+sh -c 'stty -icanon min 1; &quot;$0&quot; &quot;$@&quot;; stty icanon' rename -i from to files
+</PRE>
+
+<P>
+
+</DL>
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>返り値</H2>
+
+<DL COMPACT><DT><DD>
+
+<DL COMPACT>
+<DT><B>0</B>
+
+<DD>
+
+すべての rename 操作が成功した。
+<DT><B>1</B>
+
+<DD>
+
+すべての rename 操作が失敗した。
+<DT><B>2</B>
+
+<DD>
+
+一部の rename 操作が失敗した。
+<DT><B>4</B>
+
+<DD>
+
+なにもファイル名が変更されなかった。
+<DT><B>64</B>
+
+<DD>
+
+予期しないエラーが発生した。
+
+</DL>
+</DL>
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/mv.1.html">mv</A></B>(1)
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+rename コマンドは、util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">例</A><DD>
+<DT><A HREF="#lbAG">警告</A><DD>
+<DT><A HREF="#lbAH">対話モード</A><DD>
+<DT><A HREF="#lbAI">返り値</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:04:32 GMT, July 30, 2019
+</BODY>
+</HTML>
