@@ -1,0 +1,420 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SCRIPT</TITLE>
+</HEAD><BODY>
+<H1>SCRIPT</H1>
+Section: User Commands (1)<BR>Updated: June 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+script - 端末セッションの写し (typescript) を作成する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>script</B>
+
+[options]
+[<I>file</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+<B>script</B>
+
+は端末に表示されたものすべての写し (typescript) を作成する。
+これは宿題を出された学生が、インタラクティブなセッションの
+ハードコピーを必要とする場合などに便利だろう。
+記録された typescript ファイルを、後で
+<B><A HREF="../man1/lpr.1.html">lpr</A></B>(1)
+
+などを使って印刷すれば良い。
+<P>
+
+
+
+
+
+
+
+引き数
+<I>file</I>
+
+が指定されると、
+<B>script</B>
+
+はすべての記録を
+<I>file</I>
+
+に保存する。
+
+
+ファイル名が与えられなければ、写しは
+<B>typescript</B>
+
+というファイルに保存される。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+
+
+
+<I>size</I> 引数の後ろに倍数の拡張子
+KiB (=1024), MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB を
+付けることができる
+(&quot;iB&quot; はオプションであり、つまり &quot;K&quot; は &quot;KiB&quot; と同じ意味である)。
+また、拡張子
+KB (=1000), MB (=1000*1000), GB, TB, PB, EB, ZB, YB
+を付けることもできる。
+<DL COMPACT>
+<DT><B>-a</B>, <B>--append</B><DD>
+
+
+
+
+
+出力を
+<I>file</I>
+
+または
+<B>typescript</B>
+
+に追加 (append) する。
+以前の内容が保存される。
+<DT><B>-c</B>, <B>--command</B> <I>command</I><DD>
+
+
+
+
+
+インタラクティブなシェルではなく、
+<I>command</I>
+
+を実行する。
+標準出力が端末 (tty) でないと動作が変わってしまうプログラムの出力を、
+script が簡単に記録できるようにする。
+<DT><B>-e</B>, <B>--return</B><DD>
+
+
+
+子プロセスの終了コードを返す。
+bash でのシグナル終了と同じ形式で、終了コードは 128+n になる。
+子プロセスの終了コードは、常に typescript ファイルに格納される。
+<DT><B>-f</B>, <B>--flush</B><DD>
+
+
+
+書き込みをするごとに出力をフラッシュする。
+これは遠隔で共同作業をする場合に良い。
+一方の人が `mkfifo foo; script -f foo' を実行した場合、
+もう一方の人は、`cat foo' を使うことにより、
+何が実行されているかをリアルタイムで監視することができる。
+<DT><B>--force</B><DD>
+
+
+typescrpt ファイルがハードリンクやシンボリックリンクであっても、
+デフォルトの出力先を許可する。
+コマンドはシンボリックリンクを辿る。
+<DT><B>-o</B>, <B>--output-limit</B> <I>size</I><DD>
+
+
+
+
+
+
+
+typescript のサイズを制限し、ファイルを
+<I>size</I>
+
+に切り詰めて、サイズを超過した場合に子プロセスを停止する。
+計算されるファイルサイズには、
+<B>script</B>
+
+コマンドが子プロセスの出力の前に付ける開始メッセージと、
+後に付ける終了メッセージが含まれない。
+バッファリングのために、結果の出力ファイルは指定した値より
+大きくなる可能性がある。
+<DT><B>-q</B>, <B>--quiet</B><DD>
+
+寡黙な動作にする (開始と終了メッセージを標準出力に書き出さない)。
+<DT><B>-t</B>[<I>file</I>], <B>--timing</B>[=<I>file</I>]<DD>
+
+
+
+
+
+
+タイミングデータを標準エラーに出力する。
+<I>file</I>
+
+が指定された場合は、ファイルに出力する。
+このデータはスペースで区切られた 2 つのフィールドからなる。
+1 番目のフィールドは、前の出力からの経過時間を表す。
+2 番目のフィールドは、そのときに何文字出力されたかを表す。
+この情報は、タイピングと出力の実際の遅延時間で、
+写しを再現するために使われる。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+script は fork されたシェルが終了したときに記録を終える
+(Bourne シェル
+(<B><A HREF="../man1/sh.1.html">sh</A></B>(1))
+
+を終わるには
+<I>control-D</I>
+
+を入力する。
+C シェル
+(<B><A HREF="../man1/csh.1.html">csh</A></B>(1))
+
+なら
+<I>exit</I>,
+
+<I>logout</I>,
+
+<I>control-d</I>
+
+のいずれかを入力する。
+ただし
+<I>control-d</I>
+
+が有効なのは
+<I>ignoreeof</I>
+
+がセットされていない場合である)。
+<P>
+
+
+
+
+
+
+
+<B><A HREF="../man1/vi.1.html">vi</A></B>(1)
+
+のようなインタラクティブなコマンドでは、
+typescript ファイルにゴミができることがある。
+<B>script</B>
+
+は画面を操作しないコマンドを扱ったときに最もうまく動作する。
+その場合の結果は、ハードコピー端末をエミュレートしたものとなる。
+<P>
+
+
+
+
+
+
+
+
+
+
+<B>script</B>
+
+を対話的でないシェルで実行するのは推奨されない。
+<B>script</B>
+
+の内部シェルは、常に対話的であり、シェルが対話的でない場合、
+予期しない結果になる可能性がある。
+<B>script</B>
+
+をシェルの初期化ファイルで使う場合、無限ループに入るのを
+避けなければならない。
+例として、以下の <B>.profile</B> ファイルを使うことができる。
+これは、ログインシェルからのみ読み込まれる。
+<DL COMPACT><DT><DD>
+</DL>
+
+<P>
+
+<DL COMPACT><DT><DD>
+<PRE>
+if test -t 0 ; then
+    script
+    exit
+fi
+</PRE>
+
+</DL>
+
+
+<P>
+
+
+
+
+<B>script</B>
+
+はあなたが思うより多くの入力を読み込む可能性があるので、
+コマンドのパイプから
+<B>script</B>
+
+を使うことも避けるべきである。
+<P>
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>環境変数</H2>
+
+
+
+<B>script</B>
+
+は以下の環境変数を用いる。
+<DL COMPACT>
+<DT><B>SHELL</B>
+
+<DD>
+
+
+
+
+
+
+
+
+環境変数
+<B>SHELL</B>
+
+が定義されていると、
+<B>script</B>
+
+が fork するシェルはそれになる。
+<B>SHELL</B>
+
+が定義されていなければ、
+Bourne シェルが用いられる。
+(ほとんどのシェルはこの環境変数を自動的にセットする。)
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/csh.1.html">csh</A></B>(1)
+
+
+
+
+(<I>history</I>
+
+メカニズムに関する部分),
+<B><A HREF="../man1/scriptreplay.1.html">scriptreplay</A></B>(1)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+<B>script</B>
+
+コマンドは 3.0BSD で登場した。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+
+
+<B>script</B>
+
+はラインフィードやバックスペースも含め、
+<I>すべて</I>
+
+をログファイルに書きこむ。
+これは普通のユーザが期待するものとは異なるかもしれない。
+<P>
+
+
+
+
+
+
+
+<B>script</B>
+
+は元々対話的な端末のセッションのために設計されている。
+標準入力が端末でない場合 (例えば、<B>echo foo | script</B>)、
+セッションがハングする可能性がある。
+これは、script セッション内の対話シェルが EOF を見つけられず、
+<B>script</B>
+
+がセッションをクローズする手がかりがないためである。
+より詳細な情報は「<B>注意</B>」のセクションを参照すること。
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+script コマンドは、util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">注意</A><DD>
+<DT><A HREF="#lbAG">環境変数</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">履歴</A><DD>
+<DT><A HREF="#lbAJ">バグ</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:17:24 GMT, July 30, 2019
+</BODY>
+</HTML>
