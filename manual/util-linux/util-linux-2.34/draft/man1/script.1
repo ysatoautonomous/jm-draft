@@ -39,6 +39,8 @@
 .\"      by Yuichi SATO <ysato@h4.dion.ne.jp>
 .\" Updated & Modified Sat May  1 17:38:44 JST 2004
 .\"      by Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated & Modified Wed Jul 31 00:08:21 JST 2019
+.\"      by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .\" WORD:	typescript	写し
 .\"
@@ -87,10 +89,17 @@ script \- 端末セッションの写し (typescript) を作成する。
 というファイルに保存される。
 .\"O .SH OPTIONS
 .SH オプション
-Below, the \fIsize\fR argument may be followed by the multiplicative
-suffixes KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
-(the "iB" is optional, e.g. "K" has the same meaning as "KiB"), or the suffixes
-KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+.\"O Below, the \fIsize\fR argument may be followed by the multiplicative
+.\"O suffixes KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
+.\"O (the "iB" is optional, e.g. "K" has the same meaning as "KiB"), or the suffixes
+.\"O KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+\fIsize\fR 引数の後ろに倍数の拡張子
+KiB (=1024), MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB を
+付けることができる
+("iB" はオプションであり、つまり "K" は "KiB" と同じ意味である)。
+また、拡張子
+KB (=1000), MB (=1000*1000), GB, TB, PB, EB, ZB, YB
+を付けることもできる。
 .TP
 \fB\-a\fR, \fB\-\-append\fR
 .\"O Append the output to
@@ -118,9 +127,12 @@ KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
 script が簡単に記録できるようにする。
 .TP
 \fB\-e\fR, \fB\-\-return\fR
-Return the exit code of the child process.  Uses the same format as bash
-termination on signal termination exit code is 128+n.  The exit code of
-the child process is always stored in type script file too.
+.\"O Return the exit code of the child process.  Uses the same format as bash
+.\"O termination on signal termination exit code is 128+n.  The exit code of
+.\"O the child process is always stored in type script file too.
+子プロセスの終了コードを返す。
+bash でのシグナル終了と同じ形式で、終了コードは 128+n になる。
+子プロセスの終了コードは、常に typescript ファイルに格納される。
 .TP
 \fB\-f\fR, \fB\-\-flush\fR
 .\"O Flush output after each write.  This is nice for telecooperation: one person
@@ -133,21 +145,33 @@ the child process is always stored in type script file too.
 何が実行されているかをリアルタイムで監視することができる。
 .TP
 \fB\-\-force\fR
-Allow the default output destination, i.e. the typescript file, to be a hard
-or symbolic link.  The command will follow a symbolic link.
+.\"O Allow the default output destination, i.e. the typescript file, to be a hard
+.\"O or symbolic link.  The command will follow a symbolic link.
+typescrpt ファイルがハードリンクやシンボリックリンクであっても、
+デフォルトの出力先を許可する。
+コマンドはシンボリックリンクを辿る。
 .TP
 \fB\-o\fR, \fB\-\-output-limit\fR \fIsize\fR
-Limit the size of the typescript and timing files to
+.\"O Limit the size of the typescript and timing files to
+.\"O .I size
+.\"O and stop the child process after this size is exceeded.  The calculated
+.\"O file size does not include the start and done messages that the
+.\"O .B script
+.\"O command prepends and appends to the child process output.
+.\"O Due to buffering, the resulting output file might be larger than the specified value.
+typescript のサイズを制限し、ファイルを
 .I size
-and stop the child process after this size is exceeded.  The calculated
-file size does not include the start and done messages that the
+に切り詰めて、サイズを超過した場合に子プロセスを停止する。
+計算されるファイルサイズには、
 .B script
-command prepends and appends to the child process output.
-Due to buffering, the resulting output file might be larger than the specified value.
+コマンドが子プロセスの出力の前に付ける開始メッセージと、
+後に付ける終了メッセージが含まれない。
+バッファリングのために、結果の出力ファイルは指定した値より
+大きくなる可能性がある。
 .TP
 \fB\-q\fR, \fB\-\-quiet\fR
 .\"O Be quiet (do not write start and done messages to standard output).
-寡黙な動作にする (開始と実行メッセージを標準出力に書き出さない)。
+寡黙な動作にする (開始と終了メッセージを標準出力に書き出さない)。
 .TP
 \fB\-t\fR[\fIfile\fR], \fB\-\-timing\fR[=\fIfile\fR]
 .\"O Output timing data to standard error, or to
@@ -220,15 +244,25 @@ typescript ファイルにゴミができることがある。
 は画面を操作しないコマンドを扱ったときに最もうまく動作する。
 その場合の結果は、ハードコピー端末をエミュレートしたものとなる。
 .PP
-It is not recommended to run
+.\"O It is not recommended to run
+.\"O .B script
+.\"O in non-interactive shells.  The inner shell of
+.\"O .B script
+.\"O is always interactive, and this could lead to unexpected results.  If you use
+.\"O .B script
+.\"O in the shell initialization file, you have to avoid entering an infinite
+.\"O loop.  You can use for example the \fB\%.profile\fR file, which is read
+.\"O by login shells only:
 .B script
-in non-interactive shells.  The inner shell of
+を対話的でないシェルで実行するのは推奨されない。
 .B script
-is always interactive, and this could lead to unexpected results.  If you use
+の内部シェルは、常に対話的であり、シェルが対話的でない場合、
+予期しない結果になる可能性がある。
 .B script
-in the shell initialization file, you have to avoid entering an infinite
-loop.  You can use for example the \fB\%.profile\fR file, which is read
-by login shells only:
+をシェルの初期化ファイルで使う場合、無限ループに入るのを
+避けなければならない。
+例として、以下の \fB\%.profile\fR ファイルを使うことができる。
+これは、ログインシェルからのみ読み込まれる。
 .RS
 .RE
 .sp
@@ -243,9 +277,14 @@ fi
 .RE
 .ad
 .PP
-You should also avoid use of script in command pipes, as
+.\"O You should also avoid use of script in command pipes, as
+.\"O .B script
+.\"O can read more input than you would expect.
 .B script
-can read more input than you would expect.
+はあなたが思うより多くの入力を読み込む可能性があるので、
+コマンドのパイプから
+.B script
+を使うことも避けるべきである。
 .PP
 .\"O .SH ENVIRONMENT
 .SH 環境変数
@@ -301,12 +340,20 @@ Bourne シェルが用いられる。
 をログファイルに書きこむ。
 これは普通のユーザが期待するものとは異なるかもしれない。
 .PP
+.\"O .B script
+.\"O is primarily designed for interactive terminal sessions.  When stdin
+.\"O is not a terminal (for example: \fBecho foo | script\fR), then the session
+.\"O can hang, because the interactive shell within the script session misses EOF and
+.\"O .B script
+.\"O has no clue when to close the session.  See the \fBNOTES\fR section for more information.
 .B script
-is primarily designed for interactive terminal sessions.  When stdin
-is not a terminal (for example: \fBecho foo | script\fR), then the session
-can hang, because the interactive shell within the script session misses EOF and
+は元々対話的な端末のセッションのために設計されている。
+標準入力が端末でない場合 (例えば、\fBecho foo | script\fR)、
+セッションがハングする可能性がある。
+これは、script セッション内の対話シェルが EOF を見つけられず、
 .B script
-has no clue when to close the session.  See the \fBNOTES\fR section for more information.
+がセッションをクローズする手がかりがないためである。
+より詳細な情報は「\fB注意\fR」のセクションを参照すること。
 .\"O .SH AVAILABILITY
 .SH 入手方法
 .\"O The script command is part of the util-linux package and is available from
