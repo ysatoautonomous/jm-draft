@@ -61,9 +61,9 @@ logger \- システムログにメッセージを記録する。
 .\"O When the optional \fImessage\fR argument is present, it is written
 .\"O to the log.  If it is not present, and the \fB\-f\fR option is not
 .\"O given either, then standard input is logged.
-オプションの \fImessage\fR 引数が指定されると、
+オプションの \fImessage\fR 引き数が指定されると、
 ログに書き込まれる。
-\fImessage\fR 引数が指定されない場合、
+\fImessage\fR 引き数が指定されない場合、
 かつ \fB\-f\fR オプションも指定されない場合、
 標準入力がログに書き込まれる。
 .\"O .SH OPTIONS
@@ -112,7 +112,7 @@ syslog ポート (多くの場合 514) に行われる。
 .\"O command's PID.  The use of \fB\-\-id=$$\fR
 .\"O (PPID) is recommended in scripts that send several messages.
 各行に logger プロセスの PID を記録する。
-オプションの引数 \fIid\fR が指定された場合、
+オプションの引き数 \fIid\fR が指定された場合、
 logger コマンドの PID の代わりに使われる。
 メッセージを送るスクリプトでは、
 \fB\-\-id=$$\fR (PPID) を使うことが推奨される。
@@ -282,7 +282,7 @@ udp では syslog、tcp 接続では syslog-conn となる。
 .\"O The optional \fIwithout\fR argument can be a comma-separated list of
 .\"O the following values: \fBnotq\fR, \fBnotime\fR, \fBnohost\fR.
 リモートサーバーにメッセージを送信するために、RFC 5424 syslog プロトコルを使う。
-オプションの \fIwithout\fR 引数は、以下の値のカンマ区切りのリストである:
+オプションの \fIwithout\fR 引き数は、以下の値のカンマ区切りのリストである:
 \fBnotq\fR, \fBnotime\fR, \fBnohost\fR.
 
 .\"O The \fBnotq\fR value suppresses the time-quality structured data
@@ -484,7 +484,7 @@ openlog を使うバージョン 2.26 以前の
 .B \-\-
 .\"O End the argument list.  This allows the \fImessage\fR
 .\"O to start with a hyphen (\-).
-引数の終わり。
+引き数の終わり。
 \fImessage\fR をハイフン (\-) で始められるようにする。
 .TP
 .BR \-V , " \-\-version"
