@@ -95,7 +95,7 @@ flock \- シェルスクリプトからロックを管理する。
 .BR \-c , " \-\-command " \fIcommand
 .\"O Pass a single \fIcommand\fR, without arguments, to the shell with
 .\"O .BR \-c .
-引数なしの 1 つの \fIcommand\fR を、シェルに
+引き数なしの 1 つの \fIcommand\fR を、シェルに
 .B \-c
 オプションを付けて渡す。
 .TP
@@ -270,7 +270,7 @@ shell> flock -x local-lock-file echo 'a b c'
 これをロックしたいシェルスクリプトの先頭に置くと、
 最初の実行時に自動的にロックが行われる。
 実行されるシェルスクリプトに環境変数 $FLOCKER が設定されていない場合、
-右側の引数で再実行する前に、
+右側の引き数で再実行する前に、
 flock を実行して排他的なブロックされないロックを取得する
 (スクリプト自体をロックファイルとして使う)。
 これは、環境変数 FLOCKER を右側の値として設定するので、再度実行されない。
@@ -298,7 +298,7 @@ flock を実行して排他的なブロックされないロックを取得す�
 .PP
 .\"O When using the \fIcommand\fR variant, and executing the child worked, then
 .\"O the exit status is that of the child command.
-\fIcommand\fR 引数が使われて、かつ子のコマンドが実行された場合、
+\fIcommand\fR 引き数が使われて、かつ子のコマンドが実行された場合、
 返り値は子のコマンドの返り値となる。
 .\"O .SH AUTHOR
 .SH 著者
