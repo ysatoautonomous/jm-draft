@@ -1,0 +1,223 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of UL</TITLE>
+</HEAD><BODY>
+<H1>UL</H1>
+Section: User Commands (1)<BR>Updated: September 2011<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+ul - 入力中のアンダーライン生成コードを端末のシーケンスに変換する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>ul</B> [options]
+
+[<I>file</I>...]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+<B>ul</B>
+
+は、
+指定されたファイル (指定されていなければ標準入力) を読み、
+アンダーラインを表示すべき部分を、環境変数
+<B>TERM</B>
+
+で定義されている端末にあわせてアンダーラインを表示するシーケンスに
+変換する。
+
+
+
+
+
+
+
+
+
+アンダーラインのシーケンスを決定するために、
+<I>terminfo</I>
+
+データベースが読み込まれる。
+端末がアンダーライン機能を持たず、強調表示機能を持っている場合には、
+強調表示を代わりに使用する。もし端末が二重印字できるか、端末自体に
+アンダーラインを扱う機能があるならば、
+<B>ul</B>
+
+は
+<B><A HREF="../man1/cat.1.html">cat</A></B>(1)
+
+と同じになる。
+
+端末がアンダーラインを扱えない場合は、アンダーラインは無視される。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-i</B>, <B>--indicated</B><DD>
+
+
+
+
+
+アンダーラインのかわりに、次の行の当該位置にダッシュ `-' を表示する。
+これは、CRT 端末上で
+<B>nroff</B>
+
+出力のアンダーラインを見たいときに有効である。
+<DT><B>-t</B>, <B>-T</B>, <B>--terminal</B> <I>terminal</I><DD>
+
+
+
+
+
+環境変数
+<B>TERM</B>
+
+を指定された端末タイプ
+<I>terminal</I>
+
+で上書きする。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>環境変数</H2>
+
+
+以下の環境変数が利用される:
+<DL COMPACT>
+<DT><B>TERM</B>
+
+<DD>
+
+
+
+
+
+<B>TERM</B>
+
+変数は、tty デバイスに対応する、デバイスの端末能力記述
+(<B><A HREF="../man5/terminfo.5.html">terminfo</A></B>(5)
+
+を参照すること) を得るために利用される。
+
+
+
+
+
+
+
+<B>TERM</B>
+
+は、ログイン時に、
+<I>/etc/ttys</I>
+
+に指定されたデフォルト端末タイプに設定されるか、
+ログイン処理中に、
+ユーザによって、そのユーザの
+<B>login</B>
+
+ファイルのなかで設定される
+(<B><A HREF="../man1/setenv.1.html">setenv</A></B>(1)
+
+を参照すること)。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/colcrt.1.html">colcrt</A></B>(1),
+
+<B><A HREF="../man1/login.1.html">login</A></B>(1),
+
+<B><A HREF="../man1/man.1.html">man</A></B>(1),
+
+<B><A HREF="../man1/nroff.1.html">nroff</A></B>(1),
+
+<B><A HREF="../man1/setenv.1.html">setenv</A></B>(1),
+
+<B><A HREF="../man5/terminfo.5.html">terminfo</A></B>(5)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+
+<B>nroff</B>
+
+は、通常、テキストにアンダーラインを入れるためにバックスペースと
+アンダーライン文字を連続して出力する。
+<B>ul</B>
+
+は、このカーソルの逆方向への移動の最適化までは行わない。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+<B>ul</B>
+
+コマンドは 3.0BSD から登場した。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+ul コマンドは、util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">環境変数</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">バグ</A><DD>
+<DT><A HREF="#lbAI">履歴</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:52:49 GMT, July 31, 2019
+</BODY>
+</HTML>
