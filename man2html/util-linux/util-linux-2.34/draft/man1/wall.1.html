@@ -1,0 +1,194 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of WALL</TITLE>
+</HEAD><BODY>
+<H1>WALL</H1>
+Section: User Commands (1)<BR>Updated: August 2013<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+wall - ログインしているすべてのユーザにメッセージを送る
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>wall</B>
+
+[<B>-n</B>]
+
+[<B>-t</B>
+
+<I>timeout</I>]
+
+[<B>-g</B>
+
+<I>group</I>]
+
+[<I>message</I> | <I>file</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+
+<B>wall</B>
+
+は
+<I>message</I>
+
+、または
+<I>file</I>
+
+の内容、または標準入力の内容を現在ログインしているすべての
+ユーザの端末に表示する。
+このコマンドは、79 文字より多い行を折り返す。
+また、79 文字より短い行は空白を追加して、79 文字にする。
+このコマンドは、各行の終わりにキャリッジリターンと改行を必ず付ける。
+<P>
+
+
+
+スーパユーザだけが、メッセージを拒否しているユーザや自動的に
+メッセージを拒否するプログラムを使っているユーザの端末にメッセージを
+送ることができる。
+<P>
+
+
+
+
+
+起動したのがスーパユーザか、プログラムが suid か sgid でない限り、
+ファイルからの読み込みは拒否される。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-n</B>,<B> --nobanner</B>
+
+<DD>
+
+バナーを表示しない。
+<DT><B>-t</B>,<B> --timeout </B><I>timeout</I>
+
+<DD>
+
+
+
+
+<I>timeout</I> 秒後に端末の書き込めない場合に諦める。
+<I>timeout</I> は正の整数でなければならない。
+デフォルトの値は 300 秒であり、端末をモデム線で実行していた昔の時代の時間である。
+<DT><B>-g</B>,<B> --group </B><I>group</I>
+
+<DD>
+
+
+
+<I>group</I>
+
+引き数で定義されるメンバーグループに限定してメッセージを表示する。
+引数はグループ名または GID である。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+
+
+
+wdm のようなセッションでは、
+<B><A HREF="../man5/utmp.5.html">utmp</A></B>(5)
+
+ut_type データの始めに ':' 文字を
+<B>wall</B>
+
+からのメッセージとして受け取らない。
+
+これはエラーを避けるために行われる。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/mesg.1.html">mesg</A></B>(1),
+
+<B><A HREF="../man1/talk.1.html">talk</A></B>(1),
+
+<B><A HREF="../man1/write.1.html">write</A></B>(1),
+
+<B><A HREF="../man8/shutdown.8.html">shutdown</A></B>(8)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+<B>wall</B>
+
+コマンドは Version 7 AT&amp;T UNIX で初めて実装された。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+wall コマンドは、util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">注意</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">履歴</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 12:59:35 GMT, July 31, 2019
+</BODY>
+</HTML>
