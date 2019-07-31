@@ -4,6 +4,8 @@
 .\" Translated Mon Nov 19 21:46:46 JST 2001
 .\"         by Yuichi SATO <ysato@h4.dion.ne.jp>
 .\" Updated & Modified Sun Mar 24 02:43:47 JST 2002 by Yuichi SATO
+.\" Updated & Modified Wed Jul 31 13:32:40 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .\"WORD:	typescript	写し
 .\"WORD:	divisor		除数
@@ -30,16 +32,25 @@ scriptreplay \- タイミング情報を使って写し (typescript) を再生�
 このタイミング情報により、以前に script で記録したときと
 同じリズムで出力が行われることが保証される。
 .PP
-The replay simply displays the information again; the programs
-that were run when the typescript was being recorded are not run again.
-Since the same information is simply being displayed,
+.\"O The replay simply displays the information again; the programs
+.\"O that were run when the typescript was being recorded are not run again.
+再生は単純に情報を再度表示するだけである。
+typescript が記録されたときに実行されたプログラムは、再度実行されない。
+.\"O Since the same information is simply being displayed,
+.\"O .B scriptreplay
+.\"O is only guaranteed to work properly if run on the same type of
+.\"O terminal the typescript was recorded on.  Otherwise, any escape characters
+.\"O in the typescript may be interpreted differently by the terminal to
+.\"O which
+.\"O .B scriptreplay
+.\"O is sending its output.
+同じ情報を単純に表示するだけなので、
 .B scriptreplay
-is only guaranteed to work properly if run on the same type of
-terminal the typescript was recorded on.  Otherwise, any escape characters
-in the typescript may be interpreted differently by the terminal to
-which
+は typescript が記録された端末と同じタイプの端末でしか、
+正しく動くことが保証されない。
+端末のタイプが異なると、
 .B scriptreplay
-is sending its output.
+が出力を送る端末で、typescript 中のエスケープ文字が異なって解釈される可能性がある。
 .PP
 .\"O The timing information is what
 .\"O .BR script (1)
@@ -76,31 +87,46 @@ is sending its output.
 スピードアップ 0.1 を指定すると、10 倍遅く再生する。
 .\"O .SH OPTIONS
 .SH オプション
-The first three options will override old-style arguments.
+.\"O The first three options will override old-style arguments.
+最初の 3 つのオプションは、古い形式の引数を上書きする。
 .TP
 .BR \-t , " \-\-timing " \fIfile\fR
-File containing \fBscript\fR's timing output.
+.\"O File containing \fBscript\fR's timing output.
+\fBscript\fR のタイミング出力を保持するファイル
 .TP
 .BR \-s , " \-\-typescript " \fIfile\fR
-File containing \fBscript\fR's terminal output.
+.\"O File containing \fBscript\fR's terminal output.
+\fBscript\fR の端末出力を保持するファイル
 .TP
 .BR \-d , " \-\-divisor " \fInumber\fR
-Speed up the replay displaying this
+.\"O Speed up the replay displaying this
+.\"O .I number
+.\"O of times.  The argument is a floating point number.  It's called divisor
+.\"O because it divides the timings by this factor.
+再生を指定した
 .I number
-of times.  The argument is a floating point number.  It's called divisor
-because it divides the timings by this factor.
+でスピードアップする。
+引数は小数値である。
+これは、タイミングをこの数を分母として割るので、除数 (divisor) と呼ばれる。
 .TP
 .BR \-m , " \-\-maxdelay " \fInumber\fR
-Set the maximum delay between transcript updates to
+.\"O Set the maximum delay between transcript updates to
+.\"O .I number
+.\"O of seconds.  The argument is a floating point number.  This can be used to
+.\"O avoid long pauses in the transcript replay.
+写し (transcript) の更新を最大で
 .I number
-of seconds.  The argument is a floating point number.  This can be used to
-avoid long pauses in the transcript replay.
+秒まで待つ。
+引数は小数値である。
+これは、写しの再生に長い時間待たせるのを避けるために使われる。
 .TP
 .BR \-V , " \-\-version"
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .TP
 .BR \-h , " \-\-help"
-Display help text and exit.
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
 .\"O .SH "EXAMPLE"
 .SH 例
 .nf
