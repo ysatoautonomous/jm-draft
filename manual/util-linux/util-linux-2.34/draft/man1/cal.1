@@ -63,7 +63,7 @@ cal \- カレンダーを表示する
 .\"O month is displayed.
 .B cal
 は簡単なカレンダーを表示する。
-引数を指定しないと、今月のカレンダーが表示される。
+引き数を指定しないと、今月のカレンダーが表示される。
 .sp
 .\"O The \fImonth\fR may be specified as a number (1-12), as a month name or as an
 .\"O abbreviated month name according to the current locales.
@@ -185,7 +185,7 @@ POSIX 標準で通算日を julian と定義しているので、
 このオプションはグレゴリオ歴切り替えの適用日を設定する。
 切り替え前はユリウス歴体系を使い、
 切り替え後はグレゴリオ歴体系を使う。
-引数
+引き数
 .I val
 は以下のとおり。
 .RS
@@ -261,9 +261,9 @@ POSIX 標準で通算日を julian と定義しているので、
 .\"O it defaults to \fBauto\fR.  The colors can be disabled; for the current built-in default
 .\"O see the \fB\-\-help\fR output.  See also the \fBCOLORS\fR section.
 出力をカラー表示にする。
-オプションの引数 \fIwhen\fP は、
+オプションの引き数 \fIwhen\fP は、
 \fBauto\fR, \fBnever\fR, \fBalways\fR のいずれかである。
-\fIwhen\fR 引数が省略された場合、デフォルトは \fBauto\fR である。
+\fIwhen\fR 引き数が省略された場合、デフォルトは \fBauto\fR である。
 カラー表示を無効化することもできる。
 現在の組み込みのデフォルトは、 \fB\-\-help\fR の出力を参照すること。
 「\fBカラー表示\fR」のセクションも参照すること。
@@ -276,13 +276,13 @@ POSIX 標準で通算日を julian と定義しているので、
 .\"O Display help text and exit.
 ヘルプを表示して、終了する。
 .\"O .SH PARAMETERS
-.SH 引数
+.SH 引き数
 .TP
 .\"O \fBSingle digits-only parameter (e.g. 'cal 2020')\fR
 .\"O Specifies the \fIyear\fR to be displayed; note the year must be fully specified:
 .\"O .B "cal 89"
 .\"O will not display a calendar for 1989.
-\fB1 つの数字のみの引数 (例 'cal 2020')\fR
+\fB1 つの数字のみの引き数 (例 'cal 2020')\fR
 表示したい \fI年\fR を指定する。
 年を表す数字は全桁指定する必要がある。
 .B "cal 89"
@@ -291,7 +291,7 @@ POSIX 標準で通算日を julian と定義しているので、
 .\"O \fBSingle string parameter (e.g. 'cal tomorrow' or 'cal August')\fR
 .\"O Specifies \fItimestamp\fR or a \fImonth name\fR (or abbreviated name) according to the current
 .\"O locales.
-\fB1 つの文字列の引数 (例 'cal tomorrow' または 'cal August')\fR
+\fB1 つの文字列の引き数 (例 'cal tomorrow' または 'cal August')\fR
 現在のロケールに基づいて、\fIタイムスタンプ\fR または
 \fI月名\fR (または月の省略名) を指定する。
 .sp
@@ -318,19 +318,19 @@ POSIX 標準で通算日を julian と定義しているので、
 (例 '1 week ago')。
 .TP
 .\"O \fBTwo parameters (e.g. 'cal 11 2020')\fR
-\fB2 つの引数 (例 'cal 11 2020')\fR
+\fB2 つの引き数 (例 'cal 11 2020')\fR
 .\"O Denote the \fImonth\fR (1 - 12) and \fIyear\fR.
 \fI月\fR (1 - 12) と \fI年\fR を指定する。
 .TP
 .\"O \fBThree parameters (e.g. 'cal 25 11 2020')\fR
-\fB3 つの引数 (例 'cal 25 11 2020')\fR
+\fB3 つの引き数 (例 'cal 25 11 2020')\fR
 .\"O Denote the \fIday\fR (1-31), \fImonth and \fIyear\fR, and the day will be
 .\"O highlighted if the calendar is displayed on a terminal.  If no parameters are
 .\"O specified, the current month's calendar is displayed.
 
 \fI日\fR (1-31)、\fI月\fR、\fI年\fR を指定する。
 カレンダーを端末上で表示した場合、当日はハイライトされる。
-引数を指定しない場合、当月のカレンダーが表示される。
+引き数を指定しない場合、当月のカレンダーが表示される。
 .\"O .SH NOTES
 .SH 注意
 .\"O A year starts on January 1.  The first day of the week is determined by the
