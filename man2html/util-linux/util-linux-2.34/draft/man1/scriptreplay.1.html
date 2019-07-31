@@ -1,0 +1,258 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SCRIPTREPLAY</TITLE>
+</HEAD><BODY>
+<H1>SCRIPTREPLAY</H1>
+Section: User Commands (1)<BR>Updated: September 2011<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+scriptreplay - タイミング情報を使って写し (typescript) を再生する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>scriptreplay</B>
+
+[options]
+[<B>-t</B>]
+
+<I>timingfile</I>
+
+[<I>typescript</I>
+
+[<I>divisor</I>]]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+このプログラムはタイミング情報を使って写しを再生する。
+このタイミング情報により、以前に script で記録したときと
+同じリズムで出力が行われることが保証される。
+<P>
+
+
+
+再生は単純に情報を再度表示するだけである。
+typescript が記録されたときに実行されたプログラムは、再度実行されない。
+
+
+
+
+
+
+
+
+同じ情報を単純に表示するだけなので、
+<B>scriptreplay</B>
+
+は typescript が記録された端末と同じタイプの端末でしか、
+正しく動くことが保証されない。
+端末のタイプが異なると、
+<B>scriptreplay</B>
+
+が出力を送る端末で、typescript 中のエスケープ文字が異なって解釈される可能性がある。
+<P>
+
+
+
+
+
+
+
+タイミング情報は、
+<B>-t</B>
+
+パラメータをつけて
+<B><A HREF="../man1/script.1.html">script</A></B>(1)
+
+を実行したときに、標準エラーに出力される。
+<P>
+
+
+
+
+
+デフォルトでは、表示される写しは
+<B>typescript</B>
+
+という名前であると仮定されるが、
+第 2 パラメータまたはオプション
+<B>-s</B>
+
+で他のファイルを指定することもできる。
+<P>
+
+
+
+
+
+
+第 3 パラメータが指定された場合は、スピードアップの倍数として使われる。
+例えばスピードアップ 2 を指定すると、
+<B>scriptreplay</B>
+
+は元のセッションの 2 倍の速度で再生する。
+スピードアップ 0.1 を指定すると、10 倍遅く再生する。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+最初の 3 つのオプションは、古い形式の引数を上書きする。
+<DL COMPACT>
+<DT><B>-t</B>,<B> --timing </B><I>file</I>
+
+<DD>
+
+<B>script</B> のタイミング出力を保持するファイル
+<DT><B>-s</B>,<B> --typescript </B><I>file</I>
+
+<DD>
+
+<B>script</B> の端末出力を保持するファイル
+<DT><B>-d</B>,<B> --divisor </B><I>number</I>
+
+<DD>
+
+
+
+
+再生を指定した
+<I>number</I>
+
+でスピードアップする。
+引数は小数値である。
+これは、タイミングをこの数を分母として割るので、除数 (divisor) と呼ばれる。
+<DT><B>-m</B>,<B> --maxdelay </B><I>number</I>
+
+<DD>
+
+
+
+
+写し (transcript) の更新を最大で
+<I>number</I>
+
+秒まで待つ。
+引数は小数値である。
+これは、写しの再生に長い時間待たせるのを避けるために使われる。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>例</H2>
+
+<PRE>
+% script --timing=file.tm script.out
+スクリプトを開始しました、ファイルは script.out です
+% ls
+&lt;etc, etc&gt;
+% exit
+スクリプトを終了しました、ファイルは script.out です
+% scriptreplay --timing file.tm --typescript script.out
+</PRE><A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/script.1.html">script</A></B>(1)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>著作権</H2>
+
+Copyright &#169; 2008 James Youngman
+<BR>
+
+Copyright &#169; 2008 Karel Zak
+<P>
+
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
+<P>
+
+Released under the GNU General Public License version 2 or later.
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+
+
+
+元々の
+<B>scriptreplay</B>
+
+プログラムは
+
+Joey Hess
+
+
+によって書かれた。
+
+このプログラムは
+
+James Youngman
+
+
+と
+
+Karel Zak
+
+
+によって C 言語で書き直された。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+scriptreplay コマンドは、util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">例</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">著作権</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 04:58:10 GMT, July 31, 2019
+</BODY>
+</HTML>
