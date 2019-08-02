@@ -99,7 +99,7 @@ flock - シェルスクリプトからロックを管理する。
 <DD>
 
 
-引数なしの 1 つの <I>command</I> を、シェルに
+引き数なしの 1 つの <I>command</I> を、シェルに
 <B>-c</B>
 
 オプションを付けて渡す。
@@ -298,7 +298,7 @@ shell2&gt; flock -s -w .007 /tmp -c echo; /bin/echo $?
 これをロックしたいシェルスクリプトの先頭に置くと、
 最初の実行時に自動的にロックが行われる。
 実行されるシェルスクリプトに環境変数 $FLOCKER が設定されていない場合、
-右側の引数で再実行する前に、
+右側の引き数で再実行する前に、
 flock を実行して排他的なブロックされないロックを取得する
 (スクリプト自体をロックファイルとして使う)。
 これは、環境変数 FLOCKER を右側の値として設定するので、再度実行されない。
@@ -334,7 +334,7 @@ flock を実行して排他的なブロックされないロックを取得す�
 
 
 
-<I>command</I> 引数が使われて、かつ子のコマンドが実行された場合、
+<I>command</I> 引き数が使われて、かつ子のコマンドが実行された場合、
 返り値は子のコマンドの返り値となる。
 
 <A NAME="lbAH">&nbsp;</A>
@@ -391,6 +391,6 @@ Linux Kernel Archive
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 14:53:42 GMT, July 23, 2019
+Time: 12:49:37 GMT, August 02, 2019
 </BODY>
 </HTML>
