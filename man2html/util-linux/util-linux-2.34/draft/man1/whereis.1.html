@@ -1,0 +1,342 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of WHEREIS</TITLE>
+</HEAD><BODY>
+<H1>WHEREIS</H1>
+Section: User Commands (1)<BR>Updated: October 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+whereis - コマンドのバイナリ・ソース・マニュアルファイルの場所を示す
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>whereis</B>
+
+[options]
+[<B>-BMS</B>
+
+<I>directory</I>... <I></I><B>-f</B>]
+
+<I>name</I>...
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B>whereis</B>
+
+は指定したファイルのバイナリ・ソース・マニュアルファイルの場所を示す。
+
+
+
+
+
+与えられた名前は、最初に始めのパス名の部分が取り除かれ、次に
+(<B>.c</B>
+
+のような)
+<B>.</B><I>ext</I>
+
+という形式の拡張子が取り除かれる。
+
+
+
+ソースコード管理に使われている
+<B>s.</B>
+
+というプレフィックスがついたファイルも表示される。
+
+
+
+
+
+
+<B>whereis</B>
+
+は、標準的な Linux ファイル階層中と、
+<B>$PATH</B>
+
+と
+<B>$MANPATH</B>
+
+で指定された場所で、対象のプログラムを探す。
+<P>
+
+
+
+
+コマンドラインに指定された検索の制限
+(オプション <B>-b</B>, <B>-m</B>, <B>-s</B>) は、
+足し合わされて、その後に続く <I>name</I> パターンに適用される。
+新たに検索の制限を指定すると、検索のマスクがリセットされる。
+例えば、
+<DL COMPACT><DT><DD>
+<P>
+<B>whereis -bm ls tr -m gcc</B>
+
+<P>
+</DL>
+
+
+を実行すると、&quot;ls&quot; と &quot;tr&quot; のバイナリとマニュアルページ、
+&quot;gcc&quot; のマニュアルのみを検索する。
+<P>
+
+
+オプション <B>-B</B>, <B>-M</B> and <B>-S</B> は、
+その後に続く <I>name</I> パターンの検索パスをリセットする。
+例えば、
+<DL COMPACT><DT><DD>
+<P>
+<B>whereis -m ls -M /usr/share/man/man1 -f cal</B>
+
+<P>
+</DL>
+
+
+
+を実行すると、&quot;ls&quot; の man ページはすべてのデフォルトパスで検索されるが、
+&quot;cal&quot; の man ページは /usr/share/man/man1 ディレクトリのみで検索される。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><DT><B>-b</B><DD>
+<DD>
+
+バイナリを探す。
+<DT><B>-m</B><DD>
+
+man ページを探す。
+<DT><B>-s</B><DD>
+
+ソースを探す。
+<DT><B>-u</B><DD>
+
+
+通常とは異なるエントリのコマンドのみを表示する。
+要求されるタイプの 1 つのエントリがコマンドにない場合、
+通常とは異なるコマンドと呼ばれる。
+
+
+
+
+
+
+
+
+
+よって、
+`<B>whereis&nbsp;&nbsp;-m&nbsp;&nbsp;-u&nbsp;&nbsp;*</B>'
+
+は、カレントディレクトリのファイルからドキュメントがないもの、
+または 1 つ以上のものを探す。
+<DT><B>-B </B><I>list</I><DD>
+
+
+
+<B>whereis</B>
+
+がバイナリを探すディレクトリを制限する。
+ディレクトリは空白区切りのリストで指定する。
+<DT><B>-M </B><I>list</I><DD>
+
+
+
+
+<B>whereis</B>
+
+が man ページと Info 形式のドキュメントを探すディレクトリを制限する。
+ディレクトリは空白区切りのリストで指定する。
+<DT><B>-S </B><I>list</I><DD>
+
+
+
+<B>whereis</B>
+
+がソースを探すディレクトリを制限する。
+ディレクトリは空白区切りのリストで指定する。
+<DT><B>-f</B><DD>
+
+
+
+
+
+
+
+
+直前のディレクトリリストを終了させ、
+ファイル名指定の開始であることを示す。
+<B>-B</B>,
+
+<B>-M</B>,
+
+<B>-S</B>
+
+オプションのいずれかを使う場合は、
+このオプションを
+<I>使わなければならない</I>。
+
+<DT><B>-l<DD>
+
+
+
+
+
+
+
+
+
+whereis</B>
+
+が使う有効な検索パスを表示する。
+<B>-B</B>,
+
+<B>-M</B>,
+
+<B>-S</B>
+
+のいずれも指定されない場合、このオプションは、
+コマンドがシステム上で検索するハードコードされたパスを表示する。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>例</H2>
+
+
+
+
+
+
+
+
+<I>/usr/:bin</I>
+
+にあるファイルから
+<I>/usr/:man/:man1</I>
+
+に man ページがない、または
+<I>/usr/:src</I>
+
+にソースがないようなもの探す。
+<DL COMPACT>
+<DT><DD>
+<B>cd /usr/bin</B>
+
+<BR>
+
+<B>whereis -u -ms -M /usr/man/man1 -S /usr/src -f *</B>
+
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>ファイル検索パス</H2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+デフォルトでは
+<B>whereis</B>
+
+はハードコードされたパスでファイルを検索しようとする。
+このパスは glob パターンで定義される。
+このコマンドは、
+<B>$PATH</B>
+
+と
+<B>$MANPATH</B>
+
+環境変数をデフォルトの検索パスとして使おうとする。
+どのパスが使われるかを簡単に知りたい場合、リストのオプション
+<B>-l</B>
+
+を指定すればよい。
+<B>-B</B>,
+
+<B>-M</B>,
+
+<B>-S</B>
+
+の影響を知りたい場合も、
+<B>-l</B>
+
+で表示できる。
+<P>
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT>WHEREIS_DEBUG=all<DD>
+
+デバッグ出力を有効にする。
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+whereis コマンドは、util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">例</A><DD>
+<DT><A HREF="#lbAG">ファイル検索パス</A><DD>
+<DT><A HREF="#lbAH">環境変数</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:58:04 GMT, August 02, 2019
+</BODY>
+</HTML>
