@@ -31,16 +31,18 @@
 .\"
 .\" @(#)whereis.1 from UCB 4.2
 .\"
-.\" Japanese Version Copyright (c) 2001 Yuichi SATO
+.\" Japanese Version Copyright (c) 2001-2019 Yuichi SATO
 .\"         all rights reserved.
 .\" Translated Sat Feb 17 03:19:58 JST 2001
 .\"         by Yuichi SATO <sato@complex.eng.hokudai.ac.jp>
+.\" Updated & Modified Fri Aug  2 20:25:12 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH WHEREIS 1 "October 2014" "util-linux" "User Commands"
 .\"O .SH NAME
 .SH 名前
 .\"O whereis \- locate the binary, source, and manual page files for a command
-whereis \- コマンドのバイナリ・ソース・man ページの場所を示す
+whereis \- コマンドのバイナリ・ソース・マニュアルファイルの場所を示す
 .\"O .SH SYNOPSIS
 .SH 書式
 .B whereis
@@ -53,15 +55,15 @@ whereis \- コマンドのバイナリ・ソース・man ページの場所を�
 .\"O .B whereis
 .\"O locates the binary, source and manual files for the specified command names.
 .B whereis
-は指定したファイルのバイナリ・ソース・man ページセクションの場所を示す。
+は指定したファイルのバイナリ・ソース・マニュアルファイルの場所を示す。
 .\"O The supplied names are first stripped of leading pathname components and any
 .\"O (single) trailing extension of the form
 .\"O .BI . ext
 .\"O (for example:
 .\"O .BR .c )
 与えられた名前は、最初に始めのパス名の部分が取り除かれ、次に
-.BR .c
-のような
+.RB ( .c
+のような)
 .BI . ext
 という形式の拡張子が取り除かれる。
 .\"O Prefixes of
@@ -83,26 +85,38 @@ whereis \- コマンドのバイナリ・ソース・man ページの場所を�
 .B $MANPATH
 で指定された場所で、対象のプログラムを探す。
 .sp
-The search restrictions (options \fB\-b\fP, \fB\-m\fP and \fB\-s\fP)
-are cumulative and apply to the subsequent \fIname\fP patterns on
-the command line.  Any new search restriction resets the search mask.
-For example,
+.\"O The search restrictions (options \fB\-b\fP, \fB\-m\fP and \fB\-s\fP)
+.\"O are cumulative and apply to the subsequent \fIname\fP patterns on
+.\"O the command line.  Any new search restriction resets the search mask.
+.\"O For example,
+コマンドラインに指定された検索の制限
+(オプション \fB\-b\fP, \fB\-m\fP, \fB\-s\fP) は、
+足し合わされて、その後に続く \fIname\fP パターンに適用される。
+新たに検索の制限を指定すると、検索のマスクがリセットされる。
+例えば、
 .RS
 .sp
 .B "whereis -bm ls tr -m gcc"
 .sp
 .RE
-searches for "ls" and "tr" binaries and man pages, and for "gcc" man pages only.
+.\"O searches for "ls" and "tr" binaries and man pages, and for "gcc" man pages only.
+を実行すると、"ls" と "tr" のバイナリとマニュアルページ、
+"gcc" のマニュアルのみを検索する。
 .sp
-The options \fB\-B\fP, \fB\-M\fP and \fB\-S\fP reset search paths for the
-subsequent \fIname\fP patterns.  For example,
+.\"O The options \fB\-B\fP, \fB\-M\fP and \fB\-S\fP reset search paths for the
+.\"O subsequent \fIname\fP patterns.  For example,
+オプション \fB\-B\fP, \fB\-M\fP and \fB\-S\fP は、
+その後に続く \fIname\fP パターンの検索パスをリセットする。
+例えば、
 .RS
 .sp
 .B "whereis -m ls -M /usr/share/man/man1 -f cal"
 .sp
 .RE
-searches for "ls" man pages in all default paths, but for "cal" in
-the /usr/share/man/man1 directory only.
+.\"O searches for "ls" man pages in all default paths, but for "cal" in
+.\"O the /usr/share/man/man1 directory only.
+を実行すると、"ls" の man ページはすべてのデフォルトパスで検索されるが、
+"cal" の man ページは /usr/share/man/man1 ディレクトリのみで検索される。
 
 .\"O .SH OPTIONS
 .SH オプション
@@ -126,9 +140,14 @@ man ページを探す。
 .\"O .RB ' "whereis \-m \-u *" '
 .\"O asks for those files in the current directory which have no documentation file,
 .\"O or more than one.
+.\"Osato:
+.\"Osato: 原文が動作とあっていない気がします。
+.\"Osato: 手元で試したところドキュメントのないファイル
+.\"Osato: (which have no documentation) は表示されないようです。
+.\"Osato:
 よって、
 .RB ` "whereis\ \ \-m\ \ \-u\ \ *" '
-は、カレントディレクトリのファイルから man ページがないもの、
+は、カレントディレクトリのファイルからドキュメントがないもの、
 または 1 つ以上のものを探す。
 .IP "\fB\-B \fIlist\fP"
 .\"O Limit the places where
@@ -170,21 +189,30 @@ man ページを探す。
 このオプションを
 .IR 使わなければならない 。
 .IP "\fB\-l"
-Output the list of effective lookup paths that
+.\"O Output the list of effective lookup paths that
+.\"O .B whereis
+.\"O is using.  When none of
+.\"O .BR \-B ,
+.\"O .BR \-M ,
+.\"O or
+.\"O .B \-S
+.\"O is specified, the option will output the hard-coded paths
+.\"O that the command was able to find on the system.
 .B whereis
-is using.  When none of
+が使う有効な検索パスを表示する。
 .BR \-B ,
 .BR \-M ,
-or
 .B \-S
-is specified, the option will output the hard-coded paths
-that the command was able to find on the system.
+のいずれも指定されない場合、このオプションは、
+コマンドがシステム上で検索するハードコードされたパスを表示する。
 .TP
 \fB\-h\fR, \fB\-\-help\fR
-Display help text and exit.
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
 .TP
 \fB\-V\fR, \fB\-\-version\fR
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .\"O .SH EXAMPLE
 .SH 例
 .\"O To find all files in
@@ -206,28 +234,47 @@ Display version information and exit.
 .B whereis \-u \-ms \-M /usr/man/man1 \-S /usr/src \-f *
 .\"O .SH "FILE SEARCH PATHS"
 .SH ファイル検索パス
-By default
+.\"O By default
+.\"O .B whereis
+.\"O tries to find files from hard-coded paths, which are defined with glob
+.\"O patterns.  The command attempts to use the contents of
+.\"O .B $PATH
+.\"O and
+.\"O .B $MANPATH
+.\"O environment variables as default search path.  The easiest way to know
+.\"O what paths are in use is to add the
+.\"O .B \-l
+.\"O listing option.  Effects of the
+.\"O .BR \-B ,
+.\"O .BR \-M ,
+.\"O and
+.\"O .B \-S
+.\"O are displayed with
+.\"O .BR \-l .
+デフォルトでは
 .B whereis
-tries to find files from hard-coded paths, which are defined with glob
-patterns.  The command attempts to use the contents of
+はハードコードされたパスでファイルを検索しようとする。
+このパスは glob パターンで定義される。
+このコマンドは、
 .B $PATH
-and
+と
 .B $MANPATH
-environment variables as default search path.  The easiest way to know
-what paths are in use is to add the
+環境変数をデフォルトの検索パスとして使おうとする。
+どのパスが使われるかを簡単に知りたい場合、リストのオプション
 .B \-l
-listing option.  Effects of the
+を指定すればよい。
 .BR \-B ,
 .BR \-M ,
-and
 .B \-S
-are displayed with
-.BR \-l .
+の影響を知りたい場合も、
+.BR \-l
+で表示できる。
 .PP
 .\"O .SH ENVIRONMENT
 .SH 環境変数
 .IP WHEREIS_DEBUG=all
-enables debug output.
+.\"O enables debug output.
+デバッグ出力を有効にする。
 .\"O .SH AVAILABILITY
 .SH 入手方法
 .\"O The whereis command is part of the util-linux package and is available from
