@@ -1,0 +1,135 @@
+.\" Copyright 1998 Andries E. Brouwer (aeb@cwi.nl)
+.\" Copyright 2007 Karel Zak <kzak@redhat.com>
+.\"
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 2001 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Feb 17 04:25:09 JST 2001
+.\"         by Yuichi SATO <sato@complex.eng.hokudai.ac.jp>
+.\"
+.\"WORD:	readahead	先読み
+.\"
+.TH BLOCKDEV 8 "August 2010" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O blockdev \- call block device ioctls from the command line
+blockdev \- コマンドラインからブロックデバイスの ioctl を呼び出す
+.\"O .SH SYNOPSIS
+.SH 書式
+.B blockdev
+.RB [ \-q ]
+.RB [ \-v ]
+.I command
+.RI [ command \&...\&]
+.I device
+.RI [ device \&...\&]
+.br
+.B blockdev
+.B \-\-report
+.RI [ device \&...\&]
+.br
+.B blockdev
+.RB \-h | \-V
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The utility
+.\"O .B blockdev
+.\"O allows one to call block device ioctls from the command line.
+.B blockdev
+ユーティリティは、
+コマンドラインからブロックデバイスの ioctl を呼び出すことを可能にする。
+.\"O .SH OPTIONS
+.SH オプション
+.IP "\fB\-q\fP"
+.\"O Be quiet.
+静かにする (訳注: 余分な表示をしない)。
+.IP "\fB\-v\fP"
+.\"O Be verbose.
+詳細に表示する。
+.IP "\fB\-\-report\fP"
+Print a report for the specified device. It is possible to give multiple
+devices. If none is given, all devices which appear in /proc/partitions are
+shown. Note that the partition StartSec is in 512-byte sectors.
+.IP "\fB\-h\fR, \fB\-\-help\fR"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.IP "\fB\-V\fR, \fB\-\-version\fR"
+.\"O Print version and exit.
+バージョン情報を表示して、終了する。
+.\"O .SH COMMANDS
+.SH コマンド
+It is possible to give multiple devices and multiple commands.
+.IP "\fB\-\-flushbufs\fP"
+.\"O Flush buffers.
+バッファをフラッシュする。
+.IP "\fB\-\-getalignoff\fP"
+Get alignment offset.
+.IP "\fB\-\-getbsz\fP"
+Print blocksize in bytes.  This size does not describe device topology.  It's
+size used internally by kernel and it maybe modified (for example) by
+filesystem driver on mount.
+.IP "\fB\-\-getdiscardzeroes\fP"
+Get discard zeroes support status.
+.IP "\fB\-\-getfra\fP"
+Get filesystem readahead in 512-byte sectors.
+.IP "\fB\-\-getiomin\fP"
+Get minimum I/O size.
+.IP "\fB\-\-getioopt\fP"
+Get optimal I/O size.
+.IP "\fB\-\-getmaxsect\fP"
+Get max sectors per request
+.IP "\fB\-\-getpbsz\fP"
+Get physical block (sector) size.
+.IP "\fB\-\-getra\fP"
+.\"O Print readahead (in 512-byte sectors).
+先読みの大きさを (512 バイトセクタ単位で) 表示する。
+.IP "\fB\-\-getro\fP"
+.\"O Get read-only. Print 1 if the device is read-only, 0 otherwise.
+読み込みだけが許可されているかの情報を取得する。
+デバイスが読み込みだけの許可である場合は、1 を表示する。
+それ以外の場合は、0 を表示する。
+.IP "\fB\-\-getsize64\fP"
+.\"O Print device size in bytes.
+デバイスのサイズをバイト単位で表示する。
+.IP "\fB\-\-getsize\fP"
+.\"O Print device size (32-bit!) in sectors. Deprecated in favor of the \-\-getsz option.
+デバイスのサイズ (32ビット!) をセクタ単位で表示する。
+廃止されているので、\-\-getsz オプションを使うこと。
+.IP "\fB\-\-getss\fP"
+.\"O Print logical sector size in bytes \(en usually 512.
+論理セクタサイズをバイト単位で表示する \(en 通常は 512 バイトである。
+.IP "\fB\-\-getsz\fP"
+.\"O Get size in 512-byte sectors.
+デバイスのサイズを 512 バイトセクタ単位で取得する。
+.IP "\fB\-\-rereadpt\fP"
+.\"O Reread partition table
+パーティションテーブルの再読み込みを行う。
+.IP "\fB\-\-setbsz\fP \fIbytes\fP"
+Set blocksize. Note that the block size is specific to the current file
+descriptor opening the block device, so the change of block size only persists
+for as long as blockdev has the device open, and is lost once blockdev exits.
+.IP "\fB\-\-setfra\fP \fIsectors\fP"
+Set filesystem readahead (same like \-\-setra on 2.6 kernels).
+.IP "\fB\-\-setra\fP \fIsectors\fP"
+.\"O Set readahead (in 512-byte sectors).
+先読み (readahead) の大きさを 512 バイトセクタ単位で設定する。
+.IP "\fB\-\-setro\fP"
+.\"O Set read-only. The currently active access to the device may not be affected by the change. For example
+.\"O filesystem already mounted in read-write mode will not be affected. The change applies after remount.
+読み込みだけを許可するように設定する。
+The currently active access to the device may not be affected by the change. For example
+filesystem already mounted in read-write mode will not be affected. The change applies after remount.
+.IP "\fB\-\-setrw\fP"
+.\"O Set read-write.
+読み書きを許可するように設定する。
+.\"O .SH AUTHOR
+.SH 著者
+blockdev was written by Andries E.\& Brouwer and rewritten by Karel Zak.
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The blockdev command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+blockdev コマンドは、util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
