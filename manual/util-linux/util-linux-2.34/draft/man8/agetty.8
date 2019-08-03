@@ -2,6 +2,8 @@
 .\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
 .\" Translated Wed Jan 14 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
 .\" Modified & Updated Wed Jun 24 1998 by NAKANO Takeo
+.\" Updated & Modified Sat Aug  3 19:48:23 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH AGETTY 8 "February 2016" "util-linux" "System Administration"
 .\"O .SH NAME
@@ -122,10 +124,14 @@ System V では \fIport\fP 引き数としての "\-" は "\-\-" の前に置か
 通信速度は大きい方から小さい方へと並べるようにする。こうすると null
 文字 (Ctrl-@) も通信速度の切り替えに使えるようになる。
 .sp
-This argument is optional and unnecessary for \fBvirtual terminals\fP.
+.\"O This argument is optional and unnecessary for \fBvirtual terminals\fP.
+この引き数はオプションで、\fB仮想端末\fPには必要ない。
 .sp
-The default for \fBserial terminals\fP is keep the current baud rate
-(see \fB\-\-keep\-baud\fP) and if unsuccessful then default to '9600'.
+.\"O The default for \fBserial terminals\fP is keep the current baud rate
+.\"O (see \fB\-\-keep\-baud\fP) and if unsuccessful then default to '9600'.
+\fBシリアル端末\fPのデフォルトは現在の通信速度に保たれる
+(\fB\-\-keep\-baud\fP を参照)。
+成功しない場合、デフォルトは '9600' にされる。
 .TP
 .I term
 .\"O The value to be used for the TERM environment variable.  This overrides
@@ -133,8 +139,10 @@ The default for \fBserial terminals\fP is keep the current baud rate
 TERM 環境変数に用いる値。これは init(8) の設定を上書きし、
 login および shell に受け継がれる。
 .sp
-The default is 'vt100', or 'linux' for Linux on a virtual terminal,
-or 'hurd' for GNU Hurd on a virtual terminal.
+.\"O The default is 'vt100', or 'linux' for Linux on a virtual terminal,
+.\"O or 'hurd' for GNU Hurd on a virtual terminal.
+デフォルトは 'vt100'、または仮想端末上の Linux では 'linux'、
+または仮想端末上の GNU Hurd では 'hurd' である。
 .\"O .SH OPTIONS
 .SH オプション
 .na
@@ -143,36 +151,61 @@ or 'hurd' for GNU Hurd on a virtual terminal.
 .ad
 .TP
 \-8, \-\-8bits
-Assume that the tty is 8-bit clean, hence disable parity detection.
+.\"O Assume that the tty is 8-bit clean, hence disable parity detection.
+tty が 8-bit クリーンであると仮定し、パリティ検知を無効化する。
 .TP
 \-a, \-\-autologin \fIusername\fP
-Automatically log in the specified user without asking for a username or password.
-Using this option causes an \fB\-f \fIusername\fR option and argument to be
-added to the \fB/bin/login\fP command line.  See \fB\-\-login\-options\fR, which
-can be used to modify this option's behavior.
+.\"O Automatically log in the specified user without asking for a username or password.
+.\"O Using this option causes an \fB\-f \fIusername\fR option and argument to be
+.\"O added to the \fB/bin/login\fP command line.  See \fB\-\-login\-options\fR, which
+.\"O can be used to modify this option's behavior.
+ユーザー名とパスワードを尋ねず、指定したユーザーで自動的に
+ログインする。
+このオプションを使うと、\fB\-f \fIusername\fR オプションが指定され、
+\fB/bin/login\fP コマンドラインに引き数が追加される。
+このオプションの挙動を変更するには、
+\fB\-\-login\-options\fR オプションを参照すること。
 
-Note that \fB\-\-autologin\fP may affect the way how agetty initializes the
-serial line, because on auto-login agetty does not read from the line and it
-has no opportunity optimize the line setting.
+.\"O Note that \fB\-\-autologin\fP may affect the way how agetty initializes the
+.\"O serial line, because on auto-login agetty does not read from the line and it
+.\"O has no opportunity optimize the line setting.
+\fB\-\-autologin\fP は agetty によるシリアル回線の初期化に
+影響を与える可能性がある点に注意すること。
+これは、自動ログインの場合、agetty は回線から読み込まず、
+回線設定を最適化する機会がないためである。
 .TP
 \-c, \-\-noreset
-Do not reset terminal cflags (control modes).  See \fBtermios\fP(3) for more
-details.
+.\"O Do not reset terminal cflags (control modes).  See \fBtermios\fP(3) for more
+.\"O details.
+端末の cflags (制御モード) をリセットしない。
+詳細は \fBtermios\fP(3) を参照すること。
 .TP
 \-E, \-\-remote
-Typically the \fBlogin\fP(1) command is given a remote hostname when
-called by something such as \fBtelnetd\fP(8).  This option allows \fBagetty\fP
-to pass what it is using for a hostname to \fBlogin\fP(1) for use
-in \fButmp\fP(5).  See \fB\-\-host\fP, \fBlogin\fP(1), and \fButmp\fP(5).
+.\"O Typically the \fBlogin\fP(1) command is given a remote hostname when
+.\"O called by something such as \fBtelnetd\fP(8).  This option allows \fBagetty\fP
+.\"O to pass what it is using for a hostname to \fBlogin\fP(1) for use
+.\"O in \fButmp\fP(5).  See \fB\-\-host\fP, \fBlogin\fP(1), and \fButmp\fP(5).
+通常、\fBlogin\fP(1) は、\fBtelnetd\fP(8) などから呼び出された場合、
+リモートのホスト名が指定される。
+このオプションは、\fBagetty\fP に対して、
+\fButmp\fP(5) で使われる
+\fBlogin\fP(1) へのホスト名として何を渡すかを、指定できるようにする。
+\fB\-\-host\fP, \fBlogin\fP(1), \fButmp\fP(5) を参照すること。
 .IP
-If the \fB\-\-host\fP \fIfakehost\fP option is given, then an \fB\-h\fP
-\fIfakehost\fP option and argument are added to the \fB/bin/login\fP
-command line.
+.\"O If the \fB\-\-host\fP \fIfakehost\fP option is given, then an \fB\-h\fP
+.\"O \fIfakehost\fP option and argument are added to the \fB/bin/login\fP
+.\"O command line.
+\fB\-\-host\fP \fIfakehost\fP オプションが指定された場合、
+\fB\-h\fP \fIfakehost\fP オプションと引き数が、
+\fB/bin/login\fP コマンドラインに追加される。
 .IP
-If the \fB\-\-nohostname\fR option is given, then an \fB\-H\fP option
-is added to the \fB/bin/login\fP command line.
+.\"O If the \fB\-\-nohostname\fR option is given, then an \fB\-H\fP option
+.\"O is added to the \fB/bin/login\fP command line.
+\fB\-\-nohostname\fR オプションが指定された場合、
+\fB\-H\fP オプションが \fB/bin/login\fP コマンドラインに追加される。
 .IP
-See \fB\-\-login\-options\fR.
+.\"O See \fB\-\-login\-options\fR.
+\fB\-\-login\-options\fR を参照すること。
 .TP
 \-f, \-\-issue\-file \fIfile|directory\fP
 .\"O Display the contents of \fIfile\fP instead of \fI/etc/issue\fP.  If the
@@ -184,9 +217,8 @@ See \fB\-\-login\-options\fR.
 を
 \fI/etc/issue\fP
 の代わりに表示する。
-If the
-specified path is a \fIdirectory\fP then displays all files with .issue file
-extension in version-sort order from the directory.  
+指定したパスが\fIディレクトリ\fPの場合、ディレクトリ内の .issue という
+ファイル拡張子の全てのファイルをバージョンソート順に表示する。
 端末別にメッセージを変えることができるようになる。
 \-\-noissue オプションはこのオプションを上書きする。
 .TP
@@ -199,10 +231,14 @@ extension in version-sort order from the directory.
 任せる。
 .TP
 \-H, \-\-host \fIfakehost\fP
-Write the specified \fIfakehost\fP into the utmp file.  Normally,
-no login host is given, since \fBagetty\fP is used for local hardwired
-connections and consoles.  However, this option can be useful for
-identifying terminal concentrators and the like.
+.\"O Write the specified \fIfakehost\fP into the utmp file.  Normally,
+.\"O no login host is given, since \fBagetty\fP is used for local hardwired
+.\"O connections and consoles.  However, this option can be useful for
+.\"O identifying terminal concentrators and the like.
+指定された \fIfakehost\fP を utmp ファイルに書き込む。
+\fBagetty\fP はローカルの直結接続とコンソールを使うので、
+通常はログインホストは指定されない。
+しかし、このオプションは端末集線装置 (concentrator) を識別するのに役立つ。
 .TP
 \-i, \-\-noissue
 .\"O Do not display the contents of \fI/etc/issue\fP (or other) before writing the
@@ -228,8 +264,10 @@ identifying terminal concentrators and the like.
 10, 8 進数では 012) を送るには \\012 とする。
 .TP
 \-J, \-\-noclear
-Do not clear the screen before prompting for the login name.
-By default the screen is cleared.
+.\"O Do not clear the screen before prompting for the login name.
+.\"O By default the screen is cleared.
+ログイン名のプロンプトを出す前にスクリーンをクリアしない。
+デフォルトではスクリーンをクリアする。
 .TP
 \-l, \-\-login\-program \fIlogin_program\fP
 .\"O Invoke the specified \fIlogin_program\fP instead of /bin/login.  This allows
@@ -242,9 +280,13 @@ By default the screen is cleared.
 \fB\-\-login\-options\fP を参照すること。
 .TP
 \-L, \-\-local\-line[=\fImode\fP]
-Control the CLOCAL line flag.  The optional \fImode\fP argument is 'auto', 'always' or 'never'.
-If the \fImode\fP argument is omitted, then the default is 'always'.  If the
-\-\-local\-line option is not given at all, then the default is 'auto'.
+.\"O Control the CLOCAL line flag.  The optional \fImode\fP argument is 'auto', 'always' or 'never'.
+.\"O If the \fImode\fP argument is omitted, then the default is 'always'.  If the
+.\"O \-\-local\-line option is not given at all, then the default is 'auto'.
+CLOCAL 回線フラグを制御する。
+オプションの \fImode\fP 引き数は、'auto', 'always', 'never' である。
+\fImode\fP 引き数を省略した場合、デフォルトは 'always' である。
+\-\-local\-line オプションが全く指定されない場合、デフォルトは 'auto' である。
 .PP
 .RS
 .PD 1
@@ -259,12 +301,16 @@ If the \fImode\fP argument is omitted, then the default is 'always'.  If the
 ないシリアルケーブルを使っているときに便利である。
 .TP
 \fInever\fR
-Explicitly clears the CLOCAL flag from the line setting and the
-carrier-detect signal is expected on the line.
+.\"O Explicitly clears the CLOCAL flag from the line setting and the
+.\"O carrier-detect signal is expected on the line.
+回線設定から CLOCAL フラグを明示的にクリアし、
+回線からキャリア検知シグナルが来ることを想定する。
 .TP
 \fIauto\fR
-The \fBagetty\fR default.  Does not modify the CLOCAL setting and follows
-the setting enabled by the kernel.
+.\"O The \fBagetty\fR default.  Does not modify the CLOCAL setting and follows
+.\"O the setting enabled by the kernel.
+\fBagetty\fR のデフォルト。
+CLOCAL 設定を変更せず、カーネルが有効にした設定に従う。
 .PD
 .RE
 .TP
@@ -289,7 +335,9 @@ the setting enabled by the kernel.
 しておく方が良いだろう。
 .TP
 \-\-list\-speeds
-Display supported baud rates.  These are determined at compilation time.
+.\"O Display supported baud rates.  These are determined at compilation time.
+サポートされる通信速度を表示する。
+これらはコンパイル時に決定される。
 .TP
 \-n, \-\-skip\-login
 .\"O Do not prompt the user for a login name.  This can be used in connection
@@ -314,33 +362,47 @@ BBS システムのように非標準のログイン処理を起動する際に�
 に注意せよ。
 .TP
 \-N, \-\-nonewline
-Do not print a newline before writing out /etc/issue.
+.\"O Do not print a newline before writing out /etc/issue.
+/etc/issue を書き出す前に改行を出力しない。
 .TP
 \-o, \-\-login\-options "\fIlogin_options\fP"
-Options  and arguments that  are passed to \fBlogin\fP(1). Where \\u is
-replaced by the login name. For example:
+.\"O Options  and arguments that  are passed to \fBlogin\fP(1). Where \\u is
+.\"O replaced by the login name. For example:
+オプションと引き数を \fBlogin\fP(1) に渡す。
+ここで \\u はログイン名に置換される。
+例:
 .RS
 .IP "" 4
 .B "\-\-login\-options '-h darkstar -- \\\u'"
 .PP
-See \fB\-\-autologin\fR, \fB\-\-login\-program\fR and \fB\-\-remote\fR.
+.\"O See \fB\-\-autologin\fR, \fB\-\-login\-program\fR and \fB\-\-remote\fR.
+\fB\-\-autologin\fR, \fB\-\-login\-program\fR, \fB\-\-remote\fR を参照すること。
 .PP
-Please read the SECURITY NOTICE below before using this option.
+.\"O Please read the SECURITY NOTICE below before using this option.
+このオプションを使う前に、「セキュリティ上の注意」のセクションを
+読んでほしい。
 .RE
 .TP
 \-p, \-\-login\-pause
-Wait for any key before dropping to the login prompt.  Can be combined
-with \fB\-\-autologin\fP to save memory by lazily spawning shells.
+.\"O Wait for any key before dropping to the login prompt.  Can be combined
+.\"O with \fB\-\-autologin\fP to save memory by lazily spawning shells.
+ログインプロンプトに進む前に、何らかのキー入力を待つ。
+\fB\-\-autologin\fP と組み合わせて使うときに、
+シェルの生成を遅延させて、メモリ使用量を少なくできる。
 .TP
 \-r, \-\-chroot \fIdirectory\fP
-Change root to the specified directory.
+.\"O Change root to the specified directory.
+指定したディレクトリに chroot する。
 .TP
 \-R, \-\-hangup
-Call vhangup() to do a virtual hangup of the specified terminal.
+.\"O Call vhangup() to do a virtual hangup of the specified terminal.
+vhangup() を呼んで、指定した端末の仮想ハングアップを起こさせる。
 .TP
 \-s, \-\-keep\-baud
-Try to keep the existing baud rate.  The baud rates from
-the command line are used when agetty receives a BREAK character.
+.\"O Try to keep the existing baud rate.  The baud rates from
+.\"O the command line are used when agetty receives a BREAK character.
+既存の通信速度を維持しようとする。
+agetty が BREAK 文字を受け取った時の、コマンドラインの通信速度が使われる。
 .TP
 \-t, \-\-timeout \fItimeout\fP
 .\"O Terminate if no user name could be read within \fItimeout\fP seconds.
@@ -349,10 +411,14 @@ the command line are used when agetty receives a BREAK character.
 このオプションは直結回線には推奨されない。
 .TP
 \-U, \-\-detect\-case
-Turn on support for detecting an uppercase-only terminal.  This setting
-will detect a login name containing only capitals as indicating an
-uppercase-only terminal and turn on some upper-to-lower case conversions.
-Note that this has no support for any Unicode characters.
+.\"O Turn on support for detecting an uppercase-only terminal.  This setting
+.\"O will detect a login name containing only capitals as indicating an
+.\"O uppercase-only terminal and turn on some upper-to-lower case conversions.
+.\"O Note that this has no support for any Unicode characters.
+大文字のみの端末の検知を有効化する。
+この設定では、ログイン名が大文字のみである場合、大文字のみの
+端末であると識別し、大文字から小文字への変換を有効にする。
+これは Unicode 文字には対してはサポートされていない。
 .TP
 \-w, \-\-wait\-cr
 .\"O Wait for the user or the modem to send a carriage-return or a
@@ -365,49 +431,77 @@ Note that this has no support for any Unicode characters.
 \fB\-\-init\-string\fP オプションを用いた接続の際に便利である。
 .TP
 \-\-nohints
-Do not print hints about Num, Caps and Scroll Locks.
+.\"O Do not print hints about Num, Caps and Scroll Locks.
+Num, Caps, Scroll ロックのヒントを表示しない。
 .TP
 \-\-nohostname
-By default the hostname will be printed.  With this option enabled,
-no hostname at all will be shown.
+.\"O By default the hostname will be printed.  With this option enabled,
+.\"O no hostname at all will be shown.
+デフォルトではホスト名が表示される。
+このオプションを有効にすると、ホスト名が全く表示されない。
 .TP
 \-\-long\-hostname
-By default the hostname is only printed until the first dot.  With
-this option enabled, the fully qualified hostname by \fBgethostname\fR(3P)
-or (if not found) by \fBgetaddrinfo\fR(3) is shown.
+.\"O By default the hostname is only printed until the first dot.  With
+.\"O this option enabled, the fully qualified hostname by \fBgethostname\fR(3P)
+.\"O or (if not found) by \fBgetaddrinfo\fR(3) is shown.
+デフォルトでは、ホスト名は最初のドットまでしか表示されない。
+このオプションを有効にすると、\fBgethostname\fR(3P) による完全修飾ホスト名、
+または (これが見つからない場合は) \fBgetaddrinfo\fR(3) による完全修飾ホスト名が
+表示される。
 .TP
 \-\-erase\-chars \fIstring\fP
-This option specifies additional characters that should be interpreted as a
-backspace ("ignore the previous character") when the user types the login name.
-The default additional \'erase\' has been \'#\', but since util-linux 2.23
-no additional erase characters are enabled by default.
+.\"O This option specifies additional characters that should be interpreted as a
+.\"O backspace ("ignore the previous character") when the user types the login name.
+.\"O The default additional \'erase\' has been \'#\', but since util-linux 2.23
+.\"O no additional erase characters are enabled by default.
+このオプションは、ユーザーがログイン名を入力する時に、
+バックスペース ("前の 1 文字を無視する") として解釈される追加の文字を指定する。
+かつてはデフォルトの追加 \'erase\' 文字は \'#\' であったが、
+util-linux 2.23 からはデフォルトでは追加の erase 文字はなくなった。
 .TP
 \-\-kill\-chars \fIstring\fP
-This option specifies additional characters that should be interpreted as a
-kill ("ignore all previous characters") when the user types the login name.
-The default additional \'kill\' has been \'@\', but since util-linux 2.23
-no additional kill characters are enabled by default.
+.\"O This option specifies additional characters that should be interpreted as a
+.\"O kill ("ignore all previous characters") when the user types the login name.
+.\"O The default additional \'kill\' has been \'@\', but since util-linux 2.23
+.\"O no additional kill characters are enabled by default.
+このオプションは、ユーザーがログイン名を入力する時に、
+kill ("前のすべての文字を無視する") として解釈される追加の文字を指定する。
+かつてはデフォルトの追加 \'kill\' 文字は \'@\' であったが、
+util-linux 2.23 からはデフォルトでは追加の kill 文字はなくなった。
 .TP
 \-\-chdir \fIdirectory\fP
-Change directory before the login.
+.\"O Change directory before the login.
+login の前にディレクトリを変更する。
 .TP
 \-\-delay \fInumber\fP
-Sleep seconds before open tty.
+.\"O Sleep seconds before open tty.
+tty をオープンする前に指定した秒数だけスリープする。
 .TP
 \-\-nice \fInumber\fP
-Run login with this priority.
+.\"O Run login with this priority.
+login を指定した優先度で実行する。
 .TP
 \-\-reload
-Ask all running agetty instances to reload and update their displayed prompts,
-if the user has not yet commenced logging in.  After doing so the command will
-exit.  This feature might be unsupported on systems without Linux
-.BR inotify (7).
+.\"O Ask all running agetty instances to reload and update their displayed prompts,
+.\"O if the user has not yet commenced logging in.  After doing so the command will
+.\"O exit.  This feature might be unsupported on systems without Linux
+.\"O .BR inotify (7).
+ユーザーがログインをまだ開始していない場合、
+実行されている agetty インスタンスをリロードし、
+表示されているプロンプトを更新する。
+その後、コマンドは終了する。
+この機能は、
+Linux
+.BR inotify (7)
+がないシステムにはサポートされない。
 .TP
 \-\-version
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .TP
 \-\-help
-Display help text and exit.
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
 .PP
 .\"O .SH EXAMPLES
 .SH 例
@@ -462,31 +556,56 @@ DTR が落ちた場合は切断とベル 1 回での自動応答機能を有効�
 
 .\"O .SH SECURITY NOTICE
 .SH セキュリティ上の注意
-If you use the \fB\-\-login\-program\fP and \fB\-\-login\-options\fP options,
-be aware that a malicious user may try to enter lognames with embedded options,
-which then get passed to the used login program.  Agetty does check
-for a leading "\-" and makes sure the logname gets passed as one parameter
-(so embedded spaces will not create yet another parameter), but depending
-on how the login binary parses the command line that might not be sufficient.
-Check that the used login program cannot be abused this way.
+.\"O If you use the \fB\-\-login\-program\fP and \fB\-\-login\-options\fP options,
+.\"O be aware that a malicious user may try to enter lognames with embedded options,
+.\"O which then get passed to the used login program.  Agetty does check
+.\"O for a leading "\-" and makes sure the logname gets passed as one parameter
+.\"O (so embedded spaces will not create yet another parameter), but depending
+.\"O on how the login binary parses the command line that might not be sufficient.
+.\"O Check that the used login program cannot be abused this way.
+\fB\-\-login\-program\fP と \fB\-\-login\-options\fP オプションを使う場合、
+悪意をもったユーザがログイン名と組み込みのオプションを入力して、
+使用されている login プログラムに受け渡そうとするかも知れない点に注意すること。
+agetty はあとに続く "\-" をチェックして、
+ログイン名として 1 つのパラメータにして渡そうとする
+(組み込まれた空白があっても別のパラメータを生成しようとしない)。
+しかし、login バイナリがコマンドラインをどのように解釈するかによっては、
+充分でない場合もある。
+使用する login プログラムが、このような方法で不正に使用されないようにチェックすること。
 .PP
-Some  programs use "\-\-" to indicate that the rest of the commandline should
-not be interpreted as options.  Use this feature if available by passing "\-\-"
-before the username gets passed by \\u.
+.\"O Some  programs use "\-\-" to indicate that the rest of the commandline should
+.\"O not be interpreted as options.  Use this feature if available by passing "\-\-"
+.\"O before the username gets passed by \\u.
+"\-\-" を指定すると、コマンドラインの残りの部分をオプションとして解釈しない
+プログラムもある。
+もし利用可能であれば、この機能を使って、ユーザ名を \\u で渡す前に
+"\-\-" を渡すこと。
 
 .\"O .SH ISSUE FILES
 .SH ISSUE ファイル
-The default issue file is \fI/etc/issue\fP. If the file exists then agetty also
-checks for \fI/etc/issue.d\fP directory. The directory is optional extension to
-the default issue file and content of the directory is printed after
-\fI/etc/issue\fP content. If the \fI/etc/issue\fP does not exist than the
-directory is ignored. All files with .issue extension from the directory are
-printed in version-sort order. The directory allow to maintain 3rd-party
-messages independently on the primary system \fI/etc/issue\fP file.
+.\"O The default issue file is \fI/etc/issue\fP. If the file exists then agetty also
+.\"O checks for \fI/etc/issue.d\fP directory. The directory is optional extension to
+.\"O the default issue file and content of the directory is printed after
+.\"O \fI/etc/issue\fP content. If the \fI/etc/issue\fP does not exist than the
+.\"O directory is ignored. All files with .issue extension from the directory are
+.\"O printed in version-sort order. The directory allow to maintain 3rd-party
+.\"O messages independently on the primary system \fI/etc/issue\fP file.
+デフォルトの issue ファイルは \fI/etc/issue\fP である。
+このファイルが存在する場合、agetty は \fI/etc/issue.d\fP ディレクトリもチェックする。
+このディレクトリはデフォルトの issue ファイルに対して、オプションとなる拡張であり、
+\fI/etc/issue\fP の内容の後に、ディレクトリの内容が表示される。
+\fI/etc/issue\fP が存在しない場合、このディレクトリは無視される。
+このディレクトリ内の .issue 拡張子の付いたファイルは、
+バージョンソート順に表示される。
+このディレクトリは、主となるシステムの \fI/etc/issue\fP ファイルとは独立した、
+3rd パーティーのメッセージを管理できる。
 
-The default path maybe overridden by \fB\-\-issue\-file\fP option. In this case
-specified path has to be file or directory and the default \fI/etc/issue\fP as
-well as \fI/etc/issue.d\fP are ignored.
+.\"O The default path maybe overridden by \fB\-\-issue\-file\fP option. In this case
+.\"O specified path has to be file or directory and the default \fI/etc/issue\fP as
+.\"O well as \fI/etc/issue.d\fP are ignored.
+デフォルトのパスは \fB\-\-issue\-file\fP オプションで上書きできる。
+指定したパスのファイルまたはディレクトリが使われ、
+デフォルトの \fI/etc/issue\fP と \fI/etc/issue.d\fP は無視される。
 
 .\"O The issue files may contain certain escape codes to display the system name, date, time
 .\"O etcetera.  All escape codes consist of a backslash (\\) immediately
@@ -496,14 +615,22 @@ issue ファイルではシステム名や日付、時間
 エスケープコードはバックスラッシュ (\\) とそれに続く以下の一文字からなる。
 
 .TP
-4 or 4{\fIinterface\fR}
-Insert the IPv4 address of the specified network interface (for example: \\4{eth0}).
-If the \fIinterface\fR argument is not specified, then select the first fully
-configured (UP, non-LOCALBACK, RUNNING) interface.  If not any configured
-interface is found, fall back to the IP address of the machine's hostname.
+.\"O 4 or 4{\fIinterface\fR}
+4 または 4{\fIinterface\fR}
+.\"O Insert the IPv4 address of the specified network interface (for example: \\4{eth0}).
+.\"O If the \fIinterface\fR argument is not specified, then select the first fully
+.\"O configured (UP, non-LOCALBACK, RUNNING) interface.  If not any configured
+.\"O interface is found, fall back to the IP address of the machine's hostname.
+指定したネットワークインタフェースの IPv4 アドレスを挿入する (例: \\4{eth0})。
+\fIinterface\fR 引き数が指定されない場合、最初の完全に設定された
+(UP, non-LOCALBACK, RUNNING 状態の) インタフェースが選択される。
+設定されたインタフェースがない場合、
+マシンのホスト名の IP アドレスが選ばれる。
 .TP
-6 or 6{\fIinterface\fR}
-The same as \\4 but for IPv6.
+.\"O 6 or 6{\fIinterface\fR}
+6 または 6{\fIinterface\fR}
+.\"O The same as \\4 but for IPv6.
+\\4 と同様であるが、IPv6 アドレスを表示する。
 .TP
 b
 .\"O Insert the baudrate of the current line.
@@ -513,14 +640,24 @@ d
 .\"O Insert the current date.
 現在の日付。
 .TP
-e or e{\fIname\fR}
-Translate the human-readable \fIname\fP to an escape sequence and insert it
-(for example: \\e{red}Alert text.\\e{reset}).  If the \fIname\fR argument is
-not specified, then insert \\033.  The currently supported names are: black,
-blink, blue, bold, brown, cyan,
+.\"O e or e{\fIname\fR}
+e または e{\fIname\fR}
+.\"O Translate the human-readable \fIname\fP to an escape sequence and insert it
+.\"O (for example: \\e{red}Alert text.\\e{reset}).  If the \fIname\fR argument is
+.\"O not specified, then insert \\033.  The currently supported names are: black,
+.\"O blink, blue, bold, brown, cyan,
+.\"O darkgray, gray, green, halfbright, lightblue, lightcyan, lightgray, lightgreen,
+.\"O lightmagenta, lightred, magenta, red, reset, reverse, and yellow.  All unknown
+.\"O names are silently ignored.
+人間が読める \fIname\fP をエスケープシーケンスに変換して挿入する
+(例: \\e{red}Alert text.\\e{reset})。
+\fIname\fR 引き数が指定されていない場合、
+\\033 が挿入される。
+現在サポートされている name は以下のとおり:
+black, blink, blue, bold, brown, cyan,
 darkgray, gray, green, halfbright, lightblue, lightcyan, lightgray, lightgreen,
-lightmagenta, lightred, magenta, red, reset, reverse, and yellow.  All unknown
-names are silently ignored.
+lightmagenta, lightred, magenta, red, reset, reverse, yellow。
+不明な name は黙って無視される。
 .TP
 s
 .\"O Insert the system name (the name of the operating system).  Same as 'uname \-s'.
@@ -529,13 +666,22 @@ s
 \&'uname \-s' と同じ。
 \\S エスケープコードを参照すること。
 .TP
-S or S{VARIABLE}
-Insert the VARIABLE data from \fI/etc/os-release\fP.  If this file does not exist
-then fall back to \fI/usr/lib/os-release\fP.  If the VARIABLE argument is not
-specified, then use PRETTY_NAME from the file or the system name (see \\s).
-This escape code allows to keep \fI/etc/issue\fP distribution and release
-independent.  Note that \\S{ANSI_COLOR} is converted to the real terminal
-escape sequence.
+.\"O S or S{VARIABLE}
+S または S{VARIABLE}
+.\"O Insert the VARIABLE data from \fI/etc/os-release\fP.  If this file does not exist
+.\"O then fall back to \fI/usr/lib/os-release\fP.  If the VARIABLE argument is not
+.\"O specified, then use PRETTY_NAME from the file or the system name (see \\s).
+.\"O This escape code allows to keep \fI/etc/issue\fP distribution and release
+.\"O independent.  Note that \\S{ANSI_COLOR} is converted to the real terminal
+.\"O escape sequence.
+\fI/etc/os-release\fP から VARIABLE データを取り出して、挿入する。
+このファイルが存在市内場合、\fI/usr/lib/os-release\fP を探す。
+VARIABLE 引き数が指定されていない場合、
+このファイルから PRETTY_NAME を使うか、
+システム名 (\\s を参照) を使う。
+このエスケープコードは \fI/etc/issue\fP の配布物を保存して、
+リリースから独立させることができる。
+\\S{ANSI_COLOR} は実際の端末のエスケープシーケンスに変換される点に注意すること。
 .TP
 l
 .\"O Insert the name of the current tty line.
@@ -614,7 +760,8 @@ This is thingol.orcan.dk (Linux i386 1.1.9) 18:29:30
 ログインプロンプトの前に表示される。
 .TP
 .I /etc/os-release /usr/lib/os-release
-operating system identification data.
+.\"O operating system identification data.
+オペレーティングシステムの識別データ。
 .TP
 .I /dev/console
 .\"O problem reports (if syslog(3) is not used).
