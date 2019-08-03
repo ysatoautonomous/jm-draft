@@ -1,0 +1,692 @@
+.\"
+.\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
+.\" Translated Wed Jan 14 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Modified & Updated Wed Jun 24 1998 by NAKANO Takeo
+.\"
+.TH AGETTY 8 "February 2016" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O agetty \- alternative Linux getty
+agetty \- Linux 用 getty のもう一つの実装
+
+.\"O .SH SYNOPSIS
+.SH 書式
+.B agetty
+[options]
+.IR port " [" baud_rate "...] [" term ]
+
+.\"O .SH DESCRIPTION
+.SH 説明
+.ad
+.fi
+.\"O \fBagetty\fP opens a tty port, prompts for a login name and invokes
+.\"O the /bin/login command.  It is normally invoked by \fBinit\fP(8).
+\fBagetty\fP
+は tty ポートをオープンし、ログイン名を求めるプロンプトを出し、 
+/bin/login コマンドを起動する。通常 \fBagetty\fP は \fIinit(8)\fP から
+起動される。
+
+.\"O \fBagetty\fP has several \fInon-standard\fP features that are useful
+.\"O for hardwired and for dial-in lines:
+\fBagetty\fP
+はいくつか\fI非標準\fPな機能を持っており、直結ラインやダイアルインの
+ラインに便利になっている。
+
+.IP \(bu
+.\"O Adapts the tty settings to parity bits and to erase, kill,
+.\"O end-of-line and uppercase characters when it reads a login name.
+.\"O The program can handle 7-bit characters with even, odd, none or space
+.\"O parity, and 8-bit characters with no parity.  The following special
+.\"O characters are recognized: Control-U (kill); DEL and
+.\"O backspace (erase); carriage return and line feed (end of line).
+ログイン名を読むときに tty の設定（パリティビット、 erase、 
+kill、 end-of-line、 uppercase 文字）を行う。
+.\"?? uppercase character は、大文字のみの端末かどうかということ？
+.B agetty
+は 7 ビット文字を偶、奇、スペースの各パリティ、あるいはパリティなしの
+いずれでも扱うことができる。また 8 ビット文字をパリティなしで扱うこと
+ができる。以下の特殊文字を認識する; コントロール U (kill)、 
+DEL およびバックスペース (erase)、復帰 (carriage return) および改行 
+(linefeed) (end of line)。
+.\"O See also the \fB\-\-erase\-chars\fP and \fB\-\-kill\-chars\fP options.
+\fB\-\-erase\-chars\fP と \fB\-\-kill\-chars\fP オプションも参照すること。
+.IP \(bu
+.\"O Optionally deduces the baud rate from the CONNECT messages produced by
+.\"O Hayes(tm)-compatible modems.
+オプション機能: Hayes(tm) 互換のモデムが出す CONNECT メッセージ
+から通信速度 (baud rate) を推測する。
+.IP \(bu
+.\"O Optionally does not hang up when it is given an already opened line
+.\"O (useful for call-back applications).
+オプション機能: すでにオープンしているラインを与えられた場合に
+はラインを切断しない (コールバックの用途に便利)。
+.IP \(bu
+.\"O Optionally does not display the contents of the \fI/etc/issue\fP file.
+オプション機能: \fI/etc/issue\fP ファイルの内容を表示させない。
+.IP \(bu
+.\"O Optionally displays an alternative issue file or directory instead of \fI/etc/issue\fP or \fI/etc/issue.d\fP.
+オプション機能: \fI/etc/issue\fP または \fI/etc/issue.d\fP 以外の
+issue ファイルを表示する。
+.IP \(bu
+.\"O Optionally does not ask for a login name.
+オプション機能: ログイン名を尋ねない。
+.IP \(bu
+.\"O Optionally invokes a non-standard login program instead of
+.\"O \fI/bin/login\fP.
+オプション機能: \fI/bin/login\fP 以外の非標準なログインプログラムを
+起動する。
+.IP \(bu
+.\"O Optionally turns on hardware flow control.
+オプション機能: ハードウェアによるフローコントロールを有効にする。
+.IP \(bu
+.\"O Optionally forces the line to be local with no need for carrier detect.
+オプション機能: 接続ラインをローカルなライン (キャリア検知を必要と
+しないライン) に設定する。
+.PP
+.\"O This program does not use the \fI/etc/gettydefs\fP (System V) or
+.\"O \fI/etc/gettytab\fP (SunOS 4) files.
+このプログラムは \fI/etc/gettydefs\fP (System V) や 
+\fI/etc/gettytab\fP (SunOS 4) ファイルを利用しない。
+.\"O .SH ARGUMENTS
+.SH 引き数
+.na
+.nf
+.fi
+.ad
+.TP
+.I port
+.\"O A path name relative to the \fI/dev\fP directory.  If a "\-" is
+.\"O specified, \fBagetty\fP assumes that its standard input is
+.\"O already connected to a tty port and that a connection to a
+.\"O remote user has already been established.
+\fI/dev/\fP ディレクトリからの相対パス名。 "-" が指定されると、
+\fBagetty\fP 
+は自分の標準入力がすでに tty ポートに接続されており、リモートユーザー
+への接続がすでに確立されているものとみなす。
+.sp
+.\"O Under System V, a "\-" \fIport\fP argument should be preceded
+.\"O by a "\-\-".
+System V では \fIport\fP 引き数としての "\-" は "\-\-" の前に置かなければ
+ならない。
+.TP
+.IR baud_rate ,...
+.\"O A comma-separated list of one or more baud rates.  Each time
+.\"O \fBagetty\fP receives a BREAK character it advances through
+.\"O the list, which is treated as if it were circular.
+一つ以上の通信速度をコンマで区切ったリスト。
+\fBagetty\fP 
+が BREAK 文字を受け取ると、リストの次に進む。最後まで行ったら最初に戻る。
+.sp
+.\"O Baud rates should be specified in descending order, so that the
+.\"O null character (Ctrl\-@) can also be used for baud-rate switching.
+通信速度は大きい方から小さい方へと並べるようにする。こうすると null
+文字 (Ctrl-@) も通信速度の切り替えに使えるようになる。
+.sp
+This argument is optional and unnecessary for \fBvirtual terminals\fP.
+.sp
+The default for \fBserial terminals\fP is keep the current baud rate
+(see \fB\-\-keep\-baud\fP) and if unsuccessful then default to '9600'.
+.TP
+.I term
+.\"O The value to be used for the TERM environment variable.  This overrides
+.\"O whatever init(8) may have set, and is inherited by login and the shell.
+TERM 環境変数に用いる値。これは init(8) の設定を上書きし、
+login および shell に受け継がれる。
+.sp
+The default is 'vt100', or 'linux' for Linux on a virtual terminal,
+or 'hurd' for GNU Hurd on a virtual terminal.
+.\"O .SH OPTIONS
+.SH オプション
+.na
+.nf
+.fi
+.ad
+.TP
+\-8, \-\-8bits
+Assume that the tty is 8-bit clean, hence disable parity detection.
+.TP
+\-a, \-\-autologin \fIusername\fP
+Automatically log in the specified user without asking for a username or password.
+Using this option causes an \fB\-f \fIusername\fR option and argument to be
+added to the \fB/bin/login\fP command line.  See \fB\-\-login\-options\fR, which
+can be used to modify this option's behavior.
+
+Note that \fB\-\-autologin\fP may affect the way how agetty initializes the
+serial line, because on auto-login agetty does not read from the line and it
+has no opportunity optimize the line setting.
+.TP
+\-c, \-\-noreset
+Do not reset terminal cflags (control modes).  See \fBtermios\fP(3) for more
+details.
+.TP
+\-E, \-\-remote
+Typically the \fBlogin\fP(1) command is given a remote hostname when
+called by something such as \fBtelnetd\fP(8).  This option allows \fBagetty\fP
+to pass what it is using for a hostname to \fBlogin\fP(1) for use
+in \fButmp\fP(5).  See \fB\-\-host\fP, \fBlogin\fP(1), and \fButmp\fP(5).
+.IP
+If the \fB\-\-host\fP \fIfakehost\fP option is given, then an \fB\-h\fP
+\fIfakehost\fP option and argument are added to the \fB/bin/login\fP
+command line.
+.IP
+If the \fB\-\-nohostname\fR option is given, then an \fB\-H\fP option
+is added to the \fB/bin/login\fP command line.
+.IP
+See \fB\-\-login\-options\fR.
+.TP
+\-f, \-\-issue\-file \fIfile|directory\fP
+.\"O Display the contents of \fIfile\fP instead of \fI/etc/issue\fP.  If the
+.\"O specified path is a \fIdirectory\fP then displays all files with .issue file
+.\"O extension in version-sort order from the directory.  This allows custom
+.\"O messages to be displayed on different terminals.  The
+.\"O \-\-noissue option will override this option.
+\fIfile\fP
+を
+\fI/etc/issue\fP
+の代わりに表示する。
+If the
+specified path is a \fIdirectory\fP then displays all files with .issue file
+extension in version-sort order from the directory.  
+端末別にメッセージを変えることができるようになる。
+\-\-noissue オプションはこのオプションを上書きする。
+.TP
+\-h, \-\-flow\-control
+.\"O Enable hardware (RTS/CTS) flow control.  It is left up to the
+.\"O application to disable software (XON/XOFF) flow protocol where
+.\"O appropriate.
+ハードウェア (RTS/CTS) コントロールを有効にする。ソフトウェアによる 
+(XON/XOFF) フローコントロールを無効にするかどうかはアプリケーションに
+任せる。
+.TP
+\-H, \-\-host \fIfakehost\fP
+Write the specified \fIfakehost\fP into the utmp file.  Normally,
+no login host is given, since \fBagetty\fP is used for local hardwired
+connections and consoles.  However, this option can be useful for
+identifying terminal concentrators and the like.
+.TP
+\-i, \-\-noissue
+.\"O Do not display the contents of \fI/etc/issue\fP (or other) before writing the
+.\"O login prompt.  Terminals or communications hardware may become confused
+.\"O when receiving lots of text at the wrong baud rate; dial-up scripts
+.\"O may fail if the login prompt is preceded by too much text.
+ログインプロンプトの前に
+\fI/etc/issue\fP
+の内容を表示しない。端末や通信装置は、正しくない通信速度で大量の
+テキストを受け取ると混乱してしまうことがある。
+ダイアルアップスクリプトによっては、ログインプロンプトの前に
+大量のテキストを受け取ると落ちてしまう場合がある。
+.TP
+\-I, \-\-init\-string \fIinitstring\fP
+.\"O Set an initial string to be sent to the tty or modem before sending
+.\"O anything else.  This may be used to initialize a modem.  Non-printable
+.\"O characters may be sent by writing their octal code preceded by a
+.\"O backslash (\\).  For example, to send a linefeed character (ASCII 10,
+.\"O octal 012), write \\012.
+通信に先立って tty やモデムに送る初期化文字列を設定する。これはモデムの
+初期化に用いることができる。印刷できない文字も、バックスラッシュ (\\) 
+に引き続いて 8 進数で指定すれば送ることができる。例えば改行文字 (ASCII
+10, 8 進数では 012) を送るには \\012 とする。
+.TP
+\-J, \-\-noclear
+Do not clear the screen before prompting for the login name.
+By default the screen is cleared.
+.TP
+\-l, \-\-login\-program \fIlogin_program\fP
+.\"O Invoke the specified \fIlogin_program\fP instead of /bin/login.  This allows
+.\"O the use of a non-standard login program.  Such a program could, for example,
+.\"O ask for a dial-up password or use a different password file. See
+.\"O \fB\-\-login\-options\fP.
+指定した \fIlogin_program\fP を /bin/login の代わりに起動する。
+これによって非標準なログインプログラム (例えばダイアルアップパスワードを尋ねたり、
+/etc/passwd 以外のパスワードファイルを用いるなど) を使うことができる。
+\fB\-\-login\-options\fP を参照すること。
+.TP
+\-L, \-\-local\-line[=\fImode\fP]
+Control the CLOCAL line flag.  The optional \fImode\fP argument is 'auto', 'always' or 'never'.
+If the \fImode\fP argument is omitted, then the default is 'always'.  If the
+\-\-local\-line option is not given at all, then the default is 'auto'.
+.PP
+.RS
+.PD 1
+.TP
+\fIalways\fR
+.\"O Forces the line to be a local line with no need for carrier detect.  This
+.\"O can be useful when you have a locally attached terminal where the serial
+.\"O line does not set the carrier-detect signal.
+接続回線を、キャリア検知の必要がないローカルな直結回線
+であるとみなす。
+これはローカルに接続された端末で、キャリア検知用の信号線が
+ないシリアルケーブルを使っているときに便利である。
+.TP
+\fInever\fR
+Explicitly clears the CLOCAL flag from the line setting and the
+carrier-detect signal is expected on the line.
+.TP
+\fIauto\fR
+The \fBagetty\fR default.  Does not modify the CLOCAL setting and follows
+the setting enabled by the kernel.
+.PD
+.RE
+.TP
+\-m, \-\-extract\-baud
+.\"O Try to extract the baud rate from the CONNECT status message
+.\"O produced by Hayes(tm)\-compatible modems.  These status
+.\"O messages are of the form: "<junk><speed><junk>".
+.\"O \fBagetty\fP assumes that the modem emits its status message at
+.\"O the same speed as specified with (the first) \fIbaud_rate\fP value
+.\"O on the command line.
+通信速度を Hayes(tm) 互換モデムが出す CONNECT メッセージから抽出しようと試みる。
+メッセージは "<その他><速度><その他>" というような形式になっている。
+\fBagetty\fP 
+では、コマンドラインの \fIbaud_rate\fP の先頭に指定されたスピードで、
+モデムがステータスメッセージを出力するものとみなしている。
+.sp
+.\"O Since the \fB\-\-extract\-baud\fP feature may fail on heavily-loaded
+.\"O systems, you still should enable BREAK processing by enumerating all
+.\"O expected baud rates on the command line.
+\fI\-m\fP の機能は負荷の高いシステムでは失敗することもあるので、
+コマンドラインでも予想される通信速度をすべて列記して、 BREAK 処理を有効に
+しておく方が良いだろう。
+.TP
+\-\-list\-speeds
+Display supported baud rates.  These are determined at compilation time.
+.TP
+\-n, \-\-skip\-login
+.\"O Do not prompt the user for a login name.  This can be used in connection
+.\"O with the \fB\-\-login\-program\fP option to invoke a non-standard login
+.\"O process such as a BBS system.  Note that with the \fB\-\-skip\-login\fR
+.\"O option, \fBagetty\fR gets no input from the user who logs in and therefore
+.\"O will not be able to figure out parity, character size, and newline
+.\"O processing of the connection.  It defaults to space parity, 7 bit
+.\"O characters, and ASCII CR (13) end-of-line character.  Beware that the
+.\"O program that \fBagetty\fR starts (usually /bin/login) is run as root.
+ログイン名入力のプロンプトを出さない。
+これは \fB\-\-login\-program\fP オプションと共に用いて、
+BBS システムのように非標準のログイン処理を起動する際に便利である。 
+\fB\-\-skip\-login\fR オプションを用いると、
+\fBagetty\fR はログインしてくるユーザーから
+入力を受け取ることができないので、コネクションのパリティや
+キャラクタビット数、改行処理などを決定することができない。
+デフォルトはスペースパリティ、
+文字は 7 ビット、行末文字は ASCII の CR (13) となっている。
+\fBagetty\fR
+が起動するプログラム (通常は /bin/login) は root 権限で実行されること
+に注意せよ。
+.TP
+\-N, \-\-nonewline
+Do not print a newline before writing out /etc/issue.
+.TP
+\-o, \-\-login\-options "\fIlogin_options\fP"
+Options  and arguments that  are passed to \fBlogin\fP(1). Where \\u is
+replaced by the login name. For example:
+.RS
+.IP "" 4
+.B "\-\-login\-options '-h darkstar -- \\\u'"
+.PP
+See \fB\-\-autologin\fR, \fB\-\-login\-program\fR and \fB\-\-remote\fR.
+.PP
+Please read the SECURITY NOTICE below before using this option.
+.RE
+.TP
+\-p, \-\-login\-pause
+Wait for any key before dropping to the login prompt.  Can be combined
+with \fB\-\-autologin\fP to save memory by lazily spawning shells.
+.TP
+\-r, \-\-chroot \fIdirectory\fP
+Change root to the specified directory.
+.TP
+\-R, \-\-hangup
+Call vhangup() to do a virtual hangup of the specified terminal.
+.TP
+\-s, \-\-keep\-baud
+Try to keep the existing baud rate.  The baud rates from
+the command line are used when agetty receives a BREAK character.
+.TP
+\-t, \-\-timeout \fItimeout\fP
+.\"O Terminate if no user name could be read within \fItimeout\fP seconds.
+.\"O Use of this option with hardwired terminal lines is not recommended.
+\fItimeout\fP 秒以内にユーザー名を読み込むことができなかったら切断する。
+このオプションは直結回線には推奨されない。
+.TP
+\-U, \-\-detect\-case
+Turn on support for detecting an uppercase-only terminal.  This setting
+will detect a login name containing only capitals as indicating an
+uppercase-only terminal and turn on some upper-to-lower case conversions.
+Note that this has no support for any Unicode characters.
+.TP
+\-w, \-\-wait\-cr
+.\"O Wait for the user or the modem to send a carriage-return or a
+.\"O linefeed character before sending the \fI/etc/issue\fP file (or others)
+.\"O and the login prompt.  This is useful with the \fB\-\-init\-string\fP
+.\"O option.
+ユーザーまたはモデムからの復帰文字か改行文字を待ち、
+これを受け取ってから
+\fI/etc/issue\fP (または別の issue) ファイルやログインプロンプトを出す。
+\fB\-\-init\-string\fP オプションを用いた接続の際に便利である。
+.TP
+\-\-nohints
+Do not print hints about Num, Caps and Scroll Locks.
+.TP
+\-\-nohostname
+By default the hostname will be printed.  With this option enabled,
+no hostname at all will be shown.
+.TP
+\-\-long\-hostname
+By default the hostname is only printed until the first dot.  With
+this option enabled, the fully qualified hostname by \fBgethostname\fR(3P)
+or (if not found) by \fBgetaddrinfo\fR(3) is shown.
+.TP
+\-\-erase\-chars \fIstring\fP
+This option specifies additional characters that should be interpreted as a
+backspace ("ignore the previous character") when the user types the login name.
+The default additional \'erase\' has been \'#\', but since util-linux 2.23
+no additional erase characters are enabled by default.
+.TP
+\-\-kill\-chars \fIstring\fP
+This option specifies additional characters that should be interpreted as a
+kill ("ignore all previous characters") when the user types the login name.
+The default additional \'kill\' has been \'@\', but since util-linux 2.23
+no additional kill characters are enabled by default.
+.TP
+\-\-chdir \fIdirectory\fP
+Change directory before the login.
+.TP
+\-\-delay \fInumber\fP
+Sleep seconds before open tty.
+.TP
+\-\-nice \fInumber\fP
+Run login with this priority.
+.TP
+\-\-reload
+Ask all running agetty instances to reload and update their displayed prompts,
+if the user has not yet commenced logging in.  After doing so the command will
+exit.  This feature might be unsupported on systems without Linux
+.BR inotify (7).
+.TP
+\-\-version
+Display version information and exit.
+.TP
+\-\-help
+Display help text and exit.
+.PP
+.\"O .SH EXAMPLES
+.SH 例
+.\"O This section shows examples for the process field of an entry in the
+.\"O \fI/etc/inittab\fP file.  You'll have to prepend appropriate values
+.\"O for the other fields.  See \fIinittab(5)\fP for more details.
+この節では \fI/etc/inittab\fPファイルに記述するコマンドエントリの例を示す。
+他のフィールドには、それぞれ適当な値を指定する必要があるだろう。詳細は
+\fIinittab(5)\fP
+を参照すること。
+
+.\"O For a hardwired line or a console tty:
+直結ラインまたはコンソール tty 用:
+
+.RS
+.B /sbin/agetty\ 9600\ ttyS1
+.RE
+
+.\"O For a directly connected terminal without proper carrier-detect wiring
+.\"O (try this if your terminal just sleeps instead of giving you a password:
+.\"O prompt):
+.\"O?? carrier detect の間違いかな？
+直結された端末で、正しい CD 線のない場合 (password: プロンプトが出ない
+で端末が黙ってしまう場合はこちらを試してみると良い):
+
+.RS
+.B /sbin/agetty\ \-\-local\-line\ 9600\ ttyS1\ vt100
+.RE
+
+.\"O For an old-style dial-in line with a 9600/2400/1200 baud modem:
+9600/2400/1200 bps のモデムを用いた古いスタイルのダイアルイン接続ライン
+
+.RS
+.B /sbin/agetty\ \-\-extract\-baud\ \-\-timeout\ 60\ ttyS1\ 9600,2400,1200
+.RE
+
+.\"O For a Hayes modem with a fixed 115200 bps interface to the machine
+.\"O (the example init string turns off modem echo and result codes, makes
+.\"O modem/computer DCD track modem/modem DCD, makes a DTR drop cause a
+.\"O disconnection, and turns on auto-answer after 1 ring):
+Hayes モデムで、マシンへのインターフェースが 115200 bps に固定されている場合
+(以下の例の初期文字列ではモデムのエコーとリザルトコードを抑止し、
+モデム/コンピュータ間の DCD はモデム/モデム間の DCD に追随するようにし、 
+DTR が落ちた場合は切断とベル 1 回での自動応答機能を有効にするように
+設定している):
+.\"?? モデムのマニュアル持っている方、チェックお願いします(^_^;
+
+.ie n .RS 0
+.el .RS
+.B /sbin/agetty\ \-\-wait\-cr\ \-\-init\-string\ 'ATE0Q1&D2&C1S0=1\\015'\ 115200\ ttyS1
+.RE
+
+.\"O .SH SECURITY NOTICE
+.SH セキュリティ上の注意
+If you use the \fB\-\-login\-program\fP and \fB\-\-login\-options\fP options,
+be aware that a malicious user may try to enter lognames with embedded options,
+which then get passed to the used login program.  Agetty does check
+for a leading "\-" and makes sure the logname gets passed as one parameter
+(so embedded spaces will not create yet another parameter), but depending
+on how the login binary parses the command line that might not be sufficient.
+Check that the used login program cannot be abused this way.
+.PP
+Some  programs use "\-\-" to indicate that the rest of the commandline should
+not be interpreted as options.  Use this feature if available by passing "\-\-"
+before the username gets passed by \\u.
+
+.\"O .SH ISSUE FILES
+.SH ISSUE ファイル
+The default issue file is \fI/etc/issue\fP. If the file exists then agetty also
+checks for \fI/etc/issue.d\fP directory. The directory is optional extension to
+the default issue file and content of the directory is printed after
+\fI/etc/issue\fP content. If the \fI/etc/issue\fP does not exist than the
+directory is ignored. All files with .issue extension from the directory are
+printed in version-sort order. The directory allow to maintain 3rd-party
+messages independently on the primary system \fI/etc/issue\fP file.
+
+The default path maybe overridden by \fB\-\-issue\-file\fP option. In this case
+specified path has to be file or directory and the default \fI/etc/issue\fP as
+well as \fI/etc/issue.d\fP are ignored.
+
+.\"O The issue files may contain certain escape codes to display the system name, date, time
+.\"O etcetera.  All escape codes consist of a backslash (\\) immediately
+.\"O followed by one of the characters listed below.
+issue ファイルではシステム名や日付、時間
+などを表示するエスケープコードを用いることができる。
+エスケープコードはバックスラッシュ (\\) とそれに続く以下の一文字からなる。
+
+.TP
+4 or 4{\fIinterface\fR}
+Insert the IPv4 address of the specified network interface (for example: \\4{eth0}).
+If the \fIinterface\fR argument is not specified, then select the first fully
+configured (UP, non-LOCALBACK, RUNNING) interface.  If not any configured
+interface is found, fall back to the IP address of the machine's hostname.
+.TP
+6 or 6{\fIinterface\fR}
+The same as \\4 but for IPv6.
+.TP
+b
+.\"O Insert the baudrate of the current line.
+現在のラインの通信速度。
+.TP
+d
+.\"O Insert the current date.
+現在の日付。
+.TP
+e or e{\fIname\fR}
+Translate the human-readable \fIname\fP to an escape sequence and insert it
+(for example: \\e{red}Alert text.\\e{reset}).  If the \fIname\fR argument is
+not specified, then insert \\033.  The currently supported names are: black,
+blink, blue, bold, brown, cyan,
+darkgray, gray, green, halfbright, lightblue, lightcyan, lightgray, lightgreen,
+lightmagenta, lightred, magenta, red, reset, reverse, and yellow.  All unknown
+names are silently ignored.
+.TP
+s
+.\"O Insert the system name (the name of the operating system).  Same as 'uname \-s'.
+.\"O See also the \\S escape code.
+システム名 (オペレーティングシステムの名前)。
+\&'uname \-s' と同じ。
+\\S エスケープコードを参照すること。
+.TP
+S or S{VARIABLE}
+Insert the VARIABLE data from \fI/etc/os-release\fP.  If this file does not exist
+then fall back to \fI/usr/lib/os-release\fP.  If the VARIABLE argument is not
+specified, then use PRETTY_NAME from the file or the system name (see \\s).
+This escape code allows to keep \fI/etc/issue\fP distribution and release
+independent.  Note that \\S{ANSI_COLOR} is converted to the real terminal
+escape sequence.
+.TP
+l
+.\"O Insert the name of the current tty line.
+現在の tty ラインの名前。
+.TP
+m
+.\"O Insert the architecture identifier of the machine.  Same as 'uname \-m'.
+マシンのアーキテクチャを表す名前。
+\&'uname \-m' と同じ。
+.TP
+n
+.\"O Insert the nodename of the machine, also known as the hostname.  Same as 'uname \-n'.
+マシンのノード名 (ホスト名)。
+\&'uname \-n' と同じ。
+.TP
+o
+.\"O Insert the NIS domainname of the machine.  Same as 'hostname \-d'.
+マシンの NIS ドメイン名。
+\&'uname \-d' と同じ。
+.TP
+O
+.\"O Insert the DNS domainname of the machine.
+マシンの DNS ドメイン名。
+.TP
+r
+.\"O Insert the release number of the OS.  Same as 'uname \-r'.
+OS のリリース番号。
+\&'uname \-r' と同じ。
+.TP
+t
+.\"O Insert the current time.
+現在の時刻。
+.TP
+u
+.\"O Insert the number of current users logged in.
+現在ログインしているユーザー数。
+.TP
+U
+.\"O Insert the string "1 user" or "<n> users" where <n> is the number of current
+.\"O users logged in.
+文字列 "1 user" または "<n> users"。 <n> は現在ログインしているユーザー数。
+.TP
+v
+.\"O Insert the version of the OS, that is, the build-date and such.
+OS のバージョン (ビルドした日付など)。
+.PP
+.\"O An example.  On my system, the following \fI/etc/issue\fP file:
+以下は著者のシステムでの \fI/etc/issue\fP ファイルの例である:
+.sp
+.na
+.RS
+.nf
+This is \\n.\\o (\\s \\m \\r) \\t
+.fi
+.RE
+.PP
+.\"O displays as:
+表示は以下のようになる。
+.sp
+.RS
+.nf
+This is thingol.orcan.dk (Linux i386 1.1.9) 18:29:30
+.fi
+.RE
+
+.\"O .SH FILES
+.SH ファイル
+.na
+.TP
+.I /var/run/utmp
+.\"O the system status file.
+システムのステータスファイル。
+.TP
+.I /etc/issue
+.\"O printed before the login prompt.
+ログインプロンプトの前に表示される。
+.TP
+.I /etc/os-release /usr/lib/os-release
+operating system identification data.
+.TP
+.I /dev/console
+.\"O problem reports (if syslog(3) is not used).
+障害を報告する端末 (syslog(3) が使われていない場合)。
+.TP
+.I /etc/inittab
+.\"O \fIinit\fP(8) configuration file for SysV-style init daemon.
+SysV スタイルの init デーモンの \fIinit\fP(8) 設定ファイル。
+.\"O .SH BUGS
+.SH バグ
+.ad
+.fi
+.\"O The baud-rate detection feature (the \fB\-\-extract\-baud\fP option) requires that
+.\"O \fBagetty\fP be scheduled soon enough after completion of a dial-in
+.\"O call (within 30 ms with modems that talk at 2400 baud).  For robustness,
+.\"O always use the \fB\-\-extract\-baud\fP option in combination with a multiple baud
+.\"O rate command-line argument, so that BREAK processing is enabled.
+通信速度の自動検知機能 (\fB\-\-extract\-baud\fP オプション) では、
+\fBagetty\fP
+のスケジュールがダイアルイン接続の確立後すぐに回ってこなければならない 
+(2400 bps の場合は 30 ms 以内)。
+システムを強くするために、 \fB\-\-extract\-baud\fP 
+オプションを用いる場合には、常にコマンドライン引き数で通信速度の複数
+指定を行い、 BREAK 処理を有効にしておくべきである。
+
+.\"O The text in the \fI/etc/issue\fP file (or other) and the login prompt
+.\"O are always output with 7-bit characters and space parity.
+\fI/etc/issue\fP
+(または他の issue ファイル) のテキストとログインプロンプトの表示には
+常に 7 ビット文字とスペースパリティが用いられる。
+
+.\"O The baud-rate detection feature (the \fB\-\-extract\-baud\fP option) requires that
+.\"O the modem emits its status message \fIafter\fP raising the DCD line.
+通信速度の自動検知機能 (\fB\-\-extract\-baud\fP  オプション) では、
+モデムのステータスメッセージは DCD ラインが high に\fIなってから\fRでないと受け付けない。
+.\"O .SH DIAGNOSTICS
+.SH 返り値
+.ad
+.fi
+.\"O Depending on how the program was configured, all diagnostics are
+.\"O written to the console device or reported via the \fBsyslog\fR(3) facility.
+.\"O Error messages are produced if the \fIport\fP argument does not
+.\"O specify a terminal device; if there is no utmp entry for the
+.\"O current process (System V only); and so on.
+プログラムが返す情報はすべて console デバイスに書き込まれるか、 
+\fBsyslog\fR(3) を通してレポートされる。どちらかはプログラムの設定に依存する。 
+\fIport\fP 引き数が端末デバイスを指定していない場合、 utmp に現在の
+プロセスのエントリがない場合 (System V のみ) などにエラーメッセージ
+が発行される。
+.\"O .SH AUTHORS
+.SH 著者
+.UR werner@suse.de
+Werner Fink
+.UE
+.br
+.UR kzak@redhat.com
+Karel Zak
+.UE
+.sp
+.\"O The original
+.\"O .B agetty
+.\"O for serial terminals was written by W.Z. Venema <wietse@wzv.win.tue.nl>
+.\"O and ported to Linux by Peter Orbaek <poe@daimi.aau.dk>.
+元々の
+.B agetty
+はシリアル端末用に W.Z. Venema <wietse@wzv.win.tue.nl> が書いた。
+Peter Orbaek <poe@daimi.aau.dk> が Linux への移植を行った。
+
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The agetty command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util\-linux/.
+agetty コマンドは、util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util\-linux/
+から入手できる。
