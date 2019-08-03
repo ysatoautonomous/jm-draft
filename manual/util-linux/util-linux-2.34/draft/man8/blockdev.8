@@ -3,10 +3,12 @@
 .\"
 .\" May be distributed under the GNU General Public License
 .\"
-.\" Japanese Version Copyright (c) 2001 Yuichi SATO
+.\" Japanese Version Copyright (c) 2001-2019 Yuichi SATO
 .\"         all rights reserved.
 .\" Translated Sat Feb 17 04:25:09 JST 2001
 .\"         by Yuichi SATO <sato@complex.eng.hokudai.ac.jp>
+.\" Updated & Modified Sat Aug  3 22:26:13 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .\"WORD:	readahead	先読み
 .\"
@@ -48,9 +50,13 @@ blockdev \- コマンドラインからブロックデバイスの ioctl を呼�
 .\"O Be verbose.
 詳細に表示する。
 .IP "\fB\-\-report\fP"
-Print a report for the specified device. It is possible to give multiple
-devices. If none is given, all devices which appear in /proc/partitions are
-shown. Note that the partition StartSec is in 512-byte sectors.
+.\"O Print a report for the specified device. It is possible to give multiple
+.\"O devices. If none is given, all devices which appear in /proc/partitions are
+.\"O shown. Note that the partition StartSec is in 512-byte sectors.
+指定したデバイスのレポートを表示する。
+複数のデバイスを指定することもできる。
+何も指定しない場合、/proc/partitions のすべてのデバイスが表示される。
+パーティションの開始セクタ (StartSec) は 512 バイトセクタである。
 .IP "\fB\-h\fR, \fB\-\-help\fR"
 .\"O Display help text and exit.
 ヘルプを表示して、終了する。
@@ -59,28 +65,40 @@ shown. Note that the partition StartSec is in 512-byte sectors.
 バージョン情報を表示して、終了する。
 .\"O .SH COMMANDS
 .SH コマンド
-It is possible to give multiple devices and multiple commands.
+.\"O It is possible to give multiple devices and multiple commands.
+複数のデバイスと、複数のコマンドを指定できる。
 .IP "\fB\-\-flushbufs\fP"
 .\"O Flush buffers.
 バッファをフラッシュする。
 .IP "\fB\-\-getalignoff\fP"
-Get alignment offset.
+.\"O Get alignment offset.
+アライメントオフセットを取得する。
 .IP "\fB\-\-getbsz\fP"
-Print blocksize in bytes.  This size does not describe device topology.  It's
-size used internally by kernel and it maybe modified (for example) by
-filesystem driver on mount.
+.\"O Print blocksize in bytes.  This size does not describe device topology.  It's
+.\"O size used internally by kernel and it maybe modified (for example) by
+.\"O filesystem driver on mount.
+ブロックサイズをバイト単位で表示する。
+このサイズはデバイスのトポロジーを説明している訳ではない。
+このサイズはカーネルで内部的に使われ、(例えば) マウント時に
+ファイルシステムドライバで修正される可能性がある。
 .IP "\fB\-\-getdiscardzeroes\fP"
-Get discard zeroes support status.
+.\"O Get discard zeroes support status.
+discard zeroes サポートの状態を取得する。
 .IP "\fB\-\-getfra\fP"
-Get filesystem readahead in 512-byte sectors.
+.\"O Get filesystem readahead in 512-byte sectors.
+ファイルシステムの先読み (readahead) の大きさを 512 バイトセクタ単位で取得する。
 .IP "\fB\-\-getiomin\fP"
-Get minimum I/O size.
+.\"O Get minimum I/O size.
+最小 I/O サイズを取得する。
 .IP "\fB\-\-getioopt\fP"
-Get optimal I/O size.
+.\"O Get optimal I/O size.
+最適な I/O サイズを取得する。
 .IP "\fB\-\-getmaxsect\fP"
-Get max sectors per request
+.\"O Get max sectors per request
+リクエストの最大セクタを取得する。
 .IP "\fB\-\-getpbsz\fP"
-Get physical block (sector) size.
+.\"O Get physical block (sector) size.
+物理ブロック (セクタ) サイズを取得する。
 .IP "\fB\-\-getra\fP"
 .\"O Print readahead (in 512-byte sectors).
 先読みの大きさを (512 バイトセクタ単位で) 表示する。
@@ -106,26 +124,37 @@ Get physical block (sector) size.
 .\"O Reread partition table
 パーティションテーブルの再読み込みを行う。
 .IP "\fB\-\-setbsz\fP \fIbytes\fP"
-Set blocksize. Note that the block size is specific to the current file
-descriptor opening the block device, so the change of block size only persists
-for as long as blockdev has the device open, and is lost once blockdev exits.
+.\"O Set blocksize. Note that the block size is specific to the current file
+.\"O descriptor opening the block device, so the change of block size only persists
+.\"O for as long as blockdev has the device open, and is lost once blockdev exits.
+ブロックサイズを設定する。
+このブロックサイズはブロックデバイスをオープンしている
+現在のファイルディスクリプターに限定されたものである。
+そのため、ブロックサイズの変更は blockdev がデバイスをオープンしている間だけ続き、
+blockdev が終了すると失われる。
 .IP "\fB\-\-setfra\fP \fIsectors\fP"
-Set filesystem readahead (same like \-\-setra on 2.6 kernels).
+.\"O Set filesystem readahead (same like \-\-setra on 2.6 kernels).
+ファイルシステムの先読みの大きさを設定する
+(2.6 カーネルの \-\-setra と同様)。
 .IP "\fB\-\-setra\fP \fIsectors\fP"
 .\"O Set readahead (in 512-byte sectors).
-先読み (readahead) の大きさを 512 バイトセクタ単位で設定する。
+先読みの大きさを 512 バイトセクタ単位で設定する。
 .IP "\fB\-\-setro\fP"
 .\"O Set read-only. The currently active access to the device may not be affected by the change. For example
 .\"O filesystem already mounted in read-write mode will not be affected. The change applies after remount.
 読み込みだけを許可するように設定する。
-The currently active access to the device may not be affected by the change. For example
-filesystem already mounted in read-write mode will not be affected. The change applies after remount.
+デバイスへの現在のアクティブなアクセスは、この変更の影響を受けない。
+例えば、既に読み書きモードでマウントされているファイルシステムは
+影響を受けない。
+変更は再マウントされた後に適用される。
 .IP "\fB\-\-setrw\fP"
 .\"O Set read-write.
 読み書きを許可するように設定する。
 .\"O .SH AUTHOR
 .SH 著者
-blockdev was written by Andries E.\& Brouwer and rewritten by Karel Zak.
+.\"O blockdev was written by Andries E.\& Brouwer and rewritten by Karel Zak.
+blockdev は Andries E.\& Brouwer によって書かれ、
+Karel Zak によって書き直された。
 .\"O .SH AVAILABILITY
 .SH 入手方法
 .\"O The blockdev command is part of the util-linux package and is available from
