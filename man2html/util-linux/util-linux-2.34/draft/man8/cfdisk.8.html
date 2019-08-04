@@ -1,0 +1,460 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of CFDISK</TITLE>
+</HEAD><BODY>
+<H1>CFDISK</H1>
+Section: System Administration (8)<BR>Updated: March 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+cfdisk - ディスクパーティションテーブルの表示と操作をする。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>cfdisk</B>
+
+[options]
+[<I>device</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B>cfdisk</B>
+
+は、ハードディスクドライブのパーティション分割をする
+curses ベースのプログラムである。
+
+
+デフォルトのデバイスは
+<I>/dev/sda</I>
+
+である。
+<P>
+
+
+
+
+
+
+<B>cfdisk</B>
+
+はユーザフレンドリーなインタフェースでパーティション操作の基本的な機能を
+提供する点に注意すること。
+より進んだ機能が必要な場合は、代わりに
+<B><A HREF="../man8/fdisk.8.html">fdisk</A></B>(8)
+
+を使うこと。
+<P>
+
+
+
+
+
+
+バージョン 2.25以降で、
+<B>cfdisk</B>
+
+は MBR (DOS), GPT, SUN, SGI のディスクラベルをサポートしているが、
+CHS (Cylinder-Head-Sector) によるアドレッシングの機能は提供しなくなった。
+CHS は Linux にとって最早重要ではなく、このアドレッシングの考え方は新しいデバイスで
+意味を失った。
+<P>
+
+
+
+
+
+
+
+
+バージョン 2.25以降で、
+<B>cfdisk</B>
+
+は「表示」コマンドも提供しなくなった。
+この機能は
+<B><A HREF="../man8/partx.8.html">partx</A></B>(8)
+
+と
+<B><A HREF="../man8/lsblk.8.html">lsblk</A></B>(8)
+
+ユーティリティでとても快適でリッチは方法で提供されている。
+<P>
+
+
+デバイスから古いパーティションテーブルを削除したい場合は、
+<B><A HREF="../man8/wipefs.8.html">wipefs</A></B>(8)
+
+を使うこと。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-L</B>,<B> --color</B>[<B>=</B><I>when</I>]
+
+<DD>
+
+
+
+
+出力をカラー表示する。
+オプションの引数 <I>when</I> は <B>auto</B>, <B>never</B>, <B>always</B> の
+いずれかである。
+<I>when</I> 引数を省略した場合、デフォルトは <B>auto</B> である。
+カラー表示は現在の組み込みのデフォルトで無効化されている場合もある。
+<B>--help</B> の出力を参照すること。
+また、「カラー表示」セクションも参照すること。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-z</B>,<B> --zero</B>
+
+<DD>
+
+
+
+
+メモリ内で初期化 (zeroed) したパーティションテーブルで開始する。
+このオプションはディスク上のパーティションテーブルを初期化しない。
+むしろ、既存のパーティションテーブルを読み込まず、
+プログラムを開始する。
+このオプションはスクラッチ、または sfdisk 互換のスクリプトから
+新しいパーティションテーブルを作ることができる。
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>コマンド</H2>
+
+
+
+
+
+
+
+<B>cfdisk</B>
+
+コマンドは、対応するキーを押すことで入力できる
+(コマンドの後に
+<I>Enter</I>
+
+を押す必要はない)。
+使用可能なコマンドは、以下の通りである:
+<DL COMPACT>
+<DT><B>b</B>
+
+<DD>
+
+
+
+選択しているパーティションのブート可能フラグを切替える。
+このコマンドにより、ドライブ上で
+どの基本パーティションをブート可能にするかを選択できる。
+このコマンドはすべてのパーティションラベルタイプで使用可能な
+訳ではない。
+<DT><B>d</B>
+
+<DD>
+
+
+
+
+選択しているパーティションを削除する。
+このコマンドは、パーティションを空き領域に変換し、
+そのパーティションのすぐ前後にある空き領域と統合する。
+既に空き領域とマークされているパーティションや、
+既に使用不能と使用不可パーティションは、削除できない。
+<DT><B>h</B>
+
+<DD>
+
+ヘルプ画面を表示する。
+<DT><B>n</B>
+
+<DD>
+
+空き領域から新しいパーティションを作成する。
+
+
+
+
+<B>cfdisk</B>
+
+は作成したいパーティションのサイズを尋ねるプロンプトを出す。
+デフォルトのサイズは、現在の位置から利用可能なすべての空き領域
+である。
+<P>
+
+
+
+サイズの後ろに倍数の拡張子
+KiB (=1024), MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB を
+付けることができる
+(&quot;iB&quot; はオプションであり、つまり &quot;K&quot; は &quot;KiB&quot; と同じ意味である)。
+<DT><B>q</B>
+
+<DD>
+
+
+プログラムを終了する。
+このコマンドは、データをディスクに書き込まずにプログラムを終了する。
+<DT><B>s</B>
+
+<DD>
+
+
+
+開始セクターの昇順でパーティションをソートする。
+パーティションを削除したり、追加したりすると、
+パーティションの番号付けがディスク上の順番と一致しなくなる
+場合がある。
+このコマンドは順番を一致させるように修正する。
+<DT><B>t</B>
+
+<DD>
+
+
+
+パーティションタイプを変更する。
+デフォルトでは、新しいパーティションは
+<I>Linux</I>
+
+パーティションとして作成される。
+<DT><B>u</B>
+
+<DD>
+
+現在のメモリ内のパーティションテーブルを sfdisk 互換のスクリプトファイルにダンプする。
+<P>
+
+
+
+このスクリプトファイルは <B>cfdisk</B>, <B>fdisk</B>, <B>sfdisk</B> と
+その他の libfdisk アプリケーションで互換性がある。
+より詳細は
+<B><A HREF="../man8/sfdisk.8.html">sfdisk</A></B>(8)
+
+を参照すること。
+<P>
+
+
+
+パーティションテーブルがデバイス上にない場合、
+または <B>cfdisk</B> を <B>--zero</B> コマンドラインオプションで開始する場合、
+sfdisk のスクリプトを <B>cfdisk</B> にロードさせることができる。
+<DT><B>W</B>
+
+<DD>
+
+
+
+
+
+
+パーティションテーブルをディスクに書き込む
+(大文字 W を入力しなければならない)。
+このコマンドはディスク上のデータを破壊するかもしれないので、
+`yes' または `no' を入力して、
+書き込みを承認するか拒否するかしなければならない。
+`yes' を入力した場合、
+<B>cfdisk</B>
+
+はパーティションテーブルをディスクに書き込み、
+カーネルに対してディスクからパーティションテーブルを
+再読み込みするように指示する。
+<P>
+
+
+
+
+
+
+パーティションテーブルの再読み込みは常に成功する訳ではない。
+そのような場合、カーネルに新しいパーティションの情報を
+知らせるために、
+<B><A HREF="../man8/partprobe.8.html">partprobe</A></B>(8)
+
+または
+<B><A HREF="../man8/partx.8.html">partx</A></B>(8)
+
+を使うか、システムを再起動する必要がある。
+<DT><B>x</B>
+
+<DD>
+
+パーティションの追加情報を表示する/非表示にする。
+<DT>
+<DD>
+
+
+
+
+<I>上矢印 (↑)</I>, <I>下矢印 (↓)</I>
+
+カーソルを前または次のパーティションに移動する。
+画面上に表示できる以上のパーティションがある場合、
+画面に表示されている最後 (最初) のパーティションで
+下 (上) に移動することで、
+次 (前) のパーティションセットを表示できる。
+<P>
+<DT>
+<DD>
+<I>左矢印 (←)</I>, <I>右矢印 (→)</I>
+
+
+
+前のアイテム、または次のアイテムを選択する。
+<I>Enter</I> を押すと、現在のアイテムを実行する。
+<P>
+</DL>
+<P>
+
+
+
+
+(<B>W</B>rite
+
+を除く) すべてのコマンドは、大文字でも小文字でも入力できる。
+
+
+
+サブメニュー、またはプロンプトで
+<I>Esc</I>
+
+キーを押すことでメインメニューに戻ることができる。
+<P>
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>カラー表示</H2>
+
+
+
+暗黙のカラー表示は、空ファイル
+<I>/etc/terminal-colors.d/cfdisk.disable</I>
+
+を作成することで、無効化できる。
+<P>
+
+
+
+カラー表示の設定の詳細は、
+<B><A HREF="../man5/terminal-colors.d.5.html">terminal-colors.d</A></B>(5)
+
+を参照すること。
+<P>
+
+
+<B>cfdisk</B>
+
+はカラースキーマファイルによるカラー表示のカスタマイズをサポート
+していない。
+<P>
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT>CFDISK_DEBUG=all<DD>
+
+cfdisk のデバッグ出力を有効化する。
+<DT>LIBFDISK_DEBUG=all<DD>
+
+libfdisk のデバッグ出力を有効化する。
+<DT>LIBBLKID_DEBUG=all<DD>
+
+libblkid のデバッグ出力を有効化する。
+<DT>LIBSMARTCOLS_DEBUG=all<DD>
+
+libsmartcols のデバッグ出力を有効化する。
+<DT>LIBSMARTCOLS_DEBUG_PADDING=on<DD>
+
+表示可能な埋め (padding) 文字を使う。
+LIBSMARTCOLS_DEBUG を有効にする必要がある。
+<P>
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/fdisk.8.html">fdisk</A></B>(8),
+
+<B><A HREF="../man8/parted.8.html">parted</A></B>(8),
+
+<B><A HREF="../man8/partprobe.8.html">partprobe</A></B>(8),
+
+<B><A HREF="../man8/partx.8.html">partx</A></B>(8),
+
+<B><A HREF="../man8/sfdisk.8.html">sfdisk</A></B>(8)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>著者</H2>
+
+Karel Zak &lt;<A HREF="mailto:kzak@redhat.com">kzak@redhat.com</A>&gt;
+<P>
+
+
+
+現在の cfdisk 実装は
+Kevin E. Martin (<A HREF="mailto:martin@cs.unc.edu">martin@cs.unc.edu</A>)
+によるオリジナルの cfdisk を元にしてる。
+<P>
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+cfdisk コマンドは、util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<A NAME="lbAL">&nbsp;</A>
+<H2>翻訳者謝辞</H2>
+
+この man ページの翻訳にあたり、
+&lt;<A HREF="http://www.debian.or.jp/Documents/manuals_not_sgml/cfdisk.ja.txt">http://www.debian.or.jp/Documents/manuals_not_sgml/cfdisk.ja.txt</A>&gt;
+を参考にさせていただいた。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">コマンド</A><DD>
+<DT><A HREF="#lbAG">カラー表示</A><DD>
+<DT><A HREF="#lbAH">環境変数</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">著者</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+<DT><A HREF="#lbAL">翻訳者謝辞</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 02:16:39 GMT, August 04, 2019
+</BODY>
+</HTML>
