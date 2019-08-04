@@ -11,10 +11,12 @@
 .\" entire resulting derived work is distributed under the terms of a
 .\" permission notice identical to this one.
 .\"
-.\" Japanese Version Copyright (c) 2001 Yuichi SATO
+.\" Japanese Version Copyright (c) 2001-2019 Yuichi SATO
 .\"         all rights reserved.
 .\" Translated Mon Feb 26 19:13:14 JST 2001
 .\"         by Yuichi SATO <sato@complex.eng.hokudai.ac.jp>
+.\" Updated & Modified Sun Aug  4 11:14:43 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .\"WORD:	unusable	使用不可
 .\"WORD:	free space	空き領域
@@ -38,55 +40,96 @@ cfdisk \- ディスクパーティションテーブルの表示と操作をす�
 .B cfdisk
 は、ハードディスクドライブのパーティション分割をする
 curses ベースのプログラムである。
-The default device is
-.IR /dev/sda .
+.\"O The default device is
+.\"O .IR /dev/sda .
+デフォルトのデバイスは
+.I /dev/sda
+である。
 
-Note that
+.\"O Note that
+.\"O .B cfdisk
+.\"O provides basic partitioning functionality with a user-friendly interface.
+.\"O If you need advanced features, use
+.\"O .BR fdisk (8)
+.\"O instead.
 .B cfdisk
-provides basic partitioning functionality with a user-friendly interface.
-If you need advanced features, use
+はユーザフレンドリーなインタフェースでパーティション操作の基本的な機能を
+提供する点に注意すること。
+より進んだ機能が必要な場合は、代わりに
 .BR fdisk (8)
-instead.
+を使うこと。
 
-Since version 2.25
+.\"O Since version 2.25
+.\"O .B cfdisk
+.\"O supports MBR (DOS), GPT, SUN and SGI disk labels, but no longer provides any
+.\"O functionality for CHS (Cylinder-Head-Sector) addressing.  CHS has
+.\"O never been important for Linux, and this addressing concept does not make any
+.\"O sense for new devices.
+バージョン 2.25以降で、
 .B cfdisk
-supports MBR (DOS), GPT, SUN and SGI disk labels, but no longer provides any
-functionality for CHS (Cylinder-Head-Sector) addressing.  CHS has
-never been important for Linux, and this addressing concept does not make any
-sense for new devices.
+は MBR (DOS), GPT, SUN, SGI のディスクラベルをサポートしているが、
+CHS (Cylinder-Head-Sector) によるアドレッシングの機能は提供しなくなった。
+CHS は Linux にとって最早重要ではなく、このアドレッシングの考え方は新しいデバイスで
+意味を失った。
 
-Since version 2.25
+.\"O Since version 2.25
+.\"O .B cfdisk
+.\"O also does not provide a 'print' command any more.
+.\"O This functionality is provided by the utilities
+.\"O .BR partx (8)
+.\"O and
+.\"O .BR lsblk (8)
+.\"O in a very comfortable and rich way.
+バージョン 2.25以降で、
 .B cfdisk
-also does not provide a 'print' command any more.
-This functionality is provided by the utilities
+は「表示」コマンドも提供しなくなった。
+この機能は
 .BR partx (8)
-and
+と
 .BR lsblk (8)
-in a very comfortable and rich way.
+ユーティリティでとても快適でリッチは方法で提供されている。
 
-If you want to remove an old partition table from a device, use
-.BR wipefs (8).
+.\"O If you want to remove an old partition table from a device, use
+.\"O .BR wipefs (8).
+デバイスから古いパーティションテーブルを削除したい場合は、
+.BR wipefs (8)
+を使うこと。
 
 .\"O .SH OPTIONS
 .SH オプション
 .TP
 .BR \-h , " \-\-help"
-Display help text and exit.
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
 .TP
 .BR \-L , " \-\-color" [ = \fIwhen\fR]
-Colorize the output.  The optional argument \fIwhen\fP
-can be \fBauto\fR, \fBnever\fR or \fBalways\fR.  If the \fIwhen\fR argument is omitted,
-it defaults to \fBauto\fR.  The colors can be disabled, for the current built-in default 
-see \fB\-\-help\fR output. See also the COLORS section.
+.\"O Colorize the output.  The optional argument \fIwhen\fP
+.\"O can be \fBauto\fR, \fBnever\fR or \fBalways\fR.  If the \fIwhen\fR argument is omitted,
+.\"O it defaults to \fBauto\fR.  The colors can be disabled, for the current built-in default 
+.\"O see \fB\-\-help\fR output. See also the COLORS section.
+出力をカラー表示する。
+オプションの引数 \fIwhen\fP は \fBauto\fR, \fBnever\fR, \fBalways\fR の
+いずれかである。
+\fIwhen\fR 引数を省略した場合、デフォルトは \fBauto\fR である。
+カラー表示は現在の組み込みのデフォルトで無効化されている場合もある。
+\fB\-\-help\fR の出力を参照すること。
+また、「カラー表示」セクションも参照すること。
 .TP
 .BR \-V , " \-\-version"
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .TP
 .BR \-z , " \-\-zero"
-Start with an in-memory zeroed partition table.  This option does not zero the
-partition table on the disk; rather, it simply starts the program without
-reading the existing partition table.  This option allows you to create a new
-partition table from scratch or from an sfdisk-compatible script.
+.\"O Start with an in-memory zeroed partition table.  This option does not zero the
+.\"O partition table on the disk; rather, it simply starts the program without
+.\"O reading the existing partition table.  This option allows you to create a new
+.\"O partition table from scratch or from an sfdisk-compatible script.
+メモリ内で初期化 (zeroed) したパーティションテーブルで開始する。
+このオプションはディスク上のパーティションテーブルを初期化しない。
+むしろ、既存のパーティションテーブルを読み込まず、
+プログラムを開始する。
+このオプションはスクラッチ、または sfdisk 互換のスクリプトから
+新しいパーティションテーブルを作ることができる。
 
 .\"O .SH COMMANDS
 .SH コマンド
@@ -110,8 +153,8 @@ partition table from scratch or from an sfdisk-compatible script.
 選択しているパーティションのブート可能フラグを切替える。
 このコマンドにより、ドライブ上で
 どの基本パーティションをブート可能にするかを選択できる。
-This command may not
-be available for all partition label types.
+このコマンドはすべてのパーティションラベルタイプで使用可能な
+訳ではない。
 .TP
 .B d
 .\"O Delete the current partition.  This will convert the current partition
@@ -131,14 +174,22 @@ be available for all partition label types.
 .B n
 .\"O Create a new partition from free space.
 空き領域から新しいパーティションを作成する。
+.\"O .B cfdisk
+.\"O then prompts you for the size of the partition you want to create.
+.\"O The default size is equal to the entire available free space at the current
+.\"O position.
 .B cfdisk
-then prompts you for the size of the partition you want to create.
-The default size is equal to the entire available free space at the current
-position.
+は作成したいパーティションのサイズを尋ねるプロンプトを出す。
+デフォルトのサイズは、現在の位置から利用可能なすべての空き領域
+である。
 
-The size may be followed by a multiplicative suffix: KiB (=1024),
-MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
-(the "iB" is optional, e.g. "K" has the same meaning as "KiB").
+.\"O The size may be followed by a multiplicative suffix: KiB (=1024),
+.\"O MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
+.\"O (the "iB" is optional, e.g. "K" has the same meaning as "KiB").
+サイズの後ろに倍数の拡張子
+KiB (=1024), MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB を
+付けることができる
+("iB" はオプションであり、つまり "K" は "KiB" と同じ意味である)。
 .TP
 .B q
 .\"O Quit the program.  This will exit the program without writing any data to
@@ -147,25 +198,43 @@ MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
 このコマンドは、データをディスクに書き込まずにプログラムを終了する。
 .TP
 .B s
-Sort the partitions in ascending start-sector order.  When deleting and
-adding partitions, it is likely that the numbering of the partitions will
-no longer match their order on the disk.  This command restores that match.
+.\"O Sort the partitions in ascending start-sector order.  When deleting and
+.\"O adding partitions, it is likely that the numbering of the partitions will
+.\"O no longer match their order on the disk.  This command restores that match.
+開始セクターの昇順でパーティションをソートする。
+パーティションを削除したり、追加したりすると、
+パーティションの番号付けがディスク上の順番と一致しなくなる
+場合がある。
+このコマンドは順番を一致させるように修正する。
 .TP
 .B t
-Change the partition type.  By default, new partitions are created as
+.\"O Change the partition type.  By default, new partitions are created as
+.\"O .I Linux
+.\"O partitions.
+パーティションタイプを変更する。
+デフォルトでは、新しいパーティションは
 .I Linux
-partitions.
+パーティションとして作成される。
 .TP
 .B u
-Dump the current in-memory partition table to an sfdisk-compatible script file.
+.\"O Dump the current in-memory partition table to an sfdisk-compatible script file.
+現在のメモリ内のパーティションテーブルを sfdisk 互換のスクリプトファイルにダンプする。
 .sp
-The script files are compatible between \fBcfdisk\fR, \fBfdisk\fR, \fBsfdisk\fR
-and other libfdisk applications.  For more details see
-.BR sfdisk (8).
+.\"O The script files are compatible between \fBcfdisk\fR, \fBfdisk\fR, \fBsfdisk\fR
+.\"O and other libfdisk applications.  For more details see
+.\"O .BR sfdisk (8).
+このスクリプトファイルは \fBcfdisk\fR, \fBfdisk\fR, \fBsfdisk\fR と
+その他の libfdisk アプリケーションで互換性がある。
+より詳細は
+.BR sfdisk (8)
+を参照すること。
 .sp
-It is also possible to load an sfdisk-script into \fBcfdisk\fR if there is
-no partition table on the device or when you start \fBcfdisk\fR with the
-\fB--zero\fR command-line option.
+.\"O It is also possible to load an sfdisk-script into \fBcfdisk\fR if there is
+.\"O no partition table on the device or when you start \fBcfdisk\fR with the
+.\"O \fB--zero\fR command-line option.
+パーティションテーブルがデバイス上にない場合、
+または \fBcfdisk\fR を \fB--zero\fR コマンドラインオプションで開始する場合、
+sfdisk のスクリプトを \fBcfdisk\fR にロードさせることができる。
 .TP
 .B W
 .\"O Write the partition table to disk (you must enter an uppercase W).  Since
@@ -185,15 +254,23 @@ no partition table on the device or when you start \fBcfdisk\fR with the
 カーネルに対してディスクからパーティションテーブルを
 再読み込みするように指示する。
 
-The re-reading of the partition table does not always work.  In such a
-case you need to inform the kernel about any new partitions by using
+.\"O The re-reading of the partition table does not always work.  In such a
+.\"O case you need to inform the kernel about any new partitions by using
+.\"O .BR partprobe (8)
+.\"O or
+.\"O .BR partx (8),
+.\"O or by rebooting the system.
+パーティションテーブルの再読み込みは常に成功する訳ではない。
+そのような場合、カーネルに新しいパーティションの情報を
+知らせるために、
 .BR partprobe (8)
-or
-.BR partx (8),
-or by rebooting the system.
+または
+.BR partx (8)
+を使うか、システムを再起動する必要がある。
 .TP
 .B x
-Toggle extra information about a partition.
+.\"O Toggle extra information about a partition.
+パーティションの追加情報を表示する/非表示にする。
 .TP
 .\"O .IR "Up Arrow" , " Down Arrow"
 .\"O Move the cursor to the previous or next partition.  If there are more
@@ -208,42 +285,65 @@ Toggle extra information about a partition.
 次 (前) のパーティションセットを表示できる。
 
 .TP
-.IR "Left Arrow" , " Right Arrow"
-Select the preceding or the next menu item.  Hitting \fIEnter\fR will
-execute the currently selected item.
+.\"O .IR "Left Arrow" , " Right Arrow"
+.IR "左矢印 (←)" ", " "右矢印 (→)"
+.\"O Select the preceding or the next menu item.  Hitting \fIEnter\fR will
+.\"O execute the currently selected item.
+前のアイテム、または次のアイテムを選択する。
+\fIEnter\fR を押すと、現在のアイテムを実行する。
 
 .PP
-All commands can be entered with either uppercase or lowercase
-letters (except for
-.BR W rite).
-When in a submenu or at a prompt, you can hit the
+.\"O All commands can be entered with either uppercase or lowercase
+.\"O letters (except for
+.\"O .BR W rite).
+.RB ( W rite
+を除く) すべてのコマンドは、大文字でも小文字でも入力できる。
+.\"O When in a submenu or at a prompt, you can hit the
+.\"O .I Esc
+.\"O key to return to the main menu.
+サブメニュー、またはプロンプトで
 .I Esc
-key to return to the main menu.
+キーを押すことでメインメニューに戻ることができる。
 
 .\"O .SH COLORS
 .SH カラー表示
-Implicit coloring can be disabled by creating the empty file
-.IR /etc/terminal-colors.d/cfdisk.disable .
+.\"O Implicit coloring can be disabled by creating the empty file
+.\"O .IR /etc/terminal-colors.d/cfdisk.disable .
+暗黙のカラー表示は、空ファイル
+.I /etc/terminal-colors.d/cfdisk.disable
+を作成することで、無効化できる。
 
-See
+.\"O See
+.\"O .BR terminal-colors.d (5)
+.\"O for more details about colorization configuration.
+カラー表示の設定の詳細は、
 .BR terminal-colors.d (5)
-for more details about colorization configuration.
+を参照すること。
 
+.\"O .B cfdisk
+.\"O does not support color customization with a color-scheme file.
 .B cfdisk
-does not support color customization with a color-scheme file.
+はカラースキーマファイルによるカラー表示のカスタマイズをサポート
+していない。
 
 .\"O .SH ENVIRONMENT
 .SH 環境変数
 .IP CFDISK_DEBUG=all
-enables cfdisk debug output.
+.\"O enables cfdisk debug output.
+cfdisk のデバッグ出力を有効化する。
 .IP LIBFDISK_DEBUG=all
-enables libfdisk debug output.
+.\"O enables libfdisk debug output.
+libfdisk のデバッグ出力を有効化する。
 .IP LIBBLKID_DEBUG=all
-enables libblkid debug output.
+.\"O enables libblkid debug output.
+libblkid のデバッグ出力を有効化する。
 .IP LIBSMARTCOLS_DEBUG=all
-enables libsmartcols debug output.
+.\"O enables libsmartcols debug output.
+libsmartcols のデバッグ出力を有効化する。
 .IP LIBSMARTCOLS_DEBUG_PADDING=on
-use visible padding characters. Requires enabled LIBSMARTCOLS_DEBUG.
+.\"O use visible padding characters. Requires enabled LIBSMARTCOLS_DEBUG.
+表示可能な埋め (padding) 文字を使う。
+LIBSMARTCOLS_DEBUG を有効にする必要がある。
 
 .\"O .SH "SEE ALSO"
 .SH 関連項目
@@ -256,8 +356,11 @@ use visible padding characters. Requires enabled LIBSMARTCOLS_DEBUG.
 .SH 著者
 Karel Zak <kzak@redhat.com>
 .PP
-The current cfdisk implementation is based on the original cfdisk
-from Kevin E. Martin (martin@cs.unc.edu).
+.\"O The current cfdisk implementation is based on the original cfdisk
+.\"O from Kevin E. Martin (martin@cs.unc.edu).
+現在の cfdisk 実装は
+Kevin E. Martin (martin@cs.unc.edu)
+によるオリジナルの cfdisk を元にしてる。
 
 .\"O .SH AVAILABILITY
 .SH 入手方法
