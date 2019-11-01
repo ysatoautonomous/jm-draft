@@ -1,0 +1,110 @@
+.\" Copyright 1992, 1993 Rickard E. Faith (faith@cs.unc.edu)
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 1997 NAKANO Takeo all rights reserved.
+.\" Translated Mon Mar 16 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Fri Nov  1 15:08:59 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH FDFORMAT 8 "July 2014" "util-linux" "System Administration"
+.\"O .SH NAME
+.\"O fdformat \- low-level format a floppy disk
+.SH 名前
+fdformat \- フロッピーディスクの低レベルフォーマットを行う
+.\"O .SH SYNOPSIS
+.SH 書式
+.B fdformat
+.RI [options] " device"
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B fdformat
+.\"O does a low-level format on a floppy disk.
+.\"O .I device
+.\"O is usually one of the following (for floppy devices the major = 2, and the
+.\"O minor is shown for informational purposes only):
+.B fdformat
+はフロッピーディスクの低レベルフォーマット (low level format) を行う。
+.I device
+には通常以下のどれかを指定する。 (フロッピーデバイスは major 番号 2 で
+ある。以下の minor 番号は、単に参考のために示した。)
+.sp
+.nf
+.RS
+/dev/fd0d360  (minor = 4)
+/dev/fd0h1200 (minor = 8)
+/dev/fd0D360  (minor = 12)
+/dev/fd0H360  (minor = 12)
+/dev/fd0D720  (minor = 16)
+/dev/fd0H720  (minor = 16)
+/dev/fd0h360  (minor = 20)
+/dev/fd0h720  (minor = 24)
+/dev/fd0H1440 (minor = 28)
+.PP
+/dev/fd1d360  (minor = 5)
+/dev/fd1h1200 (minor = 9)
+/dev/fd1D360  (minor = 13)
+/dev/fd1H360  (minor = 13)
+/dev/fd1D720  (minor = 17)
+/dev/fd1H720  (minor = 17)
+/dev/fd1h360  (minor = 21)
+/dev/fd1h720  (minor = 25)
+/dev/fd1H1440 (minor = 29)
+.RE
+.fi
+.PP
+.\"O The generic floppy devices, /dev/fd0 and /dev/fd1, will fail to work with
+.\"O .B fdformat
+.\"O when a non-standard format is being used, or if the format has not been
+.\"O autodetected earlier.  In this case, use
+.\"O .BR setfdprm (8)
+.\"O to load the disk parameters.
+汎用のフロッピーデバイス /dev/fd0 と /dev/fd1 は、非標準のフォーマット
+が利用されている場合や、フォーマットがあらかじめ自動判別されていない
+場合には
+.B fdformat
+では動作しない。このような場合には、
+.BR setfdprm (8)
+を用いてディスクのパラメータをロードすること。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+\fB\-f\fR, \fB\-\-from\fR \fIN\fR
+.\"O Start at the track \fIN\fR (default is 0).
+トラック \fIN\fR (デフォルトは 0) から開始する。
+.TP
+\fB\-t\fR, \fB\-\-to\fR \fIN\fR
+.\"O Stop at the track \fIN\fR.
+トラック \fIN\fR で終了する。
+.TP
+\fB\-r\fR, \fB\-\-repair\fR \fIN\fR
+.\"O Try to repair tracks failed during the verification (max \fIN\fR retries).
+ベリファイ中に失敗した場合、トラックの修復を試みる
+(最大 \fIN\fR 回試す)。
+.TP
+\fB\-n\fR, \fB\-\-no\-verify\fR
+.\"O Skip the verification that is normally performed after the formatting.
+通常フォーマット後に実行されるベリファイをスキップさせる。
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR fd (4),
+.BR emkfs (8),
+.BR mkfs (8),
+.BR setfdprm (8)
+.\"O .SH AUTHOR
+.SH 著者
+Werner Almesberger (almesber@nessie.cs.id.ethz.ch)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The fdformat command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+fdformat コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
