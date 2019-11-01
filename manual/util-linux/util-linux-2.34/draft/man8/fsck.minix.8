@@ -1,0 +1,257 @@
+.\" Copyright 1992, 1993, 1994 Rickard E. Faith (faith@cs.unc.edu)
+.\" May be freely distributed.
+.\"
+.\" Japanese Version Copyright (c) 1999 NAKANO Takeo all rights reserved.
+.\" Translated Mon Mar 18 2000 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Wed 14 Jun 2000 by NAKANO Takeo 
+.\" Updated & Modified Sat Nov  2 02:04:48 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH FSCK.MINIX 8 "June 2015" "util-linux" "System Administration"
+.\"O .SH NAME
+.\"O fsck.minix \- check consistency of Minix filesystem
+.SH 名前
+fsck.minix \- Minix ファイルシステムの整合性をチェックする
+.\"O .SH SYNOPSIS
+.SH 書式
+.B fsck.minix
+[options]
+.I device
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B fsck.minix
+.\"O performs a consistency check for the Linux MINIX filesystem.
+.B fsck.minix
+は Linux MINIX ファイルシステムの整合性チェックを行う。
+.PP
+.\"O The program assumes the filesystem is quiescent.
+.\"O .B fsck.minix
+.\"O should not be used on a mounted device unless you can be sure nobody is
+.\"O writing to it.  Remember that the kernel can write to device when it
+.\"O searches for files.
+このプログラムでは、
+ファイルシステムがアクティブではないことを前提としている。
+マウントされたデバイスに対しては、
+誰も書き込みを行っていないという確信が持てなければ、
+.B fsck.minix
+を用いるべきではない。
+そしてカーネルがファイル検索を行うときに、
+書き込みを行うかもしれないことに注意。
+.PP
+.\"O The \fIdevice\fR name will usually have the following form:
+\fIdevice\fR 名は通常以下のようなものである:
+.RS
+.TS
+tab(:);
+l l.
+/dev/hda[1\(en63]:IDE disk 1
+/dev/hdb[1\(en63]:IDE disk 2
+/dev/sda[1\(en15]:SCSI disk 1
+/dev/sdb[1\(en15]:SCSI disk 2
+.TE
+.RE
+.PP
+.\"O If the filesystem was changed, i.e., repaired, then
+.\"O .B fsck.minix
+.\"O will print "FILE SYSTEM HAS CHANGED" and will
+.\"O .BR sync (2)
+.\"O three times before exiting.  There is
+.\"O .I no
+.\"O need to reboot after check.
+ファイルシステムを変更すると、つまり修復すると、
+.B fsck.minix
+は「ファイルシステムが変更されました」と表示し、
+.BR sync (2)
+を 3 回行ってから終了する。
+Linux  は今のところ raw デバイスを持たないので、
+このときリブートする必要は\fIない\fR。
+.\"O .SH WARNING
+.SH 警告
+.\"O .B fsck.minix
+.\"O should
+.\"O .B not
+.\"O be used on a mounted filesystem.  Using
+.\"O .B fsck.minix
+.\"O on a mounted filesystem is very dangerous, due to the possibility that
+.\"O deleted files are still in use, and can seriously damage a perfectly good
+.\"O filesystem!  If you absolutely have to run
+.\"O .B fsck.minix
+.\"O on a mounted filesystem, such as the root filesystem, make sure nothing
+.\"O is writing to the disk, and that no files are "zombies" waiting for
+.\"O deletion.
+.B fsck.minix
+をマウントされているファイルシステムに\fB用いるべきではない\fR。
+マウントされているファイルシステムに
+.B fsck.minix
+を用いるのは非常に危険である。
+まだ使用されているファイルを削除してしまう可能性があるので、
+まったく問題のないファイルシステムに深刻な障害を与えてしまうかもしれない!
+どうしても
+.B fsck.minix
+をマウントされたファイルシステムに用いなければならない場合
+例えばルートファイルシステムなどは、
+誰もディスクへの書き込みを行っていないこと、
+及び削除を待っている「ゾンビ」ファイルが存在しないことを、
+よくよく確かめてからにすること。
+.SH OPTIONS
+.TP
+\fB\-l\fR, \fB\-\-list\fR
+.\"O List all filenames.
+全てのファイル名をリストする。
+.TP
+\fB\-r\fR, \fB\-\-repair\fR
+.\"O Perform interactive repairs.
+復旧作業を対話的に行う。
+.TP
+\fB\-a\fR, \fB\-\-auto\fR
+.\"O Perform automatic repairs.  This option implies
+.\"O .B \-\-repair
+.\"O and serves to answer all of the questions asked with the default.  Note
+.\"O that this can be extremely dangerous in the case of extensive filesystem
+.\"O damage.
+自動的に復旧作業を行う。
+.B \-\-repair
+も指定したことになり、全ての質問に対してデフォルトの回答をする。
+ファイルシステムの被害が大きい場合には、
+このオプションを用いるのは非常に危険である。
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+.\"O Be verbose.
+饒舌な表示をする。
+.TP
+\fB\-s\fR, \fB\-\-super\fR
+.\"O Output super-block information.
+スーパーブロックの情報を出力する。
+.TP
+\fB\-m\fR, \fB\-\-uncleared\fR
+.\"O Activate MINIX-like "mode not cleared" warnings.
+MINIX 的な "mode not cleard" の警告を有効にする。
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+.\"O Force a filesystem check even if the filesystem was marked as valid.
+.\"O Marking is done by the kernel when the filesystem is unmounted.
+ファイルシステムに有効マークが付いている場合にも強制的にチェックする。
+このマークは、ファイルシステムがアンマウントされるときにカーネルが付ける。
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH DIAGNOSTICS
+.SH 診断メッセージ
+.\"O There are numerous diagnostic messages.  The ones mentioned here are the
+.\"O most commonly seen in normal usage.
+多くの診断メッセージが存在する。
+ここに紹介するのは、通常の利用でよく見られるだろうものである。
+
+.PP
+.\"O If the device does not exist,
+.\"O .B fsck.minix
+.\"O will print "unable to read super block".  If the device exists, but is not
+.\"O a MINIX filesystem,
+.\"O .B fsck.minix
+.\"O will print "bad magic number in super-block".
+デバイスが存在しないと、
+.B fsck.minix
+は「スーパーブロックを読み込むことができません」と表示する。
+デバイスが存在するが MINIX ファイルシステムではない場合は、
+.B fsck.minix
+は「スーパーブロックに不正なマジックナンバーがあります」と表示する。
+.\"O .SH "EXIT CODES"
+.SH 終了コード
+.\"O The exit code returned by
+.\"O .B fsck.minix
+.\"O is the sum of the following:
+.B fsck.minix
+が返す終了コードは、以下の和となる:
+.PP
+.RS
+.PD 0
+.TP
+.B 0
+.\"O No errors
+エラーなし
+.TP
+.B 3
+.\"O Filesystem errors corrected, system should be rebooted if filesystem was
+.\"O mounted
+ファイルシステムのエラーが修正された。
+ファイルシステムがマウントされていた場合はシステムをリブートすべきである。
+.TP
+.B 4
+.\"O Filesystem errors left uncorrected
+ファイルシステムのエラーが修正されずに残っている
+.TP
+.B 7
+.\"O Combination of exit codes 3 and 4
+終了コード 3 と 4 の組み合わせ。
+.TP
+.B 8
+.\"O Operational error
+動作エラー
+.TP
+.B 16
+.\"O Usage or syntax error
+利用法または文法のエラー
+.PD
+.RE
+.PP
+.\"O .SH AUTHORS
+.SH 著者
+.MT torvalds@\:cs.\:helsinki.\:fi
+Linus Torvalds
+.ME
+.br
+.\"O Error code values by
+エラーコードの値:
+.MT faith@\:cs.\:unc.\:edu
+Rik Faith
+.ME
+.br
+.\"O Added support for filesystem valid flag:
+ファイルシステム有効フラグのサポート:
+.MT greg%\:wind.\:uucp@\:plains.\:nodak.\:edu
+Dr.\& Wettstein
+.ME .
+.br
+.\"O Check to prevent fsck of mounted filesystem added by
+マウントされているファイルシステムの fsck を避けるためのチェック:
+.MT quinlan@\:yggdrasil.\:com
+Daniel Quinlan
+.ME .
+.br
+.\"O Minix v2 fs support by
+Minix v2 ファイルシステムのサポート:
+.MT schwab@\:issan.\:informatik.\:uni-dortmund.\:de
+Andreas Schwab
+.ME ,
+.\"O updated by
+その更新:
+.MT janl@\:math.\:uio.\:no
+Nicolai Langfeldt
+.ME .
+.br
+.\"O Portability patch by
+移植性向上のためのパッチ:
+.MT rmk@\:ecs.\:soton.\:ac.\:uk
+Russell King
+.ME .
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR fsck (8),
+.BR fsck.ext2 (8),
+.BR mkfs (8),
+.BR mkfs.ext2 (8),
+.BR mkfs.minix (8),
+.BR reboot (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The fsck.minix command is part of the util-linux package and is available from
+fsck.minix コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE .
+から入手可能である。
