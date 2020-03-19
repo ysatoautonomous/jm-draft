@@ -1,10 +1,12 @@
 .\"
-.\" Japanese Version Copyright (c) 2019 Yuichi SATO
+.\" Japanese Version Copyright (c) 2019-2020 Yuichi SATO
 .\"         all rights reserved.
 .\" Translated Sat Jul  6 20:17:27 JST 2019
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Fri Mar 20 04:02:42 JST 2020
+.\"         by Yuichi SATO
 .\"
-.TH IOSTAT 1 "JULY 2018" Linux "Linux User's Manual" -*- nroff -*-
+.TH IOSTAT 1 "NOVEMBER 2018" Linux "Linux User's Manual" -*- nroff -*-
 .\"O .SH NAME
 .SH 名前
 .\"O iostat \- Report Central Processing Unit (CPU) statistics and input/output
@@ -278,6 +280,13 @@ CPU (群) がアイドル状態でシステムに目立った
 1 秒あたりのデバイスへのの書き込みデータのブロック数 (キロバイト数、メガバイト数)。
 
 .RE
+.B Blk_dscd/s (kB_dscd/s, MB_dscd/s)
+.RS
+.\"O Indicate the amount of data discarded for the device expressed in a number of
+.\"O blocks (kilobytes, megabytes) per second.
+1 秒あたりのデバイスから破棄されたデータのブロック数 (キロバイト数、メガバイト数)。
+
+.RE
 .B Blk_read (kB_read, MB_read)
 .RS
 .\"O The total number of blocks (kilobytes, megabytes) read.
@@ -288,6 +297,12 @@ CPU (群) がアイドル状態でシステムに目立った
 .RS
 .\"O The total number of blocks (kilobytes, megabytes) written.
 書き込みの総計ブロック数 (キロバイト数、メガバイト数)。
+
+.RE
+.B Blk_dscd (kB_dscd, MB_dscd)
+.RS
+.\"O The total number of blocks (kilobytes, megabytes) discarded.
+破棄された総計ブロック数 (キロバイト数、メガバイト数)。
 
 .RE
 .B r/s
@@ -302,11 +317,17 @@ CPU (群) がアイドル状態でシステムに目立った
 1 秒あたりの (マージ後の) デバイスへの書き込みが完了したリクエスト数。
 
 .RE
+.B d/s
+.RS
+.\"O The number (after merges) of discard requests completed per second for the device.
+1 秒あたりの (マージ後の) デバイスからの破棄が完了したリクエスト数。
+
+.RE
 .B sec/s (kB/s, MB/s)
 .RS
-.\"O The number of sectors (kilobytes, megabytes) read from or written to the device
-.\"O per second.
-1 秒あたりのデバイスに対する読み込みと書き出しセクタ数 (キロバイト数、メガバイト数)。
+.\"O The number of sectors (kilobytes, megabytes) read from, written to or
+.\"O discarded for the device per second.
+1 秒あたりのデバイスに対する読み込みと書き出しと破棄のセクタ数 (キロバイト数、メガバイト数)。
 
 .RE
 .B rsec/s (rkB/s, rMB/s)
@@ -319,6 +340,12 @@ CPU (群) がアイドル状態でシステムに目立った
 .RS
 .\"O The number of sectors (kilobytes, megabytes) written to the device per second.
 1 秒あたりのデバイスへの書き出しセクタ数 (キロバイト数、メガバイト数)。
+
+.RE
+.B dsec/s (dkB/s, dMB/s)
+.RS
+.\"O The number of sectors (kilobytes, megabytes) discarded for the device per second.
+1 秒あたりのデバイスから破棄されたセクタ数 (キロバイト数、メガバイト数)。
 
 .RE
 .B rqm/s
@@ -341,6 +368,13 @@ CPU (群) がアイドル状態でシステムに目立った
 書き込みリクエスト数。
 
 .RE
+.B drqm/s
+.RS
+.\"O The number of discard requests merged per second that were queued to the device.
+1 秒あたりのデバイスにキューイングされたマージされた
+破棄リクエスト数。
+
+.RE
 .B %rrqm
 .RS
 .\"O The percentage of read requests merged together before being sent to the device.
@@ -351,6 +385,12 @@ CPU (群) がアイドル状態でシステムに目立った
 .RS
 .\"O The percentage of write requests merged together before being sent to the device.
 デバイスに送られる前にマージされた書き込みリクエストの割合。
+
+.RE
+.B %drqm
+.RS
+.\"O The percentage of discard requests merged together before being sent to the device.
+デバイスに送られる前にマージされた破棄リクエストの割合。
 
 .RE
 .B areq-sz
@@ -375,6 +415,13 @@ CPU (群) がアイドル状態でシステムに目立った
 .\"O The average size (in kilobytes) of the write requests that were issued to the
 .\"O device.
 デバイスに発行した書き込みリクエストの平均サイズ (キロバイト)。
+
+.RE
+.B dareq-sz
+.RS
+.\"O The average size (in kilobytes) of the discard requests that were issued to the
+.\"O device.
+デバイスに発行した破棄リクエストの平均サイズ (キロバイト)。
 
 .RE
 .B await
@@ -409,6 +456,17 @@ CPU (群) がアイドル状態でシステムに目立った
 処理される時間が含まれる。
 
 .RE
+.B d_await
+.RS
+.\"O The average time (in milliseconds) for discard requests issued to the device
+.\"O to be served. This includes the time spent by the requests in queue and
+.\"O the time spent servicing them.
+デバイスに発行した破棄リクエストが処理されるまでの
+平均時間 (ミリ秒)。
+この時間には、リクエストがキューに入っている時間と、
+処理される時間が含まれる。
+
+.RE
 .B aqu-sz
 .RS
 .\"O The average queue length of the requests that were issued to the device.
@@ -416,16 +474,6 @@ CPU (群) がアイドル状態でシステムに目立った
 .br
 .\"O Note: In previous versions, this field was known as avgqu-sz.
 以前のバージョンでは、このフィールドは avgqu-sz であった。
-
-.RE
-.B svctm
-.RS
-.\"O The average service time (in milliseconds) for I/O requests that were issued
-.\"O to the device. Warning! Do not trust this field any more.
-.\"O This field will be removed in a future sysstat version.
-デバイスに発行した I/O リクエストに対する平均サービス時間 (ミリ秒)。
-注意！このフィールドを今後信用してはならない。
-このフィールドは将来の sysstat バージョンで削除される。
 
 .RE
 .B %util
@@ -729,16 +777,6 @@ JSON 出力のフィールド順は定義されておらず、
 
 .\"O Kernels older than 2.6.x are no longer supported.
 2.6.x より古いカーネルは、もはやサポートしていない。
-
-.\"O The average service time (svctm field) value is meaningless,
-.\"O as I/O statistics are now calculated at block level, and we don't know
-.\"O when the disk driver starts to process a request. For this reason,
-.\"O this field will be removed in a future sysstat version.
-平均サービス時間 (svctm フィールド) は意味がない。
-現状、I/O 統計はブロックレベルで計算されており、
-ディスクドライバーがいつリクエストを処理するかは、
-分からないためである。
-そのため、このフィールドは将来の sysstat のバージョンで削除される。
 .\"O .SH FILES
 .SH ファイル
 .I /proc/stat
