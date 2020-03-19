@@ -1,17 +1,19 @@
 .\"
-.\" Japanese Version Copyright (c) 2019 Yuichi SATO
+.\" Japanese Version Copyright (c) 2019-2020 Yuichi SATO
 .\"         all rights reserved.
 .\" Translated Mon Jul  8 17:41:52 JST 2019
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Fri Mar 20 05:00:00 JST 2020
+.\"         by Yuichi SATO
 .\"
-.TH SADF 1 "JULY 2018" Linux "Linux User's Manual" -*- nroff -*-
+.TH SADF 1 "NOVEMBER 2019" Linux "Linux User's Manual" -*- nroff -*-
 .\"O .SH NAME
 .SH 名前
 .\"O sadf \- Display data collected by sar in multiple formats.
 sadf \- sar が収集したデータをいろいろなフォーマットで表示する。
 .\"O .SH SYNOPSIS
 .SH 書式
-.B sadf [ -C ] [ -c | -d | -g | -j | -p | -r | -x ] [ -H ] [ -h ] [ -T | -t | -U ] [ -V ] [ -O
+.B sadf [ -C ] [ -c | -d | -g | -j | -l | -p | -r | -x ] [ -H ] [ -h ] [ -T | -t | -U ] [ -V ] [ -O
 .I opts
 .B [,...] ] [ -P {
 .I cpu_list
@@ -247,9 +249,9 @@ SVG (Scalable Vector Graphics) でグラフを描いて、
 .B sar
 のオプション -d を使うのに役立つ。
 .IP "-e [ hh:mm[:ss] ]"
-.\"O Set the ending time of the report, given in local time. The default ending
+.\"O Set the ending time of the report. The default ending
 .\"O time is 18:00:00. Hours must be given in 24-hour format.
-レポートの終了時間を、ローカル時間で指定する。
+レポートの終了時間を指定する。
 デフォルトの終了時間は 18:00:00 である。
 時は 24 時間制で指定しなければならない。
 .IP --fs=fs_list
@@ -280,6 +282,8 @@ SVG (Scalable Vector Graphics) でグラフを描いて、
 
 .\"O and open the resulting SVG file in your favorite web browser.
 結果の SVG ファイルを好きなウェブブラウザで開けばよい。
+.\"O Output can be controlled using option -O (see below).
+出力はオプション -O (下記を参照) で制御できる。
 .IP -H
 .\"O Display only the header of the report (when applicable). If no format has
 .\"O been specified, then the header data (metadata) of the data file are displayed.
@@ -309,6 +313,15 @@ SVG (Scalable Vector Graphics) でグラフを描いて、
 .\"O format. Timestamps can be controlled by options -T and -t.
 データファイルの内容を JSON (JavaScript Object Notation) で表示する。
 タイムスタンプはオプション -T と -t で制御できる。
+.IP -l
+.\"O Export the contents of the data file to a PCP (Performance Co-Pilot) archive.
+.\"O The name of the archive can be specified using the keyword
+.\"O .IR pcparchive=
+.\"O with option -O.
+データファイルの内容を PCP (Performance Co-Pilot) アーカイブに書き出す。
+アーカイブの名前は、オプション -O とキーワード
+.IR pcparchive=
+を使って指定できる。
 .IP "-O opts [,...]"
 .\"O Use the specified options to control the output of
 .\"O .BR sadf .
@@ -335,6 +348,25 @@ SVG (Scalable Vector Graphics) でグラフを描いて、
 このオプションは複数のグラフを同じビューで描く際に重要である。
 小さい値のグラフと、大きな値のグラフがある場合、
 後者に合わせると前者がとても分かりづらくなる。
+.RE
+
+.B bwcol
+.RS
+.\"O Use a black and white palette to draw the graphs.
+グラフの描画に黒と白のパレットを使う。
+.RE
+
+.B customcol
+.RS
+.\"O Use a customizable color palette instead of the default one to draw
+.\"O the graphs. See environment variable
+.\"O .B S_COLORS_PALETTE
+.\"O below to know how to customize that palette.
+グラフの描画にデフォルトのカラーパレットではなく、
+カスタマイズ可能なカラーパレットを使う。
+パレットのカスタマイズ方法を知りたい場合、下記の環境変数
+.B S_COLORS_PALETTE
+を参照すること。
 .RE
 
 .BR height= value
@@ -387,6 +419,15 @@ SVG 出力の先頭に目次を追加する。
 .RS
 .\"O Do not display views where all graphs have only zero values.
 0 値しかないすべてのグラフを表示しない。
+.RE
+
+.\"O The following option may be used when data are exported to a PCP archive:
+以下のオプションは、データを PCP アーカイブに書き出す際に使用できる:
+
+.BR pcparchive= name
+.RS
+.\"O Specify the name of the PCP archive to create.
+作成する PCP アーカイブの名前を指定する。
 .RE
 
 .\"O The following option is used to control raw output displayed by
@@ -453,11 +494,11 @@ awk などのパターン処理コマンドで扱いやすいフォーマット�
 読み込んだままの値が表示される。
 例えば、経過時間に対する平均値は計算されないことを意味する。
 .IP "-s [ hh:mm[:ss] ]"
-.\"O Set the starting time of the data (given in local time), causing the
+.\"O Set the starting time of the data, causing the
 .\"O .B sadf
 .\"O command to extract records time-tagged at, or following, the time
 .\"O specified. The default starting time is 08:00:00.
-データの開始時刻を (ローカル時刻で) 設定する。
+データの開始時刻を設定する。
 .B sadf
 は指定された時刻以降のレコードの抽出する。
 デフォルトの開始時刻は、08:00:00 である。
@@ -497,9 +538,84 @@ XML スキーマは、sysstat ソースコードパッケージに含まれる�
 .SH 環境変数
 .\"O The
 .\"O .B sadf
-.\"O command takes into account the following environment variable:
+.\"O command takes into account the following environment variables:
 .B sadf
 コマンドは下記の環境変数を利用する。
+
+.IP S_COLORS_PALETTE
+.\"O Specify the colors used by
+.\"O .B sadf -g
+.\"O to render the SVG output. This environment variable is taken into account
+.\"O only when the custom color palette has been selected with the option
+.\"O .IR customcol
+.\"O (see option -O). Its value is a colon-separated list of capabilities associated
+.\"O with six-digit, three-byte
+.\"O hexadecimal numbers (hex triplets) representing colors that defaults to
+.B sadf -g
+で SVG 出力を描画する際に使う色を指定する。
+この環境変数は、オプション
+.IR customcol
+(オプション -O を参照) でカスタムカラーパレットが選択された場合にのみ、利用される。
+この値はコロン区切りの機能のリストであり、
+各機能は、6 桁で 3 バイトの 16 進数 (16 進数の 3 個組) と紐付けられる。
+デフォルトは以下の通りである。
+
+.BR 0=000000:1=1a1aff:2=1affb2:3=b21aff:4=1ab2ff:5=ff1a1a:6=ffb31a:7=b2ff1a:
+.br
+.BR 8=efefef:9=000000:A=1a1aff:B=1affb2:C=b21aff:D=1ab2ff:E=ff1a1a:F=ffb31a:
+.br
+.BR G=bebebe:H=000000:I=000000:K=ffffff:L=000000:T=000000:W=000000:X=000000
+
+.\"O Capabilities consisting of an hexadecimal digit (0 through F) are used to specify
+.\"O the first sixteen colors in the palette (these colors are used to draw the graphs),
+.\"O e.g., 3=ffffff would indicate that the third color in the palette is white (0xffffff).
+.\"O Other capabilities are:
+1 個の 16 進数 (0 から F) は、(グラフの描画に使われる)
+パレットの最初の 16 色を指定するのに使われる。
+例えば、3=ffffff はパレットの 3 番目の色が白 (0xffffff) であることを表している。
+他の機能は以下の通りである。
+
+.RS
+.TP
+.B G=
+.\"O Specify the color used to draw the grid lines.
+グリッドの線を描画する色を指定する。
+
+.TP
+.B H=
+.\"O Specify the color used to display the report header.
+レポートのヘッダを表示する色を指定する。
+
+.TP
+.B I=
+.\"O Specify the color used to display additional information (e.g., date, hostname...)
+付加情報 (例、日付、ホスト名...) を表示する色を指定する。
+
+.TP
+.B K=
+.\"O Specify the color used for the graphs background.
+グラフの背景に使う色を指定する。
+
+.TP
+.B L=
+.\"O Specify the default color (which is for example used to display the table of contents).
+(例えば、表の内容の表示に使う) デフォルトの色を指定する。
+
+.TP
+.B T=
+.\"O Specify the color used to display the graphs title.
+グラフのタイトルの表示に使う色を指定する。
+
+.TP
+.B W=
+.\"O Specify the color used to display warning and error messages.
+警告とエラーメッセージの表示に使う色を指定する。
+
+.TP
+.B X=
+.\"O Specify the color used to draw the axes and display the graduations.
+軸の描画と、グラデーションの表示に使う色を指定する。
+.RE
 
 .IP S_TIME_DEF_TIME
 .\"O If this variable exists and its value is
