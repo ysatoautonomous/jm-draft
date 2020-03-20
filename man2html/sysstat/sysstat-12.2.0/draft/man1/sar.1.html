@@ -1,0 +1,4369 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SAR</TITLE>
+</HEAD><BODY>
+<H1>SAR</H1>
+Section: Linux User's Manual (1)<BR>Updated: SEPTEMBER 2019<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+sar - システムの活性度情報の収集、報告、保存を行う。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>sar [ -A ] [ -B ] [ -b ] [ -C ] [ -D ] [ -d ] [ -F [ MOUNT ] ] [ -H ] [ -h ] [ -p ] [ -q ]</B>
+
+<B>[ -r [ ALL ] ] [ -S ] [ -t ] [ -u [ ALL ] ] [ -V ] [ -v ] [ -W ] [ -w ] [ -y ] [ -z ]</B>
+
+<B>[ --dec={ 0 | 1 | 2 } ] [ --dev=</B>
+
+<I>dev_list</I>
+
+<B>] [ --fs=</B>
+
+<I>fs_list</I>
+
+<B>] [ --help ] [ --human ] [ --iface=</B>
+
+<I>iface_list</I>
+
+<B>] [ --sadc ]</B>
+
+<B>[ -I {</B>
+
+<I>int_list</I>
+
+<B>| SUM | ALL } ] [ -P {</B>
+
+<I>cpu_list</I>
+
+<B>| ALL } ]</B>
+
+<B>[ -m {</B>
+
+<I>keyword</I>
+
+<B>[,...] | ALL } ]</B>
+
+<B>[ -n {</B>
+
+<I>keyword</I>
+
+<B>[,...] | ALL } ]</B>
+
+<B>[ -j { SID | ID | LABEL | PATH | UUID | ... } ]</B>
+
+<B>[ -f [</B>
+
+<I>filename</I>
+
+<B>] | -o [</B>
+
+<I>filename</I>
+
+<B>] | -[0-9]+ ]</B>
+
+<B>[ -i</B>
+
+<I>interval</I>
+
+<B>] [ -s [</B>
+
+<I>hh:mm[:ss]</I>
+
+<B>] ] [ -e [</B>
+
+<I>hh:mm[:ss]</I>
+
+<B>] ] [</B>
+
+<I>interval</I>
+
+<B>[</B>
+
+<I>count</I>
+
+<B>] ]</B>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+
+
+<B>sar</B>
+
+コマンドは、オペレーティングシステムの選択された
+累積活性度カウンターの内容を、標準出力に書き出す。
+この統計システムは
+<I>count</I>
+
+と
+<I>interval</I>
+
+パラメータの値に基づいて、指定された回数と間隔の秒数で情報を書き出す。
+
+
+
+
+
+
+
+
+
+
+<I>interval</I>
+
+パラメータが 0 の場合、
+<B>sar</B>
+
+はシステムが開始されてからの平均の統計値を表示する。
+<I>count</I>
+
+パラメータを指定することなく、
+<I>interval</I>
+
+パラメータが指定されると、レポートが連続して生成される。
+
+
+
+
+
+
+
+
+収集したデータは、画面に表示するとともに、-o
+<I>filename</I>
+
+フラグで指定したファイルに保存できる。
+<I>filename</I>
+
+が省略された場合、
+<B>sar</B>
+
+は標準システム活性度日次データファイル
+(standard system activity daily data file) (下記参照) が使われる。
+
+
+デフォルトでは、カーネルから入手できるすべてのデータが、
+データファイルに保存される。
+<P>
+
+
+
+
+
+<B>sar</B>
+
+コマンドは以前に保存したファイルからデータを抽出して、
+レコードを標準出力に書き出す。
+このファイルは、-f フラグで指定することができる。
+デフォルトでは、標準システム活性度日次データファイルが使われる。
+
+
+
+
+
+<B>sar</B>
+
+の引数として、何日か前のデータを表示するために、-1, -2 などを指定することもできる。
+例えば、-1 は昨日の標準システム活性度日次データファイルを指している。
+<P>
+
+
+
+
+
+
+
+
+標準システム活性度日次データファイルは、
+<I>saDD</I>
+
+または
+<I>saYYYYMMDD</I>
+
+という名前である。
+ここで、YYYY は現在の年、MM は月、DD は日である。
+これらは、ファイル名が明示的に指定されない場合に、
+<B>sar</B>
+
+がデフォルトで使うファイルである。
+
+
+
+
+
+
+(オプション -o で) データをファイルに書き出す場合、
+オプション -D も指定されていると、
+<B>sar</B>
+
+は
+<I>saYYYYMMDD</I>
+
+を使う。
+オプション -D が指定されていない場合、
+<I>saDD</I>
+
+を使う。
+
+
+
+
+
+
+
+以前にファイルに保存されたレコードを表示する場合、
+<B>sar</B>
+
+は
+<I>saDD</I>
+
+と
+<I>saYYYYMMDD</I>
+
+のうち最も最近のファイルを探して使う。
+<P>
+
+
+
+
+
+
+標準システム活性度日次データファイルは、デフォルトでは
+<I>/var/log/sa</I>
+
+ディレクトリにある。
+ファイルの場所は別のディレクトリを指定することもできる。
+(プレーンファイルではなく) ディレクトリが
+オプション -f または -o に指定されると、
+データファイルを保持するディレクトリとして扱われる。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+-P フラグが指定されない場合、
+<B>sar</B>
+
+コマンドはシステム全体
+(すべてのプロセッサのグローバル) の統計を表示する。
+この統計は、割合で表される平均値と、合計値が計算される。
+-P フラグが指定された場合、
+<B>sar</B>
+
+コマンドは指定されたプロセッサ (群) の活性度を表示する。
+-P ALL が指定された場合、
+<B>sar</B>
+
+コマンドは、各プロセッサの統計と
+すべてのプロセッサのグローバル統計を表示する。
+オフラインになってるプロセッサは表示されない。
+<P>
+
+
+フラグを使って特定のシステム活性度の情報を選択することができる。
+フラグを指定しない場合、CPU 活性度のみを選択する。
+
+
+-A フラグを指定すると全ての活性度が選択される。
+<P>
+
+
+
+
+
+
+<B>sar</B>
+
+コマンドのデフォルトバージョン
+(CPU 利用率レポート) は、
+システム活性度の調査でユーザが最初に使う機能の 1 つになっている。
+なぜなら、CPU 利用率はメジャーなシステムリソースであるためである。
+CPU 利用率 (user + nice + system) が 100% に近い場合、
+サンプリングした負荷は CPU バウンドである。
+<P>
+
+
+
+
+複数のサンプルで、複数のレポートが必要な場合、
+<B>sar</B>
+
+コマンドの出力ファイルを使うのが便利である。
+
+
+
+<B>sar</B>
+
+コマンドをバックグラウンドで実行する場合、書式は以下のとおりである。
+<P>
+<B>sar -o datafile interval count &gt;/dev/null 2&gt;&amp;1 &amp;</B>
+
+<P>
+
+すべてのデータがバイナリ形式でキャプチャされ、(datafile) ファイルに保存される。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+データは
+<B>sar</B>
+
+コマンドで -f オプションを指定して、選択して表示できる。
+<I>interval</I>
+
+と
+<I>count</I>
+
+パラメータを設定すると、
+<I>count</I>
+
+レコード数を
+<I>interval</I>
+
+秒間隔で選択する。
+<I>count</I>
+
+パラメータが設定されない場合、
+ファイルに保存されたすべてのレコードが選択される。
+
+
+この方法で収集したデータは、指定した期間のシステム利用状況の特徴を見たり、
+利用時間のピークを決定したりするのに役立つ。
+<P>
+
+
+
+注意:<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><BR>
+<B>sar</B>
+
+コマンドはローカルの活性度のみをレポートする。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT>-A<DD>
+
+
+これは
+<B>-bBdFHqSvwWy -I SUM -m ALL -n ALL -r ALL -u ALL</B>
+
+を指定するのと同じである。
+
+
+
+このオプションは、
+<B>-I ALL -P ALL</B>
+
+をコマンドラインで明示的に指定しない限り、暗黙のうちに指定する。
+<DT>-B<DD>
+
+
+ページングの統計を表示する。
+以下の値が表示される。
+<P>
+<B>pgpgin/s</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+1 秒あたりのディスクからのシステムページインのキロバイト数。
+</DL>
+
+<P>
+<B>pgpgout/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりのディスクへのシステムページアウトのキロバイト数。
+</DL>
+
+<P>
+<B>fault/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりのシステムのページフォールト (メジャー + マイナー) の回数。
+これは I/O を生成するページフォールトはカウントしない。
+なぜなら同じページフォールトが I/O なしで解決されているためである。
+</DL>
+
+<P>
+<B>majflt/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりのシステムのメジャーフォールトの回数。
+これはディスクからメモリページのロードが必要だった回数である。
+</DL>
+
+<P>
+<B>pgfree/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりにシステムがフリーリストにおいたページ数。
+</DL>
+
+<P>
+<B>pgscank/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの kswapd デーモンにスキャンされたページ数。
+</DL>
+
+<P>
+<B>pgscand/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの直接スキャンされたページ数。
+</DL>
+
+<P>
+<B>pgsteal/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+メモリ要求を満たすため、1秒あたりにシステムがキャッシュ
+(ページキャッシュとスワップキャッシュ) に再要求したページ数。
+</DL>
+
+<P>
+<B>%vmeff</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+
+
+pgsteal / pgscan で計算される。
+これはページ再要求の効率の指標である。
+これが 100% に近い場合、ほとんどすべてのページが、使用される非活性リストの末尾に入る。
+これが低すぎる (例えば、30% 以下の) 場合、仮想メモリに何らかの問題がある。
+計測間隔内にスキャンされたページがない場合、このフィールドは 0 として表示される。
+</DL>
+
+</DL>
+
+<DT>-b<DD>
+
+
+I/O と転送率の統計をレポートする。
+以下の値が表示される。
+<P>
+<B>tps</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+
+
+
+1 秒あたりに物理デバイスに発行される転送回数。
+転送は物理デバイスへの I/O リクエストである。
+複数の論理リクエストがデバイスへの 1 回の I/O リクエストにまとめられる場合もある。
+転送サイズは不定である。
+</DL>
+
+<P>
+<B>rtps</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの物理デバイスからの読み込みリクエスト数。
+</DL>
+
+<P>
+<B>wtps</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの物理デバイスへの書き込みリクエスト数。
+</DL>
+
+<P>
+<B>dtps</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの物理デバイスへの破棄リクエスト数。
+</DL>
+
+<P>
+<B>bread/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりのデバイスからの読み込みデータ量 (ブロック数)。
+ブロックはセクターと等価で、サイズは 512 バイトである。
+</DL>
+
+<P>
+<B>bwrtn/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりのデバイスへの書き込みデータ量 (ブロック数)。
+</DL>
+
+<P>
+<B>bdscd/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりのデバイスへの破棄データ量 (ブロック数)。
+</DL>
+
+</DL>
+
+<DT>-C<DD>
+
+
+
+
+データをファイルから読み込む際に、
+<B>sadc</B>
+
+が挿入したコメントを
+<B>sar</B>
+
+が表示する。
+<DT>-D<DD>
+
+
+
+
+
+
+
+標準システム活性度日次データファイルとして、
+<I>saDD</I>
+
+の代わりに
+<I>saYYYYMMDD</I>
+
+を使う。
+このオプションは、オプション -o と組み合わせて
+データをファイルに保存する際にのみ、有効である。
+<DT>-d<DD>
+
+
+
+
+ブロックデバイスの活性度をレポートする。
+データを表示する際、デバイスを示す (DEV 列として)
+<I>devM-n</I>
+
+が一般的に使われる。
+
+
+M がデバイスのメジャー番号、n がマイナー番号である。
+
+
+
+
+
+
+デバイス名は、オプション -p を付けて (/dev 以下の名前で) 小綺麗に表示したり、
+オプション -j を付けて永続的なデバイス名で表示することもできる (下記を参照)。
+オプション
+<B>--dev=</B>
+
+を使ってリストを制限しない限り、
+すべてのデバイスの統計が表示される (対応するオプションを参照)。
+
+
+
+
+
+
+
+ディスクの活性度は
+<B>sadc</B>
+
+がオプション
+options 
+<B>-S DISK</B>
+
+と
+<B>-S XDISK</B>
+
+のいずれで収集したかに依存する。
+以下の値が表示される。
+<P>
+<B>tps</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+
+
+
+1 秒あたりに物理デバイスに発行される転送回数。
+転送は物理デバイスへの I/O リクエストである。
+複数の論理リクエストがデバイスへの 1 回の I/O リクエストにまとめられる場合もある。
+転送サイズは不定である。
+</DL>
+
+<P>
+<B>rkB/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりにデバイスから読み込んだキロバイト数。
+</DL>
+
+<P>
+<B>wkB/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりにデバイスに書き込んだキロバイト数。
+</DL>
+
+<P>
+<B>dkB/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりにデバイスから破棄したキロバイト数。
+</DL>
+
+<P>
+<B>areq-sz</B>
+
+<DL COMPACT><DT><DD>
+
+デバイスに発行した I/O リクエストの平均サイズ (キロバイト)。
+<BR>
+
+
+以前のバージョンでは、このフィールドは avgrq-sz であり、セクタ数を表していた。
+</DL>
+
+<P>
+<B>aqu-sz</B>
+
+<DL COMPACT><DT><DD>
+
+デバイスに発行したリクエストの平均のキューの長さ。
+<BR>
+
+
+以前のバージョンでは、このフィールドは avgqu-sz であった。
+</DL>
+
+<P>
+<B>await</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+デバイスに発行した I/O リクエストが処理されるまでの平均時間 (ミリ秒)。
+この時間には、リクエストがキューに入っている時間と、処理される時間が含まれる。
+</DL>
+
+<P>
+<B>%util</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+
+デバイスに I/O リクエストが発行される経過時間の割合 (デバイスのバンド幅使用率)。
+リクエストに対してデバイスがシリアルにサービスする場合、
+この値が 100% に近いとデバイスの飽和が起こっている。
+RAID アレイや最近の SSD のように、リクエストに対してデバイスがパラレルにサービスする場合、
+この値は性能限界を反映しない。
+</DL>
+
+</DL>
+
+<DT>--dec={ 0 | 1 | 2 }<DD>
+
+使用する小数点の位置を指定する (0 から 2 で、デフォルトは 2 である)。
+<DT>--dev=dev_list<DD>
+
+
+<B>sar</B>
+
+が統計を表示するデバイスブロックを指定する。
+
+
+<I>dev_list</I>
+
+はカンマ区切りのデバイス名のリストである。
+<DT>-e [ hh:mm[:ss] ]<DD>
+
+
+
+
+レポートの終了時間を設定する。
+デフォルトの終了時間は 18:00:00 である。
+時は 24 時間制で指定しなければならない。
+このオプションはデータの読み書き時 (オプション -f または -o) に使われる。
+<DT>-F [ MOUNT ]<DD>
+
+
+
+
+現在マウントしているファイルシステムの統計を表示する。
+擬似 (pseudo) ファイルシステムは無視される。
+レポートの最後に
+<B>sar</B>
+
+はこれらのファイルシステムのサマリーを表示する。
+
+
+
+
+
+
+
+<B>MOUNT</B>
+
+パラメータキーワードを使うと、ファイルシステムデバイスではなく、
+マウントポイントがレポートされる。
+<B>--fs=</B>
+
+オプションで制限リストを指定しない限り、
+すべてのファイルシステムの統計が表示される (対応するオプションを参照すること)。
+
+
+
+
+
+ファイルシステムの統計は、
+<B>sadc</B>
+
+のオプション
+<B>-S XDISK</B>
+
+で収集される点に注意すること。
+<P>
+
+以下の値が表示される。
+<P>
+<B>MBfsfree</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+(特権ユーザのみが使える領域を含む) 空きスペースの総容量 (メガバイト)。
+</DL>
+
+<P>
+<B>MBfsused</B>
+
+<DL COMPACT><DT><DD>
+
+使用スペースの総容量 (メガバイト)。
+</DL>
+
+<P>
+<B>%fsused</B>
+
+<DL COMPACT><DT><DD>
+
+特権ユーザから見えるファイルシステム使用率。
+</DL>
+
+<P>
+<B>%ufsused</B>
+
+<DL COMPACT><DT><DD>
+
+非特権ユーザから見えるファイルシステム使用率。
+</DL>
+
+<P>
+<B>Ifree</B>
+
+<DL COMPACT><DT><DD>
+
+ファイルシステムの空きファイルノード数。
+</DL>
+
+<P>
+<B>Iused</B>
+
+<DL COMPACT><DT><DD>
+
+ファイルシステムの使用ファイルノード数。
+</DL>
+
+<P>
+<B>%Iused</B>
+
+<DL COMPACT><DT><DD>
+
+ファイルシステムの使用ファイルノード率。
+</DL>
+
+</DL>
+
+<DT>-f [ filename ]<DD>
+
+
+
+
+
+
+
+(-o
+<I>filename</I>
+
+フラグで作成された)
+<I>filename</I>
+
+からレコードを抽出する。
+<I>filename</I>
+
+のデフォルトの値は、
+現在の標準システム活性度日次データファイルである。
+<P>
+
+
+
+
+
+<I>filename</I>
+
+がプレーンファイルではなく、ディレクトリの場合、
+標準システム活性度日次データファイルが置かれたディレクトリと解釈される。
+-f オプションと -o オプションは同時に指定することはできない。
+<DT>--fs=fs_list<DD>
+
+
+<B>sar</B>
+
+が統計を表示するファイルシステムを指定する。
+
+
+<I>fs_list</I>
+
+はカンマ区切りのファイルシステム名、
+またはマウントポイントのリストである。
+<DT>-H<DD>
+
+
+ヒュージページ (hugepage) の利用統計を表示する。
+以下の値が表示される。
+<P>
+<B>kbhugfree</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+まだ確保 (allocate) されてないヒュージページメモリ量 (キロバイト)。
+</DL>
+
+<P>
+<B>kbhugused</B>
+
+<DL COMPACT><DT><DD>
+
+確保されたヒュージページメモリ量 (キロバイト)。
+</DL>
+
+<P>
+<B>%hugused</B>
+
+<DL COMPACT><DT><DD>
+
+確保されたヒュージページメモリの割合。
+</DL>
+
+<P>
+<B>kbhugrsvd</B>
+
+<DL COMPACT><DT><DD>
+
+予約されたヒュージページメモリ量 (キロバイト)。
+</DL>
+
+<P>
+<B>kbhugsurp</B>
+
+<DL COMPACT><DT><DD>
+
+余剰のヒュージページメモリ量 (キロバイト)。
+</DL>
+
+</DL>
+
+<DT>-h<DD>
+
+
+
+
+
+sar の出力を人間が読みやすいようにする。
+このオプションは、
+<B>--human</B>
+
+と
+<B>-p</B>
+
+(pretty-print: 小綺麗に表示) オプションを暗黙裡に有効にする。
+
+
+このオプションは、例えばネットワークインタフェースや
+ブロックデバイスの統計を表示する際に、特に役立つだろう。
+<DT>--help<DD>
+
+短いヘルプメッセージを表示して、終了する。
+<DT>--human<DD>
+
+
+
+サイズを人間が読みやすいフォーマット (例えば 1.0k, 1.2M など) で表示する。
+このオプションで表示される単位は、指標に紐付けられたデフォルトの単位
+(例えば、キロバイト、セクターなど) を上書きする。
+<DT>-I { int_list | SUM | ALL }<DD>
+
+割り込みの統計をレポートする。
+
+
+
+<I>int_list</I>
+
+はカンマで区切られた値、または範囲の値である
+(例えば、
+<B>0-16,35,400-</B>)。
+
+
+
+
+
+
+
+
+<B>SUM</B>
+
+キーワードを指定すると、1 秒あたりに受けた割り込みの総数を表示する。
+<B>ALL</B>
+
+キーワードを指定すると、潜在的な APIC 割り込みソースを含む、
+すべての割り込みの統計を表示する。
+
+
+
+
+割り込みの統計は、
+<B>sadc</B>
+
+のオプション &quot;-S INT&quot; に依存して収集される点に注意すること。
+<DT>-i interval<DD>
+
+
+
+
+可能な限り
+<I>interval</I>
+
+パラメータで指定した秒数に近い時間でデータレコードを選択する。
+<DT>--iface=iface_list<DD>
+
+
+<B>sar</B>
+
+で統計を表示するネットワークインタフェースを指定する。
+
+
+<I>iface_list</I>
+
+はカンマ区切りのインタフェース名である。
+<DT>-j { SID | ID | LABEL | PATH | UUID | ... }<DD>
+
+永続的なデバイス名を表示する。
+このオプションは、-d オプションと組み合わせて使うこと。
+
+
+
+
+
+
+オプション
+<B>ID</B>,
+
+<B>LABEL</B>
+
+などで、永続的なデバイス名のタイプを指定する。
+このオプションは限定的ではなく、唯一の必須条件は
+<I>/dev/disk</I>
+
+のディレクトリに永続的なデバイス名が存在することである。
+
+
+永続的なデバイス名が存在しない場合、デバイス名は小綺麗に表示される
+(下記の -p オプションを参照すること)。
+
+
+
+
+
+
+
+オプション
+<B>SID</B>
+
+を指定すると、デバイス名として使用する固定の識別子を取得しようとする。
+固定の識別名は、リブートを行っても、
+同じ物理デバイスについては変更されない。
+この識別子が存在する場合、通常は
+<I>/dev/disk/by-id</I>
+
+ディレクトリから読み出したデバイスの WWN (World Wide Name) である。
+<DT>-m { keyword [,...] | ALL }<DD>
+
+
+
+
+パワーマネージメント統計をレポートする。
+この統計は
+<B>sadc</B>
+
+のオプション &quot;-S POWER&quot; に依存して収集される点に注意すること。
+<P>
+
+指定可能なキーワードは以下のとおり。
+<B>CPU</B>,
+
+<B>FAN</B>,
+
+<B>FREQ</B>,
+
+<B>IN</B>,
+
+
+
+<B>TEMP</B>,
+
+<B>USB</B>.
+
+<P>
+
+
+
+
+<B>CPU</B>
+
+キーワードを指定すると、CPU についての統計がレポートされる。
+以下の値が表示される。
+<P>
+<B>MHz</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+瞬間的な CPU 周波数 (MHz)
+</DL>
+
+<P>
+
+
+
+
+<B>FAN</B>
+
+キーワードを指定すると、ファンのスピードの統計がレポートされる。
+以下の値が表示される。
+<P>
+<B>rpm</B>
+
+<DL COMPACT><DT><DD>
+
+ファンのスピード (1 分あたりの回転数)
+</DL>
+
+<P>
+<B>drpm</B>
+
+<DL COMPACT><DT><DD>
+
+
+このフィールドは、現在のファンのスピード (rpm) と下限値 (fan_min) との差分で計算される。
+</DL>
+
+<P>
+<B>DEVICE</B>
+
+<DL COMPACT><DT><DD>
+
+センサーデバイス名
+</DL>
+
+<P>
+
+
+
+
+<B>FREQ</B>
+
+キーワードを指定すると、CPU クロック周波数の統計がレポートされる。
+以下の値が表示される。
+<P>
+<B>wghMHz</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+加重平均 CPU クロック周波数 (MHz)。
+このオプションを使うためには、cpufreq-stats ドライバーが
+カーネルにコンパイルされていなければならない点に注意すること。
+</DL>
+
+<P>
+
+
+
+
+<B>IN</B>
+
+キーワードを指定すると、電圧入力の統計がレポートされる。
+以下の値が表示される。
+<P>
+<B>inV</B>
+
+<DL COMPACT><DT><DD>
+
+電圧入力をボルトで表示する。
+</DL>
+
+<P>
+<B>%in</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+相対的な入力値。
+100% は上限値 (in_max) に到達していることを意味し、
+0% は下限値 (in_min) に到達していることを意味する。
+</DL>
+
+<P>
+<B>DEVICE</B>
+
+<DL COMPACT><DT><DD>
+
+センサーデバイス名
+</DL>
+
+<P>
+
+
+
+
+<B>TEMP</B>
+
+キーワードを指定すると、デバイスの温度の統計がレポートされる。
+以下の値が表示される。
+<P>
+<B>degC</B>
+
+<DL COMPACT><DT><DD>
+
+デバイスの温度を摂氏で表示する。
+</DL>
+
+<P>
+<B>%temp</B>
+
+<DL COMPACT><DT><DD>
+
+
+相対的なデバイスの温度。
+100% は上限値 (temp_max) に到達していることを意味する。
+</DL>
+
+<P>
+<B>DEVICE</B>
+
+<DL COMPACT><DT><DD>
+
+センサーデバイス名
+</DL>
+
+<P>
+
+
+
+
+
+
+
+
+
+<B>USB</B>
+
+キーワードを指定すると、
+<B>sar</B>
+
+コマンドは現在システムにつながれてるすべての USB デバイスのスナップショットを取る。
+レポートの最後に、
+<B>sar</B>
+
+はすべての USB デバイスのサマリーを表示する。
+以下の値が表示される。
+<P>
+<B>BUS</B>
+
+<DL COMPACT><DT><DD>
+
+USB デバイスのルートハブ番号
+</DL>
+
+<P>
+<B>idvendor</B>
+
+<DL COMPACT><DT><DD>
+
+(USB 組織がアサインする) ベンダー ID 番号。
+</DL>
+
+<P>
+<B>idprod</B>
+
+<DL COMPACT><DT><DD>
+
+(製造者がアサインする) 製品 ID 番号。
+</DL>
+
+<P>
+<B>maxpower</B>
+
+<DL COMPACT><DT><DD>
+
+デバイスの最大電力消費 (mA)。
+</DL>
+
+<P>
+<B>manufact</B>
+
+<DL COMPACT><DT><DD>
+
+製造社名
+</DL>
+
+<P>
+<B>product</B>
+
+<DL COMPACT><DT><DD>
+
+製品名
+</DL>
+
+<P>
+
+
+
+
+<B>ALL</B>
+
+キーワードは、上記のすべてのキーワードを指定したのと同じであり、
+すべてのパワーマネージメント統計が表示される。
+</DL>
+
+
+<DT>-n { keyword [,...] | ALL }<DD>
+
+ネットワークの統計をレポートする。
+<P>
+
+指定可能なキーワードは以下のとおり。
+<B>DEV</B>,
+
+<B>EDEV</B>,
+
+<B>FC</B>,
+
+<B>ICMP</B>,
+
+<B>EICMP</B>,
+
+<B>ICMP6</B>,
+
+<B>EICMP6</B>,
+
+<B>IP</B>,
+
+<B>EIP</B>,
+
+<B>IP6</B>,
+
+<B>EIP6</B>,
+
+<B>NFS</B>,
+
+<B>NFSD</B>,
+
+<B>SOCK</B>,
+
+<B>SOCK6</B>,
+
+<B>SOFT</B>,
+
+<B>TCP</B>,
+
+<B>ETCP</B>,
+
+
+<B>UDP</B>,
+
+
+<B>UDP6</B>.
+
+<P>
+
+
+
+<B>DEV</B>
+
+キーワードを指定すると、ネットワークデバイスの統計をレポートする。
+
+
+
+
+オプション
+<B>--iface=</B>
+
+を使ってリストを制限しない限り、すべてのネットワークインタフェースの
+統計が表示される (対応するオプションを参照)。
+
+以下の値が表示される。
+<P>
+<B>IFACE</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+統計をレポートするネットワークインタフェースの名前。
+</DL>
+
+<P>
+<B>rxpck/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの受信パケット数。
+</DL>
+
+<P>
+<B>txpck/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの送信パケット数。
+</DL>
+
+<P>
+<B>rxkB/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの受信キロバイト数。
+</DL>
+
+<P>
+<B>txkB/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの送信キロバイト数。
+</DL>
+
+<P>
+<B>rxcmp/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの受信圧縮パケット数 (cslip など)。
+</DL>
+
+<P>
+<B>txcmp/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの送信圧縮パケット数。
+</DL>
+
+<P>
+<B>rxmcst/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの受信マルチキャストパケット数。
+</DL>
+
+<P>
+<B>%ifutil</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+ネットワークインタフェースの利用率。
+半二重インタフェースの場合の利用率は、rxkB/s と txkB/s の合計が
+インタフェーススピードに占める割合を計算する。
+全二重インタフェースの場合は、rxkB/s と txkB/s のうちの大きい方が占める割合を計算する。
+</DL>
+
+<P>
+
+
+
+<B>EDEV</B>
+
+キーワードを指定すると、ネットワークデバイスの失敗 (エラー) の統計をレポートする。
+
+
+
+
+オプション
+<B>--iface=</B>
+
+を使ってリストを制限しない限り、すべてのネットワークインタフェースの
+統計が表示される (対応するオプションを参照)。
+
+以下の値が表示される。
+<P>
+<P>
+<B>IFACE</B>
+
+<DL COMPACT><DT><DD>
+
+統計をレポートするネットワークインタフェースの名前。
+</DL>
+
+<P>
+<B>rxerr/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの受信不良パケット数。
+</DL>
+
+<P>
+<B>txerr/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの送信エラーが起きたパケット数。
+</DL>
+
+<P>
+<B>coll/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの送信衝突 (collision) が起きたパケット数。
+</DL>
+
+<P>
+<B>rxdrop/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりのドロップされた受信パケット数。Linux のバッファに空きがない場合に起こる。
+</DL>
+
+<P>
+<B>txdrop/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりのドロップされた送信パケット数。Linux のバッファに空きがない場合に起こる。
+</DL>
+
+<P>
+<B>txcarr/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりのキャリアエラーが起きた送信パケット数。
+</DL>
+
+<P>
+<B>rxfram/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりのフレームアライメントエラーが起きた受信パケット数。
+</DL>
+
+<P>
+<B>rxfifo/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの FIFO オーバーランエラーが起きた受信パケット数。
+</DL>
+
+<P>
+<B>txfifo/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの FIFO オーバーランエラーが起きた送信パケット数。
+</DL>
+
+<P>
+
+
+
+<B>FC</B>
+
+キーワードを指定すると、ファイバーチャネルの
+トラフィックの統計をレポートする。
+
+
+
+ファイバーチャネルの統計は、
+<B>sadc</B>
+
+のオプション &quot;-S DISK&quot; に依存して収集される点に注意すること。
+
+以下の値が表示される。
+<P>
+<B>FCHOST</B>
+
+<DL COMPACT><DT><DD>
+
+統計をレポートするファイバーチャネルホストバスアダプタ (HBA) のインタフェース名。
+</DL>
+
+<P>
+<B>fch_rxf/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの受信フレーム数。
+</DL>
+
+<P>
+<B>fch_txf/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの送信フレーム数。
+</DL>
+
+<P>
+<B>fch_rxw/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの受信伝送 (transmission) ワード数。
+</DL>
+
+<P>
+<B>fch_txw/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの送信伝送ワード数。
+</DL>
+
+<P>
+
+
+
+<B>ICMP</B>
+
+キーワードを指定すると、ICMPv4 ネットワークトラフィックの統計をレポートする。
+
+
+
+
+ICMPv4 の統計は
+<B>sadc</B>
+
+のオプション &quot;-S SNMP&quot; に依存して収集される点に注意すること。
+
+
+以下の値が表示される (正式な SNMP 名を角括弧内に記載する)。
+<P>
+<B>imsg/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにエンティティが受信した ICMP 通知の数 [icmpInMsgs]。
+このカウンタは、ierr/s の全てのカウントを含む点に注意すること。
+</DL>
+
+<P>
+<B>omsg/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにエンティティが送信しようとした ICMP 通知の数 [icmpOutMsgs]。
+このカウンタは、oerr/s の全てのカウントを含む点に注意すること。
+</DL>
+
+<P>
+<B>iech/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した ICMP エコー要求通知の数 [icmpInEchos]。
+</DL>
+
+<P>
+<B>iechr/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した ICMP エコー応答通知の数 [icmpInEchoReps]。
+</DL>
+
+<P>
+<B>oech/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに送信した ICMP エコー要求通知の数 [icmpOutEchos]。
+</DL>
+
+<P>
+<B>oechr/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに送信した ICMP エコー応答通知の数 [icmpOutEchoReps]。
+</DL>
+
+<P>
+<B>itm/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した ICMP タイムスタンプ要求通知の数 [icmpInTimestamps]。
+</DL>
+
+<P>
+<B>itmr/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した ICMP タイムスタンプ応答通知の数 [icmpInTimestampReps]。
+</DL>
+
+<P>
+<B>otm/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに送信した ICMP タイムスタンプ要求通知の数 [icmpOutTimestamps]。
+</DL>
+
+<P>
+<B>otmr/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに送信した ICMP タイムスタンプ要求通知の数 [icmpOutTimestampReps]。
+</DL>
+
+<P>
+<B>iadrmk/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した ICMP アドレスマスク要求通知の数 [icmpInAddrMasks]。
+</DL>
+
+<P>
+<B>iadrmkr/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した ICMP アドレスマスク応答通知の数 [icmpInAddrMaskReps]。
+</DL>
+
+<P>
+<B>oadrmk/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに送信した ICMP アドレスマスク要求通知の数 [icmpOutAddrMasks]。
+</DL>
+
+<P>
+<B>oadrmkr/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに送信した ICMP アドレスマスク応答通知の数 [icmpOutAddrMaskReps]。
+</DL>
+
+<P>
+
+
+
+<B>EICMP</B>
+
+キーワードを指定すると、ICMPv4 エラー通知の統計がレポートされる。
+
+
+
+ICMPv4 の統計は
+<B>sadc</B>
+
+のオプション &quot;-S SNMP&quot; に依存して収集される点に注意すること。
+
+
+以下の値が表示される (正式な SNMP 名を角括弧内に記載する)。
+<P>
+<B>ierr/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+エンティティが受信したが ICMP 特有のエラー
+(ICMP チェックサムの不正、長さの不正、など) があると判断された、
+1 秒あたりの ICMP 通知の数 [icmpInErrors]。
+</DL>
+
+<P>
+<B>oerr/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+バッファの不足などで、ICMP に問題が見つかって
+エンティティが送信しなかった、
+1 秒あたりの ICMP 通知の数 [icmpOutErrors]。
+</DL>
+
+<P>
+<B>idstunr/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりに受信した ICMP 宛先到達不可能通知の数 [icmpInDestUnreachs]。
+</DL>
+
+<P>
+<B>odstunr/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに送信した ICMP 宛先到達不可能通知の数 [icmpOutDestUnreachs]。
+</DL>
+
+<P>
+<B>itmex/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した ICMP 時間切れ通知の数 [icmpInTimeExcds]。
+</DL>
+
+<P>
+<B>otmex/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに送信した ICMP 時間切れ通知の数 [icmpOutTimeExcds]。
+</DL>
+
+<P>
+<B>iparmpb/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した ICMP 不正引数通知の数 [icmpInParmProbs]。
+</DL>
+
+<P>
+<B>oparmpb/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに送信した ICMP 不正引数通知の数 [icmpOutParmProbs]。
+</DL>
+
+<P>
+<B>isrcq/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した ICMP 送出抑制要求通知の数 [icmpInSrcQuenchs]。
+</DL>
+
+<P>
+<B>osrcq/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに送信した ICMP 送出抑制要求通知の数 [icmpOutSrcQuenchs]。
+</DL>
+
+<P>
+<B>iredir/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した ICMP 経路変更要求通知の数 [icmpInRedirects]。
+</DL>
+
+<P>
+<B>oredir/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに送信した ICMP 経路変更要求通知の数 [icmpInRedirects]。
+</DL>
+
+<P>
+
+
+
+<B>ICMP6</B>
+
+キーワードを指定すると、ICMPv6 ネットワークトラフィックの統計がレポートされる。
+
+
+
+ICMPv6 の統計は、
+<B>sadc</B>
+
+オプション &quot;-S IPV6&quot; に依存して収集される点に注意すること。
+
+
+以下の値が表示される (正式な SNMP 名を角括弧内に記載する)。
+<P>
+<B>imsg6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが受信した ICMP 通知の数 [ipv6IfIcmpInMsgs]。
+これは ierr6/s のカウントを含む。
+</DL>
+
+<P>
+<B>omsg6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりにインタフェースが送信しようとした ICMP 通知の数 [ipv6IfIcmpOutMsgs]。
+</DL>
+
+<P>
+<B>iech6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりにインタフェースが受信した ICMP エコー要求通知の数 [ipv6IfIcmpInEchos]。
+</DL>
+
+<P>
+<B>iechr6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりにインタフェースが受信した ICMP エコー応答通知の数 [ipv6IfIcmpInEchoReplies]。
+</DL>
+
+<P>
+<B>oechr6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりにインタフェースが送信した ICMP エコー応答通知の数 [ipv6IfIcmpOutEchoReplies]。
+</DL>
+
+<P>
+<B>igmbq6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが受信した
+ICMPv6 グループメンバーシップ問い合わせ通知の数 [ipv6IfIcmpInGroupMembQueries]。
+</DL>
+
+<P>
+<B>igmbr6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが受信した
+ICMPv6 グループメンバーシップ報告通知の数 [ipv6IfIcmpInGroupMembResponses]。
+</DL>
+
+<P>
+<B>ogmbr6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが送信した
+ICMPv6 グループメンバーシップ報告通知の数 [ipv6IfIcmpOutGroupMembResponses]。
+</DL>
+
+<P>
+<B>igmbrd6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが受信した
+ICMPv6 グループメンバーシップ削除通知の数 [ipv6IfIcmpInGroupMembResponses]。
+</DL>
+
+<P>
+<B>ogmbrd6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが送信した
+ICMPv6 グループメンバーシップ削除通知の数 [ipv6IfIcmpOutGroupMembReductions]。
+</DL>
+
+<P>
+<B>irtsol6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが受信した
+ICMP ルータ要請通知の数 [ipv6IfIcmpInRouterSolicits]。
+</DL>
+
+<P>
+<B>ortsol6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが送信した
+ICMP ルータ要請通知の数 [ipv6IfIcmpOutRouterSolicits].。
+</DL>
+
+<P>
+<B>irtad6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが受信した
+ICMP ルータ広告通知の数 [ipv6IfIcmpInRouterAdvertisements]。
+</DL>
+
+<P>
+<B>inbsol6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが受信した
+ICMP 近隣要請通知の数 [ipv6IfIcmpInNeighborSolicits]。
+</DL>
+
+<P>
+<B>onbsol6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが送信した
+ICMP 近隣要請通知の数 [ipv6IfIcmpOutNeighborSolicits].。
+</DL>
+
+<P>
+<B>inbad6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが受信した
+ICMP 近隣広告通知の数 [ipv6IfIcmpInNeighborAdvertisements]。
+</DL>
+
+<P>
+<B>onbad6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが送信した
+ICMP 近隣広告通知の数 [ipv6IfIcmpOutNeighborAdvertisements]。
+</DL>
+
+<P>
+
+
+
+<B>EICMP6</B>
+
+キーワードを指定すると、ICMPv6 エラーメッセージの統計をレポートする。
+
+
+
+ICMPv6 の統計は、
+<B>sadc</B>
+
+オプション &quot;-S IPV6&quot; に依存して収集される点に注意すること。
+
+
+以下の値が表示される (正式な SNMP 名を角括弧内に記載する)。
+<P>
+<B>ierr6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+エンティティが受信したが ICMP 特有のエラー
+(ICMP チェックサムの不正、長さの不正、など) があると判断された、
+1 秒あたりの ICMP 通知の数 [ipv6IfIcmpInErrors]。
+</DL>
+
+<P>
+<B>idtunr6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが受信した
+ICMP 宛先到達不可能通知の数 [ipv6IfIcmpInDestUnreachs]。
+</DL>
+
+<P>
+<B>odtunr6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが送信した
+ICMP 宛先到達不可能通知の数 [ipv6IfIcmpOutDestUnreachs]。
+</DL>
+
+<P>
+<B>itmex6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが受信した
+ICMP 時間切れ通知の数 [ipv6IfIcmpInTimeExcds]。
+</DL>
+
+<P>
+<B>otmex6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが送信した
+ICMP 時間切れ通知の数 [ipv6IfIcmpOutTimeExcds]。
+</DL>
+
+<P>
+<B>iprmpb6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが受信した
+ICMP 不正引数通知の数 [ipv6IfIcmpInParmProblems]。
+</DL>
+
+<P>
+<B>oprmpb6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが送信した
+ICMP 不正引数通知の数 [ipv6IfIcmpOutParmProblems]。
+</DL>
+
+<P>
+<B>iredir6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが受信した
+ICMP リダイレクト通知の数 [ipv6IfIcmpInRedirects]。
+</DL>
+
+<P>
+<B>oredir6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが送信した
+ICMP リダイレクト通知の数 [ipv6IfIcmpOutRedirects]。
+</DL>
+
+<P>
+<B>ipck2b6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが受信した
+ICMP パケット過大通知の数 [ipv6IfIcmpInPktTooBigs]。
+</DL>
+
+<P>
+<B>opck2b6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが送信した
+ICMP パケット過大通知の数 [ipv6IfIcmpOutPktTooBigs]。
+</DL>
+
+<P>
+
+
+
+<B>IP</B>
+
+キーワードを指定すると、IPv4 ネットワークトラフィックの統計がレポートされる。
+
+
+
+
+IPv4 の統計は、
+<B>sadc</B>
+
+のオプション &quot;-S SNMP&quot; に依存して収集される点に注意すること。
+
+
+以下の値が表示される (正式な SNMP 名を角括弧内に記載する)。
+<P>
+<B>irec/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりにインタフェースが受信した入力データグラムの数 [ipInReceives]。
+これはエラーで受信したデータグラム数も含む。
+</DL>
+
+<P>
+<B>fwddgm/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+エンティティが最終の IP 宛先ではなく、結果として最終の宛先に転送する経路を探した、
+1 秒あたりの入力データグラムの数 [ipForwDatagrams]。
+</DL>
+
+<P>
+<B>idel/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりの (ICMP を含む) IP ユーザプロトコルへの
+配送が成功した入力データグラムの数 [ipInDelivers]。
+</DL>
+
+<P>
+<B>orq/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりの (ICMP を含む) ローカル IP ユーザプロトコルへの
+伝送が成功した IP データグラムの数 [ipInDelivers]。
+
+このカウンタは、fwddgm/s でカウントされるデータグラムを含まない点に注意すること。
+</DL>
+
+<P>
+<B>asmrq/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりに受信したこのエンティティで再構築が必要な IP フラグメントの数 [ipReasmReqds]。
+</DL>
+
+<P>
+<B>asmok/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに再構成が成功した IP データグラムの数 [ipReasmOKs]。
+</DL>
+
+<P>
+<B>fragok/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりにこのエンティティでフラグメント化に成功した IP データグラムの数 [ipFragOKs]。
+</DL>
+
+<P>
+<B>fragcrt/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりにこのエンティティでのフラグメント化により生成された、
+IP データグラムフラグメントの数 [ipFragCreates]。
+</DL>
+
+<P>
+
+
+
+<B>EIP</B>
+
+キーワードを指定すると、IPv4 ネットワークエラーの統計がレポートされる。
+
+
+
+IPv4 の統計は、
+<B>sadc</B>
+
+のオプション &quot;-S SNMP&quot; に依存して収集される点に注意すること。
+
+
+以下の値が表示される (正式な SNMP 名を角括弧内に記載する)。
+<P>
+<B>ihdrerr/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+IP ヘッダのエラーにより、1 秒あたりに破棄された入力データグラムの数。
+IP ヘッダのエラーには、不正なチェックサム、
+バージョン番号の不一致、その他のフォーマットエラー、
+生存時間 (time-to-live) の超過、
+IP オプションの処理で見つかったエラーなどが含まれる [ipInHdrErrors]。
+</DL>
+
+<P>
+<B>iadrerr/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+
+
+
+
+IP ヘッダの宛先フィールドに書かれた IP アドレスが、
+このエンティティが受け取る有効なアドレスでなかったために、
+1 秒あたりに破棄された入力データグラムの数。
+このカウンタは、無効なアドレス (例: 0.0.0.0) と
+サポートされていないクラス (例:クラス E) を含む。
+エンティティが IP ルータではなく、データグラムを転送しない場合、
+このカウンタは、宛先アドレスがローカルアドレスでないために
+破棄されたデータグラムをカウントする [ipInAddrErrors]。
+</DL>
+
+<P>
+<B>iukwnpr/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりに受信に成功したローカルアドレス宛ての
+データグラムのうち、
+不明またはサポート外のプロトコルであったために
+破棄されたデータグラムの数 [ipInUnknownProtos]。
+</DL>
+
+<P>
+<B>idisc/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+後続処理を妨げる問題はなかったが、
+(例えば、バッファ領域の不足などで) 破棄された、
+1 秒あたりの入力 IP データグラムの数 [ipInDiscards]。
+
+
+このカウンタは、再構築を待っている間に破棄された
+データグラムを、カウントしない点に注意すること。
+</DL>
+
+<P>
+<B>odisc/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+送信を妨げる問題はなかったが、
+(例えば、バッファ領域の不足などで) 破棄された、
+1 秒あたり出力 IP データグラムの数 [ipOutDiscards]。
+
+
+
+このカウンタは、fwddgm/s でカウントされるパケットが、
+この (裁量による) 破棄基準にマッチして破棄された場合に、
+カウントに含める点に注意すること。
+</DL>
+
+<P>
+<B>onort/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+宛先に送信するための経路が見つからず破棄された、
+1 秒あたりの IP データグラムの数 [ipOutNoRoutes]。
+
+
+このカウンタは、fwddgm/s でカウントされるパケットが、
+(経路なしの) 基準にマッチして破棄された場合に、
+カウントに含める点に注意すること。
+
+
+また、このカウンタは、すべてのデフォルトルートが
+ダウンしていて、
+ホストが経路を見つけられなかったデータグラムを、
+カウントする点に注意すること。
+</DL>
+
+<P>
+<B>asmf/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりに IP 再構築アルゴリズムで検知した失敗の数
+(理由は、タイムアウト、エラーなど、何でも含まれる) [ipReasmFails]。
+
+
+
+破棄された IP フラグメントをカウントする必要がない点に注意すること。
+なぜなら、破棄されたフラグメントの数を、
+受信したフラグメントと合算してしまって、
+追跡できないアルゴリズムも存在するためである。
+</DL>
+
+<P>
+<B>fragf/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+このエンティティでのフラグメント化が必要であったが、
+フラグメント化ができなかったために破棄された、
+1 秒あたりの IP データグラムの数。
+例えば、フラグメント化不可フラグが設定されている場合など [ipFragFails]。
+</DL>
+
+<P>
+
+
+
+<B>IP6</B>
+
+キーワードを指定すると、IPv6 ネットワークトラフィックの統計がレポートされる。
+
+
+
+IPv6 の統計は、
+<B>sadc</B>
+
+のオプション &quot;-S IPV6&quot; に依存して収集される点に注意すること。
+
+
+以下の値が表示される (正式な SNMP 名を角括弧内に記載する)。
+<P>
+<B>irec6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにインタフェースが受信した入力データグラムの数。
+エラーで受信されたデータグラムも含む [ipv6IfStatsInReceives]。
+</DL>
+
+<P>
+<B>fwddgm6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにエンティティが受信して最終の宛先に転送した
+出力データグラムの数 [ipv6IfStatsOutForwDatagrams]。
+</DL>
+
+<P>
+<B>idel6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりに (ICMP を含む) IPv6 ユーザプロトコルへの配送に成功した
+データグラムの数 [ipv6IfStatsInDelivers]。
+</DL>
+
+<P>
+<B>orq6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+送信リクエストのために、
+(ICMP を含む) ローカル IPv6 ユーザプロトコルが
+IPv6 に提供された
+1 秒あたりの IPv6 データグラムの数
+<BR>&nbsp;[ipv6IfStatsOutRequests]。
+
+
+このカウンタは、fwddgm6/s でカウントされる
+データグラムをカウントしない点に注意すること。
+</DL>
+
+<P>
+<B>asmrq6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりに、このインタフェースで再構築する
+必要があった IPv6 フラグメントの数 [ipv6IfStatsReasmReqds]。
+</DL>
+
+<P>
+<B>asmok6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりに再構築が成功した IPv6 データグラムの数 [ipv6IfStatsReasmOKs]。
+</DL>
+
+<P>
+<B>imcpck6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりに受信したマルチキャストパケットの数 [ipv6IfStatsInMcastPkts]。
+</DL>
+
+<P>
+<B>omcpck6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりに送信したマルチキャストパケットの数 [ipv6IfStatsOutMcastPkts]。
+</DL>
+
+<P>
+<B>fragok6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにこの出力インタフェースでフラグメント化が成功した
+IPv6 データグラムの数 [ipv6IfStatsOutFragOKs]。
+</DL>
+
+<P>
+<B>fragcr6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにこの出力インタフェースでのフラグメント化の結果、
+生成された出力データグラムフラグメントの数 [ipv6IfStatsOutFragCreates]。
+</DL>
+
+<P>
+
+
+
+<B>EIP6</B>
+
+キーワードを指定すると、IPv6 ネットワークエラーの統計がレポートされる。
+
+
+
+IPv6 の統計は、
+<B>sadc</B>
+
+のオプション &quot;-S IPV6&quot; に依存して収集される点に注意すること。
+
+
+以下の値が表示される (正式な SNMP 名を角括弧内に記載する)。
+<P>
+<B>ihdrer6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+
+IPv6 ヘッダのエラーにより、1 秒あたりに破棄された入力データグラムの数。
+IPv6 ヘッダのエラーには、バージョン番号の不一致、
+その他のフォーマットエラー、ホップカウント超過、
+IP オプションの処理で見つかったエラーなどが含まれる [ipv6IfStatsInHdrErrors]。
+</DL>
+
+<P>
+<B>iadrer6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+
+
+
+
+
+
+IPv6 ヘッダの宛先フィールドに書かれた IPv6 アドレスが、
+このエンティティが受け取る有効なアドレスでなかったために、
+1 秒あたりに破棄された入力データグラムの数。
+このカウンタは、無効なアドレス (例: ::0) と
+サポートされていないアドレス (例: 確保されていないプレフィックスのアドレス) を含む。
+エンティティが IPv6 ルータではなく、データグラムを転送しない場合、
+このカウンタは、宛先アドレスがローカルアドレスでないために破棄された
+データグラムをカウントする [ipv6IfStatsInAddrErrors].。
+</DL>
+
+<P>
+<B>iukwnp6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりに受信に成功したローカルアドレス宛てデータグラムのうち、
+不明またはサポート外のプロトコルであったために
+破棄されたデータグラムの数 [ipv6IfStatsInUnknownProtos]。
+</DL>
+
+<P>
+<B>i2big6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+サイズが出力インタフェースのリンク MTU を越えたために、
+フォワードされなかった入力データグラムの数 [ipv6IfStatsInTooBigErrors]。
+</DL>
+
+<P>
+<B>idisc6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+
+
+
+後続処理を妨げる問題はなかったが、
+(例えば、バッファ領域の不足などで) 破棄された、
+1 秒あたりの入力 IP データグラムの数 [ipv6IfStatsInDiscards]。
+このカウンタは、再構築を待っている間に破棄された
+データグラムを、カウントしない点に注意すること。
+</DL>
+
+<P>
+<B>odisc6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+
+
+
+
+送信を妨げる問題はなかったが、
+(例えば、バッファ領域の不足などで) 破棄された、
+1 秒あたり出力 IP データグラムの数 [ipv6IfStatsOutDiscards]。
+このカウンタは、fwddgm6/s でカウントされるパケットが、
+この (裁量による) 破棄基準にマッチして破棄された場合に、
+カウントに含める点に注意すること。
+</DL>
+
+<P>
+<B>inort6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+宛先に送信するための経路が見つからず破棄された、
+1 秒あたりの入力データグラムの数 [ipv6IfStatsInNoRoutes]。
+</DL>
+
+<P>
+<B>onort6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+宛先に送信するための経路が見つからず破棄された、
+1 秒あたりのローカルで生成された IP データグラムの数 [正式な SNMP 名はない]。
+</DL>
+
+<P>
+<B>asmf6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりに IPv6 再構築アルゴリズムで検知した失敗の数
+(理由は、タイムアウト、エラーなど、何でも含まれる) [ipv6IfStatsReasmFails]。
+
+
+
+
+
+破棄された IPv6 フラグメントをカウントする必要がない点に注意すること。
+なぜなら、破棄されたフラグメントの数を、
+受信したフラグメントと合算してしまって、
+追跡できないアルゴリズムも存在するためである。
+</DL>
+
+<P>
+<B>fragf6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+このエンティティでのフラグメント化が必要であったが、
+フラグメント化ができなかったために破棄された、
+1 秒あたりの IP データグラムの数 [ipv6IfStatsOutFragFails]。
+</DL>
+
+<P>
+<B>itrpck6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+データグラムフレームが十分なデータを
+運んでいなかったため破棄された、
+1 秒あたりの入力データグラムの数
+[ipv6IfStatsInTruncatedPkts]。
+</DL>
+
+<P>
+
+
+
+
+<B>NFS</B>
+
+キーワードを指定すると、NFS クライアントの活性度の統計がレポートされる。
+以下の値が表示される。
+<P>
+<B>call/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの RPC リクエスト数。
+</DL>
+
+<P>
+<B>retrans/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+(サーバータイムアウトなどの原因により) 1 秒あたりに再送信された RPC リクエスト数。
+</DL>
+
+<P>
+<B>read/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに実行した 'read' RPC の数。
+</DL>
+
+<P>
+<B>write/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに実行した 'write' RPC の数。
+</DL>
+
+<P>
+<B>access/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに実行した 'access' RPC の数。
+</DL>
+
+<P>
+<B>getatt/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに実行した 'getattr' RPC の数。
+</DL>
+
+<P>
+
+
+
+
+<B>NFSD</B>
+
+キーワードを指定すると、NFS サーバーの活性度の統計がレポートされる。
+以下の値が表示される。
+<P>
+<B>scall/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した RPC リクエスト数。
+</DL>
+
+<P>
+<B>badcall/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりに受信した不正な RPC リクエスト数。
+処理でエラーが発生したリクエスト数。
+</DL>
+
+<P>
+<B>packet/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信したネットワークパケット数。
+</DL>
+
+<P>
+<B>udp/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した UDP パケット数。
+</DL>
+
+<P>
+<B>tcp/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した TCP パケット数。
+</DL>
+
+<P>
+<B>hit/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりのリプライキャッシュのヒット数。
+</DL>
+
+<P>
+<B>miss/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりのリプライキャッシュのミス数。
+</DL>
+
+<P>
+<B>sread/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した 'read' RPC の数。
+</DL>
+
+<P>
+<B>swrite/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した 'write' RPC の数。
+</DL>
+
+<P>
+<B>saccess/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した 'access' RPC の数。
+</DL>
+
+<P>
+<B>sgetatt/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに受信した 'getattr' RPC の数。
+</DL>
+
+<P>
+
+
+
+
+<B>SOCK</B>
+
+キーワードを指定すると、使用中のソケットの統計がレポートされる (IPv4)。
+
+以下の値が表示される。
+<P>
+<B>totsck</B>
+
+<DL COMPACT><DT><DD>
+
+システムが使用しているソケットの数。
+</DL>
+
+<P>
+<B>tcpsck</B>
+
+<DL COMPACT><DT><DD>
+
+現在使用している TCP ソケットの数。
+</DL>
+
+<P>
+<B>udpsck</B>
+
+<DL COMPACT><DT><DD>
+
+現在使用している UDP ソケットの数。
+</DL>
+
+<P>
+<B>rawsck</B>
+
+<DL COMPACT><DT><DD>
+
+現在使用している RAW ソケットの数。
+</DL>
+
+<P>
+<B>ip-frag</B>
+
+<DL COMPACT><DT><DD>
+
+現在キューにある IP フラグメントの数。
+</DL>
+
+<P>
+<B>tcp-tw</B>
+
+<DL COMPACT><DT><DD>
+
+TIME_WAIT 状態の TCP ソケットの数。
+</DL>
+
+<P>
+
+
+
+<B>SOCK6</B>
+
+キーワードを指定すると、使用中のソケットの統計がレポートされる (IPv6)。
+
+
+
+IPv6 の統計は、
+<B>sadc</B>
+
+のオプション &quot;-S IPV6&quot; に依存して収集される点に注意すること。
+
+以下の値が表示される。
+<P>
+<B>tcp6sck</B>
+
+<DL COMPACT><DT><DD>
+
+現在使用している TCPv6 ソケットの数。
+</DL>
+
+<P>
+<B>udp6sck</B>
+
+<DL COMPACT><DT><DD>
+
+現在使用している UDPv6 ソケットの数。
+</DL>
+
+<P>
+<B>raw6sck</B>
+
+<DL COMPACT><DT><DD>
+
+現在使用している RAWv6 ソケットの数。
+</DL>
+
+<P>
+<B>ip6-frag</B>
+
+<DL COMPACT><DT><DD>
+
+現在使用している IPv6 フラグメントの数。
+</DL>
+
+<P>
+
+
+
+<B>SOFT</B>
+
+キーワードを指定すると、ソフトウェアベースの
+ネットワーク処理の統計がレポートされる。
+
+以下の値が表示される。
+<P>
+<B>total/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに処理したネットワークフレームの数。
+</DL>
+
+<P>
+<B>dropd/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+処理キューに空きがなく、1 秒あたりに破棄したネットワークフレームの数。
+</DL>
+
+<P>
+<B>squeezd/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりに終了したソフトウェア割り込みハンドラ関数の回数。
+このハンドラ関数はバジェット (budget) が消費されるか、回数上限に達して、
+これ以上処理が出来かかったために終了されている。
+</DL>
+
+<P>
+<B>rx_rps/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりにパケットを処理するために
+プロセッサ間割り込みで CPU が起こされた (wake up) 回数。
+</DL>
+
+<P>
+<B>flw_lim/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりにフロー上限に達した回数。
+
+
+フロー上限はオプションの RPS (Receive Packet Steering) feature で、
+パケットの数を制限して、ある一定量のフローを
+バックログのキューに送る。
+
+
+大きなフローがパケットを押し込んできた場合にも、
+小さなフローが処理されることを保証するのに役立つ。
+</DL>
+
+<P>
+
+
+
+<B>TCP</B>
+
+キーワードを指定すると、TCPv4 ネットワークトラフィックの統計をレポートする。
+
+
+
+TCPv4 の統計は
+<B>sadc</B>
+
+のオプション &quot;-S SNMP&quot; に依存して収集される点に注意すること。
+
+
+以下の値が表示される (正式な SNMP 名を角括弧内に記載する)。
+<P>
+<B>active/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりに TCP 接続が CLOSED 状態から
+SYN-SENT 状態へ直接遷移した回数 [tcpActiveOpens]。
+</DL>
+
+<P>
+<B>passive/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりに TCP 接続が LISTEN 状態から
+SYN-RCVD 状態へ直接遷移した回数 [tcpPassiveOpens]。
+</DL>
+
+<P>
+<B>iseg/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりに受信したエラーを含むセグメントの数 [tcpInSegs]。
+このカウントには現在確立されている
+接続で受信したセグメントを含む。
+</DL>
+
+<P>
+<B>oseg/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりに受信したエラーを含むセグメントの数  [tcpOutSegs]。
+現在の接続でのセグメントは含むが、
+再送信されたオクテットのみのセグメントは含まない。
+</DL>
+
+<P>
+
+
+
+<B>ETCP</B>
+
+キーワードを指定すると、TCPv4 ネットワークエラーの統計がレポートされる。
+
+
+
+TCPv4 の統計は
+<B>sadc</B>
+
+のオプション &quot;-S SNMP&quot; に依存して収集される点に注意すること。
+
+
+以下の値が表示される (正式な SNMP 名を角括弧内に記載する)。
+<P>
+<B>atmptf/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+
+1 秒あたりに TCP 接続が SYN-SENT 状態、または SYN-RCVD 状態から
+CLOSED 状態に直接遷移した回数。
+これにプラスして、TCP 接続が SYN-RCVD 状態から
+LISTEN 状態に直接遷移した回数 [tcpAttemptFails]。
+</DL>
+
+<P>
+<B>estres/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりに TCP 接続が ESTABLISHED 状態、または CLOSE-WAIT 状態から
+CLOSED 状態に直接遷移した回数 [tcpEstabResets]。
+</DL>
+
+<P>
+<B>retrans/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりに再送信されたセグメントの数。
+つまり、以前に送信された 1 つ以上のオクテットを含んでいる、
+送信された TCP セグメントの数。
+</DL>
+
+<P>
+<B>isegerr/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりに受信した (例えば、不良 TCP チェックサムなどの)
+エラーセグメントの数 [tcpInErrs]。
+</DL>
+
+<P>
+<B>orsts/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに送信された RST フラグを含む TCP セグメントの数 [tcpOutRsts]。
+</DL>
+
+<P>
+
+
+
+<B>UDP</B>
+
+キーワードを指定すると、UDPv4 ネットワークトラフィックの統計がレポートされる。
+
+
+
+UDPv4 の統計は
+<B>sadc</B>
+
+のオプション &quot;-S SNMP&quot; に依存して収集される点に注意すること。
+
+
+以下の値が表示される (正式な SNMP 名を角括弧内に記載する)。
+<P>
+<B>idgm/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに UDP ユーザに向けて配送された
+UDP データグラムの数 [udpInDatagrams]。
+</DL>
+
+<P>
+<B>odgm/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりにこのエンティティから送信された
+UDP データグラムの数 [udpOutDatagrams]。
+</DL>
+
+<P>
+<B>noport/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりに受信した、宛先ポートにアプリケーションがない、
+UDP データグラムの数 [udpNoPorts]。
+</DL>
+
+<P>
+<B>idgmerr/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりに受信した、宛先ポートにアプリケーションがない以外の
+理由で配送できなかった、UDP データグラムの数 [udpInErrors]。
+</DL>
+
+<P>
+
+
+
+<B>UDP6</B>
+
+キーワードを指定すると、UDPv6 ネットワークトラフィックの統計がレポートされる。
+
+
+
+UDPv6 の統計は
+<B>sadc</B>
+
+のオプション &quot;-S IPV6&quot; に依存して収集される点に注意すること。
+
+
+以下の値が表示される (正式な SNMP 名を角括弧内に記載する)。
+<P>
+<B>idgm6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりに UDP ユーザに向けて配送された
+UDP データグラムの数 [udpInDatagrams]。
+</DL>
+
+<P>
+<B>odgm6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりにこのエンティティから送信された
+UDP データグラムの数 [udpOutDatagrams]。
+</DL>
+
+<P>
+<B>noport6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりに受信した、宛先ポートにアプリケーションがない、
+UDP データグラムの数 [udpNoPorts]。
+</DL>
+
+<P>
+<B>idgmer6/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりに受信した、宛先ポートにアプリケーションがない以外の
+理由で配送できなかった、UDP データグラムの数 [udpInErrors]。
+</DL>
+
+<P>
+
+
+
+
+<B>ALL</B>
+
+キーワードは、上記の全てのキーワードを指定したのと同じであり、
+全てのネットワーク活性度がレポートされる。
+</DL>
+
+
+<DT>-o [ filename ]<DD>
+
+
+
+
+読み込みをバイナリ形式でファイルに保存する。
+各読み込みは別レコードになる。
+<I>filename</I>
+
+パラメータのデフォルトは、
+現在の標準システム活性度日次データファイルである。
+
+
+
+
+<I>filename</I>
+
+がプレーンファイルではなく、ディレクトリの場合、
+標準システム活性度日次データファイルが
+置かれたディレクトリと解釈される。
+
+-f オプションと -o オプションは同時に指定することはできない。
+
+
+
+
+
+
+
+
+カーネルから取得できる全てのデータがファイルに保存される
+(実際、
+<B>sar</B>
+
+はデータ収集プログラム
+<B>sadc</B>
+
+をオプション &quot;-S ALL&quot; を付けて呼び出す。
+<B><A HREF="../man8/sadc.8.html">sadc</A></B>(8)
+
+のマニュアルページを参照すること)。
+<DT>-P { cpu_list | ALL }<DD>
+
+指定したプロセッサ (群) のプロセッサごとの統計をレポートする。
+
+
+
+<I>cpu_list</I>
+
+はカンマ区切りの値、または値の範囲である
+(例えば
+<B>0,2,4-7,12-</B>)。
+
+
+
+
+プロセッサ 0 は最初のプロセッサで、
+プロセッサ
+<B>all</B>
+
+は全てのプロセッサの平均である。
+
+
+
+
+<B>ALL</B>
+
+キーワードを指定すると、各プロセッサと全てのプロセッサ全体の統計をレポートする。
+オフラインのプロセッサは表示されない。
+<DT>-p<DD>
+
+デバイス名を小綺麗に表示する。
+このオプションは、オプション -d と一緒に使うこと。
+
+
+
+デフォルトの名前は
+<I>devM-n</I>
+
+のように表示される。M がデバイスのメジャー番号、n がマイナー番号である。
+
+
+
+このオプションを使うと、/dev にあるデバイスの名前が表示される。
+名前のマッピングは
+<I>/etc/sysconfig/sysstat.ioconf</I>
+
+で制御される。
+<DT>-q<DD>
+
+キューの長さとロードアベレージをレポートする。
+以下の値が表示される。
+<P>
+<B>runq-sz</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+実行キューの長さ (実行時間を待っているタスク数)。
+</DL>
+
+<P>
+<B>plist-sz</B>
+
+<DL COMPACT><DT><DD>
+
+タスクリストにあるタスク数。
+</DL>
+
+<P>
+<B>ldavg-1</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+過去 1 分間のシステムロードアベレージ。
+ロードアベレージは、指定した間隔における、
+実行可能または実行中 (R 状態) のタスク数と、
+割り込み不可状態スリープ (D 状態) のタスク数の平均である。
+</DL>
+
+<P>
+<B>ldavg-5</B>
+
+<DL COMPACT><DT><DD>
+
+過去 5 分間のシステムロードアベレージ。
+</DL>
+
+<P>
+<B>ldavg-15</B>
+
+<DL COMPACT><DT><DD>
+
+過去 15 分間のシステムロードアベレージ。
+</DL>
+
+<P>
+<B>blocked</B>
+
+<DL COMPACT><DT><DD>
+
+現在 I/O の完了を待って、ブロックされているタスクの数。
+</DL>
+
+</DL>
+
+<DT>-r [ ALL ]<DD>
+
+
+
+メモリ使用の統計をレポートする。
+<B>ALL</B>
+
+キーワードをしていると、すべてのメモリフィールドが表示される。
+
+以下の値が表示される。
+<P>
+<B>kbmemfree</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+利用可能なフリーなメモリ量 (キロバイト)。
+</DL>
+
+<P>
+<B>kbavail</B>
+
+<DL COMPACT><DT><DD>
+
+
+スワップなしで新しいアプリケーションを開始するのに
+利用可能なメモリ量の推定値 (キロバイト)。
+
+
+
+
+推定値は、システムがうまく動作するためのページキャッシュと、
+再利用可能スラブが利用中で再利用されないことを
+考慮に入れている。
+これらの要素の影響は、システムごとに異なる。
+</DL>
+
+<P>
+<B>kbmemused</B>
+
+<DL COMPACT><DT><DD>
+
+使用メモリ量 (キロバイト)
+(インストールされているメモリ - 
+<B>kbmemfree</B>
+
+-
+<B>kbbuffers</B>
+
+-
+<B>kbcached</B>
+
+-
+
+<B>kbslab</B>
+
+で計算される)。
+</DL>
+
+<P>
+<B>%memused</B>
+
+<DL COMPACT><DT><DD>
+
+使用メモリの割合。
+</DL>
+
+<P>
+<B>kbbuffers</B>
+
+<DL COMPACT><DT><DD>
+
+カーネルがバッファとして使っているメモリ (キロバイト)。
+</DL>
+
+<P>
+<B>kbcached</B>
+
+<DL COMPACT><DT><DD>
+
+カーネルがキャッシュデータとして使っているメモリ (キロバイト)。
+</DL>
+
+<P>
+<B>kbcommit</B>
+
+<DL COMPACT><DT><DD>
+
+
+現在のワークロードで必要なメモリ量 (キロバイト)。
+これは、アウトオブメモリを起こさないようことを
+保証するのに必要な RAM/swap の推定値である。
+</DL>
+
+<P>
+<B>%commit</B>
+
+<DL COMPACT><DT><DD>
+
+現在のワークロードで必要なメモリの、総メモリ (RAM+swap) に対する割合。
+
+カーネルは通常、メモリのオーバーコミットをするので、
+この数値は 100% より大きくなる可能性がある。
+</DL>
+
+<P>
+<B>kbactive</B>
+
+<DL COMPACT><DT><DD>
+
+
+アクティブなメモリ量 (キロバイト)
+(最近に利用されて、本当に必要でない限り再利用されないメモリ)。
+</DL>
+
+<P>
+<B>kbinact</B>
+
+<DL COMPACT><DT><DD>
+
+
+アクティブでないメモリ量 (キロバイト)
+(最近に利用されておらず、他の用途への再利用に適格なメモリ)。
+</DL>
+
+<P>
+<B>kbdirty</B>
+
+<DL COMPACT><DT><DD>
+
+ディスクへの書き戻しを待っているメモリ量 (キロバイト)。
+</DL>
+
+<P>
+<B>kbanonpg</B>
+
+<DL COMPACT><DT><DD>
+
+ユーザ空間ページテーブルへマップされるファイルに紐付かない
+(non-file backed) ページ数。
+</DL>
+
+<P>
+<B>kbslab</B>
+
+<DL COMPACT><DT><DD>
+
+カーネルがキャッシュデータ構造、またはカーネル自身で
+使っているメモリ量 (キロバイト)。
+</DL>
+
+<P>
+<B>kbkstack</B>
+
+<DL COMPACT><DT><DD>
+
+カーネルスタック空間として使っているメモリ量 (キロバイト)。
+</DL>
+
+<P>
+<B>kbpgtbl</B>
+
+<DL COMPACT><DT><DD>
+
+ページテーブルの最下層として割り当てられるメモリ量 (キロバイト)。
+</DL>
+
+<P>
+<B>kbvmused</B>
+
+<DL COMPACT><DT><DD>
+
+仮想アドレス空間として使っているメモリ量 (キロバイト)。
+</DL>
+
+</DL>
+
+<DT>-S<DD>
+
+
+スワップ空間の利用統計をレポートする。
+以下の値が表示される。
+<P>
+<B>kbswpfree</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+利用されていないスワップ空間の量 (キロバイト)。
+</DL>
+
+<P>
+<B>kbswpused</B>
+
+<DL COMPACT><DT><DD>
+
+利用されているスワップ空間の量 (キロバイト)。
+</DL>
+
+<P>
+<B>%swpused</B>
+
+<DL COMPACT><DT><DD>
+
+スワップ空間の利用割合。
+</DL>
+
+<P>
+<B>kbswpcad</B>
+
+<DL COMPACT><DT><DD>
+
+キャッシュスワップメモリの量 (キロバイト)。
+
+
+
+
+これは一度スワップアウトされて、スワップバックされているが、
+まだスワップ領域にあるメモリである
+(もしメモリが必要になった場合、既にスワップ領域にあるため、
+再度スワップアウトする必要がない。これで I/O を削減できる)。
+</DL>
+
+<P>
+<B>%swpcad</B>
+
+<DL COMPACT><DT><DD>
+
+使用されているスワップ空間に占める、
+キャッシュされたスワップメモリの割合。
+</DL>
+
+</DL>
+
+<DT>-s [ hh:mm[:ss] ]<DD>
+
+
+
+
+データの開始時刻を設定する。
+<B>sar</B>
+
+は指定された時刻から、レコードの抽出を開始する。
+デフォルトの開始時刻は、08:00:00 である。
+
+
+時は 24 時間制で指定しなければならない。
+このオプションは、(オプション -f で) データを
+ファイルから読み出す場合にのみ使われる。
+<DT>--sadc<DD>
+
+
+どのデータ収集プログラムが
+<B>sar</B>
+
+から呼び出されるかを表示する。
+
+
+データ収集プログラムが環境変数 PATH から検索できる場合、
+その場所は &quot;which sadc&quot; を入力して知ることができる。
+<DT>-t<DD>
+
+
+
+
+
+
+日次データファイルから読み出す場合、
+<B>sar</B>
+
+はタイムスタンプを、データファイル作成者のオリジナルのローカル時間で表示する。
+このオプションを指定しない場合、
+<B>sar</B>
+
+コマンドはユーザのローカル時間で表示する。
+<DT>-u [ ALL ]<DD>
+
+
+
+CPU 利用の統計をレポートする。
+<B>ALL</B>
+
+キーワードを指定すると、全ての CPU フィールドが表示される。
+
+レポートでは以下のフィールドが表示される可能性がある。
+<P>
+<B>%user</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+
+
+ユーザレベル (アプリケーション) で実行された CPU 利用の割合。
+このフィールドは仮想プロセッサで使われる時間を含む。
+</DL>
+
+<P>
+<B>%usr</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+ユーザレベル (アプリケーション) で実行された CPU 利用の割合。
+このフィールドは仮想プロセッサで使われる時間を「含まない」。
+</DL>
+
+<P>
+<B>%nice</B>
+
+<DL COMPACT><DT><DD>
+
+
+nice 優先度を付けてユーザレベルで実行された CPU 利用の割合。
+</DL>
+
+<P>
+<B>%system</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+システムレベル (カーネル) で実行された CPU 利用の割合。
+このフィールドはハードウェア割り込みと
+ソフトウェア割り込みで使われた時間を含む。
+</DL>
+
+<P>
+<B>%sys</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+システムレベル (カーネル) で実行された CPU 利用の割合。
+このフィールドはハードウェア割り込みと
+ソフトウェア割り込みで使われた時間を「含まない」。
+</DL>
+
+<P>
+<B>%iowait</B>
+
+<DL COMPACT><DT><DD>
+
+
+システムに目立ったディスク I/O リクエストがあり、
+CPU (群) がアイドル状態であった時間の割合。
+</DL>
+
+<P>
+<B>%steal</B>
+
+<DL COMPACT><DT><DD>
+
+
+ハイパーバイザーが他の仮想プロセッサにサービスを行っているために、
+仮想 CPU (群) が不本意に待たされている時間の割合。
+</DL>
+
+<P>
+<B>%irq</B>
+
+<DL COMPACT><DT><DD>
+
+CPU (群) がハードウェア割り込みへのサービスに使った時間の割合。
+</DL>
+
+<P>
+<B>%soft</B>
+
+<DL COMPACT><DT><DD>
+
+CPU (群) がソフトウェア割り込みへのサービスに使った時間の割合。
+</DL>
+
+<P>
+<B>%guest</B>
+
+<DL COMPACT><DT><DD>
+
+CPU (群) が仮想プロセッサを実行するのに使った時間の割合。
+</DL>
+
+<P>
+<B>%gnice</B>
+
+<DL COMPACT><DT><DD>
+
+CPU (群) が nice されたゲストを実行するのに使った時間の割合。
+</DL>
+
+<P>
+<B>%idle</B>
+
+<DL COMPACT><DT><DD>
+
+
+CPU (群) がアイドル状態でシステムに目立った
+ディスク I/O リクエストがなかった時間の割合。
+</DL>
+
+</DL>
+
+<DT>-V<DD>
+
+バージョン番号を表示して、終了する。
+<DT>-v<DD>
+
+
+inode、ファイル、その他のカーネルテーブルの状態をレポートする。
+下記の値が表示される。
+<P>
+<B>dentunusd</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+ディレクトリキャッシュで使われていないキャッシュエントリの数。
+</DL>
+
+<P>
+<B>file-nr</B>
+
+<DL COMPACT><DT><DD>
+
+システムで使われているファイルハンドルの数。
+</DL>
+
+<P>
+<B>inode-nr</B>
+
+<DL COMPACT><DT><DD>
+
+システムで使われている inode ハンドルの数。
+</DL>
+
+<P>
+<B>pty-nr</B>
+
+<DL COMPACT><DT><DD>
+
+システムで使われている擬似端末の数。
+</DL>
+
+</DL>
+
+<DT>-W<DD>
+
+スワップ統計がレポートされる。
+以下の値が表示される。
+<P>
+<B>pswpin/s</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+1 秒あたりにシステムに取り入れたスワップページの数。
+</DL>
+
+<P>
+<B>pswpout/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりにシステムが吐き出したスワップページの数。
+</DL>
+
+</DL>
+
+<DT>-w<DD>
+
+タスク生成と、システムのスイッチングの活性度をレポートする。
+<P>
+<B>proc/s</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+1 秒あたりに生成されたタスクの数。
+</DL>
+
+<P>
+<B>cswch/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりのコンテキストスイッチの数。
+</DL>
+
+</DL>
+
+<DT>-y<DD>
+
+TTY デバイスの活性度をレポートする。
+以下の値が表示される。
+<P>
+<B>rcvin/s</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりの現在のシリアル線から受信した割り込みの数。
+シリアル線の番号が TTY 列に表示される。
+</DL>
+
+<P>
+<B>xmtin/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの現在のシリアル線から送信した割り込みの数。
+</DL>
+
+<P>
+<B>framerr/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの現在のシリアル線でのフレームエラーの数。
+</DL>
+
+<P>
+<B>prtyerr/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの現在のシリアル線でのパリティエラーの数。
+</DL>
+
+<P>
+<B>brk/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの現在のシリアル線でのブレークの数。
+</DL>
+
+<P>
+<B>ovrun/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりの現在のシリアル線でのオーバーランエラーの数。
+</DL>
+
+</DL>
+
+<DT>-z<DD>
+
+
+
+
+サンプリング期間内に活動がなかったデバイスを
+<B>sar</B>
+
+の出力から省略する。
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>環境変数</H2>
+
+
+
+
+<B>sar</B>
+
+コマンドは下記の環境変数を利用する。
+<P>
+<DL COMPACT>
+<DT>S_COLORS<DD>
+
+この環境変数を設定すると、端末上で統計をカラー表示する。
+
+
+
+
+
+
+この環境変数に指定可能な値は、
+<I>never</I>,
+
+<I>always</I>,
+
+<I>auto</I>
+
+である (最後がデフォルトである)。
+<P>
+
+
+
+値を表示する色 (赤、黄、またはその他の色) は、色によって何かの意味を示している訳ではない。
+色は値の範囲を示しているだけである。
+<P>
+<DT>S_COLORS_SGR<DD>
+
+
+
+
+端末で統計を表示する際に、色とその他の属性を指定する。
+この値は、コロン区切りの機能のリストで、デフォルトは
+<B>C=33;22:H=31;1:I=32;22:M=35;1:N=34;1:R=31;22:Z=34;22</B>
+
+である。
+サポートされている機能は以下のとおり。
+<P>
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>C=</B>
+
+<DD>
+
+
+バイナリの日次データファイルに挿入されたコメントを表示する
+SGR (Select Graphic Rendition) 部分文字列。
+<P>
+<DT><B>H=</B>
+
+<DD>
+
+割合が 75% 以上の場合の SGR 部分文字列。
+<P>
+<DT><B>I=</B>
+
+<DD>
+
+アイテム名または値 (例、ネットワークインタフェース、CPU 番号など) を表示する SGR 部分文字列。
+<P>
+<DT><B>M=</B>
+
+<DD>
+
+割合が 50% から 75% の場合の SGR 部分文字列。
+<P>
+<DT><B>N=</B>
+
+<DD>
+
+0 以外の統計値を表示する SGR 部分文字列。
+<P>
+<DT><B>R=</B>
+
+<DD>
+
+リスタートメッセージを表示する SGR 部分文字列。
+<P>
+<DT><B>Z=</B>
+
+<DD>
+
+0 を表示する SGR 部分文字列。
+</DL>
+</DL>
+
+<P>
+<DT>S_TIME_DEF_TIME<DD>
+
+
+
+
+
+この環境変数が存在し、かつ値が
+<B>UTC</B>
+
+の場合、
+<B>sar</B>
+
+はデータを UTC 時間で保存する (一方でデータはローカル時間で表示される)。
+
+
+
+
+
+
+<B>sar</B>
+
+は
+<I>/var/log/sa</I>
+
+ディレクトリにある現在の日次データファイルを決定するために、
+ローカル時間でなく、UTC 時間を使う。
+<P>
+<DT>S_TIME_FORMAT<DD>
+
+
+
+この環境変数が存在し、かつ値が
+<B>ISO</B>
+
+の場合、レポートのヘッダの日付を表示する際に、現在のロケールを無視する。
+
+
+
+代わりに、
+<B>sar</B>
+
+コマンドは ISO 8601 フォーマット (YYYY-MM-DD) を使う。
+
+タイムスタンプも ISO 8601 フォーマットに従う。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+<B>sar -u 2 5</B>
+
+<DL COMPACT><DT><DD>
+
+CPU 利用率を 2 秒毎に 5 行表示する。
+</DL>
+
+<P>
+<B>sar -I 14 -o int14.file 2 10</B>
+
+<DL COMPACT><DT><DD>
+
+IRQ 14 の統計を 2 秒毎に 10 行表示する。
+
+
+データはファイル
+<I>int14.file</I>
+
+に格納される。
+</DL>
+
+<P>
+<B>sar -r -n DEV -f /var/log/sa/sa16</B>
+
+<DL COMPACT><DT><DD>
+
+日次データファイル 'sa16' に保存された
+メモリとネットワークの統計を表示する。
+</DL>
+
+<P>
+<B>sar -A</B>
+
+<DL COMPACT><DT><DD>
+
+現在の日次データファイルに保存されたすべての統計を表示する。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+
+<B>sar</B>
+
+コマンドが動作するためには、
+<I>/proc</I>
+
+ファイルシステムがマウントされていなければならない。
+<P>
+
+
+
+使用しているカーネルによっては、すべての統計が利用可能な訳ではない。
+<B>sar</B>
+
+は少なくとも 2.6 カーネルを使っていることを仮定している。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/var/log/sa/saDD</I>
+
+<BR>
+
+<I>/var/log/sa/saYYYYMMDD</I>
+
+<DL COMPACT><DT><DD>
+
+
+
+標準システム活性度日次データファイルとデフォルトの場所。
+YYYY は現在の年、MM は月、DD は日である。
+<P>
+</DL>
+
+
+
+
+
+<I>/proc</I>
+
+と
+<I>/sys</I>
+
+には、システム統計の様々なファイルが含まれる。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>著者</H2>
+
+Sebastien Godard (sysstat &lt;at&gt; orange.fr)
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/sadc.8.html">sadc</A></B>(8),
+
+<B><A HREF="../man8/sa1.8.html">sa1</A></B>(8),
+
+<B><A HREF="../man8/sa2.8.html">sa2</A></B>(8),
+
+<B><A HREF="../man1/sadf.1.html">sadf</A></B>(1),
+
+<B><A HREF="../man5/sysstat.5.html">sysstat</A></B>(5),
+
+<B><A HREF="../man1/pidstat.1.html">pidstat</A></B>(1),
+
+<B><A HREF="../man1/mpstat.1.html">mpstat</A></B>(1),
+
+<B><A HREF="../man1/iostat.1.html">iostat</A></B>(1),
+
+<B><A HREF="../man8/vmstat.8.html">vmstat</A></B>(8)
+
+<P>
+<I><A HREF="https://github.com/sysstat/sysstat">https://github.com/sysstat/sysstat</A></I>
+
+<P>
+<I><A HREF="http://pagesperso-orange.fr/sebastien.godard/">http://pagesperso-orange.fr/sebastien.godard/</A></I>
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">環境変数</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">バグ</A><DD>
+<DT><A HREF="#lbAI">ファイル</A><DD>
+<DT><A HREF="#lbAJ">著者</A><DD>
+<DT><A HREF="#lbAK">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 03:32:53 GMT, March 20, 2020
+</BODY>
+</HTML>

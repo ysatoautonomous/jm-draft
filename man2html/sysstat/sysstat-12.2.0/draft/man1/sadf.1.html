@@ -1,0 +1,888 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SADF</TITLE>
+</HEAD><BODY>
+<H1>SADF</H1>
+Section: Linux User's Manual (1)<BR>Updated: NOVEMBER 2019<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+sadf - sar が収集したデータをいろいろなフォーマットで表示する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>sadf [ -C ] [ -c | -d | -g | -j | -l | -p | -r | -x ] [ -H ] [ -h ] [ -T | -t | -U ] [ -V ] [ -O</B>
+
+<I>opts</I>
+
+<B>[,...] ] [ -P {</B>
+
+<I>cpu_list</I>
+
+<B>| ALL } ] [ -s [</B>
+
+<I>hh:mm[:ss]</I>
+
+<B>] ] [ -e [</B>
+
+<I>hh:mm[:ss]</I>
+
+<B>] ] [ --dev=</B>
+
+<I>dev_list</I>
+
+<B>] [ --fs=</B>
+
+<I>fs_list</I>
+
+<B>] [ --iface=</B>
+
+<I>iface_list</I>
+
+<B>] [ --</B>
+
+<I>sar_options</I>
+
+<B>] [</B>
+
+<I>interval</I>
+
+<B>[</B>
+
+<I>count</I>
+
+<B>] ] [</B>
+
+<I>datafile</I>
+
+|
+<I>-[0-9]+</I>
+
+<B>]</B>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+<B>sadf</B>
+
+コマンドは
+<B><A HREF="../man1/sar.1.html">sar</A></B>(1)
+
+コマンドで生成されたデータファイルの内容を表示するのに使われる。
+<B>sar</B>
+
+とは異なり、
+<B>sadf</B>
+
+は多くのフォーマット (CSV, XML など) で書き出すことができる。
+
+
+デフォルトのフォーマットは、
+awk などのパターン処理コマンドで扱いやすいものである
+(オプション -p を参照)。
+
+
+
+
+
+
+
+<B>sadf</B>
+
+コマンドは
+<B>sar</B>
+
+で収集した様々な活性度のグラフを描くのに使える。
+SVG (Scalable Vector Graphics) でグラフを描いて、
+ウェブブラウザで表示できる (オプション -g を参照)。
+<P>
+
+
+
+
+
+
+
+
+<B>sadf</B>
+
+コマンドは
+<I>datafile</I>
+
+ファイルに保存されたレコードを抽出して、標準出力に書き出す。
+このファイルは
+<B>sadf</B>
+
+と互換のある
+<B>sar</B>
+
+のバージョンで作成されている必要がある。
+
+
+
+
+
+<I>datafile</I>
+
+を省略すると、
+<B>sadf</B>
+
+は、標準システム活性度日次データファイル
+(standard system activity daily data file) を使う。
+
+
+
+<B>sadf</B>
+
+の引数として、-1、-2 などを指定して、
+指定した日付だけ前のデータを表示できる。
+
+
+例えば、-1 は昨日の標準システム活性度日次データファイルを指している。
+<P>
+
+
+
+
+
+
+標準システム活性度日次データファイルは、
+<I>saDD</I>
+
+または
+<I>saYYYYMMDD</I>
+
+という名前である。
+ここで、YYYY は現在の年、MM は月、DD は日である。
+
+
+
+
+
+
+
+
+<B>sadf</B>
+
+は直近の
+<I>saDD</I>
+
+と
+<I>saYYYYMMDD</I>
+
+を探して使う。
+デフォルトではこのファイルは、
+<I>/var/log/sa</I>
+
+ディレクトリにある。
+しかし、別の場所を指定することも可能である。
+
+
+
+
+
+<I>datafile</I>
+
+が (プレーンファイルではなく) ディレクトリの場合、
+標準システム活性度日次データファイルが置かれた
+ディレクトリとして解釈される。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<I>interval</I>
+
+と
+<I>count</I>
+
+パラメータは、
+<B>sadf</B>
+
+に
+<I>count</I>
+
+回のレコードを
+<I>interval</I>
+
+秒ごとに選択するのに指定される。
+<I>count</I>
+
+パラメータが指定されない場合、
+データファイルに保存された全てのレコードが表示される。
+<P>
+
+
+
+
+
+
+
+どの活性度をレポートするかについて、
+すべての
+<B>sar</B>
+
+の活性度フラグがコマンドラインから指定可能である。
+このフラグを指定する前に、
+<B>sadf</B>
+
+のフラグと混在させないように、2 つのダッシュ (--) を置くこと。
+
+フラグを指定しない場合、CPU 活性度のみが選択される。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT>-C<DD>
+
+
+
+<B>sadf</B>
+
+にファイルに存在するコメントを表示させる。
+<DT>-c<DD>
+
+
+古いシステム活性度バイナリデータファイル (9.1.6 以前) を
+現在のフォーマットに変換する。
+以下の書式を使うこと。
+<P>
+<B>sadf -c old_datafile &gt; new_datafile</B>
+
+<P>
+<DT>-d<DD>
+
+
+
+
+
+
+
+
+
+データファイルの内容をリレーショナルデータベースシステムで
+取り込みやすいフォーマットで表示する。
+出力はセミコロンで区切られたフィールドで構成される。
+各レコードは以下から構成される。
+ファイルが作成されたホストのホスト名、
+時間間隔 (取得できない場合は -1)、
+多くのデータベースで受け入れられやすいタイムスタンプ、
+<I>sar_options</I>
+
+コマンドラインオプションで指定されたカンマ区切りのデータフィールド。
+
+タイムスタンプの出力は、オプション -T, -t, -U で制御できる。
+<DT>--dev=dev_list<DD>
+
+
+<B>sadf</B>
+
+で統計を表示するブロックデバイスを指定する。
+
+
+
+<I>dev_list</I>
+
+はカンマ区切りのデバイス名のリストである。
+これは
+<B>sar</B>
+
+のオプション -d を使うのに役立つ。
+<DT>-e [ hh:mm[:ss] ]<DD>
+
+
+レポートの終了時間を指定する。
+デフォルトの終了時間は 18:00:00 である。
+時は 24 時間制で指定しなければならない。
+<DT>--fs=fs_list<DD>
+
+
+<B>sadf</B>
+
+で統計を表示するファイルシステムを指定する。
+
+
+
+
+<I>fs_list</I>
+
+はカンマ区切りのデバイス名のリストである。
+これは
+<B>sar</B>
+
+のオプション -F を使うのに役立つ。
+<DT>-g<DD>
+
+
+
+データファイルの内容を SVG (Scalable Vector Graphics) 形式で表示する。
+このオプションを使うと、ウェブブラウザで綺麗なグラフを表示できる。
+以下の書式を使うこと。
+<P>
+<B>sadf -g your_datafile [ --</B>
+
+<I>sar_options</I>
+
+<B>] &gt; output.svg</B>
+
+<P>
+
+結果の SVG ファイルを好きなウェブブラウザで開けばよい。
+
+出力はオプション -O (下記を参照) で制御できる。
+<DT>-H<DD>
+
+
+(利用可能であれば) レポートのヘッダのみを表示する。
+フォーマットが指定されない場合、データファイルのヘッダデータ (メタデータ) が表示される。
+<DT>-h<DD>
+
+
+オプション -d と一緒に指定すると、
+すべての活性度が横一列に表示される。
+<DT>--iface=iface_list<DD>
+
+
+<B>sadf</B>
+
+で統計を表示するネットワークインタフェースを指定する。
+
+
+
+
+<I>iface_list</I>
+
+はカンマ区切りのデバイス名のリストである。
+これは
+<B>sar</B>
+
+のオプション -n DEV と -n EDEV を使うのに役立つ。
+<DT>-j<DD>
+
+
+データファイルの内容を JSON (JavaScript Object Notation) で表示する。
+タイムスタンプはオプション -T と -t で制御できる。
+<DT>-l<DD>
+
+
+
+
+データファイルの内容を PCP (Performance Co-Pilot) アーカイブに書き出す。
+アーカイブの名前は、オプション -O とキーワード
+<I>pcparchive=</I>
+
+を使って指定できる。
+<DT>-O opts [,...]<DD>
+
+
+指定したオプションで、
+<B>sadf</B>
+
+の出力を制御する。
+
+
+以下のオプションは
+<B>sadf -g</B>
+
+で表示される SVG 出力を制御するために使われる。
+<P>
+<B>autoscale</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+
+
+現在のビューのスケールに基づいて、可能な限り大きなビューでグラフを描く。
+そのため、倍率 (10, 100, 1000...) がグラフを拡大するために使われる。
+
+
+
+このオプションは複数のグラフを同じビューで描く際に重要である。
+小さい値のグラフと、大きな値のグラフがある場合、
+後者に合わせると前者がとても分かりづらくなる。
+</DL>
+
+<P>
+<B>bwcol</B>
+
+<DL COMPACT><DT><DD>
+
+グラフの描画に黒と白のパレットを使う。
+</DL>
+
+<P>
+<B>customcol</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+グラフの描画にデフォルトのカラーパレットではなく、
+カスタマイズ可能なカラーパレットを使う。
+パレットのカスタマイズ方法を知りたい場合、下記の環境変数
+<B>S_COLORS_PALETTE</B>
+
+を参照すること。
+</DL>
+
+<P>
+<B>height=</B>value
+
+<DL COMPACT><DT><DD>
+
+
+SVG キャンバスの高さを
+<I>value</I>
+
+にする。
+</DL>
+
+<P>
+<B>oneday</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+グラフデータを 24 時間の期間で表示する。
+時刻はデフォルトでは UTC で表示される点に注意すること。
+時刻をローカル時間で表示し、時間の始まりを午前 0 時にするためには、
+オプション -T を使うこと。
+</DL>
+
+<P>
+<B>packed</B>
+
+<DL COMPACT><DT><DD>
+
+同じ行に同じ活性度 (と同じデバイス) を描くように、すべてのビューをグループ化する。
+</DL>
+
+<P>
+<B>showidle</B>
+
+<DL COMPACT><DT><DD>
+
+CPU 統計のグラフに %idle 状態も表示する。
+</DL>
+
+<P>
+<B>showinfo</B>
+
+<DL COMPACT><DT><DD>
+
+各ビューに付加情報 (日付とホスト名) を表示する。
+</DL>
+
+<P>
+<B>showtoc</B>
+
+<DL COMPACT><DT><DD>
+
+
+SVG 出力の先頭に目次を追加する。
+目次は各活性度の最初のグラフを指す。
+</DL>
+
+<P>
+<B>skipempty</B>
+
+<DL COMPACT><DT><DD>
+
+0 値しかないすべてのグラフを表示しない。
+</DL>
+
+<P>
+
+以下のオプションは、データを PCP アーカイブに書き出す際に使用できる:
+<P>
+<B>pcparchive=</B>name
+
+<DL COMPACT><DT><DD>
+
+作成する PCP アーカイブの名前を指定する。
+</DL>
+
+<P>
+
+
+以下のオプションは、
+<B>sadf -r</B>
+
+による生 (raw) データの出力を制御する。
+<P>
+<B>debug</B>
+
+<DL COMPACT><DT><DD>
+
+主にデバッグ目的で役立つ、付加情報を表示する。
+</DL>
+
+</DL>
+
+<DT>-P { cpu_list | ALL }<DD>
+
+
+
+
+特定のプロセッサ (群) を指定することで、
+<B>sadf</B>
+
+にプロセッサ依存の統計をレポートさせる。
+
+
+
+<I>cpu_list</I>
+
+はカンマ区切りの値または、値の範囲である (例
+<B>0,2,4-7,12-</B>)。
+
+
+
+
+プロセッサ 0 が最初のプロセッサで、プロセッサ
+<B>all</B>
+
+はすべてのプロセッサの平均である点に注意すること。
+
+
+
+
+<B>ALL</B>
+
+キーワードを指定すると、すべてのノードの統計をレポートする。
+<DT>-p<DD>
+
+
+awk などのパターン処理コマンドで扱いやすいフォーマットで、
+データファイルの内容を表示する。
+
+
+
+
+
+出力はタブ区切りのフィールドで構成される。
+各レコードには、以下が含まれる。
+ファイルが作成されたホストのホスト名、時間間隔 (利用できない場合は -1)、
+タイムスタンプ、デバイス名 (利用できない場合は -1)、
+フィールド名と値。
+
+タイムスタンプの出力は、オプション -T, -t, -U で制御できる。
+<DT>-r<DD>
+
+
+
+データファイルの生の内容を表示する。
+このフォーマットでは、すべてのカウンターはカーネルから
+読み込んだままの値が表示される。
+例えば、経過時間に対する平均値は計算されないことを意味する。
+<DT>-s [ hh:mm[:ss] ]<DD>
+
+
+
+
+データの開始時刻を設定する。
+<B>sadf</B>
+
+は指定された時刻以降のレコードの抽出する。
+デフォルトの開始時刻は、08:00:00 である。
+
+時は 24 時間制で指定しなければならない。
+<DT>-T<DD>
+
+タイムスタンプを UTC (Coordinated Universal Time) ではなく
+ローカル時間で表示する。
+<DT>-t<DD>
+
+
+タイムスタンプを UTC (Coordinated Universal Time) ではなく
+ファイル作成者の元のローカル時間で表示する。
+<DT>-U<DD>
+
+
+タイムスタンプ (UTC - Coordinated Universal Time) を
+紀元 (epoch) からの秒数で表示する。
+<DT>-V<DD>
+
+バージョン番号を表示して、終了する。
+<DT>-x<DD>
+
+データファイルの内容を XML フォーマットで表示する。
+
+タイムスタンプはオプション -T と -t で制御できる。
+
+
+
+対応する DTD (Document Type Definition) と
+XML スキーマは、sysstat ソースコードパッケージに含まれる。
+これは以下から入手できる。
+<I><A HREF="http://pagesperso-orange.fr/sebastien.godard/download.html">http://pagesperso-orange.fr/sebastien.godard/download.html</A></I>
+
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>環境変数</H2>
+
+
+
+
+<B>sadf</B>
+
+コマンドは下記の環境変数を利用する。
+<P>
+<DL COMPACT>
+<DT>S_COLORS_PALETTE<DD>
+
+
+
+
+
+
+
+
+<B>sadf -g</B>
+
+で SVG 出力を描画する際に使う色を指定する。
+この環境変数は、オプション
+<I>customcol</I>
+
+(オプション -O を参照) でカスタムカラーパレットが選択された場合にのみ、利用される。
+この値はコロン区切りの機能のリストであり、
+各機能は、6 桁で 3 バイトの 16 進数 (16 進数の 3 個組) と紐付けられる。
+デフォルトは以下の通りである。
+<P>
+<B>0=000000:1=1a1aff:2=1affb2:3=b21aff:4=1ab2ff:5=ff1a1a:6=ffb31a:7=b2ff1a:</B>
+
+<BR>
+
+<B>8=efefef:9=000000:A=1a1aff:B=1affb2:C=b21aff:D=1ab2ff:E=ff1a1a:F=ffb31a:</B>
+
+<BR>
+
+<B>G=bebebe:H=000000:I=000000:K=ffffff:L=000000:T=000000:W=000000:X=000000</B>
+
+<P>
+
+
+
+
+1 個の 16 進数 (0 から F) は、(グラフの描画に使われる)
+パレットの最初の 16 色を指定するのに使われる。
+例えば、3=ffffff はパレットの 3 番目の色が白 (0xffffff) であることを表している。
+他の機能は以下の通りである。
+<P>
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>G=</B>
+
+<DD>
+
+グリッドの線を描画する色を指定する。
+<P>
+<DT><B>H=</B>
+
+<DD>
+
+レポートのヘッダを表示する色を指定する。
+<P>
+<DT><B>I=</B>
+
+<DD>
+
+付加情報 (例、日付、ホスト名...) を表示する色を指定する。
+<P>
+<DT><B>K=</B>
+
+<DD>
+
+グラフの背景に使う色を指定する。
+<P>
+<DT><B>L=</B>
+
+<DD>
+
+(例えば、表の内容の表示に使う) デフォルトの色を指定する。
+<P>
+<DT><B>T=</B>
+
+<DD>
+
+グラフのタイトルの表示に使う色を指定する。
+<P>
+<DT><B>W=</B>
+
+<DD>
+
+警告とエラーメッセージの表示に使う色を指定する。
+<P>
+<DT><B>X=</B>
+
+<DD>
+
+軸の描画と、グラデーションの表示に使う色を指定する。
+</DL>
+</DL>
+
+<P>
+<DT>S_TIME_DEF_TIME<DD>
+
+
+
+
+
+
+
+
+この環境変数が存在し、その値が
+<B>UTC</B>
+
+の場合、
+<B>sadf</B>
+
+は
+<I>/var/log/sa</I>
+
+ディレクトリにある現在の日次データファイルの時間として、
+ローカル時間ではなく UTC 時間を使う。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+<B>sadf -d /var/log/sa/sa21 -- -r -n DEV</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+メモリとネットワークの統計をシステム活性度ファイル 'sa21' から取得し、
+データベースに取り込みやすいフォーマットで表示する。
+</DL>
+
+<P>
+<B>sadf -p -P 1</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+プロセッサ 1 (2 番目のプロセッサ) の CPU 統計を
+現在の日次データファイルから取得し、
+パターン処理コマンドで扱いやすいフォーマットで表示する。
+</DL>
+
+<P>
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+
+(オプション -g で作成される) SVG 出力は SVG 1.1 標準と完全互換である。
+画像は Firefox, Chorme, Opera など様々なブラウザで表示に成功する。
+しかし、SVG のレンダリングは Microsoft のブラウザ
+(Internet Explorer 11 と Edge 13.1 でテストした) ではうまくいかないので、
+Microsoft のブラウザは使わないでほしい。
+<P>
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/var/log/sa/saDD</I>
+
+<BR>
+
+<I>/var/log/sa/saYYYYMMDD</I>
+
+<DL COMPACT><DT><DD>
+
+
+
+標準システム活性度日次データファイルとデフォルトの場所。
+ここで、YYYY は現在の年、MM は月、DD は日である。
+<P>
+</DL>
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>著者</H2>
+
+Sebastien Godard (sysstat &lt;at&gt; orange.fr)
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/sar.1.html">sar</A></B>(1),
+
+<B><A HREF="../man8/sadc.8.html">sadc</A></B>(8),
+
+<B><A HREF="../man8/sa1.8.html">sa1</A></B>(8),
+
+<B><A HREF="../man8/sa2.8.html">sa2</A></B>(8),
+
+<B><A HREF="../man5/sysstat.5.html">sysstat</A></B>(5)
+
+<P>
+<I><A HREF="https://github.com/sysstat/sysstat">https://github.com/sysstat/sysstat</A></I>
+
+<P>
+<I><A HREF="http://pagesperso-orange.fr/sebastien.godard/">http://pagesperso-orange.fr/sebastien.godard/</A></I>
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">環境変数</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">バグ</A><DD>
+<DT><A HREF="#lbAI">ファイル</A><DD>
+<DT><A HREF="#lbAJ">著者</A><DD>
+<DT><A HREF="#lbAK">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 03:32:53 GMT, March 20, 2020
+</BODY>
+</HTML>

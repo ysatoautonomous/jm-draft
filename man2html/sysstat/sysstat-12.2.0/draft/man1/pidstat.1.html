@@ -1,0 +1,1234 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of PIDSTAT</TITLE>
+</HEAD><BODY>
+<H1>PIDSTAT</H1>
+Section: Linux User's Manual (1)<BR>Updated: JULY 2018<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+pidstat - Linux タスクの統計をレポートする。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>pidstat [ -d ] [ -H ] [ -h ] [ -I ] [ -l ] [ -R ] [ -r ] [ -s ] [ -t ] [ -U [</B>
+
+<I>username</I>
+
+<B>] ] [ -u ] [ -V ] [ -v ]</B>
+
+<B>[ -w ] [ -C</B>
+
+<I>comm</I>
+
+<B>] [ -G</B>
+
+<I>process_name</I>
+
+<B>] [ --dec={ 0 | 1 | 2 } ] [ --human ] [ -p {</B>
+
+<I>pid</I>
+
+<B>[,...] | SELF | ALL } ] [ -T { TASK | CHILD | ALL } ] [</B>
+
+<I>interval</I>
+
+<B>[</B>
+
+<I>count</I>
+
+<B>] ] [ -e</B>
+
+<I>program</I>
+
+<I>args</I>
+
+<B>]</B>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>pidstat</B>
+
+コマンドは Linux カーネルで現在管理されている各タスクをモニタリングする。
+
+
+
+
+
+
+
+
+このコマンドは
+<B>-p</B>
+
+オプションで選択されたタスク、または
+<B>-p ALL</B>
+
+オプションが指定された場合は Linux カーネルが管理するすべてのタスクの活性度を、
+標準出力に書き出す。
+何も指定しないのは
+<B>-p ALL</B>
+
+を指定するのと同様であるが、
+(統計値が 0 でない) アクティブなタスクのみが、レポートに現れる。
+<P>
+
+
+
+<B>pidstat</B>
+
+コマンドは選択されたタスクの子プロセスをモニタリングすることもできる。
+
+
+
+下記のオプション
+<B>-T</B>
+
+を参照すること。
+<P>
+
+
+
+
+
+<I>interval</I>
+
+パラメータは各レポート間の時間を指定する。
+値が 0 である (またはパラメータを指定しない) 場合、
+システムのスタートアップ (ブート) からのタスクの統計をレポートする。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<I>count</I>
+
+パラメータは
+<I>interval</I>
+
+パラメータと組み合わせて使われる。
+<I>count</I>
+
+パラメータが指定されると、
+<I>count</I>
+
+は
+<I>interval</I>
+
+秒ごとに生成される回数を決定する。
+<I>count</I>
+
+パラメータを指定せずに
+<I>interval</I>
+
+パラメータを指定すると、
+<B>pidstat</B>
+
+コマンドは連続してレポートを生成する。
+<P>
+
+
+フラグを使って特定のタスクの活性度の情報を選択できる。
+フラグを指定しない場合、CPU の活性度のみが選択される。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT>-C comm<DD>
+
+
+コマンド名に文字列
+<I>comm</I>
+
+を含むタスクのみを表示する。
+
+文字列には正規表現を使うことができる。
+<DT>-d<DD>
+
+
+I/O 統計をレポートする (カーネル 2.6.20 以降のみ)。
+以下の値が表示される。
+<P>
+<B>UID</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの実ユーザ識別番号。
+</DL>
+
+<P>
+<B>USER</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの実ユーザ名。
+</DL>
+
+<P>
+<B>PID</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの識別番号。
+</DL>
+
+<P>
+<B>kB_rd/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりにタスクがディスクから読み出したキロバイト数。
+</DL>
+
+<P>
+<B>kB_wr/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりにタスクがディスクへ書き出した、
+または書き出そうとしたキロバイト数。
+</DL>
+
+<P>
+<B>kB_ccwr/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+タスクによってディスクへの書き出しがキャンセルされた
+キロバイト数。
+これは、タスクがダーティなページキャッシュを切り詰める際に
+発生する。
+この場合、他のタスクからアナウンスされていた I/O が、発生しなくなる。
+</DL>
+
+<P>
+<B>iodelay</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+モニタリングしているタスクのブロック I/O 遅延。
+クロック ticks で計測する。
+この指標は、同期ブロック I/O の完了と
+スワップインブロック I/O の完了を、待つのに使った時間を含む。
+</DL>
+
+<P>
+<B>Command</B>
+
+<DL COMPACT><DT><DD>
+
+タスクのコマンド名。
+</DL>
+
+</DL>
+
+<DT>--dec={ 0 | 1 | 2 }<DD>
+
+使用する小数点の位置を指定する (0 から 2 で、デフォルトは 2 である)。
+<DT>-e program args<DD>
+
+
+
+
+
+
+<I>program</I>
+
+を指定した引数
+<I>args</I>
+
+で実行し、
+<B>pidstat</B>
+
+でモニタリングする。
+
+
+
+
+<I>program</I>
+
+が終了すると、
+<B>pidstat</B>
+
+も停止する。
+<DT>-G process_name<DD>
+
+
+コマンド名が文字列
+<I>process_name</I>
+
+を含むプロセスのみを表示する。
+
+
+
+
+
+文字列には正規表現を使うことができる。
+オプション -t を、オプション -G とともに設定すると、
+プロセスに属するスレッドも表示される
+(コマンド名が文字列
+<I>process_name</I>
+
+を含んでいない場合にも表示される)。
+<DT>-H<DD>
+
+タイムスタンプを紀元 (epoch) からの秒数で表示する。
+<DT>-h<DD>
+
+
+
+すべての活性度を横 1 列に表示し、レポートの最後に平均の統計情報を付けない。
+これは他のプログラムで解析しやすくことを意図している。
+<DT>--human<DD>
+
+
+
+サイズを人間が読みやすいフォーマット (例えば 1.0k, 1.2M など) で表示する。
+このオプションで表示される単位は、指標に紐付けられたデフォルトの単位
+(例えば、キロバイト、セクターなど) を上書きする。
+<DT>-I<DD>
+
+
+
+
+SMP 環境において、(オプション
+<B>-u</B>
+
+で表示される) タスクの CPU 利用量を
+総プロセッサ数で割る。
+<DT>-l<DD>
+
+プロセスのコマンド名とすべての引数を表示する。
+<DT>-p { pid [,...] | SELF | ALL }<DD>
+
+選択されたタスク (プロセス) の統計をレポートする。
+
+
+
+
+
+
+
+
+
+<I>pid</I>
+
+はプロセス識別番号である。
+<B>SELF</B>
+
+キーワードを指定すると、
+<B>pidstat</B>
+
+プロセス自身の統計をレポートする。
+また、
+<B>ALL</B>
+
+キーワードを指定すると、システムで管理されている
+全てのタスクの統計をレポートする。
+<DT>-R<DD>
+
+
+リアルタイム優先度とスケジューリングポリシーの情報をレポートする。
+以下の値が表示される。
+<P>
+<B>UID</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの実ユーザ識別番号。
+</DL>
+
+<P>
+<B>USER</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの実ユーザ名。
+</DL>
+
+<P>
+<B>PID</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの識別番号。
+</DL>
+
+<P>
+<B>prio</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクのリアルタイム優先度。
+</DL>
+
+<P>
+<B>policy</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクのスケジューリングポリシー。
+</DL>
+
+<P>
+<B>Command</B>
+
+<DL COMPACT><DT><DD>
+
+タスクのコマンド名。
+</DL>
+
+</DL>
+
+<DT>-r<DD>
+
+ページフォールトとメモリ利用をレポートする。
+<P>
+
+
+各タスクの統計をレポートする場合、以下の値が表示される。
+<P>
+<B>UID</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの実ユーザ識別番号。
+</DL>
+
+<P>
+<B>USER</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの実ユーザ名。
+</DL>
+
+<P>
+<B>PID</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの識別番号。
+</DL>
+
+<P>
+<B>minflt/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりのタスクが起こしたディスクからメモリへのロードを
+必要としないマイナーフォールトの回数。
+</DL>
+
+<P>
+<B>majflt/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりのタスクが起こしたディスクからメモリへのロードを
+必要としたメジャーフォールトの回数。
+</DL>
+
+<P>
+<B>VSZ</B>
+
+<DL COMPACT><DT><DD>
+
+Virtual Size: タスク全体の仮想メモリの使用量 (キロバイト)
+</DL>
+
+<P>
+<B>RSS</B>
+
+<DL COMPACT><DT><DD>
+
+
+Resident Set Size: タスクのスワップを含まない物理メモリの使用量 (キロバイト)
+</DL>
+
+<P>
+<B>%MEM</B>
+
+<DL COMPACT><DT><DD>
+
+タスクの現在の使用可能物理メモリの利用率。
+</DL>
+
+<P>
+<B>Command</B>
+
+<DL COMPACT><DT><DD>
+
+タスクのコマンド名。
+</DL>
+
+<P>
+
+
+タスクとその子プロセスの全体統計のレポートでは、
+以下の値が表示される。
+<P>
+<B>UID</B>
+
+<DL COMPACT><DT><DD>
+
+
+モニタリングされるタスクと子プロセスの実ユーザ識別番号。
+</DL>
+
+<P>
+<B>USER</B>
+
+<DL COMPACT><DT><DD>
+
+
+モニタリングされるタスクと子プロセスの実ユーザ名。
+</DL>
+
+<P>
+<B>PID</B>
+
+<DL COMPACT><DT><DD>
+
+
+モニタリングされるタスクと子プロセスの識別番号。
+</DL>
+
+<P>
+<B>minflt-nr</B>
+
+<DL COMPACT><DT><DD>
+
+
+計測期間にタスクとすべての子プロセスが起こした
+マイナーフォールトの回数。
+</DL>
+
+<P>
+<B>majflt-nr</B>
+
+<DL COMPACT><DT><DD>
+
+
+計測期間にタスクとすべての子プロセスが起こした
+メジャーフォールトの回数。
+</DL>
+
+<P>
+<B>Command</B>
+
+<DL COMPACT><DT><DD>
+
+
+モニタリングされるタスクと子プロセスのコマンド名。
+</DL>
+
+</DL>
+
+<DT>-s<DD>
+
+
+スタック使用状況をレポートする。
+以下の値が表示される。
+<P>
+<B>UID</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの実ユーザ識別番号。
+</DL>
+
+<P>
+<B>USER</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの実ユーザ名。
+</DL>
+
+<P>
+<B>PID</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの識別番号。
+</DL>
+
+<P>
+<B>StkSize</B>
+
+<DL COMPACT><DT><DD>
+
+
+タスクに予約されたスタックのメモリ量 (キロバイト)。
+このメモリは必ず使われる訳ではない。
+</DL>
+
+<P>
+<B>StkRef</B>
+
+<DL COMPACT><DT><DD>
+
+タスクが参照するスタックのメモリ量 (キロバイト)。
+</DL>
+
+<P>
+<B>Command</B>
+
+<DL COMPACT><DT><DD>
+
+タスクのコマンド名。
+</DL>
+
+</DL>
+
+<DT>-T { TASK | CHILD | ALL }<DD>
+
+
+
+
+
+
+
+
+
+
+
+
+
+このオプションは、
+<B>pidstat</B>
+
+コマンドで何をモニタリングするかを指定する。
+<B>TASK</B>
+
+キーワードを指定すると、各タスクの統計がレポートされる
+(これがデフォルトオプションである)。
+また
+<B>CHILD</B>
+
+キーワードを指定すると、各タスクとその子プロセスの統計が
+レポートされる。
+<B>ALL</B>
+
+キーワードを指定すると、各タスクの統計と、
+選択されたタスクと子プロセスの統計が表示される。
+<P>
+
+
+
+注意: タスクとその子プロセスの全体の統計は
+<B>pidstat</B>
+
+のすべてのオプションを指定しても利用可能ではない。
+
+これらの統計は現在の期間と関係をもつ必要がない。
+
+
+子プロセスの統計は、それが終了した場合、または kill された場合に収集される。
+<DT>-t<DD>
+
+選択されたタスクに紐付くスレッドの統計を表示する。
+<P>
+
+このオプションは以下の値をレポートに追加する。
+<P>
+<B>TGID</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+スレッドグループリーダーの識別番号。
+</DL>
+
+<P>
+<B>TID</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングするスレッドの識別番号。
+</DL>
+
+</DL>
+
+<DT>-U [ username ]<DD>
+
+モニタリングするタスクの、UID の代わりに実ユーザ名を表示する。
+
+
+
+<I>username</I>
+
+が指定されると、指定したユーザに紐付くタスクのみが表示される。
+<DT>-u<DD>
+
+CPU 利用状況をレポートする。
+<P>
+
+
+各タスクの統計をレポートする際、
+以下の値が表示される。
+<P>
+<B>UID</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの実ユーザ識別番号。
+</DL>
+
+<P>
+<B>USER</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの実ユーザ名。
+</DL>
+
+<P>
+<B>PID</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの識別番号。
+</DL>
+
+<P>
+<B>%usr</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+nice 優先度なしでユーザレベル (アプリケーション) で実行された CPU 利用の割合。
+このフィールドは仮想プロセッサで使われる時間を「含まない」。
+</DL>
+
+<P>
+<B>%system</B>
+
+<DL COMPACT><DT><DD>
+
+
+システムレベル (カーネル) で実行された CPU 利用の割合。
+</DL>
+
+<P>
+<B>%guest</B>
+
+<DL COMPACT><DT><DD>
+
+
+CPU が仮想マシンのタスク (仮想プロセッサの実行) に使った時間の割合。
+</DL>
+
+<P>
+<B>%wait</B>
+
+<DL COMPACT><DT><DD>
+
+CPU がタスクの実行待ちに使った時間の割合。
+</DL>
+
+<P>
+<B>%CPU</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+
+タスクに使った CPU 時間の合計の割合。
+SMP 環境では、オプション
+<B>-I</B>
+
+がコマンドラインから指定された場合、
+タスクの CPU 利用率は CPU の合計数で割られる。
+</DL>
+
+<P>
+<B>CPU</B>
+
+<DL COMPACT><DT><DD>
+
+タスクがアタッチされたプロセッサ番号。
+</DL>
+
+<P>
+<B>Command</B>
+
+<DL COMPACT><DT><DD>
+
+タスクのコマンド名。
+</DL>
+
+<P>
+
+
+タスクとそのすべての子プロセスの全体の統計をレポートする場合、
+以下の値が表示される。
+<P>
+<B>UID</B>
+
+<DL COMPACT><DT><DD>
+
+
+モニタリングされるタスクと子プロセスの実ユーザ識別番号。
+</DL>
+
+<P>
+<B>USER</B>
+
+<DL COMPACT><DT><DD>
+
+
+モニタリングされるタスクと子プロセスの実ユーザ名。
+</DL>
+
+<P>
+<B>PID</B>
+
+<DL COMPACT><DT><DD>
+
+
+モニタリングされるタスクと子プロセスの識別番号。
+</DL>
+
+<P>
+<B>usr-ms</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+
+
+計測期間の間に、タスクとすべての子プロセスが、
+ユーザレベル (アプリケーション) で実行され、
+かつ nice 優先度あり、もしくはなしで実行された総時間 (ミリ秒)。
+このフィールドは、仮想プロセッサの実行で使った
+時間が「含まない」点に注意すること。
+</DL>
+
+<P>
+<B>system-ms</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+計測期間の間に、タスクとすべての子プロセスが、
+システムレベル (カーネル) で実行された総時間 (ミリ秒)。
+</DL>
+
+<P>
+<B>guest-ms</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+計測期間の間に、タスクとすべての子プロセスが、
+(仮想プロセッサを実行する) 仮想マシンで実行された総時間 (ミリ秒)。
+</DL>
+
+<P>
+<B>Command</B>
+
+<DL COMPACT><DT><DD>
+
+
+モニタリングされるタスクと子プロセスのコマンド名。
+</DL>
+
+</DL>
+
+<DT>-V<DD>
+
+バージョン番号を表示して、終了する。
+<DT>-v<DD>
+
+カーネルテーブルの値をレポートする。
+以下の値が表示される。
+<P>
+<B>UID</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの実ユーザ識別番号。
+</DL>
+
+<P>
+<B>USER</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの実ユーザ名。
+</DL>
+
+<P>
+<B>PID</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの識別番号。
+</DL>
+
+<P>
+<B>threads</B>
+
+<DL COMPACT><DT><DD>
+
+現在のタスクに紐付くスレッド数。
+</DL>
+
+<P>
+<B>fd-nr</B>
+
+<DL COMPACT><DT><DD>
+
+現在のタスクに紐付くファイルディスクリプターの数。
+</DL>
+
+<P>
+<B>Command</B>
+
+<DL COMPACT><DT><DD>
+
+タスクのコマンド名。
+</DL>
+
+</DL>
+
+<DT>-w<DD>
+
+
+タスク切り替えの活性度をレポートする (カーネル 2.6.23 以降のみ)。
+以下の値が表示される。
+<P>
+<B>UID</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの実ユーザ識別番号。
+</DL>
+
+<P>
+<B>USER</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの実ユーザ名。
+</DL>
+
+<P>
+<B>PID</B>
+
+<DL COMPACT><DT><DD>
+
+モニタリングされるタスクの識別番号。
+</DL>
+
+<P>
+<B>cswch/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+1 秒あたりにタスクが起こした自発的 (voluntary) な
+コンテキストスイッチの回数。
+自発的なコンテキストスイッチは、タスクブロックが必要とした
+リソースが利用可能でない場合に発生する。
+</DL>
+
+<P>
+<B>nvcswch/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりにタスクが起こした自発的でない
+コンテキストスイッチの回数。
+
+
+
+自発的でないコンテキストスイッチは、
+タスクがタイムスライスの間で実行され、
+強制的にプロセッサを放棄させられた場合に発生する。
+</DL>
+
+<P>
+<B>Command</B>
+
+<DL COMPACT><DT><DD>
+
+タスクのコマンド名。
+</DL>
+
+</DL>
+
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>環境変数</H2>
+
+
+
+
+<B>pidstat</B>
+
+コマンドは以下の環境変数を扱う。
+<P>
+<DL COMPACT>
+<DT>S_COLORS<DD>
+
+この環境変数を設定すると、端末上で統計をカラー表示する。
+
+
+
+
+
+
+この環境変数に指定可能な値は、
+<I>never</I>,
+
+<I>always</I>,
+
+<I>auto</I>
+
+である (最後がデフォルトである)。
+<P>
+
+
+
+値を表示する色 (赤、黄、またはその他の色) は、色によって何かの意味を示している訳ではない。
+色は値の範囲を示しているだけである。
+<P>
+<DT>S_COLORS_SGR<DD>
+
+
+
+
+端末で統計を表示する際に、色とその他の属性を指定する。
+この値は、コロン区切りの機能のリストで、デフォルトは
+<B>H=31;1:I=32;22:M=35;1:N=34;1:Z=34;22</B>
+
+である。
+サポートされている機能は以下のとおり。
+<P>
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>H=</B>
+
+<DD>
+
+割合が 75% 以上の場合の SGR (Select Graphic Rendition) 部分文字列。
+<P>
+<DT><B>I=</B>
+
+<DD>
+
+PID, UID, CPU 番号などのアイテム値を表示する SGR 部分文字列。
+<P>
+<DT><B>M=</B>
+
+<DD>
+
+割合が 50% から 75% の場合の SGR 部分文字列。
+<P>
+<DT><B>N=</B>
+
+<DD>
+
+0 以外の統計値とタスク名を表示する SGR 部分文字列。
+<P>
+<DT><B>Z=</B>
+
+<DD>
+
+0 とスレッド名を表示する SGR 部分文字列。
+</DL>
+</DL>
+
+<P>
+<DT>S_TIME_FORMAT<DD>
+
+
+
+この環境変数が存在し、かつ値が
+<B>ISO</B>
+
+の場合、レポートのヘッダの日付を表示する際に、
+現在のロケールを無視する。
+
+
+
+代わりに、
+<B>pidstat</B>
+
+コマンドは ISO 8601 フォーマット (YYYY-MM-DD) を使う。
+
+タイムスタンプも ISO 8601 フォーマットに従う。
+　　　　　　　　　　　　　　　　　　　　
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+<B>pidstat 2 5</B>
+
+<DL COMPACT><DT><DD>
+
+
+システムのアクティブなタスクの CPU 統計を 2 秒間隔で 5 回レポートする。
+</DL>
+
+<P>
+<B>pidstat -r -p 1643 2 5</B>
+
+<DL COMPACT><DT><DD>
+
+
+PID 1643 のページフォールトとメモリの統計を 2 秒間隔で 5 回レポートする。
+</DL>
+
+<P>
+
+<B>pidstat -C fox|bird -r -p ALL</B>
+
+<DL COMPACT><DT><DD>
+
+
+コマンド名が文字列 &quot;fox&quot; または &quot;bird&quot; を含む
+すべてのプロセスのページフォールトとメモリの統計を表示する。
+</DL>
+
+<P>
+<B>pidstat -T CHILD -r 2 5</B>
+
+<DL COMPACT><DT><DD>
+
+
+
+システムのすべてのタスクの子プロセスについて、
+ページフォールトの統計を 2 秒間隔で 5 回レポートする。
+統計値が 0 でない子プロセスのみが表示される。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+
+<B>pidstat</B>
+
+コマンドが動作するためには、
+<I>/proc</I>
+
+ファイルシステムがマウントされていなければならない。
+<P>
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/proc</I>
+
+
+システム統計を含むさまざまなファイルを保持する。
+<P>
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>著者</H2>
+
+Sebastien Godard (sysstat &lt;at&gt; orange.fr)
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/sar.1.html">sar</A></B>(1),
+
+<B><A HREF="../man1/top.1.html">top</A></B>(1),
+
+<B><A HREF="../man1/ps.1.html">ps</A></B>(1),
+
+<B><A HREF="../man1/mpstat.1.html">mpstat</A></B>(1),
+
+<B><A HREF="../man1/iostat.1.html">iostat</A></B>(1),
+
+<B><A HREF="../man8/vmstat.8.html">vmstat</A></B>(8)
+
+<P>
+<I><A HREF="https://github.com/sysstat/sysstat">https://github.com/sysstat/sysstat</A></I>
+
+<P>
+<I><A HREF="http://pagesperso-orange.fr/sebastien.godard/">http://pagesperso-orange.fr/sebastien.godard/</A></I>
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">環境変数</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">バグ</A><DD>
+<DT><A HREF="#lbAI">ファイル</A><DD>
+<DT><A HREF="#lbAJ">著者</A><DD>
+<DT><A HREF="#lbAK">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 03:32:53 GMT, March 20, 2020
+</BODY>
+</HTML>
