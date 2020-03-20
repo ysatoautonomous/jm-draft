@@ -1,10 +1,11 @@
 .\"
-.\" Japanese Version Copyright (c) 2019 Yuichi SATO
+.\" Japanese Version Copyright (c) 2019-2020 Yuichi SATO
 .\"         all rights reserved.
 .\" Translated Sat Jul  6 10:50:25 JST 2019
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Fri Mar 20 10:50:25 JST 2020 by Yuichi SATO
 .\"
-.TH SAR 1 "APRIL 2019" Linux "Linux User's Manual" -*- nroff -*-
+.TH SAR 1 "SEPTEMBER 2019" Linux "Linux User's Manual" -*- nroff -*-
 .\"O .SH NAME
 .SH 名前
 .\"O sar \- Collect, report, or save system activity information.
@@ -31,7 +32,7 @@ sar \- システムの活性度情報の収集、報告、保存を行う。
 .B [ -n {
 .I keyword
 .B [,...] | ALL } ]
-.B [ -j { ID | LABEL | PATH | UUID | ... } ]
+.B [ -j { SID | ID | LABEL | PATH | UUID | ... } ]
 .B [ -f [
 .I filename
 .B ] | -o [
@@ -298,10 +299,16 @@ CPU 利用率 (user + nice + system) が 100% に近い場合、
 .SH オプション
 .IP -A
 .\"O This is equivalent to specifying
-.\"O .BR "-bBdFHqSvwWy -I SUM -I ALL -m ALL -n ALL -r ALL -u ALL -P ALL".
+.\"O .BR "-bBdFHqSvwWy -I SUM -m ALL -n ALL -r ALL -u ALL".
 これは
-.BR "-bBdFHqSvwWy -I SUM -I ALL -m ALL -n ALL -r ALL -u ALL -P ALL"
+.BR "-bBdFHqSvwWy -I SUM -m ALL -n ALL -r ALL -u ALL"
 を指定するのと同じである。
+.\"O This option also implies specifying
+.\"O .BR "-I ALL -P ALL"
+.\"O unless these options are explicitly set on the command line.
+このオプションは、
+.BR "-I ALL -P ALL"
+をコマンドラインで明示的に指定しない限り、暗黙のうちに指定する。
 .IP -B
 .\"O Report paging statistics.
 .\"O The following values are displayed:
@@ -411,6 +418,12 @@ I/O と転送率の統計をレポートする。
 1 秒あたりの物理デバイスへの書き込みリクエスト数。
 .RE
 
+.B dtps
+.RS
+.\"O Total number of discard requests per second issued to physical devices.
+1 秒あたりの物理デバイスへの破棄リクエスト数。
+.RE
+
 .B bread/s
 .RS
 .\"O Total amount of data read from the devices in blocks per second.
@@ -424,6 +437,12 @@ I/O と転送率の統計をレポートする。
 .RS
 .\"O Total amount of data written to devices in blocks per second.
 1 秒あたりのデバイスへの書き込みデータ量 (ブロック数)。
+.RE
+
+.B bdscd/s
+.RS
+.\"O Total amount of data discarded for devices in blocks per second.
+1 秒あたりのデバイスへの破棄データ量 (ブロック数)。
 .RE
 .RE
 .IP -C
@@ -517,6 +536,12 @@ options
 1 秒あたりにデバイスに書き込んだキロバイト数。
 .RE
 
+.B dkB/s
+.RS
+.\"O Number of kilobytes discarded for the device per second.
+1 秒あたりにデバイスから破棄したキロバイト数。
+.RE
+
 .B areq-sz
 .RS
 .\"O The average size (in kilobytes) of the I/O requests that were issued to the device.
@@ -542,16 +567,6 @@ options
 .\"O the time spent servicing them.
 デバイスに発行した I/O リクエストが処理されるまでの平均時間 (ミリ秒)。
 この時間には、リクエストがキューに入っている時間と、処理される時間が含まれる。
-.RE
-
-.B svctm
-.RS
-.\"O The average service time (in milliseconds) for I/O requests that were issued
-.\"O to the device. Warning! Do not trust this field any more. This field will be
-.\"O removed in a future sysstat version.
-デバイスに発行した I/O リクエストに対する平均サービス時間 (ミリ秒)。
-注意！このフィールドを今後信用してはならない。
-このフィールドは将来の sysstat バージョンで削除される。
 .RE
 
 .B %util
@@ -729,6 +744,18 @@ RAID アレイや最近の SSD のように、リクエストに対してデバ�
 .\"O Percentage of total hugepages memory that has been allocated.
 確保されたヒュージページメモリの割合。
 .RE
+
+.B kbhugrsvd
+.RS
+.\"O Amount of reserved hugepages memory in kilobytes.
+予約されたヒュージページメモリ量 (キロバイト)。
+.RE
+
+.B kbhugsurp
+.RS
+.\"O Amount of surplus hugepages memory in kilobytes.
+余剰のヒュージページメモリ量 (キロバイト)。
+.RE
 .RE
 .IP -h
 .\"O Make the output of sar easier to read by a human. Options
@@ -802,7 +829,7 @@ sar の出力を人間が読みやすいようにする。
 .\"O is a list of comma-separated interface names.
 .IR iface_list
 はカンマ区切りのインタフェース名である。
-.IP "-j { ID | LABEL | PATH | UUID | ... }"
+.IP "-j { SID | ID | LABEL | PATH | UUID | ... }"
 .\"O Display persistent device names. Use this option in conjunction with option -d.
 永続的なデバイス名を表示する。
 このオプションは、-d オプションと組み合わせて使うこと。
@@ -823,6 +850,21 @@ sar の出力を人間が読みやすいようにする。
 .\"O is pretty-printed (see option -p below).
 永続的なデバイス名が存在しない場合、デバイス名は小綺麗に表示される
 (下記の -p オプションを参照すること)。
+.\"O Option
+.\"O .BR SID
+.\"O tries to get a stable identifier to use as the device name. A stable
+.\"O identifier won't change across reboots for the same physical device. If it exists,
+.\"O this identifier is normally the WWN (World Wide Name) of the device, as read from the
+.\"O .IR /dev/disk/by-id
+.\"O directory.
+オプション
+.BR SID
+を指定すると、デバイス名として使用する固定の識別子を取得しようとする。
+固定の識別名は、リブートを行っても、
+同じ物理デバイスについては変更されない。
+この識別子が存在する場合、通常は
+.IR /dev/disk/by-id
+ディレクトリから読み出したデバイスの WWN (World Wide Name) である。
 .IP "-m { keyword [,...] | ALL }"
 .\"O Report power management statistics.
 .\"O Note that these statistics depend on
