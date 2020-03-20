@@ -489,11 +489,15 @@ Linux のインスタンスを再度起動したときに、適用されるず�
 .\"O Display help text and exit.
 ヘルプを表示して、終了する。
 .
-.SH OPTIONS
+.\"O .SH OPTIONS
+.SH オプション
 .
 .TP
 .BI \-\-adjfile= filename
-.RI "Override the default " /etc/adjtime " file path."
+.\"O .RI "Override the default " /etc/adjtime " file path."
+デフォルトの
+.I /etc/adjtime
+ファイルパスを上書きする。
 .
 .TP
 .BI \%\-\-date= date_string
@@ -1393,38 +1397,53 @@ timescale. The zoneinfo database must be configured to use either posix
 or 'right', as described above, or by assigning a database path to the
 .SB TZDIR
 environment variable.
-.SH EXIT STATUS
-One of the following exit values will be returned:
+.\"O .SH EXIT STATUS
+.SH 返り値
+.\"O One of the following exit values will be returned:
+以下の返り値の 1 つが返される:
 .TP
-.BR EXIT_SUCCESS " ('0' on POSIX systems)"
-Successful program execution.
+.\"O .BR EXIT_SUCCESS " ('0' on POSIX systems)"
+.\"O Successful program execution.
+.BR EXIT_SUCCESS " (POSIX システムでは '0')"
+プログラムの実行に成功した。
 .TP
-.BR EXIT_FAILURE " ('1' on POSIX systems)"
-The operation failed or the command syntax was not valid.
-.SH ENVIRONMENT
+.\"O .BR EXIT_FAILURE " ('1' on POSIX systems)"
+.\"O The operation failed or the command syntax was not valid.
+.BR EXIT_FAILURE " (POSIX システムでは '1')"
+操作に失敗した。または、コマンド書式が不正である。
+.\"O .SH ENVIRONMENT
+.SH 環境変数
 .TP
 .B TZ
-If this variable is set its value takes precedence over the system
-configured timezone.
+.\"O If this variable is set its value takes precedence over the system
+.\"O configured timezone.
+この変数が設定されると、システムのタイムゾーン設定より優先される。
 .TP
 .B TZDIR
-If this variable is set its value takes precedence over the system
-configured timezone database directory path.
+.\"O If this variable is set its value takes precedence over the system
+.\"O configured timezone database directory path.
+この変数が設定されると、システムのタイムゾーンデータベースの
+ディレクトリパスより優先される。
 .\"O .SH FILES
 .SH ファイル
 .TP
 .I /etc/adjtime
-The configuration and state file for hwclock.
+.\"O The configuration and state file for hwclock.
+hwclock の設定と状態ファイル。
 .TP
 .I /etc/localtime
-The system timezone file.
+.\"O The system timezone file.
+システムのタイムゾーンファイル。
 .TP
 .I /usr/share/zoneinfo/
-The system timezone database directory.
+.\"O The system timezone database directory.
+システムのタイムゾーンデータベースのディレクトリ。
 .PP
-Device files
+.\"O Device files
+.\"O .B hwclock
+.\"O may try for Hardware Clock access:
 .B hwclock
-may try for Hardware Clock access:
+がハードウェア・クロックのアクセスに使うデバイスファイル:
 .br
 .I /dev/rtc0
 .br
