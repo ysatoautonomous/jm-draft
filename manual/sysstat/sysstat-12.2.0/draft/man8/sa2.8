@@ -1,8 +1,9 @@
 .\"
-.\" Japanese Version Copyright (c) 2019 Yuichi SATO
+.\" Japanese Version Copyright (c) 2019-2020 Yuichi SATO
 .\"         all rights reserved.
 .\" Translated Tue Jul  9 19:33:24 JST 2019
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Fri Mar 20 11:55:00 JST 2020 by Yuichi SATO
 .\"
 .TH SA2 8 "JULY 2018" Linux "Linux User's Manual" -*- nroff -*-
 .\"O .SH NAME
@@ -82,7 +83,7 @@ sa2 \- 現在の標準システム活性度日次データファイルからレ�
 コマンドを毎日起動するには、
 以下のエントリを root の crontab ファイルに追加すること。
 
-.B 5 19 * * 1-5 /usr/lib64/sa/sa2 -A &
+.B 5 19 * * 1-5 /usr/lib64/sa/sa2 -A
 
 .\"O This will generate by default a daily report called
 .\"O .I sarDD
