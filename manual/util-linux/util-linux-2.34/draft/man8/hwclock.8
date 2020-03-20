@@ -1,0 +1,1327 @@
+.\" hwclock.8.in -- man page for util-linux' hwclock
+.\"
+.\" 2015-01-07 J William Piggott
+.\"   Authored new section: DATE-TIME CONFIGURATION.
+.\"   Subsections: Keeping Time..., LOCAL vs UTC, POSIX vs 'RIGHT'.
+.\"
+.\" Japanese Version Copyright (c) 1997 NAKANO Takeo all rights reserved.
+.\" Translated Mon Dec 8 1997 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Fri 3 Jul 1998 by NAKANO Takeo
+.\" Updated & Modified Thu 14 Oct 1999 by NAKANO Takeo 
+.\" Updated & Modified Sat 18 Mar 2000 by NAKANO Takeo
+.\" Updated & Modified Wed 14 Jun 2000 by NAKANO Takeo 
+.\" Updated & Modified Sun Jan  7 22:17:11 JST 2001
+.\"         by Yuichi SATO <ysato@h4.dion.ne.jp>
+.\" Updated & Modified Mon Apr  9 20:47:39 JST 2001 by Yuichi SATO
+.\" Updated & Modified Mon Jun 25 22:38:36 JST 2001 by Yuichi SATO
+.\" Updated & Modified Sat Jul  6 03:56:54 JST 2002 by Yuichi SATO
+.\" Updated & Modified Fri Mar 20 18:00:11 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.\"WORD:	epoch		紀元(年)
+.\"
+.TH HWCLOCK 8 "July 2017" "util-linux" "System Administration"
+.\"O .SH NAME
+.\"O hwclock \- time clocks utility
+.SH 名前
+hwclock \- タイムクロックのユーティリティ
+.\"O .SH SYNOPSIS
+.SH 書式
+.B hwclock
+.RI [ function ]
+.RI [ option ...]
+.
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B hwclock
+.\"O is an administration tool for the time clocks.  It can: display the
+.\"O Hardware Clock time; set the Hardware Clock to a specified time; set the
+.\"O Hardware Clock from the System Clock; set the System Clock from the
+.\"O Hardware Clock; compensate for Hardware Clock drift; correct the System
+.\"O Clock timescale; set the kernel's timezone, NTP timescale, and epoch
+.\"O (Alpha only); and predict future
+.\"O Hardware Clock values based on its drift rate.
+.B hwclock
+はタイムクロックの管理ツールである。
+以下のことが実行できる。
+ハードウェア・クロックの値を、ずれの値に基づいて表示する。
+ハードウェア・クロックの値を、指定した時刻に設定する。
+ハードウェア・クロックの値を、システムクロックの値に設定する。
+システムクロックの値を、ハードウェア・クロックの値に設定する。
+ハードウェア・クロックのずれのを補償する。
+システムクロックのタイムスケールを訂正する。
+カーネルのタイムゾーン、NTP タイムスケール、紀元年 (Alpha のみ) を設定する。
+将来のハードウェア・クロックの値を、ずれの値に基づいて、予想する。
+.PP
+.\"O Since v2.26 important changes were made to the
+.\"O .B \-\-hctosys
+.\"O function and the
+.\"O .B \-\-directisa
+.\"O option, and a new option
+.\"O .B \-\-update\-drift
+.\"O was added.  See their respective descriptions below.
+v2.26 から重要な変更が、
+.B \-\-hctosys
+の機能と
+.B \-\-directisa
+オプションに対して行われ、新しいオプション
+.B \-\-update\-drift
+が追加された。
+下記ののそれぞれの説明を参照すること。
+.
+.\"O .SH FUNCTIONS
+.SH 機能
+.\"O The following functions are mutually exclusive, only one can be given at
+.\"O a time.  If none is given, the default is \fB\-\-show\fR.
+以下の機能は排他であり、1 度に 1 つしか設定できない。
+何も指定されない場合、デフォルトは \fB\-\-show\fR である。
+.TP
+.B \-a, \-\-adjust
+.\"O Add or subtract time from the Hardware Clock to account for systematic
+.\"O drift since the last time the clock was set or adjusted.  See the
+.\"O discussion below, under
+.\"O .BR "The Adjust Function" .
+最後にハードウェア・クロックを合わせた時点からの経過時間に対して生じる、
+時計の規則的なずれを補償するために、
+一定の時間をハードウェア・クロックの時刻から増減する。
+詳細は以下の
+.B "The Adjust Function"
+の議論を参照のこと。
+.
+.TP
+.B \-\-getepoch
+.TQ
+.B \-\-setepoch
+.\"O These functions are for Alpha machines only, and are only available
+.\"O through the Linux kernel RTC driver.
+この機能は Alpha マシンのみであり、
+Linux カーネル RTC ドライバを通じてのみ利用可能である。
+.sp
+.\"O They are used to read and set the kernel's Hardware Clock epoch value.
+.\"O Epoch is the number of years into AD to which a zero year value in the
+.\"O Hardware Clock refers.  For example, if the machine's BIOS sets the year
+.\"O counter in the Hardware Clock to contain the number of full years since
+.\"O 1952, then the kernel's Hardware Clock epoch value must be 1952.
+この機能では、カーネルのハードウェア・クロックの紀元年の値の
+読み込みと設定を行う。
+紀元年は西暦の何年が、ハードウェア・クロックの
+0 年として参照されるかを示す数値である。
+例えば、マシンの BIOS がハードウェア・クロックの年カウンタに
+1952 年以降の経過年数を用いている場合には、
+カーネルでのハードウェア・クロック紀元年は 1952 でなければならない。
+.sp
+.\"O The \fB\%\-\-setepoch\fR function requires using the
+.\"O .B \%\-\-epoch
+.\"O option to specify the year.  For example:
+\fB\%\-\-setepoch\fR の機能は、年を指定するために、
+.B \%\-\-epoch
+オプションを使う必要がある。
+例:
+.RS
+.IP "" 4
+.B hwclock\ \-\-setepoch\ \-\-epoch=1952
+.PP
+.\"O The RTC driver attempts to guess the correct epoch value, so setting it
+.\"O may not be required.
+RTC ドライバは現在の紀元年を値を推定しようとするので、設定する必要はない。
+.PP
+.\"O This epoch value is used whenever
+.\"O .B \%hwclock
+.\"O reads or sets the Hardware Clock on an Alpha machine.  For ISA machines
+.\"O the kernel uses the fixed Hardware Clock epoch of 1900.
+この紀元年の値は、
+.B \%hwclock
+が Alpha マシンでハードウェア・クロックを読み書きするとき常に用いられる。
+ISA マシンでは、カーネルは固定のハードウェア・クロックの紀元年として、
+1900 年を用いる。
+.RE
+.
+.TP
+.B \-\-predict
+.\"O Predict what the Hardware Clock will read in the future based upon the
+.\"O time given by the
+.\"O .B \-\-date
+.\"O option and the information in
+.\"O .IR /etc/adjtime .
+.B \-\-date
+オプションと
+.I /etc/adjtime
+の情報に基づいて、ハードウェア・クロックが将来読み出す値を予測する。
+.\"O This is useful, for example, to account for drift when setting a
+.\"O Hardware Clock wakeup (aka alarm). See
+.\"O .BR \%rtcwake (8).
+例えば、ハードウェア・クロックのウェイクアップ (別名、アラーム) を設定する時に、
+ずれを考慮するのに役立つ。
+.BR \%rtcwake (8)
+を参照すること。
+.sp
+.\"O Do not use this function if the Hardware Clock is being modified by
+.\"O anything other than the current operating system's
+.\"O .B \%hwclock
+.\"O command, such as \%'11\ minute\ mode' or from dual-booting another OS.
+ハードウェア・クロックを現在のオペレーティングシステムの
+.B \%hwclock
+コマンドから変更しない場合、
+例えば \%'11\ 分モード' またはデュアルブートした他の OS から変更する場合、
+この機能を使ってはならない。
+.
+.TP
+.BR \-r , \ \-\-show
+.TQ
+.B \-\-get
+.br
+.\"O Read the Hardware Clock and print its time to standard output in the
+.\"O .B ISO 8601
+.\"O format.
+ハードウェア・クロックを読んで、時刻を
+.B ISO 8601
+フォーマットで標準出力に表示する。
+.\"O The time shown is always in local time, even if you keep your Hardware Clock
+.\"O in UTC.  See the
+.\"O .B \%\-\-localtime
+.\"O option.
+ハードウェア・クロックを協定世界時 (UTC) にしていても、
+表示はローカル・タイムである。
+.B \%\-\-localtime
+オプションを参照すること。
+.sp
+Showing the Hardware Clock time is the default when no function is specified.
+.sp
+The
+.B \-\-get
+function also applies drift correction to the time read, based upon the
+information in
+.IR /etc/adjtime .
+Do not use this function if the Hardware Clock is being modified by
+anything other than the current operating system's
+.B \%hwclock
+command, such as \%'11\ minute\ mode' or from dual-booting another OS.
+.
+.TP
+.BR \-s , \ \-\-hctosys
+Set the System Clock from the Hardware Clock.  The time read from the Hardware
+Clock is compensated to account for systematic drift before using it to set the
+System Clock.  See the discussion below, under
+.BR "The Adjust Function" .
+.sp
+The System Clock must be kept in the UTC timescale for date-time
+applications to work correctly in conjunction with the timezone configured
+for the system.  If the Hardware Clock is kept in local time then the time read
+from it must be shifted to the UTC timescale before using it to set the System
+Clock.  The
+.B \%\-\-hctosys
+function does this based upon the information in the
+.I /etc/adjtime
+file or the command line arguments
+.BR \%\-\-localtime " and " \-\-utc .
+Note: no daylight saving adjustment is made.  See the discussion below, under
+.BR "LOCAL vs UTC" .
+.sp
+.\"O The kernel also keeps a timezone value, the
+.\"O .B \%\-\-hctosys
+.\"O function sets it to the timezone configured for the system.  The system
+.\"O timezone is configured by the TZ environment variable or the
+.\"O .I \%/etc/localtime
+.\"O file, as
+.\"O .BR \%tzset (3)
+.\"O would interpret them.
+.\"O The obsolete tz_dsttime field of the kernel's timezone value is set
+.\"O to zero.  (For details on what this field used to mean, see
+.\"O .BR \%settimeofday (2).)
+カーネルはタイムゾーンの値を保持し、
+.B \%\-\-hctosys
+の機能でシステムに設定されるタイムゾーンに設定する。
+システムのタイムゾーンは、TZ 環境変数や
+.I \%/etc/localtime
+ファイルで設定され、
+.BR tzset (3)
+と同じように解釈される。
+カーネルのタイムゾーンの obsolete なフィールドである
+tz_dsttime は 0 に設定される。
+(このフィールドがかつて意味していた内容に関しては
+.BR settimeofday (2)
+を参照のこと。)
+.sp
+When used in a startup script, making the
+.B \%\-\-hctosys
+function the first caller of
+.BR \%settimeofday (2)
+from boot, it will set the NTP \%'11\ minute\ mode' timescale via the
+.I \%persistent_clock_is_local
+kernel variable.  If the Hardware Clock's timescale configuration is
+changed then a reboot is required to inform the kernel.  See the
+discussion below, under
+.BR "Automatic Hardware Clock Synchronization by the Kernel" .
+.sp
+This is a good function to use in one of the system startup scripts before the
+file systems are mounted read/write.
+.sp
+This function should never be used on a running system. Jumping system time
+will cause problems, such as corrupted filesystem timestamps.  Also, if
+something has changed the Hardware Clock, like NTP's \%'11\ minute\ mode', then
+.B \%\-\-hctosys
+will set the time incorrectly by including drift compensation.
+.sp
+Drift compensation can be inhibited by setting the drift factor in
+.I /etc/adjtime
+to zero.  This setting will be persistent as long as the
+.BR \%\-\-update\-drift " option is not used with " \%\-\-systohc
+at shutdown (or anywhere else).  Another way to inhibit this is by using the
+.BR \%\-\-noadjfile " option when calling the " \%\-\-hctosys
+function.  A third method is to delete the
+.IR /etc/adjtime " file."
+.B Hwclock
+will then default to using the UTC timescale for the Hardware Clock.  If
+the Hardware Clock is ticking local time it will need to be defined in
+the file.  This can be done by calling
+.BR hwclock\ \-\-localtime\ \-\-adjust ;
+when the file is not present this command will not actually
+adjust the Clock, but it will create the file with local time
+configured, and a drift factor of zero.
+.sp
+A condition under which inhibiting
+.BR hwclock 's
+drift correction may be desired is when dual-booting multiple operating
+systems.  If while this instance of Linux is stopped, another OS changes
+the Hardware Clock's value, then when this instance is started again the
+drift correction applied will be incorrect.
+.sp
+.RB "For " hwclock 's
+drift correction to work properly it is imperative that nothing changes
+the Hardware Clock while its Linux instance is not running.
+.
+.TP
+.B \-\-set
+Set the Hardware Clock to the time given by the
+.B \-\-date
+option, and update the timestamps in
+.IR /etc/adjtime .
+With the
+.B \%\-\-update-drift
+option also (re)calculate the drift factor.  Try it without the option if
+.BR \%\-\-set " fails.  See " \%\-\-update-drift " below."
+.
+.TP
+.B \-\-systz
+This is an alternate to the
+.B \%\-\-hctosys
+function that does not read the Hardware Clock nor set the System Clock;
+consequently there is not any drift correction.  It is intended to be
+used in a startup script on systems with kernels above version 2.6 where
+you know the System Clock has been set from the Hardware Clock by the
+kernel during boot.
+.sp
+It does the following things that are detailed above in the
+.BR \%\-\-hctosys " function:"
+.RS
+.IP \(bu 2
+Corrects the System Clock timescale to UTC as needed.  Only instead of
+accomplishing this by setting the System Clock,
+.B hwclock
+simply informs the kernel and it handles the change.
+.IP \(bu 2
+Sets the kernel's NTP \%'11\ minute\ mode' timescale.
+.IP \(bu 2
+Sets the kernel's timezone.
+.PP
+The first two are only available on the first call of
+.BR \%settimeofday (2)
+after boot.  Consequently this option only makes sense when used in a
+startup script.  If the Hardware Clocks timescale configuration is
+changed then a reboot would be required to inform the kernel.
+.RE
+.
+.TP
+.BR \-w , \ \-\-systohc
+Set the Hardware Clock from the System Clock, and update the timestamps in
+.IR /etc/adjtime .
+With the
+.B \%\-\-update-drift
+option also (re)calculate the drift factor.  Try it without the option if
+.BR \%\-\-systohc " fails.  See " \%\-\-update-drift " below."
+.
+.TP
+.BR \-V , \ \-\-version
+Display version information and exit.
+.
+.TP
+.BR \-h , \ \-\-help
+Display help text and exit.
+.
+.SH OPTIONS
+.
+.TP
+.BI \-\-adjfile= filename
+.RI "Override the default " /etc/adjtime " file path."
+.
+.TP
+.BI \%\-\-date= date_string
+.\"O This option must be used with the
+.\"O .B \-\-set
+.\"O or
+.\"O .B \%\-\-predict
+.\"O functions, otherwise it is ignored.
+このオプションは
+.B \-\-set
+または
+.B \%\-\-predict
+機能と一緒に使わなければならない。
+さもなければ、このオプションは無視される。
+.RS
+.IP "" 4
+.B "hwclock\ \-\-set\ \-\-date='16:45'"
+.IP "" 4
+.B "hwclock\ \-\-predict\ \-\-date='2525-08-14\ 07:11:05'"
+.PP
+The argument must be in local time, even if you keep your Hardware Clock in
+UTC.  See the
+.B \%\-\-localtime
+option.  Therefore, the argument should not include any timezone information.
+It also should not be a relative time like "+5 minutes", because
+.BR \%hwclock 's
+precision depends upon correlation between the argument's value and when the
+enter key is pressed.  Fractional seconds are silently dropped.  This option is
+capable of understanding many time and date formats, but the previous
+parameters should be observed.
+.RE
+.
+.TP
+.BI \%\-\-delay= seconds
+This option allows to overwrite internally used delay when set clock time. The
+default is 0.5 (500ms) for rtc_cmos, for another RTC types the delay is 0. If
+RTC type is impossible to determine (from sysfs) then it defaults also to 0.5
+to be backwardly compatible.
+.RS
+.PP
+The 500ms default is based on commonly used MC146818A-compatible (x86) hardware clock. This
+Hardware Clock can only be set to any integer time plus one half second.  The
+integer time is required because there is no interface to set or get a
+fractional second.  The additional half second delay is because the Hardware
+Clock updates to the following second precisely 500 ms after setting the new
+time. Unfortunately, this behavior is hardware specific and in same cases
+another delay is required.
+.RE
+.
+.TP
+.TP
+.BR \-D ", " \-\-debug
+.RB Use\  \-\-verbose .
+.RB The\  \%\-\-debug\  option
+has been deprecated and may be repurposed or removed in a future release.
+.
+.TP
+.B \-\-directisa
+This option is meaningful for ISA compatible machines in the x86 and
+x86_64 family.  For other machines, it has no effect.  This option tells
+.B \%hwclock
+to use explicit I/O instructions to access the Hardware Clock.
+Without this option,
+.B \%hwclock
+will use the rtc device file, which it assumes to be driven by the Linux
+RTC device driver.  As of v2.26 it will no longer automatically use
+directisa when the rtc driver is unavailable; this was causing an unsafe
+condition that could allow two processes to access the Hardware Clock at
+the same time.  Direct hardware access from userspace should only be
+used for testing, troubleshooting, and as a last resort when all other
+methods fail.  See the
+.BR \-\-rtc " option."
+.
+.TP
+.BI \-\-epoch= year
+This option is required when using the
+.BR \%\-\-setepoch \ function.
+.RI "The minimum " year
+value is 1900. The maximum is system dependent
+.RB ( ULONG_MAX\ -\ 1 ).
+.
+.TP
+.BR \-f , \ \-\-rtc=\fIfilename\fR
+.RB "Override " \%hwclock 's
+default rtc device file name.  Otherwise it will
+use the first one found in this order:
+.in +4
+.br
+.I /dev/rtc0
+.br
+.I /dev/rtc
+.br
+.I /dev/misc/rtc
+.br
+.in
+.RB "For " IA-64:
+.in +4
+.br
+.I /dev/efirtc
+.br
+.I /dev/misc/efirtc
+.in
+.
+.TP
+.BR \-l , \ \-\-localtime
+.TQ
+.BR \-u ", " \-\-utc
+Indicate which timescale the Hardware Clock is set to.
+.sp
+The Hardware Clock may be configured to use either the UTC or the local
+timescale, but nothing in the clock itself says which alternative is
+being used.  The
+.BR \%\-\-localtime " or " \-\-utc
+options give this information to the
+.B \%hwclock
+command.  If you specify the wrong one (or specify neither and take a
+wrong default), both setting and reading the Hardware Clock will be
+incorrect.
+.sp
+If you specify neither
+.BR \-\-utc " nor " \%\-\-localtime
+then the one last given with a set function
+.RB ( \-\-set ", " \%\-\-systohc ", or " \%\-\-adjust ),
+as recorded in
+.IR /etc/adjtime ,
+will be used.  If the adjtime file doesn't exist, the default is UTC.
+.sp
+Note: daylight saving time changes may be inconsistent when the
+Hardware Clock is kept in local time.  See the discussion below, under
+.BR "LOCAL vs UTC" .
+.
+.TP
+.B \-\-noadjfile
+.\"O Disable the facilities provided by
+.\"O .IR /etc/adjtime .
+.I /etc/adjtime
+によって提供される機能を無効にする。
+.\"O .B \%hwclock
+.\"O will not read nor write to that file with this option.  Either
+.\"O .BR \-\-utc " or " \%\-\-localtime
+.\"O must be specified when using this option.
+このオプションを使うと、
+.B \%hwclock
+は
+.I /etc/adjtime
+の読み込みも書き込みもしない。
+このオプションを使うときは、
+.BR \-\-utc " または " \%\-\-localtime
+を指定しなければならない。
+.
+.TP
+.B \-\-test
+Do not actually change anything on the system, that is, the Clocks or
+.I /etc/adjtime
+.RB ( \%\-\-verbose
+is implicit with this option).
+.
+.TP
+.B \-\-update\-drift
+Update the Hardware Clock's drift factor in
+.IR /etc/adjtime .
+It can only be used with
+.BR \-\-set " or " \%\-\-systohc ,
+.sp
+A minimum four hour period between settings is required.  This is to
+avoid invalid calculations.  The longer the period, the more precise the
+resulting drift factor will be.
+.sp
+This option was added in v2.26, because
+it is typical for systems to call
+.B \%hwclock\ \-\-systohc
+at shutdown; with the old behaviour this would automatically
+(re)calculate the drift factor which caused several problems:
+.RS
+.IP \(bu 2
+When using NTP with an \%'11\ minute\ mode' kernel the drift factor
+would be clobbered to near zero.
+.IP \(bu 2
+It would not allow the use of 'cold' drift correction.  With most
+configurations using 'cold' drift will yield favorable results.  Cold,
+means when the machine is turned off which can have a significant impact
+on the drift factor.
+.IP \(bu 2
+(Re)calculating drift factor on every shutdown delivers suboptimal
+results.  For example, if ephemeral conditions cause the machine to be
+abnormally hot the drift factor calculation would be out of range.
+.IP \(bu 2
+Significantly increased system shutdown times (as of v2.31 when not
+using
+.B \%\-\-update\-drift
+the RTC is not read).
+.PP
+.RB "Having " \%hwclock
+calculate the drift factor is a good starting point, but for optimal
+results it will likely need to be adjusted by directly editing the
+.I /etc/adjtime
+file.  For most configurations once a machine's optimal drift factor is
+crafted it should not need to be changed.  Therefore, the old behavior to
+automatically (re)calculate drift was changed and now requires this
+option to be used.  See the discussion below, under
+.BR "The Adjust Function" .
+.PP
+This option requires reading the Hardware Clock before setting it.  If
+it cannot be read, then this option will cause the set functions to fail.
+This can happen, for example, if the Hardware Clock is corrupted by a
+power failure.  In that case, the clock must first be set without this
+option.  Despite it not working, the resulting drift correction factor
+would be invalid anyway.
+.RE
+.
+.TP
+.BR \-v ", " \-\-verbose
+Display more details about what
+.B \%hwclock
+is doing internally.
+.
+.\"O .SH NOTES
+.SH 注意
+.
+.\"O .SS Clocks in a Linux System
+.SS Linux システムにおける時計
+.PP
+.\"O There are two types of date-time clocks:
+2 つタイプの日付時刻の時計がある:
+.PP
+.\"O .B The Hardware Clock:
+.B ハードウェア・クロック: 
+This clock is an independent hardware device, with its own power domain
+(battery, capacitor, etc), that operates when the machine is powered off,
+or even unplugged.
+.PP
+.\"O On an ISA compatible system, this clock is specified as part of the ISA
+.\"O standard.  A control program can read or set this clock only to a whole
+.\"O second, but it can also detect the edges of the 1 second clock ticks, so
+.\"O the clock actually has virtually infinite precision.
+ISA 互換のシステムでは、このクロックは ISA 規格の一部として定義されている。
+コントロールプログラムはこの時計に対して 1 秒単位で読み書きできるが、
+秒針の変化を検出することもできるので、
+実際には仮想的に無限大の精度を持っていることになる。
+.PP
+.\"O This clock is commonly called the hardware clock, the real time clock,
+.\"O the RTC, the BIOS clock, and the CMOS clock.  Hardware Clock, in its
+.\"O capitalized form, was coined for use by
+.\"O .BR \%hwclock .
+この時計は一般にハードウェア・クロック、リアルタイム・クロック、RTC、
+BIOS クロック、CMOS クロックなどと呼ばれる。
+.B hwclock
+では「ハードウェア・クロック (原文では Hardware Clock)」を用いる。
+.\"O The Linux kernel also refers to it as the persistent clock.
+The Linux kernel also refers to it as the persistent clock.
+.PP
+Some non-ISA systems have a few real time clocks with
+only one of them having its own power domain.
+A very low power external I2C or SPI clock chip might be used with a
+backup battery as the hardware clock to initialize a more functional
+integrated real-time clock which is used for most other purposes.
+.PP
+.\"O .B The System Clock:
+.B システム・クロック: 
+.\"O This clock is part of the Linux kernel and is driven by
+.\"O a timer interrupt.  (On an ISA machine, the timer interrupt is part of
+.\"O the ISA standard.)  It has meaning only while Linux is running on the
+.\"O machine.  The System Time is the number of seconds since 00:00:00
+.\"O January 1, 1970 UTC (or more succinctly, the number of seconds since
+.\"O 1969 UTC).  The System Time is not an integer, though.  It has virtually
+.\"O infinite precision.
+この時計は Linux カーネルの一部で、
+タイマ割り込みによって駆動されている
+(ISA システムでは、タイマ割り込みは ISA 標準の一部である)。
+すなわち Linux が起動している間しか動作しない。
+システム時刻は UTC 1970/01/01 00:00:00 からの経過秒数である
+(より簡単に言えば UTC 1969 年終了後の経過秒数である)。
+しかしシステム時刻は整数ではなく、仮想的に無限大の精度を持っている。
+.PP
+.\"O The System Time is the time that matters.  The Hardware Clock's basic
+
+.\"O purpose in a Linux system is to keep time when Linux is not running.  You
+.\"O initialize the System Time to the time from the Hardware Clock when Linux
+.\"O starts up, and then never use the Hardware Clock again.  Note that in DOS,
+.\"O for which ISA was designed, the Hardware Clock is the only real time clock.
+
+.\"O purpose is to keep time when Linux is not running so that the System
+.\"O Clock can be initialized from it at boot.  Note that in DOS, for which
+.\"O ISA was designed, the Hardware Clock is the only real time clock.
+
+Linux ではシステム・クロックがすべての基準となる時計である。
+ハードウェア・クロックの基本的な役割は、システムが動いていない間にも
+時計を動かしつづけることである。
+そのため、起動時にシステム・クロックを初期化する。
+ISA システムの設計対象であった DOS においては、
+ハードウェア・クロックがただ一つの実時間時計であることに注意すること。
+.PP
+.\"O It is important that the System Time not have any discontinuities such as
+.\"O would happen if you used the
+.\"O .BR \%date (1)
+.\"O program to set it while the system is running.  You can, however, do whatever
+.\"O you want to the Hardware Clock while the system is running, and the next
+.\"O time Linux starts up, it will do so with the adjusted time from the Hardware
+.\"O Clock.  Note: currently this is not possible on most systems because
+.\"O .B \%hwclock\ \-\-systohc
+.\"O is called at shutdown.
+システム・クロックには不連続が存在してはならない。
+これはシステムが走っている間に
+.BR \%date (1)
+プログラムを実行して時計を合わせるような場合でも同様である。
+一方ハードウェア・クロックには、システムの実行中にでも何を行ってもよい。
+次回 Linux が起動したときに、
+ハードウェア・クロックからこの調整された時間が使用される。
+注意: 
+.B \%hwclock\ \-\-systohc
+がシャットダウン時に呼ばれるので、
+これは現在のところ大部分のシステムで利用できない。
+.PP
+.\"O The Linux kernel's timezone is set by
+.\"O .BR hwclock .
+Linux カーネルのタイムゾーンは、
+.B hwclock
+で設定される。
+.\"O But don't be misled -- almost nobody cares what timezone the kernel
+.\"O thinks it is in.  Instead, programs that care about the timezone
+.\"O (perhaps because they want to display a local time for you) almost
+.\"O always use a more traditional method of determining the timezone: They
+.\"O use the TZ environment variable or the
+.\"O .I \%/etc/localtime
+.\"O file, as explained in the man page for
+.\"O .BR \%tzset (3).
+しかし注意してほしい \-\- 
+「カーネルが自分をどのタイムゾーンにいると思っているか」など、
+誰も気にしていないのである。代わりに、タイムゾーンに関わるプログラム
+(おそらくローカルな時間を表示しようとしているもの) は、
+ほぼ間違いなく従来用いられてきた方法でタイムゾーンを決定する。
+つまり TZ 環境変数や
+.I \%/etc/localtime
+ファイルを、
+.BR tzset (3)
+で説明されているようなやり方で参照するのである。
+.\"O However, some programs and fringe parts of the Linux kernel such as filesystems
+.\"O use the kernel's timezone value.  An example is the vfat filesystem.  If the
+.\"O kernel timezone value is wrong, the vfat filesystem will report and set the
+.\"O wrong timestamps on files.  Another example is the kernel's NTP \%'11\ minute\ mode'.
+しかしカーネルのタイムゾーンの値を見るプログラムも存在するし、
+カーネルの周辺部分 (ファイルシステムなど) もこちらを参照する。
+vfat ファイルシステムなどがそうである。カーネルのタイムゾーンの
+値が間違っていると、vfat ファイルシステムはファイルのタイムスタンプの
+設定・取得を間違ってしまう。
+他の例は、カーネルの NTP \%'11\ 分モード' である。
+If the kernel's timezone value and/or the
+.I \%persistent_clock_is_local
+variable are wrong, then the Hardware Clock will be set incorrectly
+by \%'11\ minute\ mode'.  See the discussion below, under
+.BR "Automatic Hardware Clock Synchronization by the Kernel" .
+.PP
+.\"O .B \%hwclock
+.\"O sets the kernel's timezone to the value indicated by TZ or
+.\"O .IR \%/etc/localtime " with the"
+.\"O .BR \%\-\-hctosys " or " \%\-\-systz " functions."
+.B \%hwclock
+は
+.BR \%\-\-hctosys " または " \%\-\-systz " の機能で"
+カーネルのタイムゾーンを TZ や
+.I \%/etc/localtime
+の値に設定する。
+.PP
+.\"O The kernel's timezone value actually consists of two parts: 1) a field
+.\"O tz_minuteswest indicating how many minutes local time (not adjusted
+.\"O for DST) lags behind UTC, and 2) a field tz_dsttime indicating
+.\"O the type of Daylight Savings Time (DST) convention that is in effect
+.\"O in the locality at the present time.
+.\"O This second field is not used under Linux and is always zero.
+.\"O See also
+.\"O .BR \%settimeofday (2).
+カーネルのタイムゾーンの値は実際には 2 つの部分からなる。
+1) tz_minuteswest フィールド: (DST でない)
+ローカルタイムが UTC から何分遅れているかを表す。
+2) tz_dsttime: 夏時間 (DST) の形式を表し、
+現在地の現在時刻に影響する。
+この 2 番目のフィールドは Linux では用いられず、常に 0 となる。
+.BR \%settimeofday (2)
+も参照のこと。
+.
+.\"O .SS Hardware Clock Access Methods
+.SS ハードウェア・クロックへのアクセス方法
+.PP
+.\"O .B \%hwclock
+.\"O uses many different ways to get and set Hardware Clock values.  The most
+.\"O normal way is to do I/O to the rtc device special file, which is
+.\"O presumed to be driven by the rtc device driver.  Also, Linux systems
+.\"O using the rtc framework with udev, are capable of supporting multiple
+.\"O Hardware Clocks.  This may bring about the need to override the default
+.\"O rtc device by specifying one with the
+.\"O .BR \-\-rtc " option."
+.B \%hwclock
+はハードウェア・クロック時刻の取得や設定に、いろいろな方法を用いる。
+もっとも普通のやり方は、rtc デバイススペシャルファイルに対して 
+I/O を行う方法である。
+これは rtc デバイスドライバで動作することを前提としている。
+Also, Linux systems
+using the rtc framework with udev, are capable of supporting multiple
+Hardware Clocks.  This may bring about the need to override the default
+rtc device by specifying one with the
+.BR \-\-rtc " option."
+.PP
+.\"O However, this method is not always available as older systems do not
+.\"O have an rtc driver.  On these systems, the method of accessing the
+.\"O Hardware Clock depends on the system hardware.
+しかし、この方法は古いシステムでは rtc ドライバがないので、利用できない。
+これらのシステムでは、ハードウェア・クロックへのアクセス方法は
+システムのハードウェアに依存している。
+.PP
+.\"O On an ISA compatible system,
+.\"O .B \%hwclock
+.\"O can directly access the "CMOS memory" registers that
+.\"O constitute the clock, by doing I/O to Ports 0x70 and 0x71.  It does
+.\"O this with actual I/O instructions and consequently can only do it if
+.\"O running with superuser effective userid.  This method may be used by
+.\"O specifying the
+.\"O .BR \%\-\-directisa " option."
+ISA 互換システムでは、
+.B \%hwclock
+は時計を構成していた「CMOS メモリ」のレジスタに直接アクセスすることができた
+(ポート 0x70 と 0x71 に I/O を行う)。
+これを行うには
+.B \%hwclock
+の実効ユーザー ID がスーパーユーザーでなければならない。
+この方法は、
+.B \%\-\-directisa
+オプションを指定することで使用できる。
+.PP
+This is a really poor method of accessing the clock, for all the
+reasons that userspace programs are generally not supposed to do
+direct I/O and disable interrupts.
+.B \%hwclock
+provides it for testing, troubleshooting, and  because it may be the
+only method available on ISA systems which do not have a working rtc
+device driver.
+.\"O .SS The Adjust Function
+.SS 時刻合わせ機能
+.PP
+.\"O The Hardware Clock is usually not very accurate.  However, much of its
+.\"O inaccuracy is completely predictable - it gains or loses the same amount
+.\"O of time every day.  This is called systematic drift.
+.\"O .BR \%hwclock "'s " \%\-\-adjust
+.\"O function lets you apply systematic drift corrections to the
+.\"O Hardware Clock.
+通常ハードウェア・クロックはそれほど正確なものではない。
+しかし、その「不正確さ」は完全に予測できるものである。
+すなわち、時計は一日あたり同じ時間だけ進む（あるいは遅れる）のである。
+これを規則的なずれ (systematic drift) と呼ぶことにする。
+.BR \%hwclock " の " \%\-\-adjust
+の機能は、この規則的なずれに対応する補正量を求め、
+ハードウェア・クロックに適用する。
+.PP
+.\"O It works like this:
+.\"O .BR \%hwclock " keeps a file,"
+.\"O .IR /etc/adjtime ,
+.\"O that keeps some historical information.  This is called the adjtime file.
+以下に動作原理を述べる。
+.B \%hwclock
+は
+.I /etc/adjtime
+というファイルを管理し、そこに履歴情報を保管する。
+このファイルを adjtime ファイルと呼ぶ。
+.PP
+.\"O Suppose you start with no adjtime file.  You issue a
+.\"O .B \%hwclock\ \-\-set
+.\"O command to set the Hardware Clock to the true current time.
+.\"O .B \%hwclock
+.\"O creates the adjtime file and records in it the current time as the
+.\"O last time the clock was calibrated.
+.\"O Five days later, the clock has gained 10 seconds, so you issue a
+.\"O .B \%hwclock\ \-\-set\ \-\-update\-drift
+.\"O command to set it back 10 seconds.
+.\"O .B \%hwclock
+.\"O updates the adjtime file to show the current time as the last time the
+.\"O clock was calibrated, and records 2 seconds per day as the systematic
+.\"O drift rate.  24 hours go by, and then you issue a
+.\"O .B \%hwclock\ \-\-adjust
+.\"O command.
+.\"O .B \%hwclock
+.\"O consults the adjtime file and sees that the clock gains 2 seconds per
+.\"O day when left alone and that it has been left alone for exactly one
+.\"O day.  So it subtracts 2 seconds from the Hardware Clock.  It then
+.\"O records the current time as the last time the clock was adjusted.
+.\"O Another 24 hours go by and you issue another
+.\"O .BR \%hwclock\ \-\-adjust .
+.\"O .B \%hwclock
+.\"O does the same thing: subtracts 2 seconds and updates the adjtime file
+.\"O with the current time as the last time the clock was adjusted.
+adjtime ファイルがない状態から話をはじめる。
+.B \%hwclock\ \-\-set
+コマンドを用いてハードウェア・クロックを現在の正しい値に合わせたとする。
+このとき
+.B \%hwclock
+は adjtime ファイルを作成し、そこに現在の時刻を「最後に時計合わせ
+(calibration) が行われた時刻」として記録する。
+5 日後に時計は 10 秒進んだとし、それを修正するために再び
+.B \%hwclock\ \-\-set\ \-\-update\-drift
+が実行されたとする。
+.B \%hwclock
+は adjtime ファイルを更新し、
+現在の時刻を最後に時計合わせが行われた時刻として記録、
+同時に 2 秒/日という値を規則的なずれの値として記録する。
+24 時間が経過したときに
+.B \%hwclock\ \-\-adjust
+コマンドを実行すると、
+.B \%hwclock
+は adjtime ファイルを参照し、放っておかれた時計は一日に 2 秒進むこと、
+時計はちょうど一日だけ放置されていたことを読みとる。
+そこで
+.B hwclock
+はハードウェア・クロックから 2 秒を差し引き、現在の時刻を時計の補正 
+(adjustment) が行われた時刻として記録する。
+さらに 24 時間が経過したときに
+.BR \%hwclock\ \-\-adjust
+を実行すれば、
+.B \%hwclock
+はまた同じことを行う。
+つまり 2 秒を差し引き、現在の時刻を adjtime ファイルに書き込む。
+.PP
+When you use the
+.BR \%\-\-update\-drift " option with " \-\-set " or " \%\-\-systohc ,
+the systematic drift rate is (re)calculated by comparing the fully drift
+corrected current Hardware Clock time with the new set time, from that
+it derives the 24 hour drift rate based on the last calibrated timestamp
+from the adjtime file.  This updated drift factor is then saved in
+.IR /etc/adjtime .
+.PP
+A small amount of error creeps in when
+the Hardware Clock is set, so
+.B \%\-\-adjust
+refrains from making any adjustment that is less
+than 1 second.  Later on, when you request an adjustment again, the accumulated
+drift will be more than 1 second and
+.B \%\-\-adjust
+will make the adjustment including any fractional amount.
+.PP
+.B \%hwclock\ \-\-hctosys
+also uses the adjtime file data to compensate the value read from the Hardware
+Clock before using it to set the System Clock.  It does not share the 1 second
+limitation of
+.BR \%\-\-adjust ,
+and will correct sub-second drift values immediately.  It does not
+change the Hardware Clock time nor the adjtime file.  This may eliminate
+the need to use
+.BR \%\-\-adjust ,
+unless something else on the system needs the Hardware Clock to be
+compensated.
+.
+.SS The Adjtime File
+While named for its historical purpose of controlling adjustments only,
+it actually contains other information used by
+.B hwclock
+from one invocation to the next.
+.PP
+.\"O The format of the adjtime file is, in ASCII:
+adjtime は ASCII ファイルであり、フォーマットは以下の通り:
+.PP
+.\"O Line 1: Three numbers, separated by blanks: 1) the systematic drift rate
+.\"O in seconds per day, floating point decimal; 2) the resulting number of
+.\"O seconds since 1969 UTC of most recent adjustment or calibration,
+.\"O decimal integer; 3) zero (for compatibility with
+.\"O .BR \%clock (8))
+.\"O as a decimal integer.
+一行目は三つの数値からなり、それぞれ空白で区切られる:
+1) 一日あたりに生じる時刻ずれを秒で表したもの (浮動小数点型 10 進):
+2) 最後に時計合わせあるいは補正を行った時刻を 
+1969 UTC からの経過秒数で表したもの (10 進整数):
+3) ゼロ
+.RB ( \%clock (8)
+との互換性のためのもの)
+.PP
+.\"O Line 2: One number: the resulting number of seconds since 1969 UTC of most
+.\"O recent calibration.  Zero if there has been no calibration yet or it
+.\"O is known that any previous calibration is moot (for example, because
+.\"O the Hardware Clock has been found, since that calibration, not to
+.\"O contain a valid time).  This is a decimal integer.
+二行目: 数値が一つ: 最後に時計を合わせた時刻を
+1969 UTC からの経過秒数で表したもの。
+時計合わせが一度もされていなかったり、以前の時計あわせに問題があった
+(例えばその時計あわせ以降にハードウェア・クロックの
+時刻が不正なことがわかったとか) 場合には 0 が入る。
+これは 10 進の整数である。
+.PP
+.\"O Line 3: "UTC" or "LOCAL".  Tells whether the Hardware Clock is set to
+.\"O Coordinated Universal Time or local time.  You can always override this
+.\"O value with options on the
+.\"O .B \%hwclock
+.\"O command line.
+三行目: "UTC" または "LOCAL"。ハードウェア・クロックが
+協定世界時かローカルタイム化を示す。
+この値は
+.B \%hwclock
+にコマンドラインを指定すればいつでも上書き可能である。
+.PP
+.\"O You can use an adjtime file that was previously used with the 
+.\"O .BR clock (8)
+.\"O program with 
+.\"O .B hwclock.
+.\"O You can use an adjtime file that was previously used with the
+.\"O .BR \%clock "(8) program with " \%hwclock .
+以前
+.BR \%clock "(8)"
+で使っていた adjtime ファイルは
+.B \%hwclock
+でもそのまま使うことができる。
+.
+.\"O .SS Automatic Hardware Clock Synchronization by the Kernel
+.SS カーネルによるハードウェア・クロックの自動合わせ
+.PP
+.\"O You should be aware of another way that the Hardware Clock is kept
+.\"O synchronized in some systems.  The Linux kernel has a mode wherein it
+.\"O copies the System Time to the Hardware Clock every 11 minutes. This mode
+.\"O is a compile time option, so not all kernels will have this capability.
+.\"O This is a good mode to use when you are using something sophisticated
+.\"O like NTP to keep your System Clock synchronized. (NTP is a way to keep
+.\"O your System Time synchronized either to a time server somewhere on the
+.\"O network or to a radio clock hooked up to your system.  See RFC 1305.)
+ハードウェア・クロックを正しい値に同期させるのに、
+別法が取れるようなシステムもある。
+Linux カーネルには、11 分ごとにシステムクロックを
+ハードウェア・クロックにコピーするようなモードが存在する。
+このモードはコンパイル時オプションであるので、
+全てのカーネルがこの機能を持っているわけではない。
+これは、何らかの洗練された方法 (NTP など) でシステムクロックを
+同期できている時には、よいモードであろう。
+(NTP とは、ネットワークのどこかにあるタイムサーバーか、システムに付属した
+電波時計にシステム・クロックを同期させる手法である。RFC 1305 を見よ。)
+.PP
+If the kernel is compiled with the \%'11\ minute\ mode' option it will
+be active when the kernel's clock discipline is in a synchronized state.
+When in this state, bit 6 (the bit that is set in the mask 0x0040)
+of the kernel's
+.I \%time_status
+variable is unset. This value is output as the 'status' line of the
+.BR \%adjtimex\ --print " or " \%ntptime " commands."
+.PP
+It takes an outside influence, like the NTP daemon
+to put the kernel's clock discipline into a synchronized state, and
+therefore turn on \%'11\ minute\ mode'.
+It can be turned off by running anything that sets the System Clock the old
+fashioned way, including
+.BR "\%hwclock\ \-\-hctosys" .
+However, if the NTP daemon is still running, it will turn \%'11\ minute\ mode'
+back on again the next time it synchronizes the System Clock.
+.PP
+If your system runs with \%'11\ minute\ mode' on, it may need to use either
+.BR \%\-\-hctosys " or " \%\-\-systz
+in a startup script, especially if the Hardware Clock is configured to use
+the local timescale. Unless the kernel is informed of what timescale the
+Hardware Clock is using, it may clobber it with the wrong one. The kernel
+uses UTC by default.
+.PP
+The first userspace command to set the System Clock informs the
+kernel what timescale the Hardware Clock is using.  This happens via the
+.I \%persistent_clock_is_local
+kernel variable.  If
+.BR \%\-\-hctosys " or " \%\-\-systz
+is the first, it will set this variable according to the adjtime file or the
+appropriate command-line argument.  Note that when using this capability and the
+Hardware Clock timescale configuration is changed, then a reboot is required to
+notify the kernel.
+.PP
+.B \%hwclock\ \-\-adjust
+should not be used with NTP \%'11\ minute\ mode'.
+.
+.\"O .SS ISA Hardware Clock Century value
+.SS ISA ハードウェア・クロックの「世紀値 (Century value)」
+.PP
+.\"O There is some sort of standard that defines CMOS memory Byte 50 on an ISA
+.\"O machine as an indicator of what century it is.
+.\"O .B \%hwclock
+.\"O does not use or set that byte because there are some machines that
+.\"O don't define the byte that way, and it really isn't necessary anyway,
+.\"O since the year-of-century does a good job of implying which century it
+.\"O is.
+その手の標準の中には、ISA マシンの CMOS 50 バイト目を、
+現在の世紀の指標として定義しているものがある。
+.B \%hwclock
+は、このバイトの読み書きを行わない。
+なぜならこのバイトをそのようには利用していないマシンが存在するし、
+いずれにしてもこれは実際には必要ないからである。
+年の世紀の部分を使えば、現在の世紀を特定するには充分である。
+.PP
+.\"O If you have a bona fide use for a CMOS century byte, contact the
+.\"O .B \%hwclock
+.\"O maintainer; an option may be appropriate.
+もしこの CMOS の世紀バイトの利用ルーチンを開発した (したい) 方がいたら、
+.B \%hwclock
+のメンテナに連絡してほしい。
+オプションを付加することは望ましいことであるから。
+.PP
+.\"O Note that this section is only relevant when you are using the "direct
+.\"O ISA" method of accessing the Hardware Clock.
+このセクションが意味を持つのは、ハードウェア・クロックに
+"direct ISA" によってアクセスしている場合だけであることに注意。
+ACPI provides a standard way to access century values, when they
+are supported by the hardware.
+.
+.SH DATE-TIME CONFIGURATION
+.in +4
+.SS Keeping Time without External Synchronization
+.in
+.PP
+This discussion is based on the following conditions:
+.IP \(bu 2
+Nothing is running that alters the date-time clocks, such as NTP daemon or a cron job."
+.IP \(bu 2
+The system timezone is configured for the correct local time.  See below, under
+.BR "POSIX vs 'RIGHT'" .
+.IP \(bu 2
+Early during startup the following are called, in this order:
+.br
+.BI \%adjtimex\ \-\-tick \ value\  \-\-frequency \ value
+.br
+.B \%hwclock\ \-\-hctosys
+.IP \(bu 2
+During shutdown the following is called:
+.br
+.B \%hwclock\ \-\-systohc
+.PP
+.in +4
+.BR * " Systems without " adjtimex " may use " ntptime .
+.in
+.PP
+Whether maintaining precision time with NTP daemon
+or not, it makes sense to configure the system to keep reasonably good
+date-time on its own.
+.PP
+The first step in making that happen is having a clear understanding of
+the big picture.  There are two completely separate hardware devices
+running at their own speed and drifting away from the 'correct' time at
+their own rates.  The methods and software for drift correction are
+different for each of them.  However, most systems are configured to
+exchange values between these two clocks at startup and shutdown.  Now
+the individual device's time keeping errors are transferred back and
+forth between each other.  Attempt to configure drift correction for only
+one of them, and the other's drift will be overlaid upon it.
+.PP
+This problem can be avoided when configuring drift correction for the
+System Clock by simply not shutting down the machine.  This, plus the
+fact that all of
+.BR \%hwclock 's
+precision (including calculating drift factors) depends upon the System
+Clock's rate being correct, means that configuration of the System Clock
+should be done first.
+.PP
+The System Clock drift is corrected with the
+.BR \%adjtimex "(8) command's " \-\-tick " and " \%\-\-frequency
+options.  These two work together: tick is the coarse adjustment and
+frequency is the fine adjustment.  (For systems that do not have an
+.BR \%adjtimex " package,"
+.BI \%ntptime\ \-f\  ppm
+may be used instead.)
+.PP
+Some Linux distributions attempt to automatically calculate the System
+Clock drift with
+.BR \%adjtimex 's
+compare operation.  Trying to correct one
+drifting clock by using another drifting clock as a reference is akin to
+a dog trying to catch its own tail.  Success may happen eventually, but
+great effort and frustration will likely precede it.  This automation may
+yield an improvement over no configuration, but expecting optimum
+results would be in error.  A better choice for manual configuration
+would be
+.BR \%adjtimex 's " \-\-log " options.
+.PP
+It may be more effective to simply track the System Clock drift with
+.BR \%sntp ", or " \%date\ \-Ins
+and a precision timepiece, and then calculate the correction manually.
+.PP
+After setting the tick and frequency values, continue to test and refine the
+adjustments until the System Clock keeps good time.  See
+.BR \%adjtimex (8)
+for more information and the example demonstrating manual drift
+calculations.
+.PP
+Once the System Clock is ticking smoothly, move on to the Hardware Clock.
+.PP
+As a rule, cold drift will work best for most use cases.  This should be
+true even for 24/7 machines whose normal downtime consists of a reboot.
+In that case the drift factor value makes little difference.  But on the
+rare occasion that the machine is shut down for an extended period, then
+cold drift should yield better results.
+.PP
+.B Steps to calculate cold drift:
+.IP 1 2
+.B "Ensure that NTP daemon will not be launched at startup."
+.IP 2 2
+.RI The " System Clock " "time must be correct at shutdown!"
+.IP 3 2
+Shut down the system.
+.IP 4 2
+Let an extended period pass without changing the Hardware Clock.
+.IP 5 2
+Start the system.
+.IP 6 2
+.RB "Immediately use " hwclock " to set the correct time, adding the"
+.BR \%\-\-update\-drift " option."
+.PP
+Note: if step 6 uses
+.BR \%\-\-systohc ,
+then the System Clock must be set correctly (step 6a) just before doing so.
+.PP
+.RB "Having " hwclock
+calculate the drift factor is a good starting point, but for optimal
+results it will likely need to be adjusted by directly editing the
+.I /etc/adjtime
+file.  Continue to test and refine the drift factor until the Hardware
+Clock is corrected properly at startup.  To check this, first make sure
+that the System Time is correct before shutdown and then use
+.BR \%sntp ", or " \%date\ \-Ins
+and a precision timepiece, immediately after startup.
+.SS LOCAL vs UTC
+Keeping the Hardware Clock in a local timescale causes inconsistent
+daylight saving time results:
+.IP \(bu 2
+If Linux is running during a daylight saving time change, the time
+written to the Hardware Clock will be adjusted for the change.
+.IP \(bu 2
+If Linux is NOT running during a daylight saving time change, the time
+read from the Hardware Clock will NOT be adjusted for the change.
+.PP
+The Hardware Clock on an ISA compatible system keeps only a date and time,
+it has no concept of timezone nor daylight saving. Therefore, when
+.B hwclock
+is told that it is in local time, it assumes it is in the 'correct'
+local time and makes no adjustments to the time read from it.
+.PP
+Linux handles daylight saving time changes transparently only when the
+Hardware Clock is kept in the UTC timescale. Doing so is made easy for
+system administrators as
+.B \%hwclock
+uses local time for its output and as the argument to the
+.BR \%\-\-date " option."
+.PP
+POSIX systems, like Linux, are designed to have the System Clock operate
+in the UTC timescale. The Hardware Clock's purpose is to initialize the
+System Clock, so also keeping it in UTC makes sense.
+.PP
+Linux does, however, attempt to accommodate the Hardware Clock being in
+the local timescale. This is primarily for dual-booting with older
+versions of MS Windows. From Windows 7 on, the RealTimeIsUniversal
+registry key is supposed to be working properly so that its Hardware
+Clock can be kept in UTC.
+.
+.SS POSIX vs 'RIGHT'
+A discussion on date-time configuration would be incomplete without
+addressing timezones, this is mostly well covered by
+.BR tzset (3).
+One area that seems to have no documentation is the 'right'
+directory of the Time Zone Database, sometimes called tz or zoneinfo.
+.PP
+There are two separate databases in the zoneinfo system, posix
+and 'right'. 'Right' (now named zoneinfo\-leaps) includes leap seconds and posix
+does not. To use the 'right' database the System Clock must be set to
+\%(UTC\ +\ leap seconds), which is equivalent to \%(TAI\ \-\ 10). This
+allows calculating the
+exact number of seconds between two dates that cross a leap second
+epoch. The System Clock is then converted to the correct civil time,
+including UTC, by using the 'right' timezone files which subtract the
+leap seconds. Note: this configuration is considered experimental and is
+known to have issues.
+.PP
+To configure a system to use a particular database all of the files
+located in its directory must be copied to the root of
+.IR \%/usr/share/zoneinfo .
+Files are never used directly from the posix or 'right' subdirectories, e.g.,
+.RI \%TZ=' right/Europe/Dublin '.
+This habit was becoming so common that the upstream zoneinfo project
+restructured the system's file tree by moving the posix and 'right'
+subdirectories out of the zoneinfo directory and into sibling directories:
+.PP
+.in +2
+.I /usr/share/zoneinfo
+.br
+.I /usr/share/zoneinfo\-posix
+.br
+.I /usr/share/zoneinfo\-leaps
+.PP
+Unfortunately, some Linux distributions are changing it back to the old
+tree structure in their packages. So the problem of system
+administrators reaching into the 'right' subdirectory persists. This
+causes the system timezone to be configured to include leap seconds
+while the zoneinfo database is still configured to exclude them. Then
+when an application such as a World Clock needs the South_Pole timezone
+file; or an email MTA, or
+.B hwclock
+needs the UTC timezone file; they fetch it from the root of
+.I \%/usr/share/zoneinfo
+, because that is what they are supposed to do. Those files exclude leap
+seconds, but the System Clock now includes them, causing an incorrect
+time conversion.
+.PP
+Attempting to mix and match files from these separate databases will not
+work, because they each require the System Clock to use a different
+timescale. The zoneinfo database must be configured to use either posix
+or 'right', as described above, or by assigning a database path to the
+.SB TZDIR
+environment variable.
+.SH EXIT STATUS
+One of the following exit values will be returned:
+.TP
+.BR EXIT_SUCCESS " ('0' on POSIX systems)"
+Successful program execution.
+.TP
+.BR EXIT_FAILURE " ('1' on POSIX systems)"
+The operation failed or the command syntax was not valid.
+.SH ENVIRONMENT
+.TP
+.B TZ
+If this variable is set its value takes precedence over the system
+configured timezone.
+.TP
+.B TZDIR
+If this variable is set its value takes precedence over the system
+configured timezone database directory path.
+.\"O .SH FILES
+.SH ファイル
+.TP
+.I /etc/adjtime
+The configuration and state file for hwclock.
+.TP
+.I /etc/localtime
+The system timezone file.
+.TP
+.I /usr/share/zoneinfo/
+The system timezone database directory.
+.PP
+Device files
+.B hwclock
+may try for Hardware Clock access:
+.br
+.I /dev/rtc0
+.br
+.I /dev/rtc
+.br
+.I /dev/misc/rtc
+.br
+.I /dev/efirtc
+.br
+.I /dev/misc/efirtc
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR date (1),
+.BR adjtimex (8),
+.BR gettimeofday (2),
+.BR settimeofday (2),
+.BR crontab (1),
+.BR tzset (3)
+
+.\"O .SH AUTHORS
+.SH 著者
+.\"O Written by Bryan Henderson, September 1996 (bryanh@giraffe-data.com),
+.\"O based on work done on the
+.\"O .BR \%clock (8)
+.\"O program by Charles Hedrick, Rob Hooft, and Harald Koenig.
+.\"O See the source code for complete history and credits.
+.B hwclock
+は 1996 年 9 月に Bryan Henderson (bryanh@giraffe-data.com) が
+.BR \%clock (8)
+をもとに書いた。
+.BR \%clock (8)
+は Charles Hendrick, Rob Hooft, Haraid Koenig によって書かれた。
+完全な履歴と謝辞はソースに書かれている。
+.
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The hwclock command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+hwclock コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
