@@ -1,10 +1,11 @@
 .\"
-.\" Japanese Version Copyright (c) 2019 Yuichi SATO
+.\" Japanese Version Copyright (c) 2019-2020 Yuichi SATO
 .\"         all rights reserved.
 .\" Translated Tue Jul  9 00:06:25 JST 2019
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Fri Mar 20 12:18:05 JST 2020
 .\"
-.TH SADC 8 "JULY 2018" Linux "Linux User's Manual" -*- nroff -*-
+.TH SADC 8 "FEBRUARY 2019" Linux "Linux User's Manual" -*- nroff -*-
 .\"O .SH NAME
 .SH 名前
 .\"O sadc \- System activity data collector.
@@ -13,7 +14,7 @@ sadc \- システム活性度のデータ収集を行う。
 .SH 書式
 .B /usr/lib64/sa/sadc [ -C
 .I comment
-.B ] [ -D ] [ -F ] [ -L ] [ -V ] [ -S { keyword [,...] | ALL | XALL } ] [
+.B ] [ -D ] [ -F ] [ -f ] [ -L ] [ -V ] [ -S { keyword [,...] | ALL | XALL } ]
 .I interval
 .B [
 .I count
@@ -203,6 +204,17 @@ sadc \- システム活性度のデータ収集を行う。
 .B sadc
 の古いバージョンで作成されていて、現在のバージョンと既に
 互換性がない場合に役立つ。
+.IP -f
+.\"O fdatasync() will be used to ensure data is written to disk. This differs
+.\"O from the normal operation in that a sudden system reset is less likely to
+.\"O result in the saDD datafiles being corrupted. However, this is at the
+.\"O expense of performance within the sadc process as forward progress will be
+.\"O blocked while data is written to underlying disk instead of just to cache.
+fdatasync() はデータをディスクに書き出すことを保証するために使われる。
+これは、突然のシステムリセットでも saDD データファイルを破損しづらくする
+通常の操作とは異なる。
+一方で、sadc プロセスの性能が犠牲になり、
+データがキャッシュではなくディスクに書き出される間、進行が妨げられる。
 .IP -L
 .\"O .B sadc
 .\"O will try to get an exclusive lock on the
