@@ -46,10 +46,10 @@ hwclock \- タイムクロックのユーティリティ
 以下のことが実行できる。
 ハードウェア・クロックの値を、ずれの値に基づいて表示する。
 ハードウェア・クロックの値を、指定した時刻に設定する。
-ハードウェア・クロックの値を、システムクロックの値に設定する。
-システムクロックの値を、ハードウェア・クロックの値に設定する。
+ハードウェア・クロックの値を、システム・クロックの値に設定する。
+システム・クロックの値を、ハードウェア・クロックの値に設定する。
 ハードウェア・クロックのずれのを補償する。
-システムクロックのタイムスケールを訂正する。
+システム・クロックのタイムスケールを訂正する。
 カーネルのタイムゾーン、NTP タイムスケール、紀元年 (Alpha のみ) を設定する。
 将来のハードウェア・クロックの値を、ずれの値に基づいて、予想する。
 .PP
@@ -85,7 +85,7 @@ v2.26 から重要な変更が、
 時計の規則的なずれを補償するために、
 一定の時間をハードウェア・クロックの時刻から増減する。
 詳細は以下の
-.B "The Adjust Function"
+.B "時刻合わせ機能"
 の議論を参照のこと。
 .
 .TP
@@ -185,37 +185,71 @@ ISA マシンでは、カーネルは固定のハードウェア・クロック�
 .B \%\-\-localtime
 オプションを参照すること。
 .sp
-Showing the Hardware Clock time is the default when no function is specified.
+.\"O Showing the Hardware Clock time is the default when no function is specified.
+ハードウェア・クロック時刻を表示するのは、
+どの機能も指定されてない場合のデフォルトである。
 .sp
-The
+.\"O The
+.\"O .B \-\-get
+.\"O function also applies drift correction to the time read, based upon the
+.\"O information in
+.\"O .IR /etc/adjtime .
 .B \-\-get
-function also applies drift correction to the time read, based upon the
-information in
-.IR /etc/adjtime .
-Do not use this function if the Hardware Clock is being modified by
-anything other than the current operating system's
+機能は、時刻の読み出しを行う際に、
+.I /etc/adjtime
+の情報に基づいてずれの補正を適用する。
+.\"O Do not use this function if the Hardware Clock is being modified by
+.\"O anything other than the current operating system's
+.\"O .B \%hwclock
+.\"O command, such as \%'11\ minute\ mode' or from dual-booting another OS.
+ハードウェア・クロックを現在のオペレーティングシステムの
 .B \%hwclock
-command, such as \%'11\ minute\ mode' or from dual-booting another OS.
+コマンドから変更しない場合、
+例えば \%'11\ 分モード' またはデュアルブートした他の OS から変更する場合、
+この機能を使ってはならない。
 .
 .TP
 .BR \-s , \ \-\-hctosys
-Set the System Clock from the Hardware Clock.  The time read from the Hardware
-Clock is compensated to account for systematic drift before using it to set the
-System Clock.  See the discussion below, under
-.BR "The Adjust Function" .
+.\"O Set the System Clock from the Hardware Clock.  The time read from the Hardware
+.\"O Clock is compensated to account for systematic drift before using it to set the
+.\"O System Clock.  See the discussion below, under
+.\"O .BR "The Adjust Function" .
+システム・クロックをハードウェア・クロックに合わせる。
+ハードウェア・クロックから読み出した時刻は、
+システム・クロックに設定される前に、
+規則的なずれ (systematic drift) を考慮して補正される。
+下記の
+.B "時刻合わせ機能"
+での議論を参照すること。
 .sp
-The System Clock must be kept in the UTC timescale for date-time
-applications to work correctly in conjunction with the timezone configured
-for the system.  If the Hardware Clock is kept in local time then the time read
-from it must be shifted to the UTC timescale before using it to set the System
-Clock.  The
+.\"O The System Clock must be kept in the UTC timescale for date-time
+.\"O applications to work correctly in conjunction with the timezone configured
+.\"O for the system.  If the Hardware Clock is kept in local time then the time read
+.\"O from it must be shifted to the UTC timescale before using it to set the System
+.\"O Clock.  The
+.\"O .B \%\-\-hctosys
+.\"O function does this based upon the information in the
+.\"O .I /etc/adjtime
+.\"O file or the command line arguments
+.\"O .BR \%\-\-localtime " and " \-\-utc .
+.\"O Note: no daylight saving adjustment is made.  See the discussion below, under
+.\"O .BR "LOCAL vs UTC" .
+システム・クロックは UTC タイムスケールで保持される。
+これにより、日付時刻のアプリケーションは、
+システムに設定されたタイムゾーンと組み合わされて、正しく動作する。
+ハードウェア・クロックがローカル時刻で保持されている場合、
+システム・クロックに設定する前に、
+読み出した時刻を UTC タイムケールにシフトさせなければならない。
 .B \%\-\-hctosys
-function does this based upon the information in the
+の機能は、これを
 .I /etc/adjtime
-file or the command line arguments
-.BR \%\-\-localtime " and " \-\-utc .
-Note: no daylight saving adjustment is made.  See the discussion below, under
-.BR "LOCAL vs UTC" .
+ファイル、またはコマンドライン引き数
+.BR \%\-\-localtime " と " \-\-utc
+の情報に基づいて行う。
+注意: 夏時間の補正は行われない。
+下記の
+.BR "ローカル時刻 vs UTC"
+の議論を参照すること。
 .sp
 .\"O The kernel also keeps a timezone value, the
 .\"O .B \%\-\-hctosys
@@ -242,111 +276,218 @@ tz_dsttime は 0 に設定される。
 .BR settimeofday (2)
 を参照のこと。)
 .sp
-When used in a startup script, making the
+.\"O When used in a startup script, making the
+.\"O .B \%\-\-hctosys
+.\"O function the first caller of
+.\"O .BR \%settimeofday (2)
+.\"O from boot, it will set the NTP \%'11\ minute\ mode' timescale via the
+.\"O .I \%persistent_clock_is_local
+.\"O kernel variable.  If the Hardware Clock's timescale configuration is
+.\"O changed then a reboot is required to inform the kernel.  See the
+.\"O discussion below, under
+.\"O .BR "Automatic Hardware Clock Synchronization by the Kernel" .
+起動スクリプト内で使用される場合、ブートからの
 .B \%\-\-hctosys
-function the first caller of
+機能の最初の呼び出しを、
 .BR \%settimeofday (2)
-from boot, it will set the NTP \%'11\ minute\ mode' timescale via the
+にする。
+これは、
 .I \%persistent_clock_is_local
-kernel variable.  If the Hardware Clock's timescale configuration is
-changed then a reboot is required to inform the kernel.  See the
-discussion below, under
-.BR "Automatic Hardware Clock Synchronization by the Kernel" .
+カーネル変数を使って、NTP の \%'11\ 分モード' タイムスケールを設定する。
+ハードウェア・クロックのタイムスケール設定が変更された場合、
+カーネルに通知するためには再起動が必要である。
+下記の
+.BR "カーネルによるハードウェア・クロックの自動同期"
+の議論を参照すること。
 .sp
-This is a good function to use in one of the system startup scripts before the
-file systems are mounted read/write.
+.\"O This is a good function to use in one of the system startup scripts before the
+.\"O file systems are mounted read/write.
+これはファイルシステムを read/write でマウントする前に、
+システムの起動スクリプトで使うのによい機能である。
 .sp
-This function should never be used on a running system. Jumping system time
-will cause problems, such as corrupted filesystem timestamps.  Also, if
-something has changed the Hardware Clock, like NTP's \%'11\ minute\ mode', then
+.\"O This function should never be used on a running system. Jumping system time
+.\"O will cause problems, such as corrupted filesystem timestamps.  Also, if
+.\"O something has changed the Hardware Clock, like NTP's \%'11\ minute\ mode', then
+.\"O .B \%\-\-hctosys
+.\"O will set the time incorrectly by including drift compensation.
+この機能は実行中のシステムに使うべきではない。
+システム時刻が飛んでしまうと、ファイルシステムのタイムスタンプが
+破損するといった問題を引き起こす。
+NTP の \%'11\ 分モード' のように、
+何かがハードウェア・クロックを変更すると、
 .B \%\-\-hctosys
-will set the time incorrectly by including drift compensation.
+は、ずれの補償を含めて時刻を正しく設定できない。
 .sp
-Drift compensation can be inhibited by setting the drift factor in
+.\"O Drift compensation can be inhibited by setting the drift factor in
+.\"O .I /etc/adjtime
+.\"O to zero.  This setting will be persistent as long as the
+.\"O .BR \%\-\-update\-drift " option is not used with " \%\-\-systohc
+.\"O at shutdown (or anywhere else).  Another way to inhibit this is by using the
+.\"O .BR \%\-\-noadjfile " option when calling the " \%\-\-hctosys
+.\"O function.  A third method is to delete the
+.\"O .IR /etc/adjtime " file."
+ずれの補償は、
 .I /etc/adjtime
-to zero.  This setting will be persistent as long as the
-.BR \%\-\-update\-drift " option is not used with " \%\-\-systohc
-at shutdown (or anywhere else).  Another way to inhibit this is by using the
-.BR \%\-\-noadjfile " option when calling the " \%\-\-hctosys
-function.  A third method is to delete the
-.IR /etc/adjtime " file."
-.B Hwclock
-will then default to using the UTC timescale for the Hardware Clock.  If
-the Hardware Clock is ticking local time it will need to be defined in
-the file.  This can be done by calling
+のずれの要素を 0 に設定することで、中止することができる。
+この設定は、シャットダウン時に (またはどこかで)
+.B \%\-\-update\-drift
+オプションが
+.B \%\-\-systohc
+と一緒に指定されるまで継続する。
+もう 1 つのずれの補償をさせない方法は、
+.B \%\-\-hctosys
+機能の呼び出しで、
+.B \%\-\-noadjfile
+オプションを使うことである。
+3 番目の方法は、
+.I /etc/adjtime
+ファイルを削除することである。
+.\"O .B Hwclock
+.\"O will then default to using the UTC timescale for the Hardware Clock.  If
+.\"O the Hardware Clock is ticking local time it will need to be defined in
+.\"O the file.  This can be done by calling
+.\"O .BR hwclock\ \-\-localtime\ \-\-adjust ;
+.\"O when the file is not present this command will not actually
+.\"O adjust the Clock, but it will create the file with local time
+.\"O configured, and a drift factor of zero.
+この場合、
+.B hwclock
+はデフォルトでハードウェア・クロックで UTC タイムスケールを使う。
+ハードウェア・クロックがローカル時刻で刻まれている場合、
+このファイルで定義されている必要がある。
+ファイルが存在しない場合、
 .BR hwclock\ \-\-localtime\ \-\-adjust ;
-when the file is not present this command will not actually
-adjust the Clock, but it will create the file with local time
-configured, and a drift factor of zero.
+を呼び出すことでローカル時刻にすることができる。
+このコマンドは実際にはハードウェア・クロックを調整せず、
+ローカル時刻の設定がされて、ずれ要素が 0 のファイルを生成する。
 .sp
-A condition under which inhibiting
-.BR hwclock 's
-drift correction may be desired is when dual-booting multiple operating
-systems.  If while this instance of Linux is stopped, another OS changes
-the Hardware Clock's value, then when this instance is started again the
-drift correction applied will be incorrect.
+.\"O A condition under which inhibiting
+.\"O .BR hwclock 's
+.\"O drift correction may be desired is when dual-booting multiple operating
+.\"O systems.  If while this instance of Linux is stopped, another OS changes
+.\"O the Hardware Clock's value, then when this instance is started again the
+.\"O drift correction applied will be incorrect.
+.B hwclock
+のずれ補正を中止する条件は、複数のオペレーティングシステムを
+デュアルブートする時に、望ましい効果がある。
+Linux のインスタンスが停止して、他の OS がハードウェア・クロックの値を変更した場合、
+Linux のインスタンスを再度起動したときに、適用されるずれ補正が不正になる。
 .sp
-.RB "For " hwclock 's
-drift correction to work properly it is imperative that nothing changes
-the Hardware Clock while its Linux instance is not running.
+.\"O .RB "For " hwclock 's
+.\"O drift correction to work properly it is imperative that nothing changes
+.\"O the Hardware Clock while its Linux instance is not running.
+.B hwclock
+のずれ補正が正しく動作するには、Linux インスタンスが動作していないときに、
+ハードウェア・クロックが変更されないことが、絶対必要である。
 .
 .TP
 .B \-\-set
-Set the Hardware Clock to the time given by the
+.\"O Set the Hardware Clock to the time given by the
+.\"O .B \-\-date
+.\"O option, and update the timestamps in
+.\"O .IR /etc/adjtime .
+ハードウェア・クロックを
 .B \-\-date
-option, and update the timestamps in
-.IR /etc/adjtime .
-With the
+オプションで指定した時刻に設定し、
+.I /etc/adjtime
+のタイムスタンプを更新する。
+.\"O With the
+.\"O .B \%\-\-update-drift
+.\"O option also (re)calculate the drift factor.  Try it without the option if
+.\"O .BR \%\-\-set " fails.  See " \%\-\-update-drift " below."
 .B \%\-\-update-drift
-option also (re)calculate the drift factor.  Try it without the option if
-.BR \%\-\-set " fails.  See " \%\-\-update-drift " below."
+オプションを指定すると、ずれの要素を (再) 計算する。
+このオプションを指定しないと、
+.BR \%\-\-set
+は失敗する。
+以下の
+.BR \%\-\-update-drift
+を参照すること。
 .
 .TP
 .B \-\-systz
-This is an alternate to the
+.\"O This is an alternate to the
+.\"O .B \%\-\-hctosys
+.\"O function that does not read the Hardware Clock nor set the System Clock;
+.\"O consequently there is not any drift correction.  It is intended to be
+.\"O used in a startup script on systems with kernels above version 2.6 where
+.\"O you know the System Clock has been set from the Hardware Clock by the
+.\"O kernel during boot.
+これは
 .B \%\-\-hctosys
-function that does not read the Hardware Clock nor set the System Clock;
-consequently there is not any drift correction.  It is intended to be
-used in a startup script on systems with kernels above version 2.6 where
-you know the System Clock has been set from the Hardware Clock by the
-kernel during boot.
+機能の代替である。
+これはハードウェア・クロックの読み出しと、
+システム・クロックの設定も行わない。
+結果として、ずれの補正を行わない。
+この機能は、バージョン 2.6 以降のカーネルのシステムの起動スクリプトで使うことを意図している。
+このシステムでは、カーネルの起動時に、
+システム・クロックがハードウェア・クロックの値に設定される。
 .sp
-It does the following things that are detailed above in the
-.BR \%\-\-hctosys " function:"
+.\"O It does the following things that are detailed above in the
+.\"O .BR \%\-\-hctosys " function:"
+上記の
+.BR \%\-\-hctosys
+機能では、詳細には以下に示すことが行われている:
 .RS
 .IP \(bu 2
-Corrects the System Clock timescale to UTC as needed.  Only instead of
-accomplishing this by setting the System Clock,
+.\"O Corrects the System Clock timescale to UTC as needed.  Only instead of
+.\"O accomplishing this by setting the System Clock,
+.\"O .B hwclock
+.\"O simply informs the kernel and it handles the change.
+システム・クロックのタイムスケールを必要に応じて UTC に補正する。
+システム・クロックを設定することで、これを行う代わりに、
 .B hwclock
-simply informs the kernel and it handles the change.
+はカーネルに単純に通知を行い、変更を行う。
 .IP \(bu 2
-Sets the kernel's NTP \%'11\ minute\ mode' timescale.
+.\"O Sets the kernel's NTP \%'11\ minute\ mode' timescale.
+カーネルの NTP \%'11\ 分モード' タイムスケールを設定する。
 .IP \(bu 2
-Sets the kernel's timezone.
+.\"O Sets the kernel's timezone.
+カーネルのタイムゾーンを設定する。
 .PP
-The first two are only available on the first call of
+.\"O The first two are only available on the first call of
+.\"O .BR \%settimeofday (2)
+.\"O after boot.  Consequently this option only makes sense when used in a
+.\"O startup script.  If the Hardware Clocks timescale configuration is
+.\"O changed then a reboot would be required to inform the kernel.
+最初の 2 つは、起動後の最初の
 .BR \%settimeofday (2)
-after boot.  Consequently this option only makes sense when used in a
-startup script.  If the Hardware Clocks timescale configuration is
-changed then a reboot would be required to inform the kernel.
+の呼び出しで実行される。
+結果として、このオプションは起動スクリプトで使われる場合にのみ
+意味を持つ。
+ハードウェア・クロックのタイムスケール設定が変更された場合、
+カーネルに通知するために再起動が必要である。
 .RE
 .
 .TP
 .BR \-w , \ \-\-systohc
-Set the Hardware Clock from the System Clock, and update the timestamps in
-.IR /etc/adjtime .
-With the
+.\"O Set the Hardware Clock from the System Clock, and update the timestamps in
+.\"O .IR /etc/adjtime .
+ハードウェア・クロックをシステム・クロックに設定し、
+.I /etc/adjtime
+のタイムスタンプを更新する。
+.\"O With the
+.\"O .B \%\-\-update-drift
+.\"O option also (re)calculate the drift factor.  Try it without the option if
+.\"O .BR \%\-\-systohc " fails.  See " \%\-\-update-drift " below."
 .B \%\-\-update-drift
-option also (re)calculate the drift factor.  Try it without the option if
-.BR \%\-\-systohc " fails.  See " \%\-\-update-drift " below."
+オプションを指定すると、ずれの要素を (再) 計算する。
+このオプションを指定せずに、
+.BR \%\-\-systohc
+を実行すると失敗する。
+下記の
+.BR \%\-\-update-drift
+を参照すること。
 .
 .TP
 .BR \-V , \ \-\-version
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .
 .TP
 .BR \-h , \ \-\-help
-Display help text and exit.
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
 .
 .SH OPTIONS
 .
@@ -972,11 +1113,11 @@ adjtime は ASCII ファイルであり、フォーマットは以下の通り:
 .\"O network or to a radio clock hooked up to your system.  See RFC 1305.)
 ハードウェア・クロックを正しい値に同期させるのに、
 別法が取れるようなシステムもある。
-Linux カーネルには、11 分ごとにシステムクロックを
+Linux カーネルには、11 分ごとにシステム・クロックを
 ハードウェア・クロックにコピーするようなモードが存在する。
 このモードはコンパイル時オプションであるので、
 全てのカーネルがこの機能を持っているわけではない。
-これは、何らかの洗練された方法 (NTP など) でシステムクロックを
+これは、何らかの洗練された方法 (NTP など) でシステム・クロックを
 同期できている時には、よいモードであろう。
 (NTP とは、ネットワークのどこかにあるタイムサーバーか、システムに付属した
 電波時計にシステム・クロックを同期させる手法である。RFC 1305 を見よ。)
