@@ -518,72 +518,133 @@ Linux のインスタンスを再度起動したときに、適用されるず�
 .IP "" 4
 .B "hwclock\ \-\-predict\ \-\-date='2525-08-14\ 07:11:05'"
 .PP
-The argument must be in local time, even if you keep your Hardware Clock in
-UTC.  See the
+.\"O The argument must be in local time, even if you keep your Hardware Clock in
+.\"O UTC.  See the
+.\"O .B \%\-\-localtime
+.\"O option.  Therefore, the argument should not include any timezone information.
+ハードウェア・クロックを UTC にしたい場合でも、引き数はローカル時刻でなければならない。
 .B \%\-\-localtime
-option.  Therefore, the argument should not include any timezone information.
-It also should not be a relative time like "+5 minutes", because
-.BR \%hwclock 's
-precision depends upon correlation between the argument's value and when the
-enter key is pressed.  Fractional seconds are silently dropped.  This option is
-capable of understanding many time and date formats, but the previous
-parameters should be observed.
+オプションを参照すること。
+よって、引き数にはタイムゾーンの情報を含めるべきではない。
+.\"O It also should not be a relative time like "+5 minutes", because
+.\"O .BR \%hwclock 's
+.\"O precision depends upon correlation between the argument's value and when the
+.\"O enter key is pressed.  Fractional seconds are silently dropped.  This option is
+.\"O capable of understanding many time and date formats, but the previous
+.\"O parameters should be observed.
+また、引き数を "+5 minutes" のように相対時刻にするべきでもない。
+なぜなら
+.B \%hwclock
+の精度は、引き数の値とキーが押された時の関係に依存しているからである。
+小数で指定した秒は、黙って落とされる。
+このオプションは、多くの時刻と日付のフォーマットを解釈できるが、
+前のパラメータに従う。
 .RE
 .
 .TP
 .BI \%\-\-delay= seconds
-This option allows to overwrite internally used delay when set clock time. The
-default is 0.5 (500ms) for rtc_cmos, for another RTC types the delay is 0. If
-RTC type is impossible to determine (from sysfs) then it defaults also to 0.5
-to be backwardly compatible.
+.\"O This option allows to overwrite internally used delay when set clock time. The
+.\"O default is 0.5 (500ms) for rtc_cmos, for another RTC types the delay is 0. If
+.\"O RTC type is impossible to determine (from sysfs) then it defaults also to 0.5
+.\"O to be backwardly compatible.
+このオプションを使うと、クロック時刻を設定する際に、
+内部的に使われる遅延を上書きすることができる。
+デフォルトの遅延は、rtc_cmos については 0.5 (500ms) であり、
+他の RTC タイプについては 0 である。
+RTC タイプが (sysfs から) 決定できない場合、
+後方互換性のため、デフォルトを 0.5 にする。
 .RS
 .PP
-The 500ms default is based on commonly used MC146818A-compatible (x86) hardware clock. This
-Hardware Clock can only be set to any integer time plus one half second.  The
-integer time is required because there is no interface to set or get a
-fractional second.  The additional half second delay is because the Hardware
-Clock updates to the following second precisely 500 ms after setting the new
-time. Unfortunately, this behavior is hardware specific and in same cases
-another delay is required.
+.\"O The 500ms default is based on commonly used MC146818A-compatible (x86) hardware clock. This
+.\"O Hardware Clock can only be set to any integer time plus one half second.  The
+.\"O integer time is required because there is no interface to set or get a
+.\"O fractional second.  The additional half second delay is because the Hardware
+.\"O Clock updates to the following second precisely 500 ms after setting the new
+.\"O time. Unfortunately, this behavior is hardware specific and in same cases
+.\"O another delay is required.
+500ms のデフォルトは、一般に用いられている MC146818A 互換 (x86)
+ハードウェア・クロックに基づいている。
+ハードウェア・クロックは任意の整数の時刻プラス 0.5 秒にのみ設定できる。
+小数の秒を設定または取得するインタフェースがないので、
+整数の時刻にする必要がある。
+追加される 0.5 秒の遅延は、新たな時刻が設定されてから正確に 500ms 後に、
+ハードウェア・クロックが更新されるからである。
+残念なことに、この挙動はハードウェア依存であり、
+同様な場合にも別の遅延時間が必要になる。
 .RE
 .
 .TP
 .TP
 .BR \-D ", " \-\-debug
-.RB Use\  \-\-verbose .
-.RB The\  \%\-\-debug\  option
-has been deprecated and may be repurposed or removed in a future release.
+.\"O .RB Use\  \-\-verbose .
+.B \-\-verbose
+を使うこと。
+.\"O .RB The\  \%\-\-debug\  option
+.\"O has been deprecated and may be repurposed or removed in a future release.
+.B \%\-\-debug
+オプションは古く、将来のリリースで、別の目的に使われるか、
+削除される。
 .
 .TP
 .B \-\-directisa
-This option is meaningful for ISA compatible machines in the x86 and
-x86_64 family.  For other machines, it has no effect.  This option tells
+.\"O This option is meaningful for ISA compatible machines in the x86 and
+.\"O x86_64 family.  For other machines, it has no effect.  This option tells
+.\"O .B \%hwclock
+.\"O to use explicit I/O instructions to access the Hardware Clock.
+このオプションは、x86 と x86_64 ファミリーの ISA 互換マシンでのみ意味を持つ。
+他のマシンでは、何の効果もない。
+このオプションは
 .B \%hwclock
-to use explicit I/O instructions to access the Hardware Clock.
-Without this option,
+に指令して、ハードウェア・クロックへのアクセスに
+直接 I/O 命令を用いるようにさせる。
+.\"O Without this option,
+.\"O .B \%hwclock
+.\"O will use the rtc device file, which it assumes to be driven by the Linux
+.\"O RTC device driver.  As of v2.26 it will no longer automatically use
+.\"O directisa when the rtc driver is unavailable; this was causing an unsafe
+.\"O condition that could allow two processes to access the Hardware Clock at
+.\"O the same time.  Direct hardware access from userspace should only be
+.\"O used for testing, troubleshooting, and as a last resort when all other
+.\"O methods fail.  See the
+.\"O .BR \-\-rtc " option."
+このオプションを指定しないと、
 .B \%hwclock
-will use the rtc device file, which it assumes to be driven by the Linux
-RTC device driver.  As of v2.26 it will no longer automatically use
-directisa when the rtc driver is unavailable; this was causing an unsafe
-condition that could allow two processes to access the Hardware Clock at
-the same time.  Direct hardware access from userspace should only be
-used for testing, troubleshooting, and as a last resort when all other
-methods fail.  See the
-.BR \-\-rtc " option."
+は rtc デバイスを用いようとする
+(rtc が RTC デバイスドライバで駆動されていることを仮定する)。
+v2.26 以降では、rtc ドライバが利用できない場合、
+directisa を自動で使わなくなった。
+これを使うと、2 つのプロセスが同時にハードウェア・クロックにアクセスするのを
+許可してしまい、安全でない条件が生み出されてしまうからである。
+ユーザー空間からの直接ハードウェアアクセスは、
+テストして、トラブルシュートして、他の全ての手段が失敗した場合の
+最後の手段として使うべきである。
+.BR \-\-rtc
+オプションを参照すること。
 .
 .TP
 .BI \-\-epoch= year
-This option is required when using the
-.BR \%\-\-setepoch \ function.
-.RI "The minimum " year
-value is 1900. The maximum is system dependent
-.RB ( ULONG_MAX\ -\ 1 ).
+.\"O This option is required when using the
+.\"O .BR \%\-\-setepoch \ function.
+.\"O .RI "The minimum " year
+.\"O value is 1900. The maximum is system dependent
+.\"O .RB ( ULONG_MAX\ -\ 1 ).
+このオプションは
+.BR \%\-\-setepoch
+機能を使うときに必要である。
+.I year
+の最小値は 1900 である。
+最大値はシステム依存で
+.RB ( ULONG_MAX\ -\ 1 )
+である。
 .
 .TP
 .BR \-f , \ \-\-rtc=\fIfilename\fR
-.RB "Override " \%hwclock 's
-default rtc device file name.  Otherwise it will
-use the first one found in this order:
+.\"O .RB "Override " \%hwclock 's
+.\"O default rtc device file name.  Otherwise it will
+.\"O use the first one found in this order:
+.BR \%hwclock
+のデフォルトの rtc デバイスファイル名を上書きする。
+指定しない場合、下記の順で見つかった最初のものを使う:
 .in +4
 .br
 .I /dev/rtc0
@@ -593,7 +654,8 @@ use the first one found in this order:
 .I /dev/misc/rtc
 .br
 .in
-.RB "For " IA-64:
+.\"O .RB "For " IA-64:
+.BR IA-64 " の場合:"
 .in +4
 .br
 .I /dev/efirtc
@@ -605,29 +667,52 @@ use the first one found in this order:
 .BR \-l , \ \-\-localtime
 .TQ
 .BR \-u ", " \-\-utc
-Indicate which timescale the Hardware Clock is set to.
+.\"O Indicate which timescale the Hardware Clock is set to.
+ハードウェア・クロックがどちらのタイムスケールを使うかを指定する。
 .sp
-The Hardware Clock may be configured to use either the UTC or the local
-timescale, but nothing in the clock itself says which alternative is
-being used.  The
-.BR \%\-\-localtime " or " \-\-utc
-options give this information to the
+.\"O The Hardware Clock may be configured to use either the UTC or the local
+.\"O timescale, but nothing in the clock itself says which alternative is
+.\"O being used.  The
+.\"O .BR \%\-\-localtime " or " \-\-utc
+.\"O options give this information to the
+.\"O .B \%hwclock
+.\"O command.  If you specify the wrong one (or specify neither and take a
+.\"O wrong default), both setting and reading the Hardware Clock will be
+.\"O incorrect.
+ハードウェア・クロックは、UTC またはローカルのいずれかのタイムスケールを使うように設定できる。
+しかし、クロック自身がどちらが使われているかを返すことはない。
+.BR \%\-\-localtime " または " \-\-utc
+オプションは、この情報を
 .B \%hwclock
-command.  If you specify the wrong one (or specify neither and take a
-wrong default), both setting and reading the Hardware Clock will be
-incorrect.
+コマンドに伝える。
+間違ったオプションを指定すると
+(またはどちらも指定せず、間違ったデフォルトが使われると)、
+ハードウェア・クロックの設定も読み出しも不正になる。
 .sp
-If you specify neither
-.BR \-\-utc " nor " \%\-\-localtime
-then the one last given with a set function
-.RB ( \-\-set ", " \%\-\-systohc ", or " \%\-\-adjust ),
-as recorded in
-.IR /etc/adjtime ,
-will be used.  If the adjtime file doesn't exist, the default is UTC.
+.\"O If you specify neither
+.\"O .BR \-\-utc " nor " \%\-\-localtime
+.\"O then the one last given with a set function
+.\"O .RB ( \-\-set ", " \%\-\-systohc ", or " \%\-\-adjust ),
+.\"O as recorded in
+.\"O .IR /etc/adjtime ,
+.\"O will be used.  If the adjtime file doesn't exist, the default is UTC.
+.BR \-\-utc " も " \%\-\-localtime
+も指定しない場合、最後に set 機能
+.RB ( \-\-set ", " \%\-\-systohc ", " \%\-\-adjust )
+を実行した時に使われたオプションが使われる。
+これは
+.I /etc/adjtime
+に記録されている。
+adjtime ファイルが存在しない場合、デフォルトは UTC である。
 .sp
-Note: daylight saving time changes may be inconsistent when the
-Hardware Clock is kept in local time.  See the discussion below, under
-.BR "LOCAL vs UTC" .
+.\"O Note: daylight saving time changes may be inconsistent when the
+.\"O Hardware Clock is kept in local time.  See the discussion below, under
+.\"O .BR "LOCAL vs UTC" .
+注意: ハードウェア・クロックがローカル時間で保持されている場合、
+夏時間への変更は不整合を起こす。
+下記の
+.B "ローカル時間 vs UTC"
+の議論を参照すること。
 .
 .TP
 .B \-\-noadjfile
@@ -650,69 +735,129 @@ Hardware Clock is kept in local time.  See the discussion below, under
 .
 .TP
 .B \-\-test
-Do not actually change anything on the system, that is, the Clocks or
+.\"O Do not actually change anything on the system, that is, the Clocks or
+.\"O .I /etc/adjtime
+.\"O .RB ( \%\-\-verbose
+.\"O is implicit with this option).
+実際にはシステム、つまりクロックまたは
 .I /etc/adjtime
+に変更は行わない
 .RB ( \%\-\-verbose
-is implicit with this option).
+は暗黙のうちにこのオプションを指定する)。
 .
 .TP
 .B \-\-update\-drift
-Update the Hardware Clock's drift factor in
-.IR /etc/adjtime .
-It can only be used with
-.BR \-\-set " or " \%\-\-systohc ,
+.\"O Update the Hardware Clock's drift factor in
+.\"O .IR /etc/adjtime .
+.\"O It can only be used with
+.\"O .BR \-\-set " or " \%\-\-systohc ,
+.I /etc/adjtime
+に書かれたハードウェア・クロックのずれの要素を更新する。
+このオプションは
+.BR \-\-set " または " \%\-\-systohc
+とのみ一緒に利用できる。
 .sp
-A minimum four hour period between settings is required.  This is to
-avoid invalid calculations.  The longer the period, the more precise the
-resulting drift factor will be.
+.\"O A minimum four hour period between settings is required.  This is to
+.\"O avoid invalid calculations.  The longer the period, the more precise the
+.\"O resulting drift factor will be.
+設定には、最小限 4 時間の期間を開ける必要がある。
+これは計算を不正にしないためである。
+期間を長くするほど、ずれの要素の計算結果は正確になる。
 .sp
-This option was added in v2.26, because
-it is typical for systems to call
+.\"O This option was added in v2.26, because
+.\"O it is typical for systems to call
+.\"O .B \%hwclock\ \-\-systohc
+.\"O at shutdown; with the old behaviour this would automatically
+.\"O (re)calculate the drift factor which caused several problems:
+このオプションは、v2.26 で追加された。
+なぜなら、システムで
 .B \%hwclock\ \-\-systohc
-at shutdown; with the old behaviour this would automatically
-(re)calculate the drift factor which caused several problems:
+をシャットダウン時に呼び出すことが典型的にあり、
+以前の挙動では、ずれの要素を自動的に (再) 計算しており、
+問題を引き起こしていた:
 .RS
 .IP \(bu 2
-When using NTP with an \%'11\ minute\ mode' kernel the drift factor
-would be clobbered to near zero.
+.\"O When using NTP with an \%'11\ minute\ mode' kernel the drift factor
+.\"O would be clobbered to near zero.
+NTP を \%'11\ 分モード' を使っている場合、
+カーネルのずれ要素は 0 に近い値にされる。
 .IP \(bu 2
-It would not allow the use of 'cold' drift correction.  With most
-configurations using 'cold' drift will yield favorable results.  Cold,
-means when the machine is turned off which can have a significant impact
-on the drift factor.
+.\"O It would not allow the use of 'cold' drift correction.  With most
+.\"O configurations using 'cold' drift will yield favorable results.  Cold,
+.\"O means when the machine is turned off which can have a significant impact
+.\"O on the drift factor.
+.\"Osato:
+.\"Osato: 訳を再度見直す必要あり。
+.\"Osato:
+「コールド」ずれ補正を使うことを許可しない。
+「コールド」ずれ補正を使う多くの設定では、良好な結果を生み出す。
+「コールド」とは、ずれ要素に重大な影響がある場合に、
+マシンを停止することを意味している。
 .IP \(bu 2
-(Re)calculating drift factor on every shutdown delivers suboptimal
-results.  For example, if ephemeral conditions cause the machine to be
-abnormally hot the drift factor calculation would be out of range.
+.\"O (Re)calculating drift factor on every shutdown delivers suboptimal
+.\"O results.  For example, if ephemeral conditions cause the machine to be
+.\"O abnormally hot the drift factor calculation would be out of range.
+.\"Osato:
+.\"Osato: 訳を再度見直す必要あり。
+.\"Osato:
+シャットダウン毎にずれ要素を (再) 計算することは、準最適な結果を生み出す。
+例えば、短期間しか使われない条件は、
+マシンの異常でホットなずれ要素の計算で、範囲外にしてしまう。
 .IP \(bu 2
-Significantly increased system shutdown times (as of v2.31 when not
-using
+.\"O Significantly increased system shutdown times (as of v2.31 when not
+.\"O using
+.\"O .B \%\-\-update\-drift
+.\"O the RTC is not read).
+(v2.31 の時点で
 .B \%\-\-update\-drift
-the RTC is not read).
+を使わず、RTC が読み込まれない場合)
+シャットダウンの時間が顕著に長くなる。
 .PP
-.RB "Having " \%hwclock
-calculate the drift factor is a good starting point, but for optimal
-results it will likely need to be adjusted by directly editing the
+.\"O .RB "Having " \%hwclock
+.\"O calculate the drift factor is a good starting point, but for optimal
+.\"O results it will likely need to be adjusted by directly editing the
+.\"O .I /etc/adjtime
+.\"O file.  For most configurations once a machine's optimal drift factor is
+.\"O crafted it should not need to be changed.  Therefore, the old behavior to
+.\"O automatically (re)calculate drift was changed and now requires this
+.\"O option to be used.  See the discussion below, under
+.\"O .BR "The Adjust Function" .
+.BR \%hwclock
+にずれ要素を計算させるのは、良いスタートポイントとなるが、
+最適な値に調整するには、
 .I /etc/adjtime
-file.  For most configurations once a machine's optimal drift factor is
-crafted it should not need to be changed.  Therefore, the old behavior to
-automatically (re)calculate drift was changed and now requires this
-option to be used.  See the discussion below, under
-.BR "The Adjust Function" .
+ファイルを直接編集する必要がある。
+多くの設定では、一度マシンの最適なずれ要素が作られれば、
+変更する必要はない。
+よって、自動的にずれを (再) 計算する以前の挙動は変更され、
+今はこのオプションを使う必要がある。
+下記の
+.BR "時間調整の機能"
+の議論を参照すること。
 .PP
-This option requires reading the Hardware Clock before setting it.  If
-it cannot be read, then this option will cause the set functions to fail.
-This can happen, for example, if the Hardware Clock is corrupted by a
-power failure.  In that case, the clock must first be set without this
-option.  Despite it not working, the resulting drift correction factor
-would be invalid anyway.
+.\"O This option requires reading the Hardware Clock before setting it.  If
+.\"O it cannot be read, then this option will cause the set functions to fail.
+.\"O This can happen, for example, if the Hardware Clock is corrupted by a
+.\"O power failure.  In that case, the clock must first be set without this
+.\"O option.  Despite it not working, the resulting drift correction factor
+.\"O would be invalid anyway.
+このオプションは、ハードウェア・クロックを設定する前に読み込む
+必要がある。
+読み込めない場合、このオプションは設定機能を失敗させる。
+これは、例えば、電源の障害でハードウェア・クロックが壊れている
+場合に起こる。
+この場合、このオプションなしで最初にクロックを設定しなければ
+ならない。
+これが動作しない場合、ずれの補正要素はどうしても不正になる。
 .RE
 .
 .TP
 .BR \-v ", " \-\-verbose
-Display more details about what
+.\"O Display more details about what
+.\"O .B \%hwclock
+.\"O is doing internally.
 .B \%hwclock
-is doing internally.
+が内部で実行していることをより詳細に表示する。
 .
 .\"O .SH NOTES
 .SH 注意
