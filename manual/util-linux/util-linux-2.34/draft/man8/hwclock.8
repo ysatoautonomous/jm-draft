@@ -1433,120 +1433,211 @@ NTP デーモンはカーネルのクロック discipline を同期状態にす�
 ACPI がハードウェアでサポートされている場合、
 世紀値にアクセスする標準的な方法を提供する。
 .
-.SH DATE-TIME CONFIGURATION
+.\"O .SH DATE-TIME CONFIGURATION
+.SH 日付時刻の設定
 .in +4
-.SS Keeping Time without External Synchronization
+.\"O .SS Keeping Time without External Synchronization
+.SS 外部同期なしの時刻の維持
 .in
 .PP
-This discussion is based on the following conditions:
+.\"O This discussion is based on the following conditions:
+この議論は以下の条件に基づいている:
 .IP \(bu 2
-Nothing is running that alters the date-time clocks, such as NTP daemon or a cron job."
+.\"O Nothing is running that alters the date-time clocks, such as NTP daemon or a cron job."
+NTP デーモンや cron ジョブのように、日付時刻のクロックを変更するものが動作していない。
 .IP \(bu 2
-The system timezone is configured for the correct local time.  See below, under
-.BR "POSIX vs 'RIGHT'" .
+.\"O The system timezone is configured for the correct local time.  See below, under
+.\"O .BR "POSIX vs 'RIGHT'" .
+システムのタイムゾーンが正しいローカル時刻に設定されていること。
+以下の
+.BR "POSIX vs 'RIGHT'"
+を参照すること。
 .IP \(bu 2
-Early during startup the following are called, in this order:
+.\"O Early during startup the following are called, in this order:
+起動時に以下の順番で呼ばれていること:
 .br
 .BI \%adjtimex\ \-\-tick \ value\  \-\-frequency \ value
 .br
 .B \%hwclock\ \-\-hctosys
 .IP \(bu 2
-During shutdown the following is called:
+.\"O During shutdown the following is called:
+シャットダウンで以下が呼ばれていること:
 .br
 .B \%hwclock\ \-\-systohc
 .PP
 .in +4
-.BR * " Systems without " adjtimex " may use " ntptime .
+.\"O .BR * " Systems without " adjtimex " may use " ntptime .
+.BR "* adjtimex" " がないシステムで " ntptime " を使うことができる。"
 .in
 .PP
-Whether maintaining precision time with NTP daemon
-or not, it makes sense to configure the system to keep reasonably good
-date-time on its own.
+.\"O Whether maintaining precision time with NTP daemon
+.\"O or not, it makes sense to configure the system to keep reasonably good
+.\"O date-time on its own.
+NTP デーモンで正確な時間が維持されているか否かに関わらず、
+システムが適切な日付時刻を維持できるように設定されていることには意味がある。
 .PP
-The first step in making that happen is having a clear understanding of
-the big picture.  There are two completely separate hardware devices
-running at their own speed and drifting away from the 'correct' time at
-their own rates.  The methods and software for drift correction are
-different for each of them.  However, most systems are configured to
-exchange values between these two clocks at startup and shutdown.  Now
-the individual device's time keeping errors are transferred back and
-forth between each other.  Attempt to configure drift correction for only
-one of them, and the other's drift will be overlaid upon it.
+.\"O The first step in making that happen is having a clear understanding of
+.\"O the big picture.  There are two completely separate hardware devices
+.\"O running at their own speed and drifting away from the 'correct' time at
+.\"O their own rates.  The methods and software for drift correction are
+.\"O different for each of them.  However, most systems are configured to
+.\"O exchange values between these two clocks at startup and shutdown.  Now
+.\"O the individual device's time keeping errors are transferred back and
+.\"O forth between each other.  Attempt to configure drift correction for only
+.\"O one of them, and the other's drift will be overlaid upon it.
+最初のステップは、概要を明確に理解することである。
+2 つの完全に分離されたハードウェアデバイスがそれぞれの速さで動いており、
+「正しい」時刻からそれぞれの割合でずれていく。
+ずれの補正の方法とソフトウェアは、それぞれで異なる。
+しかし、多くのシステムでは、2 つの時計が
+起動時とシャットダウン時にそれぞれの値を交換するように設定されている。
+今、各デバイスのエラーを含む時刻が相互にやりとりされている。
+一方のデバイスについてのみ、ずれの補正が行われるように設定された場合、
+他方のずれは一方の補正値で上書きされる。
 .PP
-This problem can be avoided when configuring drift correction for the
-System Clock by simply not shutting down the machine.  This, plus the
-fact that all of
-.BR \%hwclock 's
-precision (including calculating drift factors) depends upon the System
-Clock's rate being correct, means that configuration of the System Clock
-should be done first.
+.\"O This problem can be avoided when configuring drift correction for the
+.\"O System Clock by simply not shutting down the machine.  This, plus the
+.\"O fact that all of
+.\"O .BR \%hwclock 's
+.\"O precision (including calculating drift factors) depends upon the System
+.\"O Clock's rate being correct, means that configuration of the System Clock
+.\"O should be done first.
+この問題は、システム・クロックのずれ補正を設定するときに、
+マシンをシャットダウンしないことで回避できる。
+これにプラスして、(ずれ要素の計算を含む)
+.B \%hwclock
+の精度は、システム・クロックのずれの割合が修正されているかに依存する。
+つまり、システム・クロックの設定は最初にすべきである。
 .PP
-The System Clock drift is corrected with the
-.BR \%adjtimex "(8) command's " \-\-tick " and " \%\-\-frequency
-options.  These two work together: tick is the coarse adjustment and
-frequency is the fine adjustment.  (For systems that do not have an
-.BR \%adjtimex " package,"
+.\"O The System Clock drift is corrected with the
+.\"O .BR \%adjtimex "(8) command's " \-\-tick " and " \%\-\-frequency
+.\"O options.  These two work together: tick is the coarse adjustment and
+.\"O frequency is the fine adjustment.  (For systems that do not have an
+.\"O .BR \%adjtimex " package,"
+.\"O .BI \%ntptime\ \-f\  ppm
+.\"O may be used instead.)
+システム・クロックのずれは、
+.BR \%adjtimex "(8) コマンドの " \-\-tick " と " \%\-\-frequency
+オプションで修正できる。
+この 2 つのオプションは同時に動作させることができる:
+tick は大まかな補正をし、frequency は細かな補正を行う。
+.RB ( \%adjtimex
+パッケージがないシステムでは、
 .BI \%ntptime\ \-f\  ppm
-may be used instead.)
+を代わりに使うことができる。)
 .PP
-Some Linux distributions attempt to automatically calculate the System
-Clock drift with
-.BR \%adjtimex 's
-compare operation.  Trying to correct one
-drifting clock by using another drifting clock as a reference is akin to
-a dog trying to catch its own tail.  Success may happen eventually, but
-great effort and frustration will likely precede it.  This automation may
-yield an improvement over no configuration, but expecting optimum
-results would be in error.  A better choice for manual configuration
-would be
-.BR \%adjtimex 's " \-\-log " options.
+.\"O Some Linux distributions attempt to automatically calculate the System
+.\"O Clock drift with
+.\"O .BR \%adjtimex 's
+.\"O compare operation.  Trying to correct one
+.\"O drifting clock by using another drifting clock as a reference is akin to
+.\"O a dog trying to catch its own tail.  Success may happen eventually, but
+.\"O great effort and frustration will likely precede it.  This automation may
+.\"O yield an improvement over no configuration, but expecting optimum
+.\"O results would be in error.  A better choice for manual configuration
+.\"O would be
+.\"O .BR \%adjtimex 's " \-\-log " options.
+Linux ディストリビューションの中には、システム・クロックのずれを
+.BR \%adjtimex
+の比較操作で自動的に計算するものもある。
+1 つのずれた時計を、もう1 つのずれた時計を参照して補正しようとした場合、
+犬が自分の尻尾を噛もうとするようなものである。
+最終的には成功するかもしれないが、多大な努力と不満が先立ってしまう。
+この自動化は、改良して設定なしできるが、
+期待される最適な結果はエラーになってしまう。
+マニュアル設定のより良い選択肢は、
+.BR \%adjtimex " の " "\-\-log "
+オプションである。
 .PP
-It may be more effective to simply track the System Clock drift with
-.BR \%sntp ", or " \%date\ \-Ins
-and a precision timepiece, and then calculate the correction manually.
+.\"O It may be more effective to simply track the System Clock drift with
+.\"O .BR \%sntp ", or " \%date\ \-Ins
+.\"O and a precision timepiece, and then calculate the correction manually.
+より効率的な方法は、
+.BR \%sntp " または " \%date\ \-Ins
+によって単純にシステム・クロックのずれと正確な時間を追いかけ、
+補正値を手動で計算する事である。
 .PP
-After setting the tick and frequency values, continue to test and refine the
-adjustments until the System Clock keeps good time.  See
+.\"O After setting the tick and frequency values, continue to test and refine the
+.\"O adjustments until the System Clock keeps good time.  See
+.\"O .BR \%adjtimex (8)
+.\"O for more information and the example demonstrating manual drift
+.\"O calculations.
+tick と frequency の値を設定した後、システム・クロックが適切な時間を維持できるまで、
+テストと調整を続ける。
+より詳細な情報と、手動でのずれの計算のデモンストレーションの例については、
 .BR \%adjtimex (8)
-for more information and the example demonstrating manual drift
-calculations.
+を参照すること。
 .PP
-Once the System Clock is ticking smoothly, move on to the Hardware Clock.
+.\"O Once the System Clock is ticking smoothly, move on to the Hardware Clock.
+システム・クロックがなめらかに刻むようになったら、
+ハードウェア・クロックに移る。
 .PP
-As a rule, cold drift will work best for most use cases.  This should be
-true even for 24/7 machines whose normal downtime consists of a reboot.
-In that case the drift factor value makes little difference.  But on the
-rare occasion that the machine is shut down for an extended period, then
-cold drift should yield better results.
+.\"O As a rule, cold drift will work best for most use cases.  This should be
+.\"O true even for 24/7 machines whose normal downtime consists of a reboot.
+.\"O In that case the drift factor value makes little difference.  But on the
+.\"O rare occasion that the machine is shut down for an extended period, then
+.\"O cold drift should yield better results.
+原則として、コールドなずれは、多くのユースケースで一番である。
+通常のダウンタイムが再起動でのみ構成される 24/7 稼働するマシンでも、
+これは真実である。
+この場合、ずれ要素の値は少し異なる。
+しかし、マシンのシャットダウンが伸びるまれなケースでは、
+コールドなずれはより良い結果を生み出す。
 .PP
-.B Steps to calculate cold drift:
+.\"O .B Steps to calculate cold drift:
+.B コールドなずれの計算ステップ:
 .IP 1 2
-.B "Ensure that NTP daemon will not be launched at startup."
+.\"O .B "Ensure that NTP daemon will not be launched at startup."
+.B "NTP デーモンが起動時に開始されていないことを確認する。"
 .IP 2 2
-.RI The " System Clock " "time must be correct at shutdown!"
+.\"O .RI The " System Clock " "time must be correct at shutdown!"
+.IR "システム・クロック" "がシャットダウン時に正しくなっている必要がある!"
 .IP 3 2
-Shut down the system.
+.\"O Shut down the system.
+システムをシャットダウンする。
 .IP 4 2
-Let an extended period pass without changing the Hardware Clock.
+.\"O Let an extended period pass without changing the Hardware Clock.
+ハードウェア・クロックを変更せず、拡張した期間 (extended period) をパスする。
 .IP 5 2
-Start the system.
+.\"O Start the system.
+システムを起動する。
 .IP 6 2
-.RB "Immediately use " hwclock " to set the correct time, adding the"
-.BR \%\-\-update\-drift " option."
+.\"O .RB "Immediately use " hwclock " to set the correct time, adding the"
+.\"O .BR \%\-\-update\-drift " option."
+すぐに
+.B hwclock
+を使って正確な時間を
+.B \%\-\-update\-drift
+を追加して設定する。
 .PP
-Note: if step 6 uses
-.BR \%\-\-systohc ,
-then the System Clock must be set correctly (step 6a) just before doing so.
+.\"O Note: if step 6 uses
+.\"O .BR \%\-\-systohc ,
+.\"O then the System Clock must be set correctly (step 6a) just before doing so.
+注意: ステップ 6 で
+.B \%\-\-systohc
+を使う場合、その前にシステム・クロックを
+正しく設定しなければならない (ステップ 6a)。
 .PP
-.RB "Having " hwclock
-calculate the drift factor is a good starting point, but for optimal
-results it will likely need to be adjusted by directly editing the
+.\"O .RB "Having " hwclock
+.\"O calculate the drift factor is a good starting point, but for optimal
+.\"O results it will likely need to be adjusted by directly editing the
+.\"O .I /etc/adjtime
+.\"O file.  Continue to test and refine the drift factor until the Hardware
+.\"O Clock is corrected properly at startup.  To check this, first make sure
+.\"O that the System Time is correct before shutdown and then use
+.\"O .BR \%sntp ", or " \%date\ \-Ins
+.\"O and a precision timepiece, immediately after startup.
+.BR \%hwclock
+にずれ要素を計算させるのは、良いスタートポイントとなるが、
+最適な値に調整するには、
 .I /etc/adjtime
-file.  Continue to test and refine the drift factor until the Hardware
-Clock is corrected properly at startup.  To check this, first make sure
-that the System Time is correct before shutdown and then use
-.BR \%sntp ", or " \%date\ \-Ins
-and a precision timepiece, immediately after startup.
+ファイルを直接編集する必要がある。
+ハードウェア・クロックが起動時に完全正しくなるまで、ずれ要素を
+テストして洗練させ続ける。
+これをチェックするには、シャットダウンの前にシステム時刻が
+正しくなっていることを確認し、次に起動直後に
+.BR \%sntp " または " \%date\ \-Ins
+と正確な時間を使う。
 .SS LOCAL vs UTC
 Keeping the Hardware Clock in a local timescale causes inconsistent
 daylight saving time results:
