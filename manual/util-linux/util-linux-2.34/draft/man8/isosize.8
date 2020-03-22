@@ -1,0 +1,109 @@
+.\"
+.\" Japanese Version Copyright (c) 2001-2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Mon Mar 12 20:55:06 JST 2001
+.\"         by Yuichi SATO <sato@complex.eng.hokudai.ac.jp>
+.\" Updated & Modified Sun Mar 22 22:13:03 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH ISOSIZE 8 "June 2011" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O isosize \- output the length of an iso9660 filesystem
+isosize \- iso9660 ファイルシステムの長さを出力する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B isosize
+.RI [options] " iso9660_image_file"
+.\"O .SH DESCRIPTION
+.SH 説明
+.PP
+.\"O This command outputs the length of an iso9660 file system that
+.\"O is contained in given file. That file may be a normal file or
+.\"O a block device (e.g. /dev/hdd or /dev/sr0). In the absence of
+.\"O any switches (or errors) it will output the size of the iso9660
+.\"O file system in bytes. This can now be a large number (> > 4 GB).
+
+.\"O This command outputs the length of an iso9660 filesystem that
+.\"O is contained in the specified file.  This file may be a normal file or
+.\"O a block device (e.g.\& /dev/hdd or /dev/sr0).  In the absence of
+.\"O any options (and errors), it will output the size of the iso9660
+.\"O filesystem in bytes.  This can now be a large number (>> 4\ GB).
+このコマンドは、与えられたファイルに含まれる
+iso9660 ファイルシステムの長さを出力する。
+ファイルは通常のファイルでも
+ブロックデバイス (例えば\& /dev/hdd や /dev/sr0) でもよい。
+オプション (とエラー) がない場合、
+iso9660 ファイルシステムのサイズをバイト単位で出力する。
+現在では大きな数 (>> 4\ GB) になることもある。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-x , " \-\-sectors"
+.\"O Show the block count and block size in human-readable form.
+.\"O The output uses the term "sectors" for "blocks".
+ブロックカウントとブロックサイズを人に可読な形式で出力する。
+出力では「ブロック」に対して「セクタ」という言葉が使われる。
+.TP
+.BR \-d , " \-\-divisor " \fInumber\fR
+.\"O Only has an effect when
+.\"O .B \-x
+.\"O is not given.  The value shown (if no errors)
+.\"O is the iso9660 file size in bytes divided by
+.\"O .IR number .
+.\"O So if
+.\"O .I number
+.\"O is the block size then the shown value will be the block count.
+.B \-x
+が指定されていない場合にのみ効果がある。
+(エラーがない場合) 出力される数値は、
+.I number
+で分割されたバイト単位での iso9660 ファイルシステムのサイズである。
+よって、
+.I number
+がブロックサイズの場合、
+出力される数値はブロックカウントになる。
+.PP
+.\"O The size of the file (or block device) holding an iso9660
+.\"O filesystem can be marginally larger than the actual size of the
+.\"O iso9660 filesystem.  One reason for this is that cd writers
+.\"O are allowed to add "run out" sectors at the end of an iso9660
+.\"O image.
+iso9660 ファイルシステムを含む
+ファイル (またはブロックデバイス) のサイズは、
+iso9660 ファイルシステムの実際のサイズより少し大きい。
+この理由の 1 つは、cd ライタが iso9660 イメージの後に
+"run out" セクタを追加できることにある。
+.\"O .SH "EXIT STATUS"
+.SH 返り値
+.RS
+.PD 0
+.TP
+.B 0
+.\"O success
+成功
+.TP
+.B 1
+.\"O generic failure, such as invalid usage
+使い方の間違いといった、基本的な失敗
+.TP
+.B 32
+.\"O all failed
+全て失敗
+.TP
+.B 64
+.\"O some failed
+一部失敗
+.PD
+.RE
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The isosize command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+isosize コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
