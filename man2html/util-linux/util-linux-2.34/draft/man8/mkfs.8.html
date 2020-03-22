@@ -1,0 +1,238 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MKFS</TITLE>
+</HEAD><BODY>
+<H1>MKFS</H1>
+Section: System Administration (8)<BR>Updated: June 2011<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+mkfs - Linux のファイルシステムを構築する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>mkfs</B>
+
+[options]
+[<B>-t</B>
+
+<I>type</I>] [<I>fs-options</I>]<I> device </I>[<I>size</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+<B>この mkfs フロントエンドは廃れており、ファイルシステム固有の mkfs.&lt;type&gt;</B>
+
+<B>ユーティリティが支持されている。</B>
+
+<P>
+
+
+
+
+
+
+
+
+
+
+
+<B>mkfs</B>
+
+は Linux のファイルシステムをデバイス (通常はハードディスクのパーティ
+ション) 上に構築するために用いられる。
+<I>device</I>
+
+引き数はファイルシステムを作成するデバイスの名前
+(<I>/dev/hda1</I>, <I>/dev/sdb2</I>
+
+など)、またはファイルシステムを含む通常ファイルである。
+<I>size</I>
+
+は作成するファイルシステムのブロック数である。
+<P>
+
+
+
+
+<B>mkfs</B>
+
+の戻り値 (exit code) は成功すれば 0、失敗した場合は 1 である。
+<P>
+
+
+
+
+
+
+実際は
+<B>mkfs</B>
+
+は単なるフロントエンドにすぎない。 Linux で利用できるファイルシステム
+には様々なものがあるが、実際のファイルシステムの作成はそれらファイル
+システムに専用のプログラム
+(<B>mkfs.</B><I>fstype</I>)
+が行う。
+
+
+
+
+各ファイルシステム用の作成プログラムの探索は、
+PATH 環境変数の設定でのみ行われる。
+詳細については各ファイルシステム用作成プログラムの
+マニュアルページを見てほしい。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-t</B>,<B> --type </B><I>type</I>
+
+<DD>
+
+
+
+作成するファイルシステムのタイプ <I>type</I> を指定する。
+指定されなかった場合は、
+デフォルトのファイルシステムタイプ (現在は ext2) が用いられる。
+<DT><I>fs-options</I>
+
+<DD>
+
+実際のファイルシステム作成を行うコマンドに渡す、ファイルシステム
+固有のオプションを指定する。
+<DT><B>-V</B>,<B> --verbose</B>
+
+<DD>
+
+
+
+
+
+実行されるファイルシステム固有の全てのコマンドを含む、詳細な出力を行う。
+このオプションを 2 回以上指定すると、
+ファイルシステム固有のコマンドの実行を行わない。
+これは、テストのために本当に便利である。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+
+
+バージョン情報を表示して、終了する。
+(オプション <B>-V</B> は単独の引き数として指定された場合、
+バージョン情報を表示する。
+他の引き数が指定された場合、
+<B>--verbose</B> として動作する。)
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+
+
+
+mkfs の全ての汎用オプションは、ファイルシステム固有のオプションに
+優先すべきである。
+専用プログラムには、自動的にデバイスのサイズを知ることができず、
+<I>size</I>
+
+パラメータを必ず指定しなければならないものもある。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>著者</H2>
+
+David Engel (<A HREF="mailto:david@ods.com">david@ods.com</A>)
+<BR>
+
+Fred N. van Kempen (<A HREF="mailto:waltje@uwalt.nl.mugnet.org">waltje@uwalt.nl.mugnet.org</A>)
+<BR>
+
+Ron Sommeling (<A HREF="mailto:sommel@sci.kun.nl">sommel@sci.kun.nl</A>)
+<BR>
+
+
+
+本マニュアルページは (厚顔にも) Remy Card が作成した ext2 ファイル
+システム向けの版を少々変更したものである。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連情報</H2>
+
+
+<B><A HREF="../man5/fs.5.html">fs</A></B>(5),
+
+<B><A HREF="../man8/badblocks.8.html">badblocks</A></B>(8),
+
+<B><A HREF="../man8/fsck.8.html">fsck</A></B>(8),
+
+<B><A HREF="../man8/mkdosfs.8.html">mkdosfs</A></B>(8),
+
+<B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8),
+
+<B><A HREF="../man8/mkfs.bfs.8.html">mkfs.bfs</A></B>(8),
+
+<B><A HREF="../man8/mkfs.ext2.8.html">mkfs.ext2</A></B>(8),
+
+<B><A HREF="../man8/mkfs.ext3.8.html">mkfs.ext3</A></B>(8),
+
+<B><A HREF="../man8/mkfs.ext4.8.html">mkfs.ext4</A></B>(8),
+
+<B><A HREF="../man8/mkfs.minix.8.html">mkfs.minix</A></B>(8),
+
+<B><A HREF="../man8/mkfs.msdos.8.html">mkfs.msdos</A></B>(8),
+
+<B><A HREF="../man8/mkfs.vfat.8.html">mkfs.vfat</A></B>(8),
+
+<B><A HREF="../man8/mkfs.xfs.8.html">mkfs.xfs</A></B>(8)
+
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+mkfs コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">バグ</A><DD>
+<DT><A HREF="#lbAG">著者</A><DD>
+<DT><A HREF="#lbAH">関連情報</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 17:10:18 GMT, March 22, 2020
+</BODY>
+</HTML>
