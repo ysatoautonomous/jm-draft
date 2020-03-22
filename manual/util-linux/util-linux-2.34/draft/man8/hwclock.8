@@ -15,7 +15,7 @@
 .\" Updated & Modified Mon Apr  9 20:47:39 JST 2001 by Yuichi SATO
 .\" Updated & Modified Mon Jun 25 22:38:36 JST 2001 by Yuichi SATO
 .\" Updated & Modified Sat Jul  6 03:56:54 JST 2002 by Yuichi SATO
-.\" Updated & Modified Fri Mar 20 18:00:11 JST 2020
+.\" Updated & Modified Sun Mar 22 18:56:01 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .\"WORD:	epoch		紀元(年)
@@ -711,7 +711,7 @@ adjtime ファイルが存在しない場合、デフォルトは UTC である�
 注意: ハードウェア・クロックがローカル時間で保持されている場合、
 夏時間への変更は不整合を起こす。
 下記の
-.B "ローカル時間 vs UTC"
+.B "ローカル時刻 vs UTC"
 の議論を参照すること。
 .
 .TP
@@ -1450,7 +1450,7 @@ NTP デーモンや cron ジョブのように、日付時刻のクロックを�
 .\"O .BR "POSIX vs 'RIGHT'" .
 システムのタイムゾーンが正しいローカル時刻に設定されていること。
 以下の
-.BR "POSIX vs 'RIGHT'"
+.BR "POSIX vs 「正しい」データベース"
 を参照すること。
 .IP \(bu 2
 .\"O Early during startup the following are called, in this order:
@@ -1638,65 +1638,123 @@ tick と frequency の値を設定した後、システム・クロックが適�
 正しくなっていることを確認し、次に起動直後に
 .BR \%sntp " または " \%date\ \-Ins
 と正確な時間を使う。
-.SS LOCAL vs UTC
-Keeping the Hardware Clock in a local timescale causes inconsistent
-daylight saving time results:
+.\"O .SS LOCAL vs UTC
+.SS ローカル時刻 vs UTC
+.\"O Keeping the Hardware Clock in a local timescale causes inconsistent
+.\"O daylight saving time results:
+ハードウェア・クロックをローカルタイムスケールで保持すると、
+夏時間の結果に不整合を起こす。
 .IP \(bu 2
-If Linux is running during a daylight saving time change, the time
-written to the Hardware Clock will be adjusted for the change.
+.\"O If Linux is running during a daylight saving time change, the time
+.\"O written to the Hardware Clock will be adjusted for the change.
+Linux が夏時間で動作していると、
+ハードウェア・クロックにかかれた時刻は夏時間に調整される。
 .IP \(bu 2
-If Linux is NOT running during a daylight saving time change, the time
-read from the Hardware Clock will NOT be adjusted for the change.
+.\"O If Linux is NOT running during a daylight saving time change, the time
+.\"O read from the Hardware Clock will NOT be adjusted for the change.
+Linux が夏時間で動作していないと、
+ハードウェア・クロックにかかれた時刻は夏時間に調整されない。
 .PP
-The Hardware Clock on an ISA compatible system keeps only a date and time,
-it has no concept of timezone nor daylight saving. Therefore, when
+.\"O The Hardware Clock on an ISA compatible system keeps only a date and time,
+.\"O it has no concept of timezone nor daylight saving. Therefore, when
+.\"O .B hwclock
+.\"O is told that it is in local time, it assumes it is in the 'correct'
+.\"O local time and makes no adjustments to the time read from it.
+ISA 互換のシステムでは、ハードウェア・クロックは日付と時間しか保持せず、
+タイムゾーンも夏時間という考え方もない。
+よって、
 .B hwclock
-is told that it is in local time, it assumes it is in the 'correct'
-local time and makes no adjustments to the time read from it.
+がローカル時刻であると言えば、それが「正しい」ローカル時間であると仮定し、
+それから読み出す際に、何の調整も行わない。
 .PP
-Linux handles daylight saving time changes transparently only when the
-Hardware Clock is kept in the UTC timescale. Doing so is made easy for
-system administrators as
+.\"O Linux handles daylight saving time changes transparently only when the
+.\"O Hardware Clock is kept in the UTC timescale. Doing so is made easy for
+.\"O system administrators as
+.\"O .B \%hwclock
+.\"O uses local time for its output and as the argument to the
+.\"O .BR \%\-\-date " option."
+Linux は、ハードウェア・クロックが UTC タイムスケールで保持されている場合にのみ、
+透過的に夏時間への変更を行う。
+システム管理者は簡単に
 .B \%hwclock
-uses local time for its output and as the argument to the
-.BR \%\-\-date " option."
+を使ってローカル時刻を出力し、
+.B \%\-\-date
+オプションの引き数に指定することができる。
 .PP
-POSIX systems, like Linux, are designed to have the System Clock operate
-in the UTC timescale. The Hardware Clock's purpose is to initialize the
-System Clock, so also keeping it in UTC makes sense.
+.\"O POSIX systems, like Linux, are designed to have the System Clock operate
+.\"O in the UTC timescale. The Hardware Clock's purpose is to initialize the
+.\"O System Clock, so also keeping it in UTC makes sense.
+Linux のような POSIX システムでは、
+システム・クロックを UTC タイムスケールで扱うように設計されている。
+ハードウェア・クロックの目的は、システム・クロックを初期化することなので、
+時刻を UTC で保持することには意味がある。
 .PP
-Linux does, however, attempt to accommodate the Hardware Clock being in
-the local timescale. This is primarily for dual-booting with older
-versions of MS Windows. From Windows 7 on, the RealTimeIsUniversal
-registry key is supposed to be working properly so that its Hardware
-Clock can be kept in UTC.
+.\"O Linux does, however, attempt to accommodate the Hardware Clock being in
+.\"O the local timescale. This is primarily for dual-booting with older
+.\"O versions of MS Windows. From Windows 7 on, the RealTimeIsUniversal
+.\"O registry key is supposed to be working properly so that its Hardware
+.\"O Clock can be kept in UTC.
+一方で、Linux はハードウェア・クロックをローカルタイムスケールで提供しようとする。
+これは、主に古いバージョンの MS Windows とのデュアルブートのためである。
+WIndows 7 からは、正しく動作するように、
+RealTimeIsUniversal レジストリキーがサポートされているので、
+ハードウェア・クロックを UTC で保持することができる。
 .
-.SS POSIX vs 'RIGHT'
-A discussion on date-time configuration would be incomplete without
-addressing timezones, this is mostly well covered by
-.BR tzset (3).
-One area that seems to have no documentation is the 'right'
-directory of the Time Zone Database, sometimes called tz or zoneinfo.
+.\"O .SS POSIX vs 'RIGHT'
+.SS POSIX vs 「正しい」データベース
+.\"O A discussion on date-time configuration would be incomplete without
+.\"O addressing timezones, this is mostly well covered by
+.\"O .BR tzset (3).
+.\"O One area that seems to have no documentation is the 'right'
+.\"O directory of the Time Zone Database, sometimes called tz or zoneinfo.
+日付時刻の設定の議論は、タイムゾーンについて言及しないと不完全である。
+タイムゾーンの言及は、
+.BR tzset (3)
+で大部分が充分にカバーされている。
+ドキュメント化されていない 1 つの領域は、tz または zoneinfo とも呼ばれる、
+タイムゾーンデータベースの「正しい」ディレクトリである。
 .PP
-There are two separate databases in the zoneinfo system, posix
-and 'right'. 'Right' (now named zoneinfo\-leaps) includes leap seconds and posix
-does not. To use the 'right' database the System Clock must be set to
-\%(UTC\ +\ leap seconds), which is equivalent to \%(TAI\ \-\ 10). This
-allows calculating the
-exact number of seconds between two dates that cross a leap second
-epoch. The System Clock is then converted to the correct civil time,
-including UTC, by using the 'right' timezone files which subtract the
-leap seconds. Note: this configuration is considered experimental and is
-known to have issues.
+.\"O There are two separate databases in the zoneinfo system, posix
+.\"O and 'right'. 'Right' (now named zoneinfo\-leaps) includes leap seconds and posix
+.\"O does not. To use the 'right' database the System Clock must be set to
+.\"O \%(UTC\ +\ leap seconds), which is equivalent to \%(TAI\ \-\ 10). This
+.\"O allows calculating the
+.\"O exact number of seconds between two dates that cross a leap second
+.\"O epoch. The System Clock is then converted to the correct civil time,
+.\"O including UTC, by using the 'right' timezone files which subtract the
+.\"O leap seconds. Note: this configuration is considered experimental and is
+.\"O known to have issues.
+zoneinfo システムには、posix データベースと「正しい」データベースの 2 つがある。
+「正しい」データベース (ここでは閏秒付き zoneinfo と呼ぶデータベース) には、
+閏秒が含まれるが、posix には含まれない。
+「正しい」データベースを使うには、
+システム・クロックを \%(UTC\ +\ 閏秒) に設定しなければならない。
+これは、\%(TAI\ \-\ 10) と同じである。
+これにより、閏秒紀元年を考慮した 2 つの日付の間の、正確な秒数を計算できる。
+システム・クロックは、閏秒を引いた「正しい」ゾーンファイルを使って、
+UTC を含む正しい歴時間をカバーできるようになる。
+注意: この設定は実験的と考えられており、問題があることも知られている。
 .PP
-To configure a system to use a particular database all of the files
-located in its directory must be copied to the root of
-.IR \%/usr/share/zoneinfo .
-Files are never used directly from the posix or 'right' subdirectories, e.g.,
-.RI \%TZ=' right/Europe/Dublin '.
-This habit was becoming so common that the upstream zoneinfo project
-restructured the system's file tree by moving the posix and 'right'
-subdirectories out of the zoneinfo directory and into sibling directories:
+.\"O To configure a system to use a particular database all of the files
+.\"O located in its directory must be copied to the root of
+.\"O .IR \%/usr/share/zoneinfo .
+.\"O Files are never used directly from the posix or 'right' subdirectories, e.g.,
+.\"O .RI \%TZ=' right/Europe/Dublin '.
+.\"O This habit was becoming so common that the upstream zoneinfo project
+.\"O restructured the system's file tree by moving the posix and 'right'
+.\"O subdirectories out of the zoneinfo directory and into sibling directories:
+システムが特定のデータベースを使うように設定するためには、
+そのディレクトリにある全てのファイルが、
+.I \%/usr/share/zoneinfo
+をルートにしてにコピーされていなければならない。
+ファイルは、例えば
+.RI \%TZ=' right/Europe/Dublin '
+のようにして、posix または「正しい」データベースの
+サブディレクトリから直接使われることはない。
+この方法はとても一般的になっており、上位の zoneinfo プロジェクトが、
+posix または「正しい」データベースのサブディレクトリを
+zoneinfo ディレクトリの外に出して、兄弟のディレクトリに入れることで、
+システムのファイルツリーを再構成することができる。
 .PP
 .in +2
 .I /usr/share/zoneinfo
@@ -1705,26 +1763,50 @@ subdirectories out of the zoneinfo directory and into sibling directories:
 .br
 .I /usr/share/zoneinfo\-leaps
 .PP
-Unfortunately, some Linux distributions are changing it back to the old
-tree structure in their packages. So the problem of system
-administrators reaching into the 'right' subdirectory persists. This
-causes the system timezone to be configured to include leap seconds
-while the zoneinfo database is still configured to exclude them. Then
-when an application such as a World Clock needs the South_Pole timezone
-file; or an email MTA, or
+.\"O Unfortunately, some Linux distributions are changing it back to the old
+.\"O tree structure in their packages. So the problem of system
+.\"O administrators reaching into the 'right' subdirectory persists. This
+.\"O causes the system timezone to be configured to include leap seconds
+.\"O while the zoneinfo database is still configured to exclude them. Then
+.\"O when an application such as a World Clock needs the South_Pole timezone
+.\"O file; or an email MTA, or
+.\"O .B hwclock
+.\"O needs the UTC timezone file; they fetch it from the root of
+.\"O .I \%/usr/share/zoneinfo
+.\"O , because that is what they are supposed to do. Those files exclude leap
+.\"O seconds, but the System Clock now includes them, causing an incorrect
+.\"O time conversion.
+不幸なことに、Linux ディストリビューションの中には、
+パッケージ内で昔のツリー構造に戻しているものもある。
+その場合、システム管理者が 'right' サブディレクトリに到達できる問題が残っている。
+これは、システムのタイムゾーンが閏秒を含んでいるといるが、
+zoneinfo データベースには閏秒が含んでいないという問題を引き起こす。
+世界時計のようなアプリケーションが
+South_Pole タイムゾーンファイルを必要とした場合や、
+MTA に email を送る場合や、
 .B hwclock
-needs the UTC timezone file; they fetch it from the root of
+が UTC タイムゾーンファイルを必要とした場合、期待されているように、
+ファイルを
 .I \%/usr/share/zoneinfo
-, because that is what they are supposed to do. Those files exclude leap
-seconds, but the System Clock now includes them, causing an incorrect
-time conversion.
+のルートから取得する必要がある。
+これらのファイルには閏秒が含まれていないが、
+システム・クロックは今日では閏秒を含んでいるので、
+時刻の変換が不正になる。
 .PP
-Attempting to mix and match files from these separate databases will not
-work, because they each require the System Clock to use a different
-timescale. The zoneinfo database must be configured to use either posix
-or 'right', as described above, or by assigning a database path to the
+.\"O Attempting to mix and match files from these separate databases will not
+.\"O work, because they each require the System Clock to use a different
+.\"O timescale. The zoneinfo database must be configured to use either posix
+.\"O or 'right', as described above, or by assigning a database path to the
+.\"O .SB TZDIR
+.\"O environment variable.
+これらの別々のデータベースを混ぜてファイルをマッチさせるのは、
+それぞれがシステム・クロックで別々のタイムスケールを要求するので、
+うまくいかない。
+zoneinfo データベースは、上記で説明した
+posix または「正しい」データベースのいずれかを使うか、
+データベースのパスを
 .SB TZDIR
-environment variable.
+環境変数で指定しなければならない。
 .\"O .SH EXIT STATUS
 .SH 返り値
 .\"O One of the following exit values will be returned:
