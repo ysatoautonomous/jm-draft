@@ -1,0 +1,149 @@
+.\" Copyright 1992, 1993, 1994 Rickard E. Faith (faith@cs.unc.edu)
+.\" May be freely distributed.
+.\"
+.\" Japanese Version Copyright (c) 1999 NAKANO Takeo all rights reserved.
+.\" Translated Sat Mar 18 2000 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated Fri 18 Feb 2001 by NAKANO Takeo
+.\" Updated & Modified Mon Mar 22 20:50:17 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.\" This man page is a part of util-linux.
+.\"
+.\"WORD:	inode		i-ノード
+.\"WORD:	bad block	不良ブロック
+.\"
+.TH MKFS.MINIX 8 "June 2015" "util-linux" "System Administration"
+.\"O .SH NAME
+.\"O mkfs.minix \- make a Minix filesystem
+.SH 名前
+mkfs.minix \- MINIX ファイルシステムを作成する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B mkfs.minix
+[options]
+.I device
+.RI [ size-in-blocks ]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B mkfs.minix
+.\"O creates a Linux MINIX filesystem on a device (usually a disk partition).
+.B mkfs.minix
+は Linux MINIX ファイルシステムをデバイス
+(通常はディスクパーティション) 上に作成する。
+.PP
+.\"O The
+.\"O .I device
+.\"O is usually of the following form:
+.I device
+は通常以下のようなものである:
+.sp
+.nf
+.RS
+/dev/hda[1\(en8] (IDE disk 1)
+/dev/hdb[1\(en8] (IDE disk 2)
+/dev/sda[1\(en8] (SCSI disk 1)
+/dev/sdb[1\(en8] (SCSI disk 2)
+.RE
+.fi
+.sp
+.\"O The device may be a block device or an image file of one, but this is not
+.\"O enforced.  Expect not much fun on a character device :-).
+デバイスはブロックデバイス、またはイメージファイルであるが、
+強制はされない。
+キャラクタデバイス上に作るのは楽しいものではないと予想できる :-).
+.PP
+.\"O The
+.\"O .I size-in-blocks
+.\"O parameter is the desired size of the file system, in blocks.
+.\"O It is present only for backwards compatibility.
+.\"O If omitted the size will be determined automatically.
+.\"O Only block counts strictly greater than 10 and strictly less than
+.\"O 65536 are allowed.
+.I size-in-blocks
+引数は、ファイルシステムのサイズの希望値をブロック単位で指定する。
+これは、もっぱら過去との互換性の維持を目的とした機能である。
+省略されると、サイズは自動的に決定される。
+11 以上か、65535 以下の値だけが指定可能である。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+\fB\-c\fR, \fB\-\-check\fR
+.\"O Check the device for bad blocks before creating the filesystem.  If any
+.\"O are found, the count is printed.
+ファイルシステムを作成する前に、
+デバイスに不良ブロックがないかチェックする。
+見付かったら、ブロックカウントを表示する。
+.TP
+\fB\-n\fR, \fB\-\-namelength\fR \fIlength\fR
+.\"O Specify the maximum length of filenames.  Currently, the only allowable
+.\"O values are 14 and 30 for file system versions 1 and 2.  Version 3 allows
+.\"O only value 60.  The default is 30.
+ファイル名の最大の長さを指定する。
+現在指定できるのは、バージョン 1 と 2 では 14 または 30 だけである。
+バージョン 3 では 60 だけである。
+デフォルトは 30 である。
+.TP
+\fB\-i\fR, \fB\-\-inodes\fR \fInumber\fR
+.\"O Specify the number of inodes for the filesystem.
+ファイルシステムの i-ノードの個数を指定する。
+.TP
+\fB\-l\fR, \fB\-\-badblocks\fR \fIfilename\fR
+.\"O Read the list of bad blocks from
+.\"O .IR filename .
+.\"O The file has one bad-block number per line.  The count of bad blocks read
+.\"O is printed.
+.I filename
+から不良ブロックのリストを読み込む
+ファイルの一行に不良ブロックをひとつ書く。
+読み込んだ不良ブロックのカウントが表示される。
+.TP
+.B \-1
+.\"O is Make a Minix version 1 filesystem.  This is the default.
+Minix version 1 ファイルシステムを作成する。
+これがデフォルトである。
+.TP
+.BR \-2 , " \-v"
+.\"O Make a Minix version 2 filesystem.
+Minix version 2 ファイルシステムを作成する。
+.TP
+.B \-3
+.\"O Make a Minix version 3 filesystem.
+Minix version 3 ファイルシステムを作成する。
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+.\"O Display version information and exit.  The long option cannot be combined
+.\"O with other options.
+バージョン情報を表示して、終了する。
+長いオプションは、他のオプションと組み合わせて使うことができない。
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH "EXIT CODES"
+.SH 終了コード
+.\"O The exit code returned by
+.\"O .B mkfs.minix
+.\"O is one of the following:
+.B mkfs.minix
+の返す終了コードは以下のどれかである:
+.IP 0
+.\"O No errors
+エラーなし
+.IP 8
+.\"O Operational error
+動作エラー
+.IP 16
+.\"O Usage or syntax error
+利用法または文法のエラー
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR fsck (8),
+.BR mkfs (8),
+.BR reboot (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The mkfs.minix command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+mkfs.minix コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
