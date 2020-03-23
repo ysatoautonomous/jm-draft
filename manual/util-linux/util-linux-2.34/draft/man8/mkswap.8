@@ -1,0 +1,269 @@
+.\" Copyright 1998 Andries E. Brouwer (aeb@cwi.nl)
+.\"
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 1999 NAKANO Takeo all rights reserved.
+.\" Japanese Version Copyright (c) 1997 NAKANO Takeo all rights reserved.
+.\" Translated Thu Aug 28 1997 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Thu 7 Oct 1999 by NAKANO Takeo 
+.\" Updated & Modified Sat 18 Mar 2000 by NAKANO Takeo
+.\" Updated & Modified Wed 14 Jun 2000 by NAKANO Takeo 
+.\" Updated & Modified Wed May  5 00:29:28 JST 2004
+.\"         by Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated & Modified Sat May  7 00:44:04 JST 2005 by Yuichi SATO
+.\" Updated & Modified Mon Mar 23 22:21:14 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH MKSWAP 8 "March 2009" "util-linux" "System Administration"
+.\"O .SH NAME
+.\"O mkswap \- set up a Linux swap area
+.SH 名前
+mkswap \- Linux のスワップ領域を準備する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B mkswap
+[options]
+.I device
+.RI [ size ]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B mkswap
+.\"O sets up a Linux swap area on a device or in a file.
+.B mkswap
+は Linux のスワップ領域をデバイス上またはファイル上に準備する。
+
+.\"O The
+.\"O .I device
+.\"O argument will usually be a disk partition (something like
+.\"O .IR /dev/sdb7 )
+.\"O but can also be a file.
+.\"O The Linux kernel does not look at partition IDs, but
+.\"O many installation scripts will assume that partitions
+.\"O of hex type 82 (LINUX_SWAP) are meant to be swap partitions.
+.\"O (Warning: Solaris also uses this type. Be careful not to kill
+.\"O your Solaris partitions.)
+.\"O (\fBWarning: Solaris also uses this type.  Be careful not to kill
+.\"O your Solaris partitions.\fP)
+引き数
+.I device
+は通常はディスクパーティション
+.RI ( /dev/sdb7
+のようなもの) であるが、ファイルを指定することもできる。
+Linux カーネルはパーティション ID を参照しないが、
+インストールスクリプトの多くでは、パーティション形式が
+16 進の 82 (LINUX_SWAP) となっているものをスワップパーティション
+とみなしている。
+(\fB警告: Solaris もこの形式を使う。
+Solaris のパーティションを破壊しないように注意すること。\fP)
+
+.\"O The
+.\"O .I size
+.\"O parameter is superfluous but retained for backwards compatibility.
+.\"O (It specifies the desired size of the swap area in 1024-byte blocks.
+.\"O .B mkswap
+.\"O will use the entire partition or file if it is omitted.
+.\"O Specifying it is unwise \(en a typo may destroy your disk.)
+.I size
+パラメータは不要であるが、過去との互換性のために残してある。
+(スワップ領域にしたいサイズを 1024 バイトブロック単位で指定する。
+このパラメータが省略されると、
+.B mkswap
+はパーティション全体を用いる。
+このパラメータは指定しないほうが賢い。タイプミスをすると
+ディスクを壊してしまう。)
+
+.\"O After creating the swap area, you need the
+.\"O .B swapon
+.\"O command to start using it.  Usually swap areas are listed in
+.\"O .I /etc/fstab
+.\"O so that they can be taken into use at boot time by a
+.\"O .B swapon \-a
+.\"O command in some boot script.
+スワップ領域を準備した後にこの領域の利用を開始するには、
+.B swapon
+コマンドを用いる必要がある。通常スワップ領域は
+.I /etc/fstab
+にリストされ、起動スクリプトに記述されている
+.B swapon \-a
+コマンドによって、起動時から利用できるようになっている。
+
+.\"O .SH WARNING
+.SH 警告
+.\"O The swap header does not touch the first block.  A boot loader or disk label
+.\"O can be there, but it is not a recommended setup.  The recommended setup is to
+.\"O use a separate partition for a Linux swap area.
+スワップヘッダは、最初のブロックに書き込まない。
+ブートローダやディスクラベルをここに置くことができるが、
+推奨される設定ではない。
+推奨される設定としては、Linux スワップ領域に別のパーティションを使うことである。
+
+.\"O .BR mkswap ,
+.\"O like many others mkfs-like utils,
+.\"O .B erases the first partition block to make any previous filesystem invisible.
+.B mkswap
+は他の mkfs ユーティリティのように、
+.B 以前のファイルシステムが見えなくなるように、
+.B 最初のパーティションブロックを消去する。
+
+.\"O However,
+.\"O .B mkswap
+.\"O refuses to erase the first block on a device with a disk
+.\"O label (SUN, BSD, \&...\&).
+しかし、
+.B mkswap
+はディスクラベル (SUN, BSD, \&...\&) が書かれた
+デバイスの最初のブロックを消去しない。
+
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-c , " \-\-check"
+.\"O Check the device (if it is a block device) for bad blocks
+.\"O before creating the swap area.
+.\"O If any bad blocks are found, the count is printed.
+スワップ領域を作る前に、デバイスに対して不良ブロックの
+チェックを行う。
+不良ブロックが見つかった場合は、そのカウント数を表示する。
+.TP
+.BR \-f , " \-\-force"
+.\"O Go ahead even if the command is stupid.
+.\"O This allows the creation of a swap area larger than the file
+.\"O or partition it resides on.
+馬鹿なコマンドでも実行する。
+これを指定すると、ファイルまたはパーティションの実際の大きさよりも
+大きなスワップファイルを作る動作ができてしまう。
+
+.\"O Also, without this option,
+.\"O .B mkswap
+.\"O will refuse to erase the first block on a device with a partition table.
+また、このオプションを使わないと、
+.B mkswap
+はパーティションテーブルが書かれたデバイスの最初のブロックを
+消去しない。
+.TP
+.BR \-L , " \-\-label " \fIlabel\fR
+.\"O Specify a \fIlabel\fR for the device, to allow
+.\"O .B swapon
+.\"O by label.
+ラベル \fIlabel\fR を指定し、そのラベルで
+.B swapon
+できるようにする。
+.TP
+.BR \-p , " \-\-pagesize " \fIsize\fR
+.\"O Specify the page \fIsize\fR (in bytes) to use.  This option is usually unnecessary;
+.\"O .B mkswap
+.\"O reads the size from the kernel.
+指定されたページサイズ \fIsize\fR (バイト単位) を使う。
+.B mkswap
+はページサイズをカーネルから読み出すので、
+このオプションは通常は必要ない。
+.TP
+.BR \-U , " \-\-uuid " \fIUUID\fR
+.\"O Specify the \fIUUID\fR to use.  The default is to generate a UUID.
+指定した \fIUUID\fR を使う。
+デフォルトは UUID を生成する。
+.TP
+.BR \-v , " \-\-swapversion 1"
+.\"O Specify the swap-space version.  (This option is currently pointless, as the old
+.\"O .B \-v 0
+.\"O option has become obsolete and now only
+.\"O .B \-v 1
+.\"O is supported.
+.\"O The kernel has not supported v0 swap-space format since 2.5.22 (June 2002).
+.\"O The new version v1 is supported since 2.1.117 (August 1998).)
+スワップ領域のバージョンを指定する。
+.RB ( "\-v 0"
+オプションは廃止されていて、今は
+.B \-v 1
+のみがサポートされているので、
+このオプションは現在では意味がない。
+カーネルは v0 のスワップ領域を 2.5.22 (2002 年 6 月) 以降でサポートしていない。
+また、新しいバージョン v1 を 2.1.117 (1998 年 8 月) 以降でサポートしている。)
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+
+.\"O .SH NOTES
+.SH 注意
+.\"O The maximum useful size of a swap area depends on the architecture and
+.\"O the kernel version.
+利用できるスワップ領域の最大値は、アーキテクチャとカーネルバージョンに
+依存する。
+.\"O The maximum number of the pages that is possible to address by swap area header
+.\"O is 4294967295 (32-bit unsigned int).  The remaining space on the swap device is ignored.
+スワップ領域のヘッダでアドレス指定可能な最大のページサイズは、
+4294967295 (32-bit unsigned int) である。
+スワップデバイスの残りの領域は無視される。
+
+.\"O Presently, Linux allows 32 swap areas.
+.\"O The areas in use can be seen in the file
+.\"O .I /proc/swaps
+現時点では、 Linux は 32 個のスワップ領域を持つことができる。
+利用している領域は
+.I /proc/swaps
+ファイルで見ることができる。
+
+.\"O .B mkswap
+.\"O refuses areas smaller than 10 pages.
+.B mkswap
+では 10 ページより小さい領域を作ることはできない。
+
+.\"O If you don't know the page size that your machine uses, you may be
+.\"O able to look it up with "cat /proc/cpuinfo" (or you may not \(en
+.\"O the contents of this file depend on architecture and kernel version).
+使っているマシンのページサイズがわからない場合は、"cat /proc/cpuinfo"
+によって調べることができるかもしれない。
+(できないかもしれない \(en このファイルの内容はアーキテクチャと
+カーネルのバージョンに依存しているので。)
+
+.\"O To set up a swap file, it is necessary to create that file before
+.\"O initializing it with
+.\"O .BR mkswap ,
+.\"O e.g.\& using a command like
+スワップファイルを作成する場合は、
+.B mkswap
+による初期化を行う前に、ファイルを作成しておく必要がある。
+この目的には、以下のようなコマンドを用いれば良い:
+
+.nf
+.RS
+# dd if=/dev/zero of=swapfile bs=1MiB count=$((8*1024))
+.RE
+.fi
+
+.\"O to create 8GiB swapfile.
+これで 8GiB スワップファイルが作成できる。
+
+.\"O Please read notes from
+.\"O .BR swapon (8)
+.\"O about
+.\"O .B the swap file use restrictions
+.\"O (holes, preallocation and copy-on-write issues).
+.B スワップファイル利用の制約
+(ホール、事前確保、copy-on-write の問題)
+については、
+.BR swapon (8)
+の注意を読むこと。
+
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.IP LIBBLKID_DEBUG=all
+.\"O enables libblkid debug output.
+libblkid デバッグ出力を有効にする。
+
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR fdisk (8),
+.BR swapon (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The mkswap command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+mkswap コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
