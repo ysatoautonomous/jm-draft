@@ -1,0 +1,343 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MKSWAP</TITLE>
+</HEAD><BODY>
+<H1>MKSWAP</H1>
+Section: System Administration (8)<BR>Updated: March 2009<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+mkswap - Linux のスワップ領域を準備する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>mkswap</B>
+
+[options]
+<I>device</I>
+
+[<I>size</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B>mkswap</B>
+
+は Linux のスワップ領域をデバイス上またはファイル上に準備する。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+引き数
+<I>device</I>
+
+は通常はディスクパーティション
+(<I>/dev/sdb7</I>
+
+のようなもの) であるが、ファイルを指定することもできる。
+Linux カーネルはパーティション ID を参照しないが、
+インストールスクリプトの多くでは、パーティション形式が
+16 進の 82 (LINUX_SWAP) となっているものをスワップパーティション
+とみなしている。
+(<B>警告: Solaris もこの形式を使う。
+Solaris のパーティションを破壊しないように注意すること。</B>)
+<P>
+
+
+
+
+
+
+
+<I>size</I>
+
+パラメータは不要であるが、過去との互換性のために残してある。
+(スワップ領域にしたいサイズを 1024 バイトブロック単位で指定する。
+このパラメータが省略されると、
+<B>mkswap</B>
+
+はパーティション全体を用いる。
+このパラメータは指定しないほうが賢い。タイプミスをすると
+ディスクを壊してしまう。)
+<P>
+
+
+
+
+
+
+
+スワップ領域を準備した後にこの領域の利用を開始するには、
+<B>swapon</B>
+
+コマンドを用いる必要がある。通常スワップ領域は
+<I>/etc/fstab</I>
+
+にリストされ、起動スクリプトに記述されている
+<B>swapon -a</B>
+
+コマンドによって、起動時から利用できるようになっている。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>警告</H2>
+
+
+
+
+スワップヘッダは、最初のブロックに書き込まない。
+ブートローダやディスクラベルをここに置くことができるが、
+推奨される設定ではない。
+推奨される設定としては、Linux スワップ領域に別のパーティションを使うことである。
+<P>
+
+
+
+<B>mkswap</B>
+
+は他の mkfs ユーティリティのように、
+<B>以前のファイルシステムが見えなくなるように、</B>
+
+<B>最初のパーティションブロックを消去する。</B>
+
+<P>
+
+
+
+
+しかし、
+<B>mkswap</B>
+
+はディスクラベル (SUN, BSD, ...) が書かれた
+デバイスの最初のブロックを消去しない。
+<P>
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-c</B>,<B> --check</B>
+
+<DD>
+
+
+
+スワップ領域を作る前に、デバイスに対して不良ブロックの
+チェックを行う。
+不良ブロックが見つかった場合は、そのカウント数を表示する。
+<DT><B>-f</B>,<B> --force</B>
+
+<DD>
+
+
+
+馬鹿なコマンドでも実行する。
+これを指定すると、ファイルまたはパーティションの実際の大きさよりも
+大きなスワップファイルを作る動作ができてしまう。
+<P>
+
+
+
+また、このオプションを使わないと、
+<B>mkswap</B>
+
+はパーティションテーブルが書かれたデバイスの最初のブロックを
+消去しない。
+<DT><B>-L</B>,<B> --label </B><I>label</I>
+
+<DD>
+
+
+
+ラベル <I>label</I> を指定し、そのラベルで
+<B>swapon</B>
+
+できるようにする。
+<DT><B>-p</B>,<B> --pagesize </B><I>size</I>
+
+<DD>
+
+
+
+指定されたページサイズ <I>size</I> (バイト単位) を使う。
+<B>mkswap</B>
+
+はページサイズをカーネルから読み出すので、
+このオプションは通常は必要ない。
+<DT><B>-U</B>,<B> --uuid </B><I>UUID</I>
+
+<DD>
+
+指定した <I>UUID</I> を使う。
+デフォルトは UUID を生成する。
+<DT><B>-v</B>,<B> --swapversion 1</B>
+
+<DD>
+
+
+
+
+
+
+
+スワップ領域のバージョンを指定する。
+(<B>-v 0</B>
+
+オプションは廃止されていて、今は
+<B>-v 1</B>
+
+のみがサポートされているので、
+このオプションは現在では意味がない。
+カーネルは v0 のスワップ領域を 2.5.22 (2002 年 6 月) 以降でサポートしていない。
+また、新しいバージョン v1 を 2.1.117 (1998 年 8 月) 以降でサポートしている。)
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<P>
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+利用できるスワップ領域の最大値は、アーキテクチャとカーネルバージョンに
+依存する。
+
+
+スワップ領域のヘッダでアドレス指定可能な最大のページサイズは、
+4294967295 (32-bit unsigned int) である。
+スワップデバイスの残りの領域は無視される。
+<P>
+
+
+
+現時点では、 Linux は 32 個のスワップ領域を持つことができる。
+利用している領域は
+<I>/proc/swaps</I>
+
+ファイルで見ることができる。
+<P>
+
+
+<B>mkswap</B>
+
+では 10 ページより小さい領域を作ることはできない。
+<P>
+
+
+
+使っているマシンのページサイズがわからない場合は、&quot;cat /proc/cpuinfo&quot;
+によって調べることができるかもしれない。
+(できないかもしれない - このファイルの内容はアーキテクチャと
+カーネルのバージョンに依存しているので。)
+<P>
+
+
+
+
+スワップファイルを作成する場合は、
+<B>mkswap</B>
+
+による初期化を行う前に、ファイルを作成しておく必要がある。
+この目的には、以下のようなコマンドを用いれば良い:
+<P>
+<PRE>
+<DL COMPACT><DT><DD># dd if=/dev/zero of=swapfile bs=1MiB count=$((8*1024))
+</DL>
+</PRE>
+
+<P>
+
+これで 8GiB スワップファイルが作成できる。
+<P>
+
+
+
+
+
+<B>スワップファイル利用の制約</B>
+
+(ホール、事前確保、copy-on-write の問題)
+については、
+<B><A HREF="../man8/swapon.8.html">swapon</A></B>(8)
+
+の注意を読むこと。
+<P>
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT>LIBBLKID_DEBUG=all<DD>
+
+libblkid デバッグ出力を有効にする。
+<P>
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/fdisk.8.html">fdisk</A></B>(8),
+
+<B><A HREF="../man8/swapon.8.html">swapon</A></B>(8)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+mkswap コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">警告</A><DD>
+<DT><A HREF="#lbAF">オプション</A><DD>
+<DT><A HREF="#lbAG">注意</A><DD>
+<DT><A HREF="#lbAH">環境変数</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:25:23 GMT, March 23, 2020
+</BODY>
+</HTML>
