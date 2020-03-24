@@ -1,0 +1,199 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of PIVOT_ROOT</TITLE>
+</HEAD><BODY>
+<H1>PIVOT_ROOT</H1>
+Section: System Administration (8)<BR>Updated: August 2011<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+pivot_root - root ファイルシステムを変更する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>pivot_root</B>
+
+<I>new_root put_old</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>pivot_root</B>
+
+はカレントプロセスの root ファイルシステムを
+<I>put_old</I>
+
+ディレクトリに移動し、
+<I>new_root</I>
+
+を新しい root ファイルシステムにする。
+<B><A HREF="../man8/pivot_root.8.html">pivot_root</A></B>(8)
+
+は
+<B><A HREF="../man2/pivot_root.2.html">pivot_root</A></B>(2)
+
+を呼び出しているだけなので、詳細は後者の man ページにあたって欲しい。
+<P>
+
+
+
+
+呼び出しプロセスの root とカレントワーキングディレクトリ (cwd) は
+<B>pivot_root</B>
+
+の実装に依存して変わったり変わらなかったりする。
+以下はどちらの場合にも動作する
+<B>pivot_root</B>
+
+の起動方法だが、
+<B>pivot_root</B> と <B>chroot</B> の両方が現在の <B>PATH</B>
+
+に入っている必要がある。
+<P>
+cd <I>new_root</I>
+<BR>
+
+pivot_root . <I>put_old</I>
+<BR>
+
+exec chroot . <I>command</I>
+<P>
+
+
+
+<B>chroot</B>
+
+は古い root と新しい root の両方で使えなければならない。
+なぜなら
+<B>pivot_root</B>
+
+がシェルの root ディレクトリを暗黙のうちに変更するかどうかは
+わからないからである。
+<P>
+
+
+
+
+
+
+
+<B>exec chroot</B>
+
+は動作している実行ファイルを変更する。
+これは後で古い root ディレクトリがアンマウントされるために必要なのである。
+また標準入力・標準出力・標準エラー出力が古い root ファイルシステムの
+デバイスを指していて、 root ファイルシステムを
+busy 状態にするかもしれない。
+これらは
+<B>chroot</B>
+
+を実行するときに簡単に変更できる (以下を参照。
+先頭のスラッシュがないので (相対パスで指定しているので)、
+<B>pivot_root</B>
+
+がシェルの root を変更する場合でもしない場合でも動作することに注目。)
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>例</H2>
+
+
+対話シェルから root ファイルシステムを /dev/hda1 に変更する:
+<P>
+<PRE>
+mount /dev/hda1 /new-root
+cd /new-root
+pivot_root . old-root
+exec chroot . sh &lt;dev/console &gt;dev/console 2&gt;&amp;1
+umount /old-root
+</PRE>
+
+<P>
+
+
+新しい root ファイルシステムを 10.0.0.1:/my_root から
+NFS でマウントし、
+<B>init</B>
+
+を起動する:
+<P>
+<PRE>
+ifconfig lo 127.0.0.1 up   # for portmap
+# configure Ethernet or such
+portmap   # for lockd (implicitly started by mount)
+mount -o ro 10.0.0.1:/my_root /mnt
+killall portmap   # portmap keeps old root busy
+cd /mnt
+pivot_root . old_root
+exec chroot . sh -c 'umount /old_root; exec /sbin/init' \
+  &lt;dev/console &gt;dev/console 2&gt;&amp;1
+</PRE>
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/chroot.1.html">chroot</A></B>(1),
+
+<B><A HREF="../man2/pivot_root.2.html">pivot_root</A></B>(2),
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8),
+
+<B><A HREF="../man8/switch_root.8.html">switch_root</A></B>(8),
+
+<B><A HREF="../man8/umount.8.html">umount</A></B>(8)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+pivot_root コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">例</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:09:51 GMT, March 24, 2020
+</BODY>
+</HTML>
