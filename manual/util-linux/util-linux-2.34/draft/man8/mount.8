@@ -1239,8 +1239,15 @@ output for extN filesystems).
 オプションも参照すること。)
 .TP
 .B atime
-.\"O Update inode access time for each access. This is the default.
-アクセス毎に inode のアクセス時間を更新する。デフォルト。
+Do not use the \fBnoatime\fR feature, so the inode access time is controlled
+by kernel defaults.  See also the descriptions of the \fB\%relatime\fR and
+.B strictatime
+mount options.
+.TP
+.B noatime
+Do not update inode access times on this filesystem (e.g.\& for faster
+access on the news spool to speed up news servers).  This works for all
+inode types (directories too), so it implies \fB\%nodiratime\fR.
 .TP
 .B auto
 .\"O Can be mounted with the
@@ -1249,28 +1256,130 @@ output for extN filesystems).
 .B \-a
 が指定されたときにマウントされる。
 .TP
+.B noauto
+Can only be mounted explicitly (i.e., the
+.B \-a
+option will not cause the filesystem to be mounted).
+.TP
+.na
+.BR context=\fIcontext ", " fscontext=\fIcontext ", " defcontext=\fIcontext ", and " \%rootcontext=\fIcontext
+.ad
+The
+.B context=
+option is useful when mounting filesystems that do not support
+extended attributes, such as a floppy or hard disk formatted with VFAT, or
+systems that are not normally running under SELinux, such as an ext3 or ext4 formatted
+
+disk from a non-SELinux workstation.  You can also use
+.B context=
+on filesystems you do not trust, such as a floppy.  It also helps in compatibility with
+xattr-supporting filesystems on earlier 2.4.<x> kernel versions.  Even where
+xattrs are supported, you can save time not having to label every file by
+assigning the entire disk one security context.
+
+A commonly used option for removable media is
+.BR \%context="system_u:object_r:removable_t" .
+
+Two other options are
+.B fscontext=
+and
+.BR defcontext= ,
+both of which are mutually exclusive of the context option.  This means you
+can use fscontext and defcontext with each other, but neither can be used with
+context.
+
+The
+.B fscontext=
+option works for all filesystems, regardless of their xattr
+support.  The fscontext option sets the overarching filesystem label to a
+specific security context.  This filesystem label is separate from the
+individual labels on the files.  It represents the entire filesystem for
+certain kinds of permission checks, such as during mount or file creation.
+Individual file labels are still obtained from the xattrs on the files
+themselves.  The context option actually sets the aggregate context that
+fscontext provides, in addition to supplying the same label for individual
+files.
+
+You can set the default security context for unlabeled files using
+.B defcontext=
+option.  This overrides the value set for unlabeled files in the policy and requires a
+filesystem that supports xattr labeling.
+
+The
+.B rootcontext=
+option allows you to explicitly label the root inode of a FS being mounted
+before that FS or inode becomes visible to userspace.  This was found to be
+useful for things like stateless linux.
+
+Note that the kernel rejects any remount request that includes the context
+option, \fBeven\fP when unchanged from the current context.
+
+.BR "Warning: the \fIcontext\fP value might contain commas" ,
+in which case the value has to be properly quoted, otherwise
+.BR mount (8)
+will interpret the comma as a separator between mount options.  Don't forget that
+the shell strips off quotes and thus
+.BR "double quoting is required" .
+For example:
+.RS
+.RS
+.sp
+.nf
+.B mount \-t tmpfs none /mnt \-o \e
+.B \ \ 'context="system_u:object_r:tmp_t:s0:c127,c456",noexec'
+.fi
+.sp
+.RE
+For more details, see
+.BR selinux (8).
+.RE
+
+.TP
 .B defaults
-.\"O Use default options:
-.\"O .BR rw ", " suid ", " dev ", " exec ", " auto ", " nouser ", and " async.
+.\"O Use the default options:
+.\"O .BR rw ", " suid ", " dev ", " exec ", " auto ", " nouser ", and " async .
 デフォルトのオプション:
 .BR rw ", " suid ", " dev ", " exec ", " auto ", " nouser ", " async
 を用いる。
+
+Note that the real set of all default mount options depends on kernel
+and filesystem type.  See the beginning of this section for more details.
 .TP
 .B dev
-.\"O Interpret character or block special devices on the file system.
+.\"O Interpret character or block special devices on the filesystem.
 ファイルシステム上の
 キャラクタ・スペシャル・デバイスや
 ブロック・スペシャル・デバイスを
 利用できるようにする。
 .TP
+.B nodev
+Do not interpret character or block special devices on the file
+system.
+.TP
+.B diratime
+Update directory inode access times on this filesystem.  This is the default.
+(This option is ignored when \fBnoatime\fR is set.)
+.TP
+.B nodiratime
+Do not update directory inode access times on this filesystem.
+(This option is implied when \fBnoatime\fR is set.)
+.TP
+.B dirsync
+All directory updates within the filesystem should be done synchronously.
+This affects the following system calls: creat, link, unlink, symlink,
+mkdir, rmdir, mknod and rename.
+.TP
 .B exec
 .\"O Permit execution of binaries.
 バイナリの実行を許可する。
 .TP
+.B noexec
+Do not permit direct execution of any binaries on the mounted filesystem.
+.TP
 .B group
-.\"O Allow an ordinary (i.e., non-root) user to mount the file system if one
-.\"O of his groups matches the group of the device.
-通常 (つまり root 以外) のユーザーの属するグループのうちの 1 つが
+.\"O Allow an ordinary user to mount the filesystem if one
+.\"O of that user's groups matches the group of the device.
+通常のユーザーの属するグループのうちの 1 つが
 デバイスのグループとマッチした場合に、
 そのユーザーがファイルシステムをマウントするのを許可する。
 .\"O This option implies the options
@@ -1284,12 +1393,21 @@ output for extN filesystems).
 .B group,dev,suid
 のようにして、その後のオプションで上書きしない限り)。
 .TP
+.B iversion
+Every time the inode is modified, the i_version field will be incremented.
+.TP
+.B noiversion
+Do not increment the i_version inode field.
+.TP
 .B mand
-.\"O Allow mandatory locks on this filesystem. See
+.\"O Allow mandatory locks on this filesystem.  See
 .\"O .BR fcntl (2).
 このファイルシステム上での強制 (mandatory) ロックを許可する。
 .BR fcntl (2)
 を参照すること。
+.TP
+.B nomand
+Do not allow mandatory locks on this filesystem.
 .TP
 .B _netdev
 .\"O The filesystem resides on a device that requires network access
@@ -1299,60 +1417,88 @@ output for extN filesystems).
 (システムでネットワークが使用可能になるまでは、
 ファイルシステムをマウントさせないために使われる)。
 .TP
-.B noatime
-.\"O Do not update inode access times on this file system (e.g, for faster
-.\"O access on the news spool to speed up news servers).
-そのファイルシステム上では inode のアクセス時間を更新しない
-(例えばニュースサーバーをスピードアップしたいときなどに、
-ニューススプールへのアクセス速度を向上させるために用いられる)。
+.B nofail
+Do not report errors for this device if it does not exist.
 .TP
-.B noauto
-.\"O Can only be mounted explicitly (i.e., the
-.\"O .B \-a
-.\"O option will not cause the file system to be mounted).
-明示的に指定されたときのみマウントできる。
-つまり
-.B \-a
-オプションではマウントされない。
+.B relatime
+Update inode access times relative to modify or change time.  Access
+time is only updated if the previous access time was earlier than the
+current modify or change time.  (Similar to \fB\%noatime\fR, but it doesn't
+break \fBmutt\fR or other applications that need to know if a file has been
+read since the last time it was modified.)
+
+Since Linux 2.6.30, the kernel defaults to the behavior provided by this
+option (unless
+.B \%noatime
+was specified), and the
+.B \%strictatime
+option is required to obtain traditional semantics.  In addition, since Linux
+2.6.30, the file's last access time is always updated if it is more than 1
+day old.
 .TP
-.B nodev
-.\"O Do not interpret character or block special devices on the file
-.\"O system.
-このファイルシステム上にある
-キャラクタ・スペシャル・デバイスや
-ブロック・スペシャル・デバイスを
-使用できないようにする。
+.B norelatime
+Do not use the
+.B relatime
+feature.  See also the
+.B strictatime
+mount option.
 .TP
-.B noexec
-.\"O Do not allow direct execution of any binaries on the mounted file system.
-.\"O (Until recently it was possible to run binaries anyway using a command like
-.\"O /lib/ld*.so /mnt/binary. This trick fails since Linux 2.4.25 / 2.6.0.)
-マウントされたファイルシステム上の任意のバイナリの直接実行を禁止する。
-(最近になるまで /lib/ld*.so /mnt/binary のようなコマンドを使って、
-バイナリを何とか実行することが可能であった。
-このトリックは Linux 2.4.25 / 2.6.0 以降では失敗する。)
+.B strictatime
+Allows to explicitly request full atime updates.  This makes it
+possible for the kernel to default to
+.B \%relatime
+or
+.B \%noatime
+but still allow userspace to override it.  For more details about the default
+system mount options see /proc/mounts.
 .TP
-.B nomand
-.\"O Do not allow mandatory locks on this filesystem.
-ファイルシステム上での強制ロックを禁止する。
+.B nostrictatime
+Use the kernel's default behavior for inode access time updates.
+.TP
+.B lazytime
+Only update times (atime, mtime, ctime) on the in-memory version of the file inode.
+
+This mount option significantly reduces writes to the inode table for
+workloads that perform frequent random writes to preallocated files.
+
+The on-disk timestamps are updated only when:
+.sp
+.RS
+- the inode needs to be updated for some change unrelated to file timestamps
+.sp
+- the application employs
+.BR fsync (2),
+.BR syncfs (2),
+or
+.BR sync (2)
+.sp
+- an undeleted inode is evicted from memory
+.sp
+- more than 24 hours have passed since the i-node was written to disk.
+.RE
+.sp
+.TP
+.B nolazytime
+Do not use the lazytime feature.
+.TP
+.B suid
+Honor set-user-ID and set-group-ID bits or file capabilities when
+executing programs from this filesystem.
 .TP
 .B nosuid
-.\"O Do not allow set-user-identifier or set-group-identifier bits to take
-.\"O effect. (This seems safe, but is in fact rather unsafe if you have
-.\"O suidperl(1) installed.)
-SUID および SGID ビットを無効にする (これは安全なように見えるが、
-suidperl(1) がインストールされている場合には、実際にはむしろ危険である)。
+Do not honor set-user-ID and set-group-ID bits or file capabilities when
+executing programs from this filesystem.
 .TP
-.B nouser
-.\"O Forbid an ordinary (i.e., non-root) user to mount the file system.
-.\"O This is the default.
-一般ユーザー (スーパーユーザー以外のユーザー) のマウントを禁止する。
-これはデフォルトである。
+.B silent
+Turn on the silent flag.
+.TP
+.B loud
+Turn off the silent flag.
 .TP
 .B owner
-.\"O Allow an ordinary (i.e., non-root) user to mount the file system if he
-.\"O is the owner of the device.
-通常 (つまり root 以外) のユーザーがデバイスの所有者とマッチした場合に、
+.\"O Allow an ordinary user to mount the filesystem if that
+.\"O user is the owner of the device.
+通常のユーザーがデバイスの所有者とマッチした場合に、
 そのユーザーがファイルシステムをマウントするのを許可する。
 .\"O This option implies the options
 .\"O .BR nosuid " and " nodev
@@ -1366,50 +1512,84 @@ suidperl(1) がインストールされている場合には、実際にはむ�
 のようにして、その後のオプションで上書きしない限り)。
 .TP
 .B remount
-.\"O Attempt to remount an already-mounted file system.  This is commonly
-.\"O used to change the mount flags for a file system, especially to make a
-.\"O readonly file system writeable. It does not change device or mount point.
+.\"O Attempt to remount an already-mounted filesystem.  This is commonly
+.\"O used to change the mount flags for a filesystem, especially to make a
+.\"O readonly filesystem writable.  It does not change device or mount point.
 すでにマウントされているファイルシステムを再マウントしようとする。
 これは通常ファイルシステムのマウントフラグを変更するとき
 (特にリードオンリーのファイルシステムを書き込み可能にするとき) に用いられる。
 デバイスとマウントポイントを変更しない。
+
+The remount operation together with the
+.B bind
+flag has special semantic. See above, the subsection \fBBind mounts\fR.
+
+The remount functionality follows the standard way the mount command works
+with options from fstab.  This means that \fBmount\fR does not
+read fstab (or mtab) only when both
+.I device
+and
+.I dir
+are specified.
+.sp
+.in +4
+.B "mount \-o remount,rw /dev/foo /dir"
+.in
+.sp
+After this call all old mount options are replaced and arbitrary stuff from
+fstab (or mtab) is ignored, except the loop= option which is internally
+generated and maintained by the mount command.
+.sp
+.in +4
+.B "mount \-o remount,rw  /dir"
+.in
+.sp
+After this call, mount reads fstab and merges these options with
+the options from the command line (\fB\-o\fR).
+If no mountpoint is found in fstab, then a remount with unspecified source is
+allowed.
+.sp
+mount(8) allows to use \fB\-\-all\fR to remount all already mounted filesystems
+which match a specified filter (\fB\-O\fR and \fB\-t\fR).  For example:
+.sp
+.in +4
+.B "mount \-\-all \-o remount,ro -t vfat"
+.in
+.sp
+remounts all already mounted vfat filesystems in read-only mode. The each of the
+filesystems is remounted by "mount \-o remount,ro /dir" semantic. It means the
+mount command reads fstab or mtab and merges these options with the options
+from the command line.
 .TP
 .B ro
-.\"O Mount the file system read-only.
+.\"O Mount the filesystem read-only.
 ファイルシステムをリードオンリーでマウントする。
 .TP
 .B rw
-.\"O Mount the file system read-write.
+.\"O Mount the filesystem read-write.
 ファイルシステムを読み書き可能なモードでマウントする。
 .TP
-.B suid
-.\"O Allow set-user-identifier or set-group-identifier bits to take
-.\"O effect.
-SUID および SGID ビットを有効にする。
-.TP
 .B sync
-.\"O All I/O to the file system should be done synchronously.
+.\"O All I/O to the filesystem should be done synchronously.  In the case of
+.\"O media with a limited number of write cycles
+.\"O (e.g.\& some flash drives), \fBsync\fR may cause life-cycle shortening.
 そのファイルシステムに対する I/O がすべて同期的 (synchronous) に行われる。
-.TP
-.B dirsync
-.\"O All directory updates within the file system should be done synchronously.
-ファイルシステムにおける全てのディレクトリ更新を、
-同期的 (synchronous) に行わせる。
-.\"O This affects the following system calls: creat, link, unlink, symlink,
-.\"O mkdir, rmdir, mknod and rename.
-このオプションは以下のシステムコールに影響する:
-creat, link, unlink, symlink, mkdir, rmdir, mknod, rename.
+In the case of
+media with a limited number of write cycles
+(e.g.\& some flash drives), \fBsync\fR may cause life-cycle shortening.
 .TP
 .B user
-.\"O Allow an ordinary user to mount the file system.
-.\"O The name of the mounting user is written to mtab so that he can unmount
-.\"O the file system again.
+.\"O Allow an ordinary user to mount the filesystem.
+.\"O The name of the mounting user is written to the mtab file (or to the private
+.\"O libmount file in /run/mount on systems without a regular mtab) so that this
+.\"O same user can unmount the filesystem again.
 .\"O This option implies the options
 .\"O .BR noexec ", " nosuid ", and " nodev
 .\"O (unless overridden by subsequent options, as in the option line
 .\"O .BR user,exec,dev,suid ).
 一般ユーザーでもファイルシステムをマウントできるようにする。
-マウントを行ったユーザーの名前が mtab に書き込まれ、
+マウントを行ったユーザーの名前が mtab (or to the private
+libmount file in /run/mount on systems without a regular mtab) に書き込まれ、
 そのユーザーがアンマウントできるようになる。
 このオプションを指定すると、同時に
 .BR noexec ", " nosuid ", " nodev
@@ -1419,12 +1599,18 @@ creat, link, unlink, symlink, mkdir, rmdir, mknod, rename.
 .B user,exec,dev,suid
 のような行を指定すればよい。
 .TP
+.B nouser
+Forbid an ordinary user to mount the filesystem.
+This is the default; it does not imply any other options.
+.TP
 .B users
-.\"O Allow every user to mount and unmount the file system.
+.\"O Allow any user to mount and to unmount the filesystem, even
+.\"O when some other ordinary user mounted it.
 .\"O This option implies the options
 .\"O .BR noexec ", " nosuid ", and " nodev
 .\"O (unless overridden by subsequent options, as in the option line
 .\"O .BR users,exec,dev,suid ).
+even when some other ordinary user mounted it
 全てのユーザーがファイルシステムをマウント・アンマウント出来るようにする。
 このオプションを指定すると、同時に
 .BR noexec ", " nosuid ", " nodev
@@ -1433,23 +1619,48 @@ creat, link, unlink, symlink, mkdir, rmdir, mknod, rename.
 すなわち
 .B users,exec,dev,suid
 のような行を指定すればよい。
-.RE
 .TP
-.B \-\-bind
-.\"O Remount a subtree somewhere else (so that its contents are available
-.\"O in both places). See above.
-サブツリーをどこか他の場所に再マウントする
-(サブツリーの内容が両方の場所でアクセスできる)。
-上記を参照。
+.B X-*
+All options prefixed with "X-" are interpreted as comments or as userspace
+application-specific options.  These options are not stored in the user space (e.g. mtab file),
+nor sent to the mount.\fItype\fR helpers nor to the
+.BR mount (2)
+system call.  The suggested format is \fBX-\fIappname\fR.\fIoption\fR.
 .TP
-.B \-\-move
-.\"O Move a subtree to some other place. See above.
-サブツリーを他の場所に移動する。上記を参照。
+.B x-*
+The same as \fBX-*\fR options, but stored permanently in the user space. It
+means the options are also available for umount or another operations.  Note
+that maintain mount options in user space is tricky, because it's necessary use
+libmount based tools and there is no guarantee that the options will be always
+available (for example after a move mount operation or in unshared namespace).
 
-.\"O .SH "FILESYSTEM SPECIFIC MOUNT OPTIONS"
+Note that before util-linux v2.30 the x-* options have not been maintained by
+libmount and stored in user space (functionality was the same as have X-* now),
+but due to growing number of use-cases (in initrd, systemd etc.) the
+functionality have been extended to keep existing fstab configurations usable
+without a change.
+.TP
+.BR X-mount.mkdir [ = \fImode\fR ]
+Allow to make a target directory (mountpoint).  The optional argument
+.I mode
+specifies the filesystem access mode used for
+.BR mkdir (2)
+in octal notation.  The default mode is 0755.  This functionality is supported
+only for root users.  The option is also supported as x-mount.mkdir, this notation
+is deprecated for mount.mkdir since v2.30.
+
+.\"O .SH "FILESYSTEM-SPECIFIC MOUNT OPTIONS"
 .SH ファイルシステム独自のマウントオプション
-.\"O The following options apply only to certain file systems.
-.\"O We sort them by file system. They all follow the
+You should consult the respective man page for the filesystem first.
+If you want to know what options the ext4 filesystem supports, then check the
+.BR ext4 (5)
+man page.
+If that doesn't exist, you can also check the corresponding mount page like
+.BR mount.cifs (8).
+Note that you might have to install the respective userland tools.
+.sp
+.\"O The following options apply only to certain filesystems.
+.\"O We sort them by filesystem.  They all follow the
 .\"O .B \-o
 .\"O flag.
 以下のオプションは特定のファイルシステムにのみ適用される。
@@ -1457,7 +1668,7 @@ creat, link, unlink, symlink, mkdir, rmdir, mknod, rename.
 すべて
 .B \-o
 フラグに続けて指定する。
-
+.sp
 .\"O What options are supported depends a bit on the running kernel.
 どのようなオプションがサポートされているかは、
 実行されているカーネルに少々依存する。
@@ -1467,15 +1678,17 @@ creat, link, unlink, symlink, mkdir, rmdir, mknod, rename.
 .I Documentation/filesystems
 で見つけることができる。
 
-.\"O .SH "Mount options for adfs"
-.SH "adfs のマウントオプション"
+.\"O .SS "Mount options for adfs"
+.SS "adfs のマウントオプション"
 .TP
-\fBuid=\fP\fIvalue\fP and \fBgid=\fP\fIvalue\fP
-.\"O Set the owner and group of the files in the file system (default: uid=gid=0).
+.\"O \fBuid=\fP\,\fIvalue\fP and \fBgid=\fP\,\fIvalue\fP
+\fBuid=\fP\,\fIvalue\fP と \fBgid=\fP\,\fIvalue\fP
+.\"O Set the owner and group of the files in the filesystem (default: uid=gid=0).
 このファイルシステムのファイルの所有者とグループを設定する
 (デフォルトは uid=gid=0)。
 .TP
-\fBownmask=\fP\fIvalue\fP and \fBothmask=\fP\fIvalue\fP
+.\"O \fBownmask=\fP\,\fIvalue\fP and \fBothmask=\fP\,\fIvalue\fP
+\fBownmask=\fP\,\fIvalue\fP と \fBothmask=\fP\,\fIvalue\fP
 .\"O Set the permission mask for ADFS 'owner' permissions and 'other' permissions,
 .\"O respectively (default: 0700 and 0077, respectively).
 それぞれ ADFS の「所有者」属性と「その他」属性に対する
@@ -1485,27 +1698,28 @@ creat, link, unlink, symlink, mkdir, rmdir, mknod, rename.
 .\"O .IR /usr/src/linux/Documentation/filesystems/adfs.txt .
 .I /usr/src/linux/Documentation/filesystems/adfs.txt
 も参照のこと。
-.\"O .SH "Mount options for affs"
-.SH "affs のマウントオプション"
+
+.\"O .SS "Mount options for affs"
+.SS "affs のマウントオプション"
 .TP
-.\"O \fBuid=\fP\fIvalue\fP and \fBgid=\fP\fIvalue\fP
-\fBuid=\fP\fIvalue\fP と \fBgid=\fP\fIvalue\fP
-.\"O Set the owner and group of the root of the file system (default: uid=gid=0,
+.\"O \fBuid=\fP\,\fIvalue\fP and \fBgid=\fP\,\fIvalue\fP
+\fBuid=\fP\,\fIvalue\fP と \fBgid=\fP\,\fIvalue\fP
+.\"O Set the owner and group of the root of the filesystem (default: uid=gid=0,
 .\"O but with option
 .\"O .B uid
 .\"O or
 .\"O .B gid
-.\"O without specified value, the uid and gid of the current process are taken).
+.\"O without specified value, the UID and GID of the current process are taken).
 ファイルシステムのルートの所有者とグループを設定する
 (デフォルトは uid=gid=0。
 ただしオプション
 .B uid
 や
 .B gid
-を値なしで指定すると、カレントプロセスの uid および gid が用いられる)。
+を値なしで指定すると、カレントプロセスの UID および GID が用いられる)。
 .TP
-.\"O \fBsetuid=\fP\fIvalue\fP and \fBsetgid=\fP\fIvalue\fP
-\fBsetuid=\fP\fIvalue\fP と \fBsetgid=\fP\fIvalue\fP
+.\"O \fBsetuid=\fP\,\fIvalue\fP and \fBsetgid=\fP\,\fIvalue\fP
+\fBsetuid=\fP\,\fIvalue\fP と \fBsetgid=\fP\,\fIvalue\fP
 .\"O Set the owner and group of all files.
 すべてのファイルの所有者とグループを設定する。
 .TP
@@ -1523,15 +1737,15 @@ creat, link, unlink, symlink, mkdir, rmdir, mknod, rename.
 この値は 8 進数で与える。
 .TP
 .B protect
-.\"O Do not allow any changes to the protection bits on the file system.
+.\"O Do not allow any changes to the protection bits on the filesystem.
 ファイルシステムの保護ビットへのいかなる変更も許可しない。
 .TP
 .B usemp
-.\"O Set uid and gid of the root of the file system to the uid and gid
+.\"O Set UID and GID of the root of the filesystem to the UID and GID
 .\"O of the mount point upon the first sync or umount, and then
-.\"O clear this option. Strange...
-ファイルシステムのルートの uid と gid を
-マウントポイントの uid と gid に設定する。
+.\"O clear this option.  Strange...
+ファイルシステムのルートの UID と GID を
+マウントポイントの UID と GID に設定する。
 ただしこの設定は最初の sync または umount の際に実行され、
 その後にこのオプションはクリアされる。変なの。
 .TP
@@ -1557,10 +1771,10 @@ creat, link, unlink, symlink, mkdir, rmdir, mknod, rename.
 ルートブロックの位置を明示的に与える。
 .TP
 .BI bs= value
-.\"O Give blocksize. Allowed values are 512, 1024, 2048, 4096.
+.\"O Give blocksize.  Allowed values are 512, 1024, 2048, 4096.
 ブロックサイズを与える。有効な値は 512, 1024, 2048, 4096 のいずれか。
 .TP
-.BR grpquota " / " noquota " / " quota " / " usrquota
+.BR grpquota | noquota | quota | usrquota
 .\"O These options are accepted but ignored.
 .\"O (However, quota utilities may react to such strings in
 .\"O .IR /etc/fstab .)
@@ -1569,14 +1783,22 @@ creat, link, unlink, symlink, mkdir, rmdir, mknod, rename.
 .I /etc/fstab
 にこのような文字列があると反応する)
 
-.\"O .SH "Mount options for coherent"
-.\"O None.
-.SH "coherent のマウントオプション"
-なし。
+.SS "Mount options for debugfs"
+The debugfs filesystem is a pseudo filesystem, traditionally mounted on
+.IR /sys/kernel/debug .
+.\" or just /debug
+.\" present since 2.6.11
+As of kernel version 3.4, debugfs has the following options:
+.TP
+.BI uid= n ", gid=" n
+Set the owner and group of the mountpoint.
+.TP
+.BI mode= value
+Sets the mode of the mountpoint.
 
-.\"O .SH "Mount options for devpts"
-.SH "devpts のマウントオプション"
-.\"O The devpts file system is a pseudo file system, traditionally mounted on
+.\"O .SS "Mount options for devpts"
+.SS "devpts のマウントオプション"
+.\"O The devpts filesystem is a pseudo filesystem, traditionally mounted on
 .\"O .IR /dev/pts .
 .\"O In order to acquire a pseudo terminal, a process opens
 .\"O .IR /dev/ptmx ;
@@ -1596,10 +1818,10 @@ devpts ファイルシステムは擬似ファイルシステムで、
 経由でアクセスできるようになる。
 .\"nakano: 勉強してないんでよくわからない...
 .TP
-.\"O \fBuid=\fP\fIvalue\fP and \fBgid=\fP\fIvalue\fP
-\fBuid=\fP\fIvalue\fP と \fBgid=\fP\fIvalue\fP
+.\"O \fBuid=\fP\,\fIvalue\fP and \fBgid=\fP\,\fIvalue\fP
+\fBuid=\fP\,\fIvalue\fP と \fBgid=\fP\,\fIvalue\fP
 .\"O This sets the owner or the group of newly created PTYs to
-.\"O the specified values. When nothing is specified, they will
+.\"O the specified values.  When nothing is specified, they will
 .\"O be set to the UID and GID of the creating process.
 .\"O For example, if there is a tty group with GID 5, then
 .\"O .B gid=5
@@ -1613,9 +1835,9 @@ devpts ファイルシステムは擬似ファイルシステムで、
 .BI mode= value
 .\"O Set the mode of newly created PTYs to the specified value.
 .\"O The default is 0600.
-.\"O A value of 
+.\"O A value of
 .\"O .B mode=620
-.\"O and 
+.\"O and
 .\"O .B gid=5
 .\"O makes "mesg y" the default on newly created PTYs.
 新たに作成される PTY のモードを設定する。
@@ -1625,330 +1847,64 @@ devpts ファイルシステムは擬似ファイルシステムで、
 .B gid=5
 を設定すると、新たに生成される PTY は、
 "mesg y" がデフォルトになる。
+.TP
+\fBnewinstance
+Create a private instance of devpts filesystem, such that
+indices of ptys allocated in this new instance are
+independent of indices created in other instances of devpts.
 
-.\"O .SH "Mount options for ext"
-.\"O None.
-.\"O Note that the `ext' file system is obsolete. Don't use it.
-.\"O Since Linux version 2.1.21 extfs is no longer part of the kernel source.
-.SH "ext のマウントオプション"
-なし。
-`ext' ファイルシステムはすでに時代遅れであり、用いるべきではない。
-Linux バージョン 2.1.21 以降では extfs はカーネルソースから削除されている。
+All mounts of devpts without this
+.B newinstance
+option share the same set of pty indices (i.e. legacy mode).
+Each mount of devpts with the
+.B newinstance
+option has a private set of pty indices.
 
-.\"O .SH "Mount options for ext2"
-.SH "ext2 のマウントオプション"
-.\"O The `ext2' file system is the standard Linux file system.
-`ext2' ファイルシステムは Linux の標準ファイルシステムである。
-.\"O .\" Due to a kernel bug, it may be mounted with random mount options
-.\"O .\" (fixed in Linux 2.0.4).
-.\" カーネルのバグのため、ランダムなオプションでマウントされてしまうことがあった 
-.\" (Linux 2.0.4 で修正された)。
-.\"O Since Linux 2.5.46, for most mount options the default
-.\"O is determined by the filesystem superblock. Set them with
-.\"O .BR tune2fs (8).
-Linux 2.5.46 以降では、大部分のマウントオプションのデフォルト値は
-ファイルシステムのスーパーブロックで決定される。
-このデフォルト値は
-.BR tune2fs (8)
-で設定すること。
-.TP
-.BR acl " / " noacl
-.\"O Support POSIX Access Control Lists (or not)
-POSIX アクセス制御リスト (Access Control List) をサポートする
-(またはサポートしない)。
-.\"O .\" requires CONFIG_EXT2_FS_POSIX_ACL
-.\" CONFIG_EXT2_FS_POSIX_ACL が必要である。
-.TP
-.BR bsddf " / " minixdf
-.\"O Set the behaviour for the
-.\"O .I statfs
-.\"O system call. The
-.\"O .B minixdf
-.\"O behaviour is to return in the
-.\"O .I f_blocks
-.\"O field the total number of blocks of the file system, while the
-.\"O .B bsddf
-.\"O behaviour (which is the default) is to subtract the overhead blocks
-.\"O used by the ext2 file system and not available for file storage. Thus
-システムコール
-.I statfs
-の振る舞いを設定する。
-.B minixdf
-を指定すると、返り値の
-.I f_blocks
-フィールドにファイルシステムの全ブロック数が入るようになり、
-.B bsddf
-を指定すると、ext2 ファイルシステムによって利用されていて、
-ファイルの保存領域としては使えないブロックの分を引いた値が入る。
-デフォルトは
-.BR bsddf 。
-すなわち、
-.RE
-.nf
+This option is mainly used to support containers in the
+linux kernel.  It is implemented in linux kernel versions
+starting with 2.6.29.  Further, this mount option is valid
+only if CONFIG_DEVPTS_MULTIPLE_INSTANCES is enabled in the
+kernel configuration.
 
-% mount /k -o minixdf; df /k; umount /k
-Filesystem   1024-blocks  Used Available Capacity Mounted on
-/dev/sda6      2630655   86954  2412169      3%   /k
-% mount /k -o bsddf; df /k; umount /k
-Filesystem   1024-blocks  Used Available Capacity Mounted on
-/dev/sda6      2543714      13  2412169      0%   /k
+To use this option effectively,
+.I /dev/ptmx
+must be a symbolic link to
+.I pts/ptmx.
+See
+.I Documentation/filesystems/devpts.txt
+in the linux kernel source tree for details.
+.TP
+.BI ptmxmode= value
 
-.fi
-.\"O (Note that this example shows that one can add command line options
-.\"O to the options given in
-.\"O .IR /etc/fstab .)
-(この例より、
-.I /etc/fstab
-のオプションにコマンドラインオプションを追加できることもわかる。)
+Set the mode for the new
+.I ptmx
+device node in the devpts filesystem.
 
-.TP
-.\"O .\" Before Linux 2.3.99-pre3:
-.\"O .\" .BR check " / " check=normal " / " check=strict
-.\"O .\" Set checking level. When at least one of these options is set (and
-.\"O .\" .B check=normal
-.\"O .\" is set by default) the inodes and blocks bitmaps are checked upon mount
-.\"O .\" (which can take half a minute or so on a big disk, and is rather useless).
-.\"O .\" With strict checking, block deallocation checks that the block to free
-.\"O .\" is in the data zone.
-.\" Linux 2.3.99-pre3 より前:
-.\" .BR check " / " check=normal " / " check=strict
-.\" チェックレベルを設定する。
-.\" これらのオプションのうち少なくとも 1 つが設定されると (デフォルトでは
-.\" .B check=normal
-.\" が設定されている)、inode とブロックのビットマップが
-.\" マウントの際にチェックされる
-.\" (これは大きなディスクでは 30 秒ほどかかることもあるが、あまり役に立たない)。
-.\" strict チェックが指定されると、ブロックの deallocation
-.\" (解放すべきブロックがデータ領域にないかどうか) がチェックされる。
-.\"O .\" Since 2.3.99-pre3 but before 2.6.0-test7 every string check=foo
-.\"O .\" was equivalent to just check. Since 2.6.0-test7 only check is accepted.
-.\" 2.3.99-pre3 以降で 2.6.0-test7 より前では、
-.\" 文字列 check=foo という全ての文字列は単なる check と等価であった。
-.\" 2.6.0-test7 以降では check のみが受け付けられる。
-.BR check
-.\"O Check filesystem (block and inode bitmaps) at mount time.
-.\"O .\" requires CONFIG_EXT2_CHECK
-ファイルシステム (のブロックと inode ビットマップ) をマウント時にチェックする。
-.\" CONFIG_EXT2_CHECK が必要である。
-.TP
-.BR check=none " / " nocheck
-.\"O No checking is done at mount time. This is the default. This is fast.
-.\"O It is wise to invoke
-.\"O .BR e2fsck (8)
-.\"O every now and then, e.g. at boot time.
-マウント時にチェックを行わない。
-これがデフォルトであり、高速である。
-.BR e2fsck (8)
-を時折、例えばブート時に、呼び出す方が賢明である。
-.TP
-.B debug
-.\"O Print debugging info upon each (re)mount.
-デバッグ情報をマウントおよび再マウントごとに表示する。
-.TP
-.BR errors=continue " / " errors=remount-ro " / " errors=panic
-.\"O Define the behaviour when an error is encountered.
-.\"O (Either ignore errors and just mark the file system erroneous and continue,
-.\"O or remount the file system read-only, or panic and halt the system.)
-.\"O The default is set in the filesystem superblock, and can be
-.\"O changed using
-.\"O .BR tune2fs (8).
-エラーが起こったときの振る舞いを指定する。
-(エラーを無視し、ファイルシステムに問題があることを記録だけして続ける /
-ファイルシステムをリードオンリーでマウントしなおす /
-パニックを起こしてシステムを停止する)
-デフォルトはファイルシステムのスーパーブロックに設定されている。
-これは
-.BR tune2fs (8)
-を用いて変更することができる。
-.TP
-.\"O .BR grpid " or " bsdgroups " / " nogrpid " or " sysvgroups
-.BR grpid " または " bsdgroups " / " nogrpid " または " sysvgroups
-.\"O These options define what group id a newly created file gets.
-.\"O When
-.\"O .BR grpid
-.\"O is set, it takes the group id of the directory in which it is created;
-.\"O otherwise (the default) it takes the fsgid of the current process, unless
-.\"O the directory has the setgid bit set, in which case it takes the gid
-.\"O from the parent directory, and also gets the setgid bit set
-.\"O if it is a directory itself.
-新しく作成されたファイルが取得するグループ id を指定する。
-.B grpid
-が設定されていると、ファイルは作成されたディレクトリと同じグループ id を得る。
-それ以外の場合ファイルはカレントプロセスの fsgid を得る (デフォルト)。
-ただしディレクトリに SGID ビットが設定されている場合は、
-親ディレクトリから gid を引き継ぎ、作成されたファイルがディレクトリならば、
-自分自身にも SGID ビットを設定する。
-.TP
-.BR grpquota " / " noquota " / " quota " / " usrquota
-.\"O These options are accepted but ignored.
-これらのオプションは指定可能であるが、単に無視される。
-.TP
-.BR nobh
-.\"O Do not attach buffer_heads to file pagecache. (Since 2.5.49.)
-buffer_heads をファイルページキャッシュにアタッチしない (2.5.49 以降)。
-.TP
-.BR nouid32
-.\"O Disables 32-bit UIDs and GIDs.  This is for interoperability with older
-.\"O kernels which only store and expect 16-bit values.
-32 ビットの UID と GID を無効にする。
-これは 16 ビットで (UID や GID の) 値を格納したり、
-値が返されることを想定している昔のカーネルとの互換性のためにある。
-.TP
-.\"O .BR oldalloc " or " orlov
-.BR oldalloc " または " orlov
-.\"O Use old allocator or Orlov allocator for new inodes. Orlov is default.
-新しい inode に対して、old アロケータまたは Orlov アロケータを使う。
-Orlov がデフォルトである。
-.TP
-.\"O \fBresgid=\fP\fIn\fP and \fBresuid=\fP\fIn\fP
-\fBresgid=\fP\fIn\fP と \fBresuid=\fP\fIn\fP
-.\"O The ext2 file system reserves a certain percentage of the available
-.\"O space (by default 5%, see
-.\"O .BR mke2fs (8)
-.\"O and
-.\"O .BR tune2fs (8)).
-.\"O These options determine who can use the reserved blocks.
-.\"O (Roughly: whoever has the specified uid, or belongs to the specified group.)
-ext2 ファイルシステムは適当な大きさの予約領域を持っている
-(デフォルトでは 5%。
-.BR mke2fs (8)
-および
-.BR tune2fs (8)
-を見よ)。
-これらのオプションはこの予約ブロックを使えるユーザーを指定する。
-すなわち指定された uid を持つユーザー、あるいは指定されたグループに
-所属するユーザーである。
-.TP
-.BI sb= n
-.\"O Instead of block 1, use block
-.\"O .I n
-.\"O as superblock. This could be useful when the filesystem has been damaged.
-.\"O (Earlier, copies of the superblock would be made every 8192 blocks: in
-.\"O block 1, 8193, 16385, ... (and one got thousands of copies on
-.\"O a big filesystem). Since version 1.08,
-.\"O .B mke2fs
-.\"O has a \-s (sparse superblock) option to reduce the number of backup
-.\"O superblocks, and since version 1.15 this is the default. Note
-.\"O that this may mean that ext2 filesystems created by a recent
-.\"O .B mke2fs
-.\"O cannot be mounted r/w under Linux 2.0.*.)
-ブロック 1 の代わりにブロック
-.I n
-をスーパーブロックとして用いる。
-このオプションはファイルシステムが損傷を受けた場合に便利である。
-(以前はスーパーブロックのコピーが 8192 ブロックおきに作成されていた。
-つまりブロック 1, 8193, 16385, ... である
-(大きなファイルシステムでは、この数は数千にも及ぶことがあった)。
-バージョン 1.08 以降の
-.B mke2fs
-では  \-s オプション (sparse superblock: 疎なスーパーブロック)
-が使えるようになり、バージョン 1.15 以降ではこれがデフォルトになった。
-注意してほしいのだが、つまりこれは、最近の
-.B mke2fs
-で作成された ext2 ファイルシステムは、
-Linux 2.0.* では read/write での mount ができない、ということである。)
-.\"O The block number here uses 1k units. Thus, if you want to use logical
-.\"O block 32768 on a filesystem with 4k blocks, use "sb=131072".
-ここでのブロック数は 1k バイト単位を使う。
-よって、4k バイトブロックでファイルシステム上の
-論理ブロック 32768 を使いたい場合は、"sb=131072" とすること。
-.TP
-.BR user_xattr " / " nouser_xattr
-.\"O Support "user." extended attributes (or not).
-"user." 拡張属性をサポートする (またはサポートしない)。
-.\"O .\" requires CONFIG_EXT2_FS_XATTR
-.\" CONFIG_EXT2_FS_XATTR が必要である。
+With the support for multiple instances of devpts (see
+.B newinstance
+option above), each instance has a private
+.I ptmx
+node in the root of the devpts filesystem (typically
+.IR /dev/pts/ptmx ).
 
+For compatibility with older versions of the kernel, the
+default mode of the new
+.I ptmx
+node is 0000.
+.BI ptmxmode= value
+specifies a more useful mode for the
+.I ptmx
+node and is highly recommended when the
+.B newinstance
+option is specified.
 
-.\"O .SH "Mount options for ext3"
-.SH "ext3 のマウントオプション"
-.\"O The `ext3' file system is a version of the ext2 file system which has been
-.\"O enhanced with journalling.  It supports the same options as ext2 as
-.\"O well as the following additions:
-`ext3' ファイルシステムは ext2 ファイルシステムを作り替えたもので、
-拡張としてジャーナリング機能を備えている。
-ext2 と同じオプションに加え、以下の追加オプションをサポートしている。
-.\" .TP
-.\" .BR abort
-.\"O .\" Mount the file system in abort mode, as if a fatal error has occurred.
-.\" 致命的なエラーが起こったかのように
-.\" 中止 (abort) モードでファイルシステムをマウントする。
-.TP
-.BR journal=update
-.\"O Update the ext3 file system's journal to the current format.
-ext3 ファイルシステムのジャーナルを現在の形式に更新する。
-.TP
-.BR journal=inum
-.\"O When a journal already exists, this option is ignored. Otherwise, it
-.\"O specifies the number of the inode which will represent the ext3 file system's
-.\"O journal file;  ext3 will create a new journal, overwriting the old contents
-.\"O of the file whose inode number is
-.\"O .IR inum .
-ジャーナルが既にある場合、このオプションは無視される。
-ジャーナルがない場合、ext3 ファイルシステムのジャーナルファイルを
-表すための i ノードの数を指定する。
-ext3 は、i ノード数が
-.I inum
-のファイルの古い内容を上書きして、新しいジャーナルを作成する。
-.TP
-.BR noload
-.\"O Do not load the ext3 file system's journal on mounting.
-マウント時に ext3 ファイルシステムのジャーナルを読み込まない。
-.TP
-.BR data=journal " / " data=ordered " / " data=writeback
-.\"O Specifies the journalling mode for file data.  Metadata is always journaled.
-ファイルデータのジャーナリングモードを指定する。
-メタデータは常にジャーナルに書かれる。
-.\"O To use modes other than
-.\"O .B ordered
-.\"O on the root file system, pass the mode to the kernel as boot parameter, e.g.
-.\"O .IR rootflags=data=journal .
-ルートファイルシステムに対して
-.B ordered
-以外のモードを使用するには、
-.I rootflags=data=journal
-のようにして、モードをブートパラメータとしてカーネルに渡す。
-.RS
-.TP
-.B journal
-.\"O All data is committed into the journal prior to being written into the
-.\"O main file system.
-メインファイルシステムより前に、全てのデータがジャーナルに記録される。
-.TP
-.B ordered
-.\"O This is the default mode.  All data is forced directly out to the main file
-.\"O system prior to its metadata being committed to the journal.
-これがデフォルトのモードである。
-メタデータがジャーナルに記録される前に、
-全てのデータがメインファイルシステムに直接書き出される。
-.TP
-.B writeback
-.\"O Data ordering is not preserved - data may be written into the main
-.\"O file system after its metadata has been committed to the journal.
-.\"O This is rumoured to be the highest-throughput option.  It guarantees
-.\"O internal file system integrity, however it can allow old data to appear
-.\"O in files after a crash and journal recovery.
-データの順番は保存されない。
-メタデータがジャーナルに記録された後で、
-データがメインファイルシステムに書き込まれる。
-これはスループットを高くするオプションらしい。
-このオプションは内部ファイルシステムの完全性を保証する。
-しかし、クラッシュした後のジャーナルによる回復で、
-ファイルが昔のデータになることも許されている。
-.RE
-.TP
-.BI commit= nrsec
-.\"O Sync all data and metadata every
-.\"O .I nrsec
-.\"O seconds. The default value is 5 seconds. Zero means default.
-全てのデータとメタデータを
-.I nrsec
-秒毎に同期させる。
-デフォルト値は 5 秒である。
-0 はデフォルトを意味する。
+This option is only implemented in linux kernel versions
+starting with 2.6.29.  Further, this option is valid only if
+CONFIG_DEVPTS_MULTIPLE_INSTANCES is enabled in the kernel
+configuration.
 
-.\"O .SH "Mount options for fat"
-.SH "fat のマウントオプション"
+.\"O .SS "Mount options for fat"
+.SS "fat のマウントオプション"
 .\"O (Note:
 .\"O .I fat
 .\"O is not a separate filesystem, but a common part of the
@@ -1965,21 +1921,22 @@ ext3 は、i ノード数が
 .I vfat
 各ファイルシステムの共通部分である。)
 .TP
-.BR blocksize=512 " / " blocksize=1024 " / " blocksize=2048
-.\"O Set blocksize (default 512).
+.BR blocksize= { 512 | 1024 | 2048 }
+.\"O Set blocksize (default 512).  This option is obsolete.
 ブロックサイズを設定する (デフォルトは 512)。
+このオプションは古い。
 .TP
-.\"O \fBuid=\fP\fIvalue\fP and \fBgid=\fP\fIvalue\fP
-\fBuid=\fP\fIvalue\fP と \fBgid=\fP\fIvalue\fP
+.\"O \fBuid=\fP\,\fIvalue\fP and \fBgid=\fP\,\fIvalue\fP
+\fBuid=\fP\,\fIvalue\fP と\fBgid=\fP\,\fIvalue\fP
 .\"O Set the owner and group of all files.
-.\"O (Default: the uid and gid of the current process.)
+.\"O (Default: the UID and GID of the current process.)
 すべてのファイルの所有者とグループを設定する
-(デフォルトはカレントプロセスの uid と gid)。
+(デフォルトはカレントプロセスの UID と GID)。
 .TP
 .BI umask= value
 .\"O Set the umask (the bitmask of the permissions that are
 .\"O .B not
-.\"O present). The default is the umask of the current process.
+.\"O present).  The default is the umask of the current process.
 .\"O The value is given in octal.
 umask を設定する (umask とは許可属性のビットマスクで、
 立て\fBない\fRビットを立てたもの)。
@@ -1989,30 +1946,46 @@ umask を設定する (umask とは許可属性のビットマスクで、
 .\"O Set the umask applied to directories only.
 .\"O The default is the umask of the current process.
 .\"O The value is given in octal.
-.\"O .\" Present since Linux 2.5.43.
 ディレクトリにのみ適用される umask を設定する。
 デフォルトはカレントプロセスの umask。
 値は 8 進数で与える。
-.\" 2.5.43 以降に存在する。
 .TP
 .BI fmask= value
 .\"O Set the umask applied to regular files only.
 .\"O The default is the umask of the current process.
 .\"O The value is given in octal.
-.\"O .\" Present since Linux 2.5.43.
 通常のファイルにのみ適用される umask を設定する。
 デフォルトはカレントプロセスの umask。
 値は 8 進数で与える。
-.\" 2.5.43 以降に存在する。
 .TP
-.BI check= value 
-.\"O Three different levels of pickyness can be chosen:
-チェックの詳細さは 3 つのレベルから選択できる:
+.BI allow_utime= value
+This option controls the permission check of mtime/atime.
 .RS
 .TP
-.B r[elaxed]
+.B 20
+If current process is in group of file's group ID, you can change timestamp.
+.TP
+.B 2
+Other users can change timestamp.
+.PP
+The default is set from `dmask' option. (If the directory is writable,
+.BR utime (2)
+is also allowed.  I.e.\& \s+3~\s0dmask & 022)
+
+Normally
+.BR utime (2)
+checks current process is owner of the file, or it has
+CAP_FOWNER capability.  But FAT filesystem doesn't have UID/GID on disk, so
+normal check is too inflexible.  With this option you can relax it.
+.RE
+.TP
+.BI check= value
+Three different levels of pickiness can be chosen:
+.RS
+.TP
+.BR r [ elaxed ]
 .\"O Upper and lower case are accepted and equivalent, long name parts are
-.\"O truncated (e.g.
+.\"O truncated (e.g.\&
 .\"O .I verylongname.foobar
 .\"O becomes
 .\"O .IR verylong.foo ),
@@ -2026,97 +1999,54 @@ umask を設定する (umask とは許可属性のビットマスクで、
 となる)。
 スペース文字を名前のそれぞれの部分 (本体と拡張子) に用いることができる。
 .TP
-.B n[ormal]
+.BR n [ ormal ]
 .\"O Like "relaxed", but many special characters (*, ?, <, spaces, etc.) are
 .\"O rejected.  This is the default.
 "relaxed" と似ているが、多くの特殊文字 (*, ?, <, スペースなど) は
 用いることができない。デフォルト。
 .TP
-.B s[trict]
-.\"O Like "normal", but names may not contain long parts and special characters
-.\"O that are sometimes used on Linux, but are not accepted by MS-DOS are
-.\"O rejected. (+, =, spaces, etc.)
+.BR s [ trict ]
+.\"O Like "normal", but names that contain long parts or special characters
+.\"O that are sometimes used on Linux but are not accepted by MS-DOS
+.\"O (+, =, etc.) are rejected.
 "normal" と似ているが、名前には長い部分を含むことができない。
 また Linux では用いることができるが MS-DOS では受け入れられない特殊文字
-(+, =, スペースなど) を用いることができない。
+(+, =, など) を用いることができない。
 .RE
 .TP
 .BI codepage= value
 .\"O Sets the codepage for converting to shortname characters on FAT
-.\"O and VFAT filesystems. By default, codepage 437 is used.
+.\"O and VFAT filesystems.  By default, codepage 437 is used.
 FAT や VFAT ファイルシステムで、短いファイル名に変換するときに
 用いる文字のコードページを設定する。
 デフォルトではコードページ 437 が用いられる。
 .TP
-.BR conv=b[inary] " / " conv=t[ext] " / " conv=a[uto]
-.\"O The
-.\"O .I fat
-.\"O file system can perform CRLF<-->NL (MS-DOS text format to UNIX text
-.\"O format) conversion in the kernel. The following conversion modes are
-.\"O available:
-.I fat
-ファイルシステムは CRLF<-->NL (MS-DOS のテキストフォーマットと UNIX の
-テキストフォーマット) の変換をカーネルで行うことができる。
-以下の変換モードを指定できる:
-.RS
-.TP
-.B binary
-.\"O no translation is performed.  This is the default.
-変換は行わない。デフォルト。
-.TP
-.B text
-.\"O CRLF<-->NL translation is performed on all files.
-すべてのファイルで CRLF<-->NL の変換を行う。
-.TP
-.B auto
-.\"O CRLF<-->NL translation is performed on all files that don't have a
-.\"O "well-known binary" extension. The list of known extensions can be found at
-.\"O the beginning of
-.\"O .I fs/fat/misc.c
-.\"O (as of 2.0, the list is: exe, com, bin, app, sys, drv, ovl, ovr, obj,
-.\"O lib, dll, pif, arc, zip, lha, lzh, zoo, tar, z, arj, tz, taz, tzp, tpz,
-.\"O gz, tgz, deb, gif, bmp, tif, gl, jpg, pcx, tfm, vf, gf, pk, pxl, dvi).
-拡張子を見てバイナリファイルかどうか判断し、バイナリではないファイルに
-対して CRLF<-->NL の変換を行う。
-拡張子のリストは
-.I fs/fat/misc.c
-の先頭に記述されている。
-(2.0 の段階ではリストは以下の通り:
-exe, com, bin, app, sys, drv, ovl, ovr, obj,
-lib, dll, pif, arc, zip, lha, lzh, zoo, tar, z, arj, tz, taz, tzp, tpz,
-gz, tgz, deb, gif, bmp, tif, gl, jpg, pcx, tfm, vf, gf, pk, pxl, dvi)
-.PP
-.\"O Programs that do computed lseeks won't like in-kernel text conversion.
-.\"O Several people have had their data ruined by this translation. Beware!
-lseek を行うプログラムはカーネルレベルのテキスト変換と相性が悪い。
-この変換によってデータを台無しにしてしまった人もいるので、注意すること！
-
-.\"O For file systems mounted in binary mode, a conversion tool
-.\"O (fromdos/todos) is available.
-バイナリモードでマウントしたファイルシステムに対して、変換ツール
-(fromdos/todos) を用いることもできる。
-.RE
+.BI conv= mode
+This option is obsolete and may fail or being ignored.
 .TP
 .BI cvf_format= module
 .\"O Forces the driver to use the CVF (Compressed Volume File) module
 .\"O .RI cvf_ module
-.\"O instead of auto-detection. If the kernel supports kmod, the
+.\"O instead of auto-detection.  If the kernel supports kmod, the
 .\"O cvf_format=xxx option also controls on-demand CVF module loading.
+.\"O This option is obsolete.
 自動検知の結果ではなく、CVF (Compressed Volume File:
 圧縮ボリュームファイル) モジュール
 .RI cvf_ module
 を使うよう、ドライバに強制する。
 カーネルが kmod をサポートしていれば、
 cvf_format=xxx オプションとしてもオンデマンドで CVF モジュールをロードできる。
+このオプションは古い。
 .TP
 .BI cvf_option= option
-.\"O Option passed to the CVF module.
+.\"O Option passed to the CVF module.  This option is obsolete.
 CVF モジュールに渡すオプション。
+このオプションは古い。
 .TP
 .B debug
 .\"O Turn on the
 .\"O .I debug
-.\"O flag.  A version string and a list of file system parameters will be
+.\"O flag.  A version string and a list of filesystem parameters will be
 .\"O printed (these data are also printed if the parameters appear to be
 .\"O inconsistent).
 .I debug
@@ -2124,7 +2054,21 @@ CVF モジュールに渡すオプション。
 バージョン文字とファイルシステムのパラメータが表示される
 (これらのデータはパラメータが一貫していないような場合にも表示される)。
 .TP
-.BR fat=12 " / " fat=16 " / " fat=32
+.B discard
+If set, causes discard/TRIM commands to be issued to the block device
+when blocks are freed.  This is useful for SSD devices and
+sparse/thinly-provisioned LUNs.
+.TP
+.B dos1xfloppy
+If set, use a fallback default BIOS Parameter Block configuration, determined
+by backing device size.  These static parameters match defaults assumed by DOS
+1.x for 160 kiB, 180 kiB, 320 kiB, and 360 kiB floppies and floppy images.
+.TP
+.BR errors= { panic | continue | remount-ro }
+Specify FAT behavior on critical errors: panic, continue without doing
+anything, or remount the partition in read-only mode (default behavior).
+.TP
+.BR fat= { 12 | 16 | 32 }
 .\"O Specify either a 12, 16 or 32 bit fat.  This overrides
 .\"O the automatic FAT type detection routine.  Use with caution!
 12 ビット fat か 16 ビット fat か 32 ビット fat かを特定する。
@@ -2133,31 +2077,106 @@ CVF モジュールに渡すオプション。
 .TP
 .BI iocharset= value
 .\"O Character set to use for converting between 8 bit characters
-.\"O and 16 bit Unicode characters. The default is iso8859-1.
+.\"O and 16 bit Unicode characters.  The default is iso8859-1.
 .\"O Long filenames are stored on disk in Unicode format.
 8 ビットの文字を 16 ビットの Unicode 文字に変換する (あるいはその逆)
 ときに用いる文字セット (character set)。デフォルトは iso8859-1 である。
 長いファイル名は、ディスクには Unicode フォーマットで保存されている。
 .TP
+.BR nfs= { stale_rw | nostale_ro }
+Enable this only if you want to export the FAT filesystem over NFS.
+
+.BR stale_rw :
+This option maintains an index (cache) of directory inodes which is used by the
+nfs-related code to improve look-ups.  Full file operations (read/write) over
+NFS are supported but with cache eviction at NFS server, this could result in
+spurious
+.B ESTALE
+errors.
+
+.BR nostale_ro :
+This option bases the inode number and file handle
+on the on-disk location of a file in the FAT directory entry.
+This ensures that
+.B ESTALE
+will not be returned after a file is
+evicted from the inode cache.  However, it means that operations
+such as rename, create and unlink could cause file handles that
+previously pointed at one file to point at a different file,
+potentially causing data corruption.  For this reason, this
+option also mounts the filesystem readonly.
+
+To maintain backward compatibility, '-o nfs' is also accepted,
+defaulting to
+.BR stale_rw .
+.TP
+.B tz=UTC
+This option disables the conversion of timestamps
+between local time (as used by Windows on FAT) and UTC
+(which Linux uses internally).  This is particularly
+useful when mounting devices (like digital cameras)
+that are set to UTC in order to avoid the pitfalls of
+local time.
+.TP
+.BI time_offset= minutes
+Set offset for conversion of timestamps from local time used by FAT to UTC.
+I.e.,
+.I minutes
+will be subtracted from each timestamp to convert it to UTC used
+internally by Linux.  This is useful when the time zone set in the kernel via
+.BR settimeofday (2)
+is not the time zone used by the filesystem.  Note
+that this option still does not provide correct time stamps in all cases in
+presence of DST - time stamps in a different DST setting will be off by one
+hour.
+.TP
 .B quiet
 .\"O Turn on the
 .\"O .I quiet
 .\"O flag.  Attempts to chown or chmod files do not return errors,
-.\"O although they fail. Use with caution!
+.\"O although they fail.  Use with caution!
 .I quiet
 フラグを ON にする。
 ファイルを chown や chmod しようとしたときにもエラーを返さず、単に失敗する。
 用いる際には注意すること！
 .TP
-.B "sys_immutable, showexec, dots, nodots, dotsOK=[yes|no]"
+.B rodir
+FAT has the ATTR_RO (read-only) attribute.  On Windows, the ATTR_RO of the
+directory will just be ignored, and is used only by applications as a flag
+(e.g.\& it's set for the customized folder).
+
+If you want to use ATTR_RO as read-only flag even for the directory, set this
+option.
+.TP
+.B showexec
+If set, the execute permission bits of the file will be allowed only if
+the extension part of the name is \&.EXE, \&.COM, or \&.BAT.  Not set by default.
+.TP
+.B sys_immutable
+If set, ATTR_SYS attribute on FAT is handled as IMMUTABLE flag on Linux.
+Not set by default.
+.TP
+.B flush
+If set, the filesystem will try to flush to disk more early than normal.
+Not set by default.
+.TP
+.B usefree
+Use the "free clusters" value stored on FSINFO.  It'll
+be used to determine number of free clusters without
+scanning disk.  But it's not used by default, because
+recent Windows don't update it correctly in some
+case.  If you are sure the "free clusters" on FSINFO is
+correct, by this option you can avoid scanning disk.
+.TP
+.BR dots ", " nodots ", " dotsOK= [ yes | no ]
 .\"O Various misguided attempts to force Unix or DOS conventions
-.\"O onto a FAT file system.
+.\"O onto a FAT filesystem.
 FAT ファイルシステムに Unix または DOS のしきたりを
 強制しようとするさまざまな試み。
 おそらくは用いるべきでない。
 
-.\"O .SH "Mount options for hfs"
-.SH "hfs のマウントオプション"
+.\"O .SS "Mount options for hfs"
+.SS "hfs のマウントオプション"
 .TP
 .BI creator= cccc ", type=" cccc
 .\"O Set the creator/type values as shown by the MacOS finder
@@ -2168,9 +2187,9 @@ MacOS の finder で表示されるクリエータとタイプを設定する。
 .TP
 .BI uid= n ", gid=" n
 .\"O Set the owner and group of all files.
-.\"O (Default: the uid and gid of the current process.)
+.\"O (Default: the UID and GID of the current process.)
 すべてのファイルの所有者とグループを設定する
-(デフォルトはカレントプロセスの uid と gid)。
+(デフォルトはカレントプロセスの UID と GID)。
 .TP
 .BI dir_umask= n ", file_umask=" n ", umask=" n
 .\"O Set the umask used for all directories, all regular files, or all
@@ -2189,7 +2208,7 @@ MacOS の finder で表示されるクリエータとタイプを設定する。
 .TP
 .BI part= n
 .\"O Select partition number n from the device.
-.\"O Only makes sense for CDROMS.
+.\"O Only makes sense for CDROMs.
 .\"O Defaults to not parsing the partition table at all.
 デバイスのパーティション番号 n を選択する。
 CDROM に対してのみ意味を持つ。
@@ -2199,20 +2218,20 @@ CDROM に対してのみ意味を持つ。
 .\"O Don't complain about invalid mount options.
 不正なマウントオプションに対して苦情を出さない。
 
-.\"O .SH "Mount options for hpfs"
-.SH "hpfs のマウントオプション"
+.\"O .SS "Mount options for hpfs"
+.SS "hpfs のマウントオプション"
 .TP
-.\"O \fBuid=\fP\fIvalue\fP and \fBgid=\fP\fIvalue\fP
-\fBuid=\fP\fIvalue\fP と \fBgid=\fP\fIvalue\fP
-.\"O Set the owner and group of all files. (Default: the uid and gid
+.\"O \fBuid=\fP\,\fIvalue\fP and \fBgid=\fP\,\fIvalue\fP
+\fBuid=\fP\,\fIvalue\fP と \fBgid=\fP\,\fIvalue\fP
+.\"O Set the owner and group of all files. (Default: the UID and GID
 .\"O of the current process.)
 すべてのファイルの所有者とグループを設定する
-(デフォルトはカレントプロセスの uid と gid)。
+(デフォルトはカレントプロセスの UID と GID)。
 .TP
 .BI umask= value
 .\"O Set the umask (the bitmask of the permissions that are
 .\"O .B not
-.\"O present). The default is the umask of the current process.
+.\"O present).  The default is the umask of the current process.
 .\"O The value is given in octal.
 umask を設定する (umask とは許可属性のビットマスクで、立って
 .B いない
@@ -2220,7 +2239,7 @@ umask を設定する (umask とは許可属性のビットマスクで、立っ
 デフォルトはカレントプロセスの umask。
 値は 8 進数で与える。
 .TP
-.BR case=lower " / " case=asis
+.BR case= { lower | asis }
 .\"O Convert all files names to lower case, or leave them.
 .\"O (Default:
 .\"O .BR case=lower .)
@@ -2229,38 +2248,17 @@ umask を設定する (umask とは許可属性のビットマスクで、立っ
 (デフォルトは
 .BR case=lower )
 .TP
-.BR conv=binary " / " conv=text " / " conv=auto
-.\"O For
-.\"O .BR conv=text ,
-.\"O delete some random CRs (in particular, all followed by NL)
-.\"O when reading a file.
-.\"O For
-.\"O .BR conv=auto ,
-.\"O choose more or less at random between
-.\"O .BR conv=binary " and " conv=text .
-.\"O For
-.\"O .BR conv=binary ,
-.\"O just read what is in the file. This is the default.
-.B conv=text
-が指定されると、ファイルを読み取るときに CR を適宜削除する
-(特に NL の前にある場合)。
-.B conv=auto
-が指定されると、ファイルによって
-.BR conv=binary " と " conv=text
-を適宜選択する。
-.B conv=binary
-が指定されると、ファイルをそのまま読み込む。
-デフォルトは
-.BR conv=binary 。
+.BI conv= mode
+This option is obsolete and may fail or being ignored.
 .TP
 .B nocheck
 .\"O Do not abort mounting when certain consistency checks fail.
 ファイルシステムの整合性チェックに失敗しても、マウントを中断しない。
 
-.\"O .SH "Mount options for iso9660"
-.SH "iso9660 のマウントオプション"
+.\"O .SS "Mount options for iso9660"
+.SS "iso9660 のマウントオプション"
 .\"O ISO 9660 is a standard describing a filesystem structure to be used
-.\"O on CD-ROMs. (This filesystem type is also seen on some DVDs. See also the
+.\"O on CD-ROMs. (This filesystem type is also seen on some DVDs.  See also the
 .\"O .I udf
 .\"O filesystem.)
 ISO 9660 は CD-ROM で使われているファイルシステム構造を記述している。
@@ -2270,7 +2268,7 @@ ISO 9660 は CD-ROM で使われているファイルシステム構造を記述
 
 .\"O Normal
 .\"O .I iso9660
-.\"O filenames appear in a 8.3 format (i.e., DOS-like restrictions on filename
+.\"O filenames appear in an 8.3 format (i.e., DOS-like restrictions on filename
 .\"O length), and in addition all characters are in upper case.  Also there is
 .\"O no field for file ownership, protection, number of links, provision for
 .\"O block/character devices, etc.
@@ -2281,12 +2279,12 @@ ISO 9660 は CD-ROM で使われているファイルシステム構造を記述
 また所有者や保護属性、リンク数、ブロックデバイスか
 キャラクタデバイスかなどを表すフィールドも存在しない。
 
-.\"O Rock Ridge is an extension to iso9660 that provides all of these unix like
+.\"O Rock Ridge is an extension to iso9660 that provides all of these UNIX-like
 .\"O features.  Basically there are extensions to each directory record that
 .\"O supply all of the additional information, and when Rock Ridge is in use,
-.\"O the filesystem is indistinguishable from a normal UNIX file system (except
+.\"O the filesystem is indistinguishable from a normal UNIX filesystem (except
 .\"O that it is read-only, of course).
-Rock Ridge は iso9660 の拡張で、上に示した unix 的機能をすべて与える。
+Rock Ridge は iso9660 の拡張で、上に示した UNIX 的機能をすべて与える。
 基本的にはそれぞれのディレクトリレコードを拡張して、
 付加的な情報を与えるものである。
 Rock Ridge が用いられると、ファイルシステムは通常の 
@@ -2294,14 +2292,14 @@ UNIX ファイルシステムとは区別できなくなる
 (もちろんリードオンリーであることを除いて、だが)。
 .TP
 .B norock
-.\"O Disable the use of Rock Ridge extensions, even if available. Cf.\&
+.\"O Disable the use of Rock Ridge extensions, even if available.  Cf.\&
 .\"O .BR map .
 Rock Ridge 拡張が利用できる場合でもこれを無効にする。
 .B map
 も参照のこと。
 .TP
 .B nojoliet
-.\"O Disable the use of Microsoft Joliet extensions, even if available. Cf.\&
+.\"O Disable the use of Microsoft Joliet extensions, even if available.  Cf.\&
 .\"O .BR map .
 Microsoft Joliet 拡張が利用できる場合でもこれを無効にする。
 .B map
@@ -2327,9 +2325,9 @@ Microsoft Joliet 拡張が利用できる場合でもこれを無効にする。
 (デフォルトは
 .BR check=strict 。)
 .TP
-.\"O \fBuid=\fP\fIvalue\fP and \fBgid=\fP\fIvalue\fP
-\fBuid=\fP\fIvalue\fP と \fBgid=\fP\fIvalue\fP
-.\"O Give all files in the file system the indicated user or group id,
+.\"O \fBuid=\fP\,\fIvalue\fP and \fBgid=\fP\,\fIvalue\fP
+\fBuid=\fP\,\fIvalue\fP と \fBgid=\fP\,\fIvalue\fP
+.\"O Give all files in the filesystem the indicated user or group id,
 .\"O possibly overriding the information found in the Rock Ridge extensions.
 .\"O (Default:
 .\"O .BR uid=0,gid=0 .)
@@ -2339,12 +2337,12 @@ Rock Ridge 拡張で指定されている情報を上書きできる。
 デフォルトは
 .BR uid=0,gid=0 。
 .TP
-.BR map=n[ormal] " / " map=o[ff] " / " map=a[corn]
+.BR map= { n [ ormal ]| o [ ff ]| a [ corn ]}
 .\"O For non-Rock Ridge volumes, normal name translation maps upper
 .\"O to lower case ASCII, drops a trailing `;1', and converts `;' to `.'.
 .\"O With
 .\"O .B map=off
-.\"O no name translation is done. See
+.\"O no name translation is done.  See
 .\"O .BR norock .
 .\"O (Default:
 .\"O .BR map=normal .)
@@ -2358,7 +2356,7 @@ Rock Ridge 拡張がされていないボリュームに対して normal が指�
 .BR map=normal 。
 .\"O .B map=acorn
 .\"O is like
-.\"O .BR map=normal
+.\"O .B map=normal
 .\"O but also apply Acorn extensions if present.
 .B map=acorn
 は
@@ -2367,14 +2365,12 @@ Rock Ridge 拡張がされていないボリュームに対して normal が指�
 .TP
 .BI mode= value
 .\"O For non-Rock Ridge volumes, give all files the indicated mode.
-.\"O (Default: read permission for everybody.)
-.\"O Since Linux 2.1.37 one no longer needs to specify the mode in
-.\"O decimal. (Octal is indicated by a leading 0.)
+.\"O (Default: read and execute permission for everybody.)
+.\"O Octal mode values require a leading 0.
 Rock Ridge 拡張がされていないボリュームに対して、
 すべてのファイルのモードを指定された値にする。
-デフォルトは、すべてのユーザーに対する読み込み属性。
-Linux 2.1.37 以降では、10 進数を用いなくても良くなった
-(0 で始まる数値は 8 進数とみなされる)。
+(デフォルトは、すべてのユーザーに対する読み込みと実行属性。)
+8 進数は 0 で始める必要がある。
 .TP
 .B unhide
 .\"O Also show hidden and associated files.
@@ -2384,40 +2380,31 @@ hidden 属性のファイルや、それに関連付けられたファイルも�
 (通常のファイルがそれに関連付けられたファイルまたは hidden 属性のファイルと
 同じファイル名である場合、通常のファイルはアクセスできなくなる。)
 .TP
-.B block=[512|1024|2048]
+.BR block= { 512 | 1024 | 2048 }
 .\"O Set the block size to the indicated value.
 .\"O (Default:
 .\"O .BR block=1024 .)
 ブロックサイズを指定する。デフォルトは
 .BR block=1024 。
 .TP
-.BR conv=a[uto] " / " conv=b[inary] " / " conv=m[text] " / " conv=t[ext]
-.\"O (Default:
-.\"O .BR conv=binary .)
-.\"O Since Linux 1.3.54 this option has no effect anymore.
-.\"O (And non-binary settings used to be very dangerous,
-.\"O possibly leading to silent data corruption.)
-デフォルトは
-.BR conv=binary 。
-Linux 1.3.54 以降では、このオプションは無効となった。
-またそれ以前でも binary 以外の設定は非常に危険であり、
-原因不明のデータ破壊を引き起こすことがある。
+.BI conv= mode
+This option is obsolete and may fail or being ignored.
 .TP
 .B cruft
 .\"O If the high byte of the file length contains other garbage,
 .\"O set this mount option to ignore the high order bits of the file length.
-.\"O This implies that a file cannot be larger than 16MB.
+.\"O This implies that a file cannot be larger than 16\ MB.
 ファイルサイズの上位バイトがゴミを含んでいる場合、
 このオプションを指定することで上位バイトを無視できる。
-このオプションを指定すると、ファイルの大きさは 16MB に制限される。
+このオプションを指定すると、ファイルの大きさは 16\ MB に制限される。
 .TP
 .BI session= x
-.\"O Select number of session on multisession CD. (Since 2.3.4.)
-マルチセッション CD でのセッション数を選択する (2.3.4 以降)。
+.\"O Select number of session on multisession CD.
+マルチセッション CD でのセッション数を選択する。
 .TP
 .BI sbsector= xxx
-.\"O Session begins from sector xxx. (Since 2.3.4.)
-セッションをセクタ xxx から始める (2.3.4 以降)。
+.\"O Session begins from sector xxx.
+セッションをセクタ xxx から始める。
 .LP
 .\"O The following options are the same as for vfat and specifying them only makes
 .\"O sense when using discs encoded using Microsoft's Joliet extensions.
@@ -2427,7 +2414,7 @@ Microsoft Joliet 拡張でエンコードされた
 .TP
 .BI iocharset= value
 .\"O Character set to use for converting 16 bit Unicode characters on CD
-.\"O to 8 bit characters. The default is iso8859-1.
+.\"O to 8 bit characters.  The default is iso8859-1.
 CD 上の 16 ビットの Unicode 文字を
 8 ビットの文字に変換するときに用いる文字セット。
 デフォルトは iso8859-1 である。
@@ -2436,8 +2423,8 @@ CD 上の 16 ビットの Unicode 文字を
 .\"O Convert 16 bit Unicode characters on CD to UTF-8.
 CD 上の 16 ビットの Unicode 文字を UTF-8 に変換する。
 
-.\"O .SH "Mount options for jfs"
-.SH "jfs のマウントオプション"
+.\"O .SS "Mount options for jfs"
+.SS "jfs のマウントオプション"
 .TP
 .BI iocharset= name
 .\"O Character set to use for converting from Unicode to ASCII.  The default is
@@ -2459,8 +2446,8 @@ UTF8 変換を行う場合は、
 .BI resize= value
 .\"O Resize the volume to
 .\"O .I value
-.\"O blocks. JFS only supports growing a volume, not shrinking it. This option
-.\"O is only valid during a remount, when the volume is mounted read-write. The
+.\"O blocks.  JFS only supports growing a volume, not shrinking it.  This option
+.\"O is only valid during a remount, when the volume is mounted read-write.  The
 .\"O .B resize
 .\"O keyword with no value will grow the volume to the full size of the partition.
 ボリュームを
@@ -2476,8 +2463,8 @@ JFS ではボリュームを増やすことのみがサポートされており�
 .TP
 .B nointegrity
 .\"O Do not write to the journal.  The primary use of this option is to allow
-.\"O for higher performance when restoring a volume from backup media. The
-.\"O integrity of the volume is not guaranteed if the system abnormally abends.
+.\"O for higher performance when restoring a volume from backup media.  The
+.\"O integrity of the volume is not guaranteed if the system abnormally ends.
 ジャーナルに書き込まない。
 このオプションの主な目的は、
 バックアップメディアからボリュームを復旧する際に、
@@ -2496,45 +2483,40 @@ JFS ではボリュームを増やすことのみがサポートされており�
 オプションが指定されたボリュームを通常の状態に戻すために
 再マウントするときは、このオプションを使用すること。
 .TP
-.BR errors=continue " / " errors=remount-ro " / " errors=panic
-.\"O Define the behaviour when an error is encountered.
-.\"O (Either ignore errors and just mark the file system erroneous and continue,
-.\"O or remount the file system read-only, or panic and halt the system.)
+.BR errors= { continue | remount-ro | panic }
+.\"O Define the behavior when an error is encountered.
+.\"O (Either ignore errors and just mark the filesystem erroneous and continue,
+.\"O or remount the filesystem read-only, or panic and halt the system.)
 エラーが起こったときの振る舞いを指定する。
 (エラーを無視し、ファイルシステムに問題があることを記録だけして続ける /
 ファイルシステムをリードオンリーでマウントしなおす /
 パニックを起こしてシステムを停止する)
 .TP
-.BR noquota " / " quota " / " usrquota " / " grpquota
+.BR noquota | quota | usrquota | grpquota
 .\"O These options are accepted but ignored.
 これらのオプションは指定可能であるが、単に無視される。
 
-.\"O .SH "Mount options for minix"
-.\"O None.
-.SH "minix のマウントオプション"
-なし。
-
-.\"O .SH "Mount options for msdos"
+.\"O .SS "Mount options for msdos"
+.SS "msdos のマウントオプション"
 .\"O See mount options for fat.
 .\"O If the
 .\"O .I msdos
-.\"O file system detects an inconsistency, it reports an error and sets the file
-.\"O system read-only. The file system can be made writeable again by remounting
+.\"O filesystem detects an inconsistency, it reports an error and sets the file
+.\"O system read-only.  The filesystem can be made writable again by remounting
 .\"O it.
-.SH "msdos のマウントオプション"
 fat のマウントオプションを見よ。
 .I msdos
 ファイルシステムに不整合が発見されるとエラーが報告され、
 ファイルシステムはリードオンリーとなる。
 再マウントすることによって書き込み可能にすることができる。
 
-.\"O .SH "Mount options for ncpfs"
-.SH "ncpfs のマウントオプション"
+.\"O .SS "Mount options for ncpfs"
+.SS "ncpfs のマウントオプション"
 .\"O Just like
 .\"O .IR nfs ", the " ncpfs
 .\"O implementation expects a binary argument (a
 .\"O .IR "struct ncp_mount_data" )
-.\"O to the mount system call. This argument is constructed by
+.\"O to the mount system call.  This argument is constructed by
 .\"O .BR ncpmount (8)
 .\"O and the current version of
 .\"O .B mount
@@ -2550,137 +2532,17 @@ fat のマウントオプションを見よ。
 .B mount
 (2.12) は ncpfs を扱うことができない。
 
-.\"O .SH "Mount options for nfs"
-.SH "nfs のマウントオプション"
-.\"O Instead of a textual option string, parsed by the kernel, the
-.\"O .I nfs
-.\"O file system expects a binary argument of type
-.\"O .IR "struct nfs_mount_data" .
-.\"O The program
-.\"O .B mount
-.\"O itself parses the following options of the form `tag=value',
-.\"O and puts them in the structure mentioned:
-通常のマウントオプションにはカーネルによって解釈される
-逐語的な文字列を用いるが、
-.I nfs
-ファイルシステムでは
-.I "struct nfs_mount_data"
-と言う型のバイナリ引き数でオプションを渡す。
-.B mount
-プログラムは以下の `tag=value' 形式のオプションを解釈し、
-その内容を上の構造体に代入する。
-.BI rsize= n,
-.BI wsize= n,
-.BI timeo= n,
-.BI retrans= n,
-.BI acregmin= n,
-.BI acregmax= n,
-.BI acdirmin= n,
-.BI acdirmax= n,
-.BI actimeo= n,
-.BI retry= n,
-.BI port= n,
-.BI mountport= n,
-.BI mounthost= name,
-.BI mountprog= n,
-.BI mountvers= n,
-.BI nfsprog= n,
-.BI nfsvers= n,
-.BI namlen= n.
-.\"O The option
-.\"O .BI addr= n
-.\"O is accepted but ignored.
-.\"O Also the following Boolean options, possibly preceded by
-.\"O .B no
-.\"O are recognized:
-オプション
-.BI addr= n
-は指定可能であるが単に無視される。
-以下のオプションはブール値で指定する。
-.B no
-を前置することもでき、その場合は真偽が反転する。
-.BR bg ,
-.BR fg ,
-.BR soft ,
-.BR hard ,
-.BR intr ,
-.BR posix ,
-.BR cto ,
-.BR ac ,
-.BR tcp ,
-.BR udp ,
-.BR lock .
-.\"O For details, see
-.\"O .BR nfs (5).
-これらの詳細に関しては
-.BR nfs (5)
-を見よ。
-
-.\"O Especially useful options include
-特に便利なオプションをいくつか以下に示す。
-.TP
-.B rsize=8192,wsize=8192
-.\"O This will make your nfs connection faster than with the default
-.\"O buffer size of 4096. (NFSv2 does not work with larger values of
-.\"O .B rsize
-.\"O and
-.\"O .BR wsize .)
-この指定をすると nfs コネクションは高速になる。
-デフォルトのバッファサイズは 4096。
-(NFSv2 は
-.BR rsize " や " wsize
-があまり大きいと動作しない。)
-.TP
-.B hard
-.\"O The program accessing a file on a NFS mounted file system will hang
-.\"O when the server crashes. The process cannot be interrupted or
-.\"O killed unless you also specify
-.\"O .BR intr .
-.\"O When the NFS server is back online the program will continue undisturbed
-.\"O from where it was. This is probably what you want.
-サーバーがクラッシュしたとき、NFS マウントされたファイルシステム上の
-ファイルにアクセスしているプログラムはハングする。
-.B intr
-を同時に指定していなければ、プロセスは interrupt / kill できない。
-NFS サーバが再び接続可能になると、
-プログラムはその時点から何もなかったように再開する。
-こちらを指定しておくと良い場合が大部分であろう。
-.TP
-.B soft
-.\"O This option allows the kernel to time out if the nfs server is not
-.\"O responding for some time. The time can be
-.\"O specified with
-.\"O .BR timeo=time .
-.\"O This option might be useful if your nfs server sometimes doesn't respond
-.\"O or will be rebooted while some process tries to get a file from the server.
-.\"O Usually it just causes lots of trouble.
-このオプションを指定すると nfs サーバがしばらく反応しなくなったとき、
-カーネルはタイムアウト動作をするようになる。
-時間の長さは
-.BR timeo=time
-で指定できる。
-このオプションは、プロセスがサーバからファイルを get するときに
-nfs サーバがときどき反応しなくなったり、
-リブートしたりする場合に指定すると有効かもしれない。
-通常はトラブルの原因になる場合がほとんどだろう。
-.TP
-.B nolock
-.\"O Do not use locking. Do not start lockd.
-ロック動作を行わない。lockd を起動しない。
-
-.\"O .SH "Mount options for ntfs"
-.SH ntfs のマウントオプション
+.\"O .SS "Mount options for ntfs"
+.SS ntfs のマウントオプション
 .TP
 .BI iocharset= name
 .\"O Character set to use when returning file names.
 .\"O Unlike VFAT, NTFS suppresses names that contain
-.\"O unconvertible characters. Deprecated.
+.\"O nonconvertible characters.  Deprecated.
 ファイル名を返すときに用いる文字セット。
 VFAT とは異なり、NTFS は変換できない文字を含む名前を抑制する。
 .\"NAKANO 返さない?
 このオプションは推奨されない。
-.\"O .\" since 2.5.11
-.\" 2.5.11 以降
 .TP
 .BI nls= name
 .\"O New name for the option earlier called
@@ -2688,18 +2550,16 @@ VFAT とは異なり、NTFS は変換できない文字を含む名前を抑制�
 以前は
 .I iocharset
 という名前であったオプションの新しい名前。
-.\"O .\" since 2.5.11
-.\" 2.5.11 以降
 .TP
-.BR utf8
+.B utf8
 .\"O Use UTF-8 for converting file names.
 ファイル名の変換に UTF-8 を用いる。
 .TP
-.B uni_xlate=[0|1|2]
+.BR uni_xlate= { 0 | 1 | 2 }
 .\"O For 0 (or `no' or `false'), do not use escape sequences
 .\"O for unknown Unicode characters.
 .\"O For 1 (or `yes' or `true') or 2, use vfat-style 4-byte escape sequences
-.\"O starting with ":". Here 2 give a little-endian encoding
+.\"O starting with ":".  Here 2 give a little-endian encoding
 .\"O and 1 a byteswapped bigendian encoding.
 0 (または `no' または `false') とすると、
 不明な Unicode 文字に対してエスケープシーケンスを使わない。
@@ -2710,14 +2570,15 @@ VFAT とは異なり、NTFS は変換できない文字を含む名前を抑制�
 ビッグエンディアンとみなしてエンコードする。
 .TP
 .B posix=[0|1]
-.\"O If enabled (posix=1), the file system distinguishes between
-.\"O upper and lower case. The 8.3 alias names are presented as
-.\"O hard links instead of being suppressed.
+.\"O If enabled (posix=1), the filesystem distinguishes between
+.\"O upper and lower case.  The 8.3 alias names are presented as
+.\"O hard links instead of being suppressed.  This option is obsolete.
 有効になっている (posix=1) と、ファイルシステムは大文字小文字を区別する。
 この場合には 8.3 形式の別名がハードリンクとして実現される。
+このオプションは古い。
 .TP
-.\"O \fBuid=\fP\fIvalue\fP, \fBgid=\fP\fIvalue\fP and \fBumask=\fP\fIvalue\fP
-\fBuid=\fP\fIvalue\fP と \fBgid=\fP\fIvalue\fP, \fBumask=\fP\fIvalue\fP
+.\"O \fBuid=\fP\,\fIvalue\fP, \fBgid=\fP\,\fIvalue\fP and \fBumask=\fP\,\fIvalue\fP
+\fBuid=\fP\,\fIvalue\fP, \fBgid=\fP\,\fIvalue\fP, \fBumask=\fP\,\fIvalue\fP
 .\"O Set the file permission on the filesystem.
 .\"O The umask value is given in octal.
 .\"O By default, the files are owned by root and not readable by somebody else.
@@ -2726,59 +2587,70 @@ umask の値は 8 進数で指定する。
 デフォルトではファイルは root が所有し、
 他のユーザーからは読み取り不可になっている。
 
-.\"O .SH "Mount options for proc"
-.SH "proc のマウントオプション"
+.SS "Mount options for overlay"
+Since Linux 3.18 the overlay pseudo filesystem implements a union mount for
+other filesystems.
+
+An overlay filesystem combines two filesystems - an \fBupper\fR filesystem and
+a \fBlower\fR filesystem.  When a name exists in both filesystems, the object
+in the upper filesystem is visible while the object in the lower filesystem is
+either hidden or, in the case of directories, merged with the upper object.
+
+The lower filesystem can be any filesystem supported by Linux and does not need
+to be writable.  The lower filesystem can even be another overlayfs.  The upper
+filesystem will normally be writable and if it is it must support the creation
+of trusted.* extended attributes, and must provide a valid d_type in readdir
+responses, so NFS is not suitable.
+
+A read-only overlay of two read-only filesystems may use any filesystem type.
+The options \fBlowerdir\fR and \fBupperdir\fR are combined into a merged
+directory by using:
+
+.RS
+.br
+.nf
+.B "mount \-t overlay  overlay  \e"
+.B "  \-olowerdir=/lower,upperdir=/upper,workdir=/work  /merged"
+.fi
+.br
+.RE
+
 .TP
-.\"O \fBuid=\fP\fIvalue\fP and \fBgid=\fP\fIvalue\fP
-\fBuid=\fP\fIvalue\fP と \fBgid=\fP\fIvalue\fP
-.\"O These options are recognized, but have no effect as far as I can see.
-これらのオプションは指定可能であるが、私の知る限り効力はない。
+.BI lowerdir= directory
+Any filesystem, does not need to be on a writable filesystem.
+.TP
+.BI upperdir= directory
+The upperdir is normally on a writable filesystem.
+.TP
+.BI workdir= directory
+The workdir needs to be an empty directory on the same filesystem as upperdir.
 
-.\"O .SH "Mount options for ramfs"
-.SH "ramfs のマウントオプション"
-.\"O Ramfs is a memory based filesystem. Mount it and you have it. Unmount it
-.\"O and it is gone. Present since Linux 2.3.99pre4.
-.\"O There are no mount options.
-ramfs はメモリベースのファイルシステムである。
-マウントすれば使用することができる。
-アンマウントすると内容は消えてしまう。
-Linux 2.3.99pre4 以降で存在する。
-マウントオプションはない。
-.\"Osato:
-.\"Osato: have it がうまく訳せていない。
-.\"Osato:
-
-.\"O .SH "Mount options for reiserfs"
-.SH "reiserfs のマウントオプション"
+.\"O .SS "Mount options for reiserfs"
+.SS "reiserfs のマウントオプション"
 .\"O Reiserfs is a journaling filesystem.
 reiserfs はジャーナリングファイルシステムである。
-.\"O The reiserfs mount options are more fully described at
-.\"O .IR http://www.namesys.com/mount-options.html .
-reiserfs のマウントオプションは
-.I http://www.namesys.com/mount-options.html
-でもっと完全に説明されている。
 .TP
-.BR conv
-.\"O Instructs version 3.6 reiserfs software to mount a version 3.5 file system,
-.\"O using the 3.6 format for newly created objects. This file system will no
+.B conv
+.\"O Instructs version 3.6 reiserfs software to mount a version 3.5 filesystem,
+.\"O using the 3.6 format for newly created objects.  This filesystem will no
 .\"O longer be compatible with reiserfs 3.5 tools.
 バージョン 3.6 の reiserfs ソフトウェアに
 バージョン 3.5 のファイルシステムをマウントさせる。
 新しく作成されたオブジェクトには 3.6 の形式が使われる。
 このようにしたファイルシステムは reiserfs 3.5 のツールとは互換性がなくなる。
 .TP
-.BR hash=rupasov " / " hash=tea " / " hash=r5 " / " hash=detect
+.BR hash= { rupasov | tea | r5 | detect }
 .\"O Choose which hash function reiserfs will use to find files within directories.
 reiserfs がディレクトリ内でファイルを見付けるのに、
 どのハッシュ関数を使うかを選択する。
 .RS
 .TP
 .B rupasov
-.\"O A hash invented by Yury Yu. Rupasov.  It is fast and preserves locality,
+.\"O A hash invented by Yury Yu.\& Rupasov.  It is fast and preserves locality,
 .\"O mapping lexicographically close file names to close hash values.
 .\"O This option should not be used, as it causes a high probability of hash
-.\"O collisions. 
-Yury Yu. Rupasov が発明したハッシュ。
+.\"O collisions.
+Yury Yu.\& Rupasov が発明したハッシュ。
 このハッシュは高速であり、
 辞書順で近いファイル名を近いハッシュ値に対応づけることで
 近接関係 (locality) が保存される。
@@ -2788,16 +2660,16 @@ Yury Yu. Rupasov が発明したハッシュ。
 .\"O A Davis-Meyer function implemented by Jeremy Fitzhardinge.
 .\"O It uses hash permuting bits in the name.  It gets high randomness
 .\"O and, therefore, low probability of hash collisions at some CPU cost.
-.\"O This may be used if EHASHCOLLISION errors are experienced with the r5 hash. 
+.\"O This may be used if EHASHCOLLISION errors are experienced with the r5 hash.
 Jeremy Fitzhardinge が実装した Davis-Meyer 関数。
 ハッシュ名にハッシュ置換ビットを使う。
 ランダム性が高いので、使用される CPU コストに対してハッシュ衝突の確率が低い。
 このオプションは、r5 ハッシュで EHASHCOLLISION エラーが起こる場合に使われる。
 .TP
 .B r5
-.\"O A modified version of the rupasov hash. It is used by default and is
-.\"O the best choice unless the file system has huge directories and
-.\"O unusual file-name patterns. 
+.\"O A modified version of the rupasov hash.  It is used by default and is
+.\"O the best choice unless the filesystem has huge directories and
+.\"O unusual file-name patterns.
 rupasov ハッシュの修正版。
 デフォルトではこれが使用され、非常に多くのディレクトリや
 変わったファイル名のパターンがファイルシステムにない限り、
@@ -2805,11 +2677,11 @@ rupasov ハッシュの修正版。
 .TP
 .B detect
 .\"O Instructs
-.\"O .IR mount
+.\"O .I mount
 .\"O to detect which hash function is in use by examining
-.\"O the file system being mounted,  and to write this information into
-.\"O the reiserfs superblock. This is only useful on the first mount of
-.\"O an old format file system. 
+.\"O the filesystem being mounted, and to write this information into
+.\"O the reiserfs superblock.  This is only useful on the first mount of
+.\"O an old format filesystem.
 現在マウントされているファイルシステムを
 .I mount
 コマンドに調べさせ、どのハッシュ関数が使われているかを検出 (detect) させる。
@@ -2817,25 +2689,31 @@ rupasov ハッシュの修正版。
 古い形式のファイルシステムを初めてマウントするときにのみ役立つ。
 .RE
 .TP
-.BR hashed_relocation
-.\"O Tunes the block allocator. This may provide performance improvements
-.\"O in some situations. 
+.B hashed_relocation
+.\"O Tunes the block allocator.  This may provide performance improvements
+.\"O in some situations.
 ブロックアロケータを有効にする。
 ある状況下では性能の向上が見られるかもしれない。
 .TP
-.BR noborder
-.\"O Disable the border allocator algorithm invented by Yury Yu. Rupasov.
-.\"O This may provide performance improvements in some situations.
-Yury Yu. Rupasov が発明した境界アロケータアルゴリズムを無効にする。
+.B no_unhashed_relocation
+.\"O Tunes the block allocator.  This may provide performance improvements
+.\"O in some situations.
+ブロックアロケータを有効にする。
 ある状況下では性能の向上が見られるかもしれない。
 .TP
-.BR nolog
-.\"O Disable journalling. This will provide slight performance improvements in
+.B noborder
+.\"O Disable the border allocator algorithm invented by Yury Yu.\& Rupasov.
+.\"O This may provide performance improvements in some situations.
+Yury Yu.\& Rupasov が発明した境界アロケータアルゴリズムを無効にする。
+ある状況下では性能の向上が見られるかもしれない。
+.TP
+.B nolog
+.\"O Disable journaling.  This will provide slight performance improvements in
 .\"O some situations at the cost of losing reiserfs's fast recovery from crashes.
-.\"O Even with this option turned on, reiserfs still performs all journalling
-.\"O operations, save for actual writes into its journalling area.  Implementation
+.\"O Even with this option turned on, reiserfs still performs all journaling
+.\"O operations, save for actual writes into its journaling area.  Implementation
 .\"O of
-.\"O .IR nolog
+.\"O .I nolog
 .\"O is a work in progress.
 ジャーナリングを無効にする。
 reiserfs が持つクラッシュからの高速な回復は失われるが、
@@ -2843,14 +2721,14 @@ reiserfs が持つクラッシュからの高速な回復は失われるが、
 このオプションが有効になっている場合でも、
 reiserfs は、ジャーナリング領域への実際の書き込みを保存するといった
 全てのジャーナリング操作を行っている。
-.IR nolog
+.I nolog
 の実装は進行中の作業である。
 .TP
-.BR notail
+.B notail
 .\"O By default, reiserfs stores small files and `file tails' directly into its
-.\"O tree. This confuses some utilities such as
-.\"O .BR LILO (8) .
-.\"O This option is used to disable packing of files into the tree. 
+.\"O tree.  This confuses some utilities such as
+.\"O .BR LILO (8).
+.\"O This option is used to disable packing of files into the tree.
 デフォルトでは、reiserfs は小さなファイルや「ファイルの末尾」を
 ツリーの中に直接格納する。
 これが
@@ -2858,9 +2736,9 @@ reiserfs は、ジャーナリング領域への実際の書き込みを保存�
 のようなユーティリティを混乱させてしまう。
 このオプションはファイルをツリーの中に格納させないようにする。
 .TP
-.BR replayonly
+.B replayonly
 .\"O Replay the transactions which are in the journal, but do not actually
-.\"O mount the file system. Mainly used by
+.\"O mount the filesystem.  Mainly used by
 .\"O .IR reiserfsck .
 ジャーナルにあるトランザクションをやり直させる。
 実際にはファイルシステムをマウントしない。
@@ -2891,98 +2769,143 @@ reiserfs パーティションのオンラインでの領域拡張を許可す�
 .I resizer
 ユーティリティが取得できる。
 
-.\"O .SH "Mount options for romfs"
-.\"O None.
-.SH "romfs のマウントオプション"
-なし。
-
-.\"O .SH "Mount options for smbfs"
-.SH "smbfs のマウントオプション"
-.\"O Just like
-.\"O .IR nfs ", the " smbfs
-.\"O implementation expects a binary argument (a
-.\"O .IR "struct smb_mount_data" )
-.\"O to the mount system call. This argument is constructed by
-.\"O .BR smbmount (8)
-.\"O and the current version of
-.\"O .B mount
-.\"O (2.12) does not know anything about smbfs.
-.IR nfs " と同様に、" smbfs
-の実装は mount システムコールにバイナリの引き数
-.RI ( "struct smb_mount_data" )
-を用いる。
-この引き数は
-.BR smbmount (8)
-によって渡すことができる。
-現在のバージョンの
-.B mount
-(2.12) は smbfs を扱うことができない。
-
-.\"O .SH "Mount options for sysv"
-.\"O None.
-.SH "sysv のマウントオプション"
-なし。
-
-.\"O .SH "Mount options for tmpfs"
-.SH "tmpfs のマウントオプション"
-.\"O The following parameters accept a suffix
-.\"O .BR k ,
-.\"O .B m
-.\"O or
-.\"O .B g
-.\"O for Ki, Mi, Gi (binary kilo, mega and giga) and can be changed on remount.
-以下のパラメータには、Ki, Mi, Gi (バイナリのキロ・メガ・ギガ) を表す
-サフィックス
-.BR k ,
-.BR m ,
-.B g
-をつけることができる。
-また再マウントのときに変更することもできる。
 .TP
-.BI size= nbytes
-.\"O Override default maximum size of the filesystem.
-.\"O The size is given in bytes, and rounded down to entire pages.
-.\"O The default is half of the memory.
-ファイルシステムのデフォルトの最大サイズを上書きする。
-サイズはバイトで指定され、ページ単位になるように切り捨てられる。
-デフォルトはメモリサイズの半分である。
+.B user_xattr
+Enable Extended User Attributes.  See the
+.BR attr (5)
+manual page.
 .TP
-.B nr_blocks=
-.\"O Set number of blocks.
-ブロック数を設定する。
+.B acl
+Enable POSIX Access Control Lists.  See the
+.BR acl (5)
+manual page.
 .TP
-.B nr_inodes=
-.\"O Set number of inodes.
-inode 数を設定する。
-.TP
-.B mode=
-.\"O Set initial permissions of the root directory.
-ルートディレクトリの最初の許可属性を設定する。
+.\"O .BR barrier=none " / " barrier=flush "
+.BR barrier=none " / " barrier=flush
+This disables / enables the use of write barriers in the journaling code.
+barrier=none disables, barrier=flush enables (default).  This also requires an
+IO stack which can support barriers, and if reiserfs gets an error on a barrier
+write, it will disable barriers again with a warning.  Write barriers enforce
+proper on-disk ordering of journal commits, making volatile disk write caches
+safe to use, at some performance penalty.  If your disks are battery-backed in
+one way or another, disabling barriers may safely improve performance.
 
-.\"O .SH "Mount options for udf"
-.SH "udf のマウントオプション"
-.\"O udf is the "Universal Disk Format" filesystem defined by the Optical
-.\"O Storage Technology Association, and is often used for DVD-ROM.
+.SS "Mount options for ubifs"
+UBIFS is a flash filesystem which works on top of UBI volumes.  Note that
+\fBatime\fR is not supported and is always turned off.
+.TP
+The device name may be specified as
+.RS
+.B ubiX_Y
+UBI device number
+.BR X ,
+volume number
+.B Y
+.TP
+.B ubiY
+UBI device number
+.BR 0 ,
+volume number
+.B Y
+.TP
+.B ubiX:NAME
+UBI device number
+.BR X ,
+volume with name
+.B NAME
+.TP
+.B ubi:NAME
+UBI device number
+.BR 0 ,
+volume with name
+.B NAME
+.RE
+Alternative
+.B !
+separator may be used instead of
+.BR : .
+.TP
+The following mount options are available:
+.TP
+.B bulk_read
+Enable bulk-read.  VFS read-ahead is disabled because it slows down the file
+system.  Bulk-Read is an internal optimization.  Some flashes may read faster if
+the data are read at one go, rather than at several read requests.  For
+example, OneNAND can do "read-while-load" if it reads more than one NAND page.
+.TP
+.B no_bulk_read
+Do not bulk-read.  This is the default.
+.TP
+.B chk_data_crc
+Check data CRC-32 checksums.  This is the default.
+.TP
+.BR no_chk_data_crc .
+Do not check data CRC-32 checksums.  With this option, the filesystem does not
+check CRC-32 checksum for data, but it does check it for the internal indexing
+information.  This option only affects reading, not writing.  CRC-32 is always
+calculated when writing the data.
+.TP
+.BR compr= { none | lzo | zlib }
+Select the default compressor which is used when new files are written.  It is
+still possible to read compressed files if mounted with the
+.B none
+option.
+
+.\"O .SS "Mount options for udf"
+.SS "udf のマウントオプション"
+.\"O UDF is the "Universal Disk Format" filesystem defined by OSTA, the Optical
+.\"O Storage Technology Association, and is often used for DVD-ROM, frequently
+.\"O in the form of a hybrid UDF/ISO-9660 filesystem. It is, however,
+.\"O perfectly usable by itself on disk drives, flash drives and other block devices.
 .\"O See also
 .\"O .IR iso9660 .
-udf は Optical Storage Technology Association で定義されている
+UDF は OSTA, Optical Storage Technology Association で定義されている
 "Universal Disk Format" ファイルシステムであり、DVD-ROM で多く使用される。
+frequently
+in the form of a hybrid UDF/ISO-9660 filesystem. It is, however,
+perfectly usable by itself on disk drives, flash drives and other block devices.
 .I iso9660
 も参照すること。
 .TP
+.B uid=
+Make all files in the filesystem belong to the given user.
+uid=forget can be specified independently of (or usually in
+addition to) uid=<user> and results in UDF
+not storing uids to the media. In fact the recorded uid
+is the 32-bit overflow uid -1 as defined by the UDF standard.
+The value is given as either <user> which is a valid user name or the corresponding
+decimal user id, or the special string "forget".
+.TP
 .B gid=
-.\"O Set the default group.
-デフォルトのグループを設定する。
+Make all files in the filesystem belong to the given group.
+gid=forget can be specified independently of (or usually in
+addition to) gid=<group> and results in UDF
+not storing gids to the media. In fact the recorded gid
+is the 32-bit overflow gid -1 as defined by the UDF standard.
+The value is given as either <group> which is a valid group name or the corresponding
+decimal group id, or the special string "forget".
 .TP
 .B umask=
-.\"O Set the default umask.
-デフォルトの umask を設定する。
+Mask out the given permissions from all inodes read from the filesystem.
 .\"O The value is given in octal.
 値は 8 進数で指定する。
 .TP
-.B uid=
-.\"O Set the default user.
-デフォルトのユーザーを設定する。
+.B mode=
+If mode= is set the permissions of all non-directory inodes read from the
+filesystem will be set to the given mode. The value is given in octal.
+.TP
+.B dmode=
+If dmode= is set the permissions of all directory inodes read from the
+filesystem will be set to the given dmode. The value is given in octal.
+.TP
+.B bs=
+Set the block size. Default value prior to kernel version 2.6.30 was
+2048. Since 2.6.30 and prior to 4.11 it was logical device block size with
+fallback to 2048. Since 4.11 it is logical block size with fallback to
+any valid block size between logical device block size and 4096.
+
+For other details see the \fBmkudffs\fP(8) 2.0+ manpage, sections
+\fBCOMPATIBILITY\fP and \fBBLOCK SIZE\fP.
 .TP
 .B unhide
 .\"O Show otherwise hidden files.
@@ -2992,62 +2915,75 @@ udf は Optical Storage Technology Association で定義されている
 .\"O Show deleted files in lists.
 削除されたファイルもリストに見せる。
 .TP
+.B adinicb
+Embed data in the inode. (default)
+.TP
+.B noadinicb
+Don't embed data in the inode.
+.TP
+.B shortad
+Use short UDF address descriptors.
+.TP
+.B longad
+Use long UDF address descriptors. (default)
+.TP
 .B nostrict
 .\"O Unset strict conformance.
 厳密に適合させない。
-.\" .TP
-.\" .B utf8
-.\"O .\" (unused).
-.\" (未実装)。
 .TP
-.B iocharset
-.\"O Set the NLS character set.
+.B iocharset=
+.\"O Set the NLS character set. This requires kernel compiled with CONFIG_UDF_NLS option.
 NLS 文字セットを設定する。
+This requires kernel compiled with CONFIG_UDF_NLS option.
 .TP
-.B bs=
-.\"O Set the block size. (May not work unless 2048.)
-ブロックサイズを設定する (2048 以外では動作しない)。
+.B utf8
+Set the UTF-8 character set.
+.SS Mount options for debugging and disaster recovery
 .TP
 .B novrs
-.\"O Skip volume sequence recognition.
-ボリュームシーケンスの確認をスキップする。
+.\"O Ignore the Volume Recognition Sequence and attempt to mount anyway.
+Ignore the Volume Recognition Sequence and attempt to mount anyway.
 .TP
 .B session=
-.\"O Set the CDROM session counting from 0. Default: last session.
-CDROM セッションのカウントを 0 から始める。
-デフォルトは最終セッション。
-.\"nakano: 直前のセッションだろうか?
+.\"O Select the session number for multi-session recorded optical media. (default= last session)
+Select the session number for multi-session recorded optical media. (default= last session)
 .TP
 .B anchor=
-.\"O Override standard anchor location. Default: 256.
-標準のアンカーの位置を上書きする。デフォルトは 256。
-.TP
-.B volume=
-.\"O Override the VolumeDesc location. (unused)
-VolumeDesc の位置を上書きする (未実装)。
-.TP
-.B partition=
-.\"O Override the PartitionDesc location. (unused)
-PartitionDesc の位置を上書きする (未実装)。
+.\"O Override standard anchor location. (default= 256)
+標準のアンカーの位置を上書きする。(デフォルトは 256)
 .TP
 .B lastblock=
-.\"O Set the last block of the filesystem.
-ファイルシステムの最終ブロックを設定する。
+Set the last block of the filesystem.
+.SS Unused historical mount options that may be encountered and should be removed
+.TP
+.B uid=ignore
+Ignored, use uid=<user> instead.
+.TP
+.B gid=ignore
+Ignored, use gid=<group> instead.
+.TP
+.B volume=
+.\"O Unimplemented and ignored.
+未実装であり、無視される。
+.TP
+.B partition=
+.\"O Unimplemented and ignored.
+未実装であり、無視される。
 .TP
 .B fileset=
-.\"O Override the fileset block location. (unused)
-fileset ブロックの位置を上書きする (未実装)。
+.\"O Unimplemented and ignored.
+未実装であり、無視される。
 .TP
 .B rootdir=
-.\"O Override the root directory location. (unused)
-ルートディレクトリの位置を上書きする (未実装)。
+.\"O Unimplemented and ignored.
+未実装であり、無視される。
 
-.\"O .SH "Mount options for ufs"
-.SH "ufs のマウントオプション"
+.\"O .SS "Mount options for ufs"
+.SS "ufs のマウントオプション"
 .TP
 .BI ufstype= value
-.\"O UFS is a file system widely used in different operating systems.
-.\"O The problem are differences among implementations. Features of some
+.\"O UFS is a filesystem widely used in different operating systems.
+.\"O The problem are differences among implementations.  Features of some
 .\"O implementations are undocumented, so its hard to recognize the
 .\"O type of ufs automatically.
 .\"O That's why the user must specify the type of ufs by mount option.
@@ -3067,9 +3003,15 @@ ufs の古い形式。これがデフォルトで、リードオンリー
 (\-r オプションを忘れずに指定すること)。
 .TP
 .B 44bsd
-.\"O For filesystems created by a BSD-like system (NetBSD,FreeBSD,OpenBSD).
+.\"O For filesystems created by a BSD-like system (NetBSD, FreeBSD, OpenBSD).
 BSD ライクなシステム (NetBSD, FreeBSD, OpenBSD)
 で作られたファイルシステムに用いる。
+.TP
+.B ufs2
+Used in FreeBSD 5.x supported as read-write.
+.TP
+.B 5xbsd
+Synonym for ufs2.
 .TP
 .B sun
 .\"O For filesystems created by SunOS or Solaris on Sparc.
@@ -3103,7 +3045,7 @@ OpenStep で作られたファイルシステムに用いる (現在はリード
 
 .TP
 .BI onerror= value
-.\"O Set behaviour on error:
+.\"O Set behavior on error:
 エラー時の振る舞いを設定する:
 .RS
 .TP
@@ -3111,28 +3053,28 @@ OpenStep で作られたファイルシステムに用いる (現在はリード
 .\"O If an error is encountered, cause a kernel panic.
 エラーが起こったらカーネルパニックを起こす。
 .TP
-.B [lock|umount|repair]
+.RB [ lock | umount | repair ]
 .\"O These mount options don't do anything at present;
 .\"O when an error is encountered only a console message is printed.
 現在のところはこれらのオプションはなにもしない。
 エラーが起こるとコンソールメッセージが表示されるだけである。
 .RE
 
-.\"O .SH "Mount options for umsdos"
+.\"O .SS "Mount options for umsdos"
+.SS "umsdos のマウントオプション"
 .\"O See mount options for msdos.
 .\"O The
 .\"O .B dotsOK
 .\"O option is explicitly killed by
 .\"O .IR umsdos .
-.SH "umsdos のマウントオプション"
 msdos のマウントオプションを見よ。
 .B dotsOK
 オプションは
 .I umsdos
 では当然無効である。
 
-.\"O .SH "Mount options for vfat"
-.SH "vfat のマウントオプション"
+.\"O .SS "Mount options for vfat"
+.SS "vfat のマウントオプション"
 .\"O First of all, the mount options for
 .\"O .I fat
 .\"O are recognized.
@@ -3153,10 +3095,10 @@ msdos のマウントオプションを見よ。
 .B uni_xlate
 .\"O Translate unhandled Unicode characters to special escaped sequences.
 .\"O This lets you backup and restore filenames that are created with any
-.\"O Unicode characters. Without this option, a '?' is used when no
-.\"O translation is possible. The escape character is ':' because it is
-.\"O otherwise illegal on the vfat filesystem. The escape sequence
-.\"O that gets used, where u is the unicode character,
+.\"O Unicode characters.  Without this option, a '?' is used when no
+.\"O translation is possible.  The escape character is ':' because it is
+.\"O otherwise invalid on the vfat filesystem.  The escape sequence
+.\"O that gets used, where u is the Unicode character,
 .\"O is: ':', (u & 0x3f), ((u>>6) & 0x3f), (u>>12).
 扱うことのできない Unicode 文字を特殊なエスケープシーケンスに変換する。
 これは Unicode 文字を含むファイルをバックアップ、
@@ -3169,325 +3111,150 @@ msdos のマウントオプションを見よ。
 .TP
 .B posix
 .\"O Allow two files with names that only differ in case.
+.\"O This option is obsolete.
 大文字か小文字かだけが異なる 2 つのファイル名を識別できるようにする。
+このオプションは古い。
 .TP
 .B nonumtail
 .\"O First try to make a short name without sequence number,
 .\"O before trying
-.\"O .IR name~num.ext .
-.I name~num.ext
+.\"O .IR name\s+3~\s0num.ext .
+.I name\s+3~\s0num.ext
 を用いる前に、まずシーケンス番号のない短縮名に変換しようとする。
 .TP
 .B utf8
-.\"O UTF8 is the filesystem safe 8-bit encoding of Unicode that is used
-.\"O by the console. It can be be enabled for the filesystem with this option.
-.\"O If `uni_xlate' gets set, UTF8 gets disabled.
+.\"O UTF8 is the filesystem safe 8-bit encoding of Unicode that is used by the
+.\"O console.  It can be enabled for the filesystem with this option or disabled
+.\"O with utf8=0, utf8=no or utf8=false.  If `uni_xlate' gets set, UTF8 gets
+.\"O disabled.
 UTF8 は、コンソールで用いられる Unicode の 8 ビットエンコードに対して
 安全なファイルシステムである。
 このオプションを指定すると UTF8 が有効になる。
+また、utf8=0, utf8=no, utf8=false のいずれかで無効になる。
 \&'uni_xlate' が設定されていると UTF8 は無効になる。
 .TP
-.B shortname=[lower|win95|winnt|mixed]
-
-.\"O Defines the behaviour for creation and display of filenames which fit into
-.\"O 8.3 characters. If a long name for a file exists, it will always be
-.\"O preferred display. There are four modes:
+.BI shortname= mode
+.\"O Defines the behavior for creation and display of filenames which fit into
+.\"O 8.3 characters.  If a long name for a file exists, it will always be the
+.\"O preferred one for display.  There are four \fImode\fRs:
 8.3 形式の文字列に合うようなファイル名を
 生成したり表示したりする動作を定義する。
 ファイルにロングネームがある場合は、いつでも指定された動作で表示する。
-以下の 4 つのモードがある:
+以下の 4 つの \fImode\fR がある:
 .RS
 .TP
-.I lower
-.\"O Force the short name to lower case upon display; store a long name when 
+.B lower
+.\"O Force the short name to lower case upon display; store a long name when
 .\"O the short name is not all upper case.
 ショートネームを表示する際に小文字にする。
 ショートネームに小文字が含まれる場合は、ロングネームで生成する。
 .TP
-.I win95
+.B win95
 .\"O Force the short name to upper case upon display; store a long name when
 .\"O the short name is not all upper case.
 ショートネームを表示する際に大文字にする。
 ショートネームに小文字が含まれる場合は、ロングネームで生成する。
 .TP
-.I winnt
-.\"O Display the shortname as is; store a long name when the short name is 
+.B winnt
+.\"O Display the short name as is; store a long name when the short name is
 .\"O not all lower case or all upper case.
 ショート名をそのまま表示する。
 ショートネームが全て小文字または全て大文字でない場合は、
 ロングネームで生成する。
 .TP
-.I mixed
+.B mixed
 .\"O Display the short name as is; store a long name when the short name is not
-.\"O all upper case.
+.\"O all upper case.  This mode is the default since Linux 2.6.32.
 ショート名をそのまま表示する。
 ショートネームに小文字が含まれる場合は、ロングネームで生成する。
+このモードは、Linux 2.6.32 以降のデフォルトである。
 .RE
 
-.\"O The default is "lower".
-デフォルトは "lower" である。
-
-.\"O .SH "Mount options for usbfs"
-.SH "usbfs のマウントオプション"
+.\"O .SS "Mount options for usbfs"
+.SS "usbfs のマウントオプション"
 .TP
-.\"O \fBdevuid=\fP\fIuid\fP and \fBdevgid=\fP\fIgid\fP and \fBdevmode=\fP\fImode\fP
-.\"O Set the owner and group and mode of the device files in the usbfs file system
-.\"O (default: uid=gid=0, mode=0644). The mode is given in octal.
-\fBdevuid=\fP\fIuid\fP, \fBdevgid=\fP\fIgid\fP, \fBdevmode=\fP\fImode\fP
+.\"O \fBdevuid=\fP\,\fIuid\fP and \fBdevgid=\fP\,\fIgid\fP and \fBdevmode=\fP\,\fImode\fP
+.\"O Set the owner and group and mode of the device files in the usbfs filesystem
+.\"O (default: uid=gid=0, mode=0644).  The mode is given in octal.
+\fBdevuid=\fP\,\fIuid\fP, \fBdevgid=\fP\,\fIgid\fP, \fBdevmode=\fP\,\fImode\fP
 usbfs ファイルシステムにあるデバイスファイルの
 所有者・グループ・モードを設定する
 (デフォルトは uid=gid=0, mode=0644)。
 このモードは 8 進数で指定する。
 .TP
-.\"O \fBbusuid=\fP\fIuid\fP and \fBbusgid=\fP\fIgid\fP and \fBbusmode=\fP\fImode\fP
+.\"O \fBbusuid=\fP\,\fIuid\fP and \fBbusgid=\fP\,\fIgid\fP and \fBbusmode=\fP\,\fImode\fP
 .\"O Set the owner and group and mode of the bus directories in the usbfs
-.\"O file system (default: uid=gid=0, mode=0555). The mode is given in octal.
-\fBbusuid=\fP\fIuid\fP, \fBbusgid=\fP\fIgid\fP, \fBbusmode=\fP\fImode\fP
+.\"O filesystem (default: uid=gid=0, mode=0555).  The mode is given in octal.
+\fBbusuid=\fP\,\fIuid\fP, \fBbusgid=\fP\,\fIgid\fP, \fBbusmode=\fP\,\fImode\fP
 usbfs ファイルシステムにあるバスディレクトリの
 所有者・グループ・モードを設定する
 (デフォルトは uid=gid=0, mode=0555)。
 このモードは 8 進数で指定する。
 .TP
-.\"O \fBlistuid=\fP\fIuid\fP and \fBlistgid=\fP\fIgid\fP and \fBlistmode=\fP\fImode\fP
+.\"O \fBlistuid=\fP\,\fIuid\fP and \fBlistgid=\fP\,\fIgid\fP and \fBlistmode=\fP\,\fImode\fP
 .\"O Set the owner and group and mode of the file
 .\"O .I devices
-.\"O (default: uid=gid=0, mode=0444). The mode is given in octal.
-\fBlistuid=\fP\fIuid\fP, \fBlistgid=\fP\fIgid\fP, \fBlistmode=\fP\fImode\fP
+.\"O (default: uid=gid=0, mode=0444).  The mode is given in octal.
+\fBlistuid=\fP\,\fIuid\fP, \fBlistgid=\fP\,\fIgid\fP, \fBlistmode=\fP\,\fImode\fP
 ファイル
 .I devices
 の所有者・グループ・モードを設定する
 (デフォルトは uid=gid=0, mode=0444)。
 このモードは 8 進数で指定する。
 
-.\"O .SH "Mount options for xenix"
-.\"O None.
-.SH "xenix のマウントオプション"
-なし。
-
-.\"O .SH "Mount options for xfs"
-.SH "xfs のマウントオプション"
-.TP
-.BI biosize= size
-.\"O Sets the preferred buffered I/O size (default size is 64K).
-.\"O .I size
-.\"O must be expressed as the logarithm (base2) of the desired I/O size.
-.\"O Valid values for this option are 14 through 16, inclusive
-.\"O (i.e. 16K, 32K, and 64K bytes).
-バッファされる I/O サイズを設定する (デフォルトのサイズは 64K)。
-.I size
-は、希望する I/O サイズの (基数 2 の) 対数で表さなければならない。
-このオプションに指定される有効な値は 14	〜 16 である
-(つまり、16K, 32K, 64K バイトである)。
-.\"O On machines with a 4K pagesize, 13 (8K bytes) is also a valid
-.\"O .IR size .
-.\"O The preferred buffered I/O size can also be altered on an individual
-.\"O file basis using the
-.\"O .BR ioctl (2)
-.\"O system call.
-ページサイズが 4K バイトのマシンでは、
-13 (8K バイト) も
-.I size
-として有効である。
-バッファされる I/O サイズは、
-.BR ioctl (2)
-システムコールを使って、各ファイル単位で変更することもできる。
-.TP
-.B dmapi " / " xdsm
-.\"O Enable the DMAPI (Data Management API) event callouts.
-DMAPI (Data Management API, データ管理 API) イベント呼び出しを有効にする。
-.TP
-.BI logbufs= value
-.\"O Set the number of in-memory log buffers.
-.\"O Valid numbers range from 2-8 inclusive.
-.\"O The default value is 8 buffers for filesystems with a blocksize of 64K,
-.\"O 4 buffers for filesystems with a blocksize of 32K,
-.\"O 3 buffers for filesystems with a blocksize of 16K,
-.\"O and 2 buffers for all other configurations.
-.\"O Increasing the number of buffers may increase performance on
-.\"O some workloads at the cost of the memory used for the
-.\"O additional log buffers and their associated control structures.
-メモリ内ログバッファの数を指定する。
-有効な数値は 2 〜 8 の範囲である。
-デフォルトの値は、
-ブロックサイズが 64K のファイルシステムには 8 バッファ、
-ブロックサイズが 23K のファイルシステムには 4 バッファ、
-ブロックサイズが 16K のファイルシステムには 3 バッファ、
-他の設定では 2 バッファである。
-バッファ数を増やすと、同じ実行負荷に対して性能が良くなる。
-しかし、追加されるログバッファとそれに関連する制御構造体で使われる
-メモリのコストがかかる。
-.TP
-.BI logbsize= value
-.\"O Set the size of each in-memory log buffer.
-.\"O Valid sizes are 16384 (16K) and 32768 (32K).
-.\"O The default value for machines with more than 32MB of memory is 32768,
-.\"O machines with less memory use 16384 by default.
-各メモリ内ログバッファのサイズを設定する。
-有効なサイズは 16384 (16K) と 32768 (32K) である。
-デフォルトの値は、32MB 以上のメモリを持つマシンでは 32768 である。
-それ以下のマシンでは 16384 がデフォルトである。
-.TP
-.\"O \fBlogdev=\fP\fIdevice\fP and \fBrtdev=\fP\fIdevice\fP
-.\"O Use an external log (metadata journal) and/or real-time device.
-.\"O An XFS filesystem has up to three parts: a data section, a log section,
-.\"O and a real-time section.
-.\"O The real-time section is optional, and the log section can be separate
-.\"O from the data section or contained within it.
-.\"O Refer to
-.\"O .BR xfs (5).
-\fBlogdev=\fP\fIdevice\fP と \fBrtdev=\fP\fIdevice\fP
-外部ログ (メタデータジャーナル) とリアルタイムデバイスの
-両方または片方を使う。
-XFS ファイルシステムには、データセクション・ログセクション・
-リアルタイムセクションの 3 つの部分がある。
-リアルタイムセクションは省略することができる。
-ログセクションはデータセクションと分離することも、
-データセクションに含めることもできる。
-.BR xfs (5)
-を参照すること。
-.TP
-.B noalign
-.\"O Data allocations will not be aligned at stripe unit boundaries.
-データ割り当てをストライプユニット境界に配置しない。
-.TP
-.B noatime
-.\"O Access timestamps are not updated when a file is read.
-ファイルを読み込んだときに、タイムスタンプを更新しない。
-.TP
-.B norecovery
-.\"O The filesystem will be mounted without running log recovery.
-.\"O If the filesystem was not cleanly unmounted, it is likely to
-.\"O be inconsistent when mounted in
-.\"O .B norecovery
-.\"O mode.
-ログを使った回復を実行せずにファイルシステムをマウントする。
-ファイルシステムが正常にアンマウンントされなかった場合に、
-.B norecovery
-モードでマウントされると、不整合が起こりやすい。
-.\"O Some files or directories may not be accessible because of this.
-.\"O Filesystems mounted
-.\"O .B norecovery
-.\"O must be mounted read-only or the mount will fail.
-そのため、いくつかのファイルやディレクトリにアクセスできないかもしれない。
-.B norecovery
-でマウントされるファイルシステムは、
-リードオンリーでマウントしなければならない。
-さもなければ、マウントに失敗するだろう。
-.TP
-.B nouuid
-.\"O Ignore the filesystem uuid. This avoids errors for duplicate uuids.
-ファイルシステム uuid を無視する。
-これは重複する uuid によるエラーを回避する。
-.TP
-.B osyncisdsync
-.\"O Make writes to files opened with the O_SYNC flag set behave
-.\"O as if the O_DSYNC flag had been used instead.
-.\"O This can result in better performance without compromising
-.\"O data safety.
-.\"O However if this option is in effect, timestamp updates from
-.\"O O_SYNC writes can be lost if the system crashes.
-O_SYNC フラグを設定してオープンしたファイルに、
-O_DSYNC フラグが使われた場合と同じ動作で書き込む。
-データの安全性を危険に晒すことなく、よりよい性能が得られる。
-しかし、このオプションが有効になっている場合、
-システムがクラッシュすると、
-O_SYNC 書き込みによるタイムスタンプの更新が失われる。
-.TP
-.BR quota " / " usrquota " / " uqnoenforce
-.\"O User disk quota accounting enabled, and limits (optionally) enforced.
-ユーザーディスク quota のアカウントを有効にして、
-制限を (オプションとして) 守らせる。
-.TP
-.BR grpquota " / " gqnoenforce
-.\"O Group disk quota accounting enabled and limits (optionally) enforced.
-グループディスク quota のアカウントを有効にして、
-制限を (オプションとして) 守らせる。
-.TP
-.\"O \fBsunit=\fP\fIvalue\fP and \fBswidth=\fP\fIvalue\fP
-\fBsunit=\fP\fIvalue\fP と \fBswidth=\fP\fIvalue\fP
-.\"O Used to specify the stripe unit and width for a RAID device or a stripe
-.\"O volume.
-.\"O .I value
-.\"O must be specified in 512-byte block units.
-RAID デバイスのストライプユニットと幅を指定する。
-または、ストライプボリュームを指定する。
-.\"O If this option is not specified and the filesystem was made on a stripe
-.\"O volume or the stripe width or unit were specified for the RAID device at
-.\"O mkfs time, then the mount system call will restore the value from the
-.\"O superblock.
-このオプションが指定されていない場合、
-mkfs の時に RAID デバイスに対して
-ストライプボリューム・幅・ユニットを指定して
-ファイルシステムが作成されていれば、
-mount システムコールは値をスーパーブロックから取り出す。
-.\"O For filesystems that are made directly on RAID devices, these options can be
-.\"O used to override the information in the superblock if the underlying disk
-.\"O layout changes after the filesystem has been created.
-RAID デバイス上に直接作成されたファイルシステムでは、
-スーパーブロックにある情報を上書きするために、
-これらのオプションを使うことができる。
-ただし、ファイルシステムが作成された後で、
-下層にあるディスクレイアウトが変更される場合。
-.\"O The
-.\"O .B swidth
-.\"O option is required if the
-.\"O .B sunit
-.\"O option has been specified,
-.\"O and must be a multiple of the
-.\"O .B sunit
-.\"O value.
-.B sunit
-オプションが指定された場合、
-.B swidth
-が必要である。
-.B swidth
-は
-.B sunit
-の値の倍数でなければならない。
-
-.\"O .SH "Mount options for xiafs"
-.\"O None. Although nothing is wrong with xiafs, it is not used much,
-.\"O and is not maintained. Probably one shouldn't use it.
-.\"O Since Linux version 2.1.21 xiafs is no longer part of the kernel source.
-.SH "xiafs のマウントオプション"
-なし。xiafs は特に欠点のないファイルシステムであるが、
-あまり用いられておらず、メンテナンスされていない。
-おそらく用いない方が良いだろう。
-Linux のバージョン 2.1.21 以降では xiafs はカーネルソースから削除された。
-
 .\"O .SH "THE LOOP DEVICE"
 .SH "loop デバイス"
-.\"O One further possible type is a mount via the loop device. For example,
+.\"O One further possible type is a mount via the loop device.  For example,
 .\"O the command
 残ったタイプとしてもう 1 つ、loop デバイスを用いたマウントがある。
 例えば以下のコマンド
-
-.nf
-.B "  mount /tmp/fdimage /mnt -t msdos -o loop=/dev/loop3,blocksize=1024"
-.fi
-
+.RS
+.sp
+.B "mount /tmp/disk.img /mnt \-t vfat \-o loop=/dev/loop3"
+.sp
+.RE
 .\"O will set up the loop device
 .\"O .I /dev/loop3
 .\"O to correspond to the file
-.\"O .IR /tmp/fdimage ,
+.\"O .IR /tmp/disk.img ,
 .\"O and then mount this device on
 .\"O .IR /mnt .
 は loop デバイス
 .I /dev/loop3
 をファイル
-.I /tmp/fdimage
+.I /tmp/disk.img
 に関連付け、そしてこのデバイスを
 .I /mnt
 にマウントする。
 
+If no explicit loop device is mentioned
+(but just an option `\fB\-o loop\fP' is given), then
+.B mount
+will try to find some unused loop device and use that, for example
+.RS
+.sp
+.B "mount /tmp/disk.img /mnt \-o loop"
+.sp
+.RE
+The mount command
+.B automatically
+creates a loop device from a regular file if a filesystem type is
+not specified or the filesystem is known for libblkid, for example:
+.RS
+.sp
+.B "mount /tmp/disk.img /mnt"
+.sp
+.B "mount \-t ext4 /tmp/disk.img /mnt"
+.sp
+.RE
 .\"O This type of mount knows about three options, namely
-.\"O .BR loop ", " offset " and " encryption ,
+.\"O .BR loop ", " offset " and " sizelimit ,
 .\"O that are really options to
 .\"O .BR \%losetup (8).
 .\"O (These options can be used in addition to those specific
 .\"O to the filesystem type.)
 このタイプのマウントの際には 3 つのオプションが指定できる。
-.BR loop ", " offset ", " encryption
+.BR loop ", " offset ", " sizelimit
 である。
 これらは実際には
 .BR \%losetup (8)
@@ -3495,36 +3262,34 @@ Linux のバージョン 2.1.21 以降では xiafs はカーネルソースか�
 (これらのオプションはファイルシステムタイプに固有のオプションの他に
 使用することができる。)
 
-.\"O If no explicit loop device is mentioned
-.\"O (but just an option `\fB\-o loop\fP' is given), then
-.\"O .B mount
-.\"O will try to find some unused loop device and use that.
-loop デバイスの名前をコマンドラインで省略した場合
-(`\fB\-o loop\fP' のみを指定した場合) は
-.B mount
-はまだ使われていない loop デバイスを探してそれを利用する。
-.\"O If you are not so unwise as to make
-.\"O .I /etc/mtab
-.\"O a symbolic link to
-.\"O .I /proc/mounts
-.\"O then any loop device allocated by
+.\"O Since Linux 2.6.25 auto-destruction of loop devices is supported,
+.\"O meaning that any loop device allocated by
 .\"O .B mount
 .\"O will be freed by
-.\"O .BR umount .
-.\"O You can also free a loop device by hand, using `losetup -d', see
-.\"O .BR losetup (8).
-.I /etc/mtab
-を
-.I /proc/mounts
-へのシンボリックリンクにするような馬鹿をしなければ、
+.\"O .B umount
+.\"O independently of
+.\"O .IR /etc/mtab .
+Since Linux 2.6.25 auto-destruction of loop devices is supported,
+meaning that any loop device allocated by
 .B mount
-によって割り当てられたいずれの loop デバイスも
+will be freed by
 .B umount
-によって解放できる。
-`losetup -d' を用いれば loop デバイスを手動で解放することもできる。
-詳細は
-.BR losetup (8)
-を見よ。
+independently of
+.IR /etc/mtab .
+
+.\"O You can also free a loop device by hand, using
+.\"O .BR "losetup \-d " or " umount \-d" .
+You can also free a loop device by hand, using
+.BR "losetup \-d " or " umount \-d" .
+
+.\"O Since util-linux v2.29 mount command re-uses the loop device rather than
+.\"O initialize a new device if the same backing file is already used for some loop
+.\"O device with the same offset and sizelimit. This is necessary to avoid
+.\"O a filesystem corruption.
+Since util-linux v2.29 mount command re-uses the loop device rather than
+initialize a new device if the same backing file is already used for some loop
+device with the same offset and sizelimit. This is necessary to avoid
+a filesystem corruption.
 
 .\"O .SH RETURN CODES
 .SH 返り値
@@ -3533,95 +3298,151 @@ loop デバイスの名前をコマンドラインで省略した場合
 .B mount
 は以下のコードを返す (ビットは OR できる):
 .TP
-.BR 0
+.B 0
 .\"O success
 成功した。
 .TP
-.BR 1
+.B 1
 .\"O incorrect invocation or permissions
 呼び出しやパーミッションが正しくない。
 .TP
-.BR 2
+.B 2
 .\"O system error (out of memory, cannot fork, no more loop devices)
 システムエラー (メモリ不足、fork できなかった、loop デバイスが足りない)。
 .TP
-.BR 4
+.B 4
 .\"O internal
 .\"O .B mount
-.\"O bug or missing
-.\"O .BR nfs
-.\"O support in
-.\"O .B mount
+.\"O bug
 .B mount
-内部のバグ、または
-.B mount
-が
-.B nfs
-に対応していない。
+の内部のバグ
 .TP
-.BR 8
+.B 8
 .\"O user interrupt
 ユーザーによる中断。
 .TP
-.BR 16
+.B 16
 .\"O problems writing or locking /etc/mtab
 /etc/mtab の書き込み時またはロック時の問題がある。
 .TP
-.BR 32
+.B 32
 .\"O mount failure
 マウントに失敗した。
 .TP
-.BR 64
+.B 64
 .\"O some mount succeeded
 (訳註: "mount -a" などで) 一部が成功した。
+.RE
+
+The command \fBmount \-a\fR returns 0 (all succeeded), 32 (all failed), or 64 (some
+failed, some succeeded).
+
+.SH "EXTERNAL HELPERS"
+The syntax of external mount helpers is:
+.sp
+.in +4
+.BI /sbin/mount. suffix
+.I spec dir
+.RB [ \-sfnv ]
+.RB [ \-N
+.IR namespace ]
+.RB [ \-o
+.IR options ]
+.RB [ \-t
+.IR type \fB. subtype ]
+.in
+.sp
+where the \fIsuffix\fR is the filesystem type and the \fB\-sfnvoN\fR options have
+the same meaning as the normal mount options.  The \fB\-t\fR option is used for
+filesystems with subtypes support (for example
+.BR "/sbin/mount.fuse \-t fuse.sshfs" ).
+
+The command \fBmount\fR does not pass the mount options
+.BR unbindable ,
+.BR runbindable ,
+.BR private ,
+.BR rprivate ,
+.BR slave ,
+.BR rslave ,
+.BR shared ,
+.BR rshared ,
+.BR auto ,
+.BR noauto ,
+.BR comment ,
+.BR x-* ,
+.BR loop ,
+.B offset
+and
+.B sizelimit
+to the mount.<suffix> helpers.  All other options are used in a
+comma-separated list as argument to the \fB\-o\fR option.
 
 .\"O .SH FILES
 .SH ファイル
+.\"O See also "\fBThe files /etc/fstab, /etc/mtab and /proc/mounts\fR" section above.
+上記の "\fB/etc/fstab, /etc/mtab, /proc/mounts\fR" セクションも参照すること。
 .TP 18n
 .I /etc/fstab
-.\"O file system table
+.\"O filesystem table
 ファイルシステムの一覧表
 .TP
-.I /etc/mtab
-.\"O table of mounted file systems
-マウントされたファイルシステムの一覧表
+.I /run/mount
+libmount private runtime directory
 .TP
-.I /etc/mtab~
-.\"O lock file
-ロックファイル
+.I /etc/mtab
+.\"O table of mounted filesystems or symlink to /proc/mounts
+マウントされたファイルシステムの一覧表、または /proc/mounts へのシンボリックリンク。
+.TP
+.I /etc/mtab\s+3~\s0
+.\"O lock file (unused on systems with mtab symlink)
+ロックファイル (mtab がシンボリックリンクのシステムでは使われない)。
 .TP
 .I /etc/mtab.tmp
-.\"O temporary file
-テンポラリファイル
+.\"O temporary file (unused on systems with mtab symlink)
+テンポラリファイル (mtab がシンボリックリンクのシステムでは使われない)。
 .TP
 .I /etc/filesystems
 .\"O a list of filesystem types to try
 試行するファイルシステムタイプの一覧
-
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.IP LIBMOUNT_FSTAB=<path>
+overrides the default location of the fstab file (ignored for suid)
+.IP LIBMOUNT_MTAB=<path>
+overrides the default location of the mtab file (ignored for suid)
+.IP LIBMOUNT_DEBUG=all
+enables libmount debug output
+.IP LIBBLKID_DEBUG=all
+enables libblkid debug output
+.IP LOOPDEV_DEBUG=all
+enables loop device setup debug output
 .\"O .SH "SEE ALSO"
 .SH 関連項目
+.na
 .BR mount (2),
 .BR umount (2),
-.BR fstab (5),
 .BR umount (8),
-.BR swapon (8),
+.BR fstab (5),
 .BR nfs (5),
 .BR xfs (5),
 .BR e2label (8),
-.BR xfs_admin (8),
+.BR findmnt (8),
+.BR losetup (8),
+.BR mke2fs (8),
 .BR mountd (8),
 .BR nfsd (8),
-.BR mke2fs (8),
+.BR swapon (8),
 .BR tune2fs (8),
-.BR losetup (8)
+.BR xfs_admin (8)
+.ad
 .\"O .SH BUGS
 .SH バグ
-.\"O It is possible for a corrupted file system to cause a crash.
+.\"O It is possible for a corrupted filesystem to cause a crash.
 ファイルシステムに整合性がないと、クラッシュを引き起こす場合がある。
 .PP
-.\"O Some Linux file systems don't support
-.\"O .B "\-o sync and \-o dirsync"
-.\"O (the ext2 and ext3 file systems
+.\"O Some Linux filesystems don't support
+.\"O .BR "\-o sync " nor " \-o dirsync"
+.\"O (the ext2, ext3, ext4, fat and vfat filesystems
 .\"O .I do
 .\"O support synchronous updates (a la BSD) when mounted with the
 .\"O .B sync
@@ -3629,7 +3450,8 @@ loop デバイスの名前をコマンドラインで省略した場合
 Linux のファイルシステムのなかには
 .BR "\-o sync" " と " "\-o dirsync"
 をサポートしていないものがある。
-(ext2, ext3 ファイルシステムは BSD 流の同期更新をサポートして\fIいる\fP。
+(ext2, ext3, ext4, fat, vfat ファイルシステムは
+BSD 流の同期更新をサポートして\fIいる\fP。
 .B sync
 オプションとともにマウントすれば良い。)
 .PP
@@ -3638,7 +3460,7 @@ Linux のファイルシステムのなかには
 .\"O may not be able to change mount parameters (all
 .\"O .IR ext2fs -specific
 .\"O parameters, except
-.\"O .BR  sb ,
+.\"O .BR sb ,
 .\"O are changeable with a remount, for example, but you can't change
 .\"O .B gid
 .\"O or
@@ -3658,15 +3480,41 @@ Linux のファイルシステムのなかには
 .B umask
 を変更できない)。
 .PP
-.\"O Mount by label or uuid will work only if your devices have the names listed in
-.\"O .IR /proc/partitions .
-ラベルまたは uuid によるマウントは、そのデバイスの名前が
-.I /proc/partitions
-にリストされている場合にのみ可能である。
-.\"O In particular, it may well fail if the kernel was compiled with devfs
-.\"O but devfs is not mounted.
-特に、カーネルが devfs を付けてコンパイルされているにも関わらず、
-devfs がマウントされていない場合にも失敗する。
+It is possible that the files
+.I /etc/mtab
+and
+.I /proc/mounts
+don't match on systems with a regular mtab file.  The first file is based only on
+the mount command options, but the content of the second file also depends on
+the kernel and others settings (e.g.\& on a remote NFS server -- in certain cases
+the mount command may report unreliable information about an NFS mount point
+and the /proc/mounts file usually contains more reliable information.)  This is
+another reason to replace the mtab file with a symlink to the
+.I /proc/mounts
+file.
+.PP
+Checking files on NFS filesystems referenced by file descriptors (i.e.\& the
+.B fcntl
+and
+.B ioctl
+families of functions) may lead to inconsistent results due to the lack of
+a consistency check in the kernel even if noac is used.
+.PP
+The
+.B loop
+option with the
+.B offset
+or
+.B sizelimit
+options used may fail when using older kernels if the
+.B mount
+command can't confirm that the size of the block device has been configured
+as requested.  This situation can be worked around by using
+the
+.B losetup
+command manually before calling
+.B mount
+with the configured loop device.
 .\"O .SH HISTORY
 .SH 履歴
 .\"O A
@@ -3674,3 +3522,15 @@ devfs がマウントされていない場合にも失敗する。
 .\"O command existed in Version 5 AT&T UNIX.
 .B mount
 コマンドは Version 5 の AT&T UNIX には存在していた。
+.\"O .SH AUTHORS
+.SH 著者
+.nf
+Karel Zak <kzak@redhat.com>
+.fi
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The mount command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+mount コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
