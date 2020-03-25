@@ -169,87 +169,160 @@ Unix のシステムにおいては、アクセスできるファイルはすべ
 .B mount /dir
 .sp
 .RE
-then \fBmount\fR looks for a mountpoint (and if not found then for a device) in the
+.\"O then \fBmount\fR looks for a mountpoint (and if not found then for a device) in the
+.\"O .I /etc/fstab
+.\"O file.  It's possible to use the
+.\"O .B \-\-target
+.\"O or
+.\"O .B \-\-source
+.\"O options to avoid ambivalent interpretation of the given argument.  For example:
+\fBmount\fR は
 .I /etc/fstab
-file.  It's possible to use the
+ファイルのマウントポイントを調べる (なければ、デバイスを調べる)。
 .B \-\-target
-or
+または
 .B \-\-source
-options to avoid ambivalent interpretation of the given argument.  For example:
+オプションを使って指定した引き数が曖昧になるのを防ぐことができる。
+例えば:
 .RS
 .sp
 .B mount \-\-target /mountpoint
 .sp
 .RE
 
-The same filesystem may be mounted more than once, and in some cases (e.g.
-network filesystems) the same filesystem may be mounted on the same
-mountpoint more times. The mount command does not implement any policy to
-control this behavior. All behavior is controlled bythe  kernel and it is usually
-specific to the filesystem driver. The exception is \fB\-\-all\fR, in this case
-already mounted filesystems are ignored (see \fB\-\-all\fR below for more details).
+.\"O The same filesystem may be mounted more than once, and in some cases (e.g.
+.\"O network filesystems) the same filesystem may be mounted on the same
+.\"O mountpoint more times. The mount command does not implement any policy to
+.\"O control this behavior. All behavior is controlled bythe  kernel and it is usually
+.\"O specific to the filesystem driver. The exception is \fB\-\-all\fR, in this case
+.\"O already mounted filesystems are ignored (see \fB\-\-all\fR below for more details).
+同じファイルシステムを複数回マウントできる。
+同様なケースで (例えばネットワークファイルシステムで) 同じファイルシステムを
+同じマウントポイントで複数回マウントできる。
+マウントコマンドはこの挙動を制御するポリシーを実装していない。
+全ての挙動はカーネルで制御され、通常はファイルシステムドライバの仕様である。
+例外は、\fB\-\-all\fR であり、このオプションが指定された場合、
+既にマウントされているファイルシステムは無視される
+(詳細は以下の \fB\-\-all\fR を参照すること)。
 
-.SS Listing the mounts
-The listing mode is maintained for backward compatibility only.
+.\"O .SS Listing the mounts
+.SS マウントのリスト表示
+.\"O The listing mode is maintained for backward compatibility only.
+リスト表示モードは後方互換のためにのみ維持されている。
 
-For more robust and customizable output use
-.BR findmnt (8),
-\fBespecially in your scripts\fP.  Note that control characters in the
-mountpoint name are replaced with '?'.
+.\"O For more robust and customizable output use
+.\"O .BR findmnt (8),
+.\"O \fBespecially in your scripts\fP.  Note that control characters in the
+.\"O mountpoint name are replaced with '?'.
+\fB特にスクリプトにおいては\fP、より強力でカスタマイズ可能な出力には、
+.BR findmnt (8)
+を使うこと。
+マウントポイント名に含まれる制御文字は、'?' に置換される点に注意すること。
 
-The following command lists all mounted filesystems (of type
-.IR type ):
+.\"O The following command lists all mounted filesystems (of type
+.\"O .IR type ):
+以下のコマンドでは、(タイプ
+.I type
+の) 全てのマウントされたファイルシステムのリストを表示する:
 .RS
 .sp
 .BR "mount " [ \-l "] [" "\-t \fItype\/\fP" ]
 .sp
 .RE
-The option \fB\-l\fR adds labels to this listing.  See below.
+.\"O The option \fB\-l\fR adds labels to this listing.  See below.
+オプション \fB\-l\fR を付けると、ラベルをリストに追加する。
+下記を参照すること。
 
-.SS Indicating the device and filesystem
-Most devices are indicated by a filename (of a block special device), like
-.IR /dev/sda1 ,
-but there are other possibilities.  For example, in the case of an NFS mount,
+.\"O .SS Indicating the device and filesystem
+.SS デバイスとファイルシステムの指定
+.\"O Most devices are indicated by a filename (of a block special device), like
+.\"O .IR /dev/sda1 ,
+.\"O but there are other possibilities.  For example, in the case of an NFS mount,
+.\"O .I device
+.\"O may look like
+.\"O .IR knuth.cwi.nl:/dir .
+ほとんどの場合、デバイスは (ブロックスペシャルデバイスの) ファイル名で
+指定する (例:
+.IR /dev/sda1 )。
+しかし例外もある。例えば NFS を通してマウントする場合には、
 .I device
-may look like
-.IR knuth.cwi.nl:/dir .
-It is also possible to indicate a block special device using its filesystem label
-or UUID (see the \fB\-L\fR and \fB\-U\fR options below), or its partition label
-or UUID.  Partition identifiers are supported for example for GUID Partition
-Tables (GPT).
+は
+.IR knuth.cwi.nl:/dir
+のようになる。
+.\"O It is also possible to indicate a block special device using its filesystem label
+.\"O or UUID (see the \fB\-L\fR and \fB\-U\fR options below), or its partition label
+.\"O or UUID.  Partition identifiers are supported for example for GUID Partition
+.\"O Tables (GPT).
+ブロックスペシャルデバイスの指定には、ボリュームラベルや UUID を
+用いることができる (以下の \fB\-L\fR および \fB\-U\fR  オプションを見よ)。
+また、パーティションラベル、または UUID を用いることができる。
+パーティション識別子は、例えば、GUID パーティションテーブル (GPT) をサポートする。
 
-The device name of disk partitions are unstable; hardware reconfiguration,
-adding or removing a device can cause change in names. This is reason why it's
-strongly recommended to use filesystem or partition identificators like UUID or
-LABEL.
+.\"O The device name of disk partitions are unstable; hardware reconfiguration,
+.\"O adding or removing a device can cause change in names. This is reason why it's
+.\"O strongly recommended to use filesystem or partition identificators like UUID or
+.\"O LABEL.
+ディスクパーティションのデバイス名は不安定である。
+ハードウェアの認識でデバイスの追加や削除を行った場合、
+名前が変わる可能性がある。
+これが、ファイルシステムやパーティションの識別子に、
+UUID やラベルを使うのを強く推奨する理由である。
 
-The command \fBlsblk --fs\fR provides overview of filesystems, LABELs and UUIDs
-on available block devices.  The command \fBblkid -p <device>\fR provides details about
-a filesystem on the specified device.
+.\"O The command \fBlsblk --fs\fR provides overview of filesystems, LABELs and UUIDs
+.\"O on available block devices.  The command \fBblkid -p <device>\fR provides details about
+.\"O a filesystem on the specified device.
+コマンド \fBlsblk --fs\fR は、利用可能なブロックデバイスの
+ファイルシステム、ラベル、UUID の概要を表示する。
+コマンド \fBblkid -p <device>\fR は、
+指定されたデバイス上のファイルシステムの詳細を表示する。
 
-Don't forget that there is no guarantee that UUIDs and labels are really
-unique, especially if you move, share or copy the device.  Use
+.\"O Don't forget that there is no guarantee that UUIDs and labels are really
+.\"O unique, especially if you move, share or copy the device.  Use
+.\"O .B "lsblk \-o +UUID,PARTUUID"
+.\"O to verify that the UUIDs are really unique in your system.
+デバイスを移動、共有、コピーする場合、
+UUID とラベルが実際に一意である保証がないことを忘れてはいけない。
+システム上で UUID が実際に一意であるかを検証するには、
 .B "lsblk \-o +UUID,PARTUUID"
-to verify that the UUIDs are really unique in your system.
+を使うこと。
 
-The recommended setup is to use tags (e.g.\& \fBUUID=\fIuuid\fR) rather than
-.I /dev/disk/by-{label,uuid,partuuid,partlabel}
-udev symlinks in the
+.\"O The recommended setup is to use tags (e.g.\& \fBUUID=\fIuuid\fR) rather than
+.\"O .I /dev/disk/by-{label,uuid,partuuid,partlabel}
+.\"O udev symlinks in the
+.\"O .I /etc/fstab
+.\"O file.  Tags are
+.\"O more readable, robust and portable.  The
+.\"O .BR mount (8)
+.\"O command internally uses udev
+.\"O symlinks, so the use of symlinks in /etc/fstab has no advantage over tags.
+.\"O For more details see
+.\"O .BR libblkid (3).
 .I /etc/fstab
-file.  Tags are
-more readable, robust and portable.  The
+ファイルでは、
+.I /dev/disk/by-{label,uuid,partuuid,partlabel}
+udev シンボリックリンクより、
+タグ (例えば\& \fBUUID=\fIuuid\fR) を使った設定が推奨される。
+タグは、より読みやすく、堅牢で、移植性が高い。
 .BR mount (8)
-command internally uses udev
-symlinks, so the use of symlinks in /etc/fstab has no advantage over tags.
-For more details see
-.BR libblkid (3).
+は内部的に udev シンボリックリンクを使っているので、
+/etc/fstab でシンボリックリンクを使うのは、タグを使うのに比べて、
+何の利点もない。
+より詳細は
+.BR libblkid (3)
+を参照すること。
 
-Note that
+.\"O Note that
+.\"O .BR mount (8)
+.\"O uses UUIDs as strings.  The UUIDs from the command line or from
+.\"O .BR fstab (5)
+.\"O are not converted to internal binary representation.  The string representation
+.\"O of the UUID should be based on lower case characters.
 .BR mount (8)
-uses UUIDs as strings.  The UUIDs from the command line or from
+は UUID を文字列として使っている点に注意すること。
+コマンドライン、または
 .BR fstab (5)
-are not converted to internal binary representation.  The string representation
-of the UUID should be based on lower case characters.
+から指定された UUID は内部的なバイナリ表現に変換されない。
+UUID の文字列表現は、小文字になる。
 
 .\"O The
 .\"O .I proc
@@ -292,11 +365,11 @@ of the UUID should be based on lower case characters.
 .RB ( fstab (5)
 を見よ) は、それぞれのデバイスが通常マウントされる場所を、
 オプションとともに記述したものである。
-The default location of the
 .BR fstab (5)
-file can be overridden with the
+ファイルのデフォルトの場所は、
 .BI \-\-fstab " path"
-command-line option (see below for more details).
+コマンドラインオプションで上書きできる
+(より詳細は下記を参照すること)。
 .LP
 .\"O The command
 コマンド
