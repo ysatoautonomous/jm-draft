@@ -1,0 +1,41 @@
+.\" -*- nroff -*-
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.\" Japanese Version Copyright (c) 2004 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Apr 17 16:59:10 JST 2004
+.\"         by Yuichi SATO <ysato444@yahoo.co.jp>
+.\"
+.TH FILEFRAG 8 "February 2012" "E2fsprogs version 1.42.1" 
+.SH 名前
+filefrag \- ファイルの断片化を報告する
+.SH 書式
+\fBfilefrag\fP [ \fB\-Bbsvx\fP ] [ \fIfiles...\fP ]
+.SH 説明
+\fBfilefrag\fP は特定のファイルがどのくらい酷く断片化されているかを報告する。 このプログラムは、ext2 と ext3 ファイルシステムの
+間接ブロックを許しているが、 全てのファイルシステム上のファイルに使うことができる。
+.PP
+\fBfilefrag\fP は最初に、より効率的で高速な FIEMAP ioctl を使って、エクステント情報を取得しようとする。もし FIEMAP
+がサポートされていない場合、 filefrag は FIBMAP を使う。
+.SH オプション
+.TP 
+\fB\-B\fP
+テストのため、 FIEMAP ioctl ではなく、古い FIBMAP ioctl を強制的に使用する。
+.TP 
+\fB\-b\fP
+1024 バイトブロックサイズを出力に使う。
+.TP 
+\fB\-s\fP
+マッピングをリクエストする前にファイルを同期する。
+.TP 
+\fB\-v\fP
+ファイルの断片化をチェックするときに、詳細に報告する。
+.TP 
+\fB\-x\fP
+拡張属性のマッピングを表示する。
+.SH 作者
+\fBfilefrag\fP は Theodore Ts'o <tytso@mit.edu> が作成した。

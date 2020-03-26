@@ -1,0 +1,319 @@
+.\" -*- nroff -*-
+.\" Copyright 1993, 1994, 1995 by Theodore Ts'o.  All Rights Reserved.
+.\" This file may be copied under the terms of the GNU Public License.
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\" 
+.\" Japanese Version Copyright 1998 by MATSUMOTO Shoji. All Rights Reserved.
+.\" Translated Fri Mar 13 03:10:18 JST 1998 by MATSUMOTO Shoji.
+.\" Updated Sat 23 Oct 1999 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated Tue 16 Nov 1999 by NAKANO Takeo
+.\" Updated & Modified Thu Aug 16 00:10:30 JST 2001
+.\"         by Yuichi SATO <ysato@h4.dion.ne.jp>
+.\" Updated Thu 3 Oct 2002 by NAKANO Takeo
+.\" Updated & Modified Sat Apr 17 13:18:42 JST 2004
+.\"         by Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated & Modified Tue May  3 03:13:30 JST 2005 by Yuichi SATO
+.\" Updated & Modified Sat Oct 28 04:28:52 JST 2006 by Yuichi SATO
+.\"
+.TH DEBUGFS 8 "February 2012" "E2fsprogs version 1.42.1" 
+.SH 名前
+debugfs \- ext2/ext3/ext4 ファイルシステムデバッガ
+.SH 書式
+\fBdebugfs\fP [ \fB\-DVwci\fP ] [ \fB\-b\fP blocksize ] [ \fB\-s\fP superblock ] [ \fB\-f\fP
+cmd_file ] [ \fB\-R\fP request ] [ \fB\-d\fP data_source_device ] [ device ]
+.SH 説明
+\fBdebugfs\fP は対話的なファイルシステムのデバッガである。 ext2/ext3/ext4 ファイルシステムの状態の調査・変更に利用できる。
+.br
+\fIdevice\fP は、ファイルシステムを含むデバイスに対応する スペシャルファイルである。(例: /dev/hdXX)
+.SH オプション
+.TP 
+\fI\-w\fP
+ファイルシステムを read/write モードでオープンする。 このオプションを指定しない場合は、 ファイルシステムは read\-only
+モードでオープンされる。
+.TP 
+\fI\-c\fP
+ファイルシステムを catastrophic (甚大な破損が起こった場合の) モードでオープンする。 このモードでは inode
+とグループビットを最初に読み込まない。 これは重度に破損したファイルシステムに対しては有効なことがあるが、 一方このため catastrophic
+モードではファイルシステムを read\-only でしかオープンできない。
+.TP 
+\fI\-i\fP
+\fIdevice\fP が \fBe2image\fP プログラムによって作成された ext2 イメージファイルであることを指定する。 ext2
+イメージファイルは、スーパーブロック・ ブロックグループディスクリプタ・ブロックアロケーションビットマップ・ inode
+アローケションビットマップ・inode テーブルしか持たないので、 \fBdebugfs\fP の多くのコマンドが正しく機能しない。 \fB警告:\fP
+安全性のチェックは行わない。 また、 \fI\-d\fP オプションによって \fIdata_source_device\fP を指定せずに、 \fIls\fP,
+\fIdump\fP などのコマンドを実行した場合には \fBdebugfs\fP は変な風に失敗するかもしれない。 \fBdebugfs\fP
+はデバッグ用のツールなので、洗練された部分のみであるとは限らない!
+.TP 
+\fI\-d data_source_device\fP
+\fI\-i\fP オプションと共に使用され、 読み込みブロックが ext2 イメージファイルに見つからない場合には、 指定された
+\fIdata_source_device\fP が使用される。 このデバイスにはデータ・ディレクトリ・間接 (indirect) ブロックが含まれる。
+.TP 
+\fI\-b blocksize\fP
+通常のように正しいブロックサイズを検出する動作を行わず、 指定したブロックサイズをそのファイルシステムに用いる。
+.TP 
+\fI\-s superblock\fP
+ファイルシステムのスーパーブロックを、プライマリスーパーブロック (ファイルシステムの先頭からオフセット 1024 バイトの位置)
+ではなく、指定されたブロック数から読み込む。\fI\-s\fP オプションを指定した場合、ファイルシステムのブロックサイズを \fI\-b\fP
+オプションで指定する必要がある。
+.TP 
+\fI\-f cmd_file\fP
+\fBdebugfs\fP に、 \fIcmd_file\fP からコマンドを読み込ませ、実行させる。 コマンドの実行を終了すると、 \fBdebugfs\fP
+は終了する。
+.TP 
+\fI\-D\fP
+\fBdebugfs\fP がデバイスをオープンする際に、バッファキャッシュをバイパスして、ダイレクト I/O を使う。これを書いている時点では、いくつかの
+Linux デバイス、特にデバイスマッパーはダイレクト I/O をサポートしていない。
+.TP 
+\fI\-R request\fP
+\fIrequest\fP というひとつのコマンドを実行し、終了する。
+.TP 
+\fI\-V\fP
+\fBdebugfs\fP のバージョンを表示して終了する。
+.SH ファイル指定
+.\"
+.\"
+\fBdebugfs\fP のコマンドの多くは、 debugfs が現在オープンしているファイルシステムにおける inode (パス名ではない) を示す
+\fIfilespec\fP という引数を取る。 \fIfilespec\fP には 2 種類の表記法がある。ひとつは、inode 番号を <>
+で囲む方法である (例: \fI<2>\fP)。 もうひとつはパス名で指定する方法である。 パス名が「/ (スラッシュ)」ではじまる場合、
+\fBdebugfs\fP が現在オープンしているファイルシステムのルートからの相対パスを表す。
+「/」で始まらない場合、カレントワーキングディレクトリからの相対パスを表す。 カレントワーキングディレクトリは \fBdebugfs\fP の \fIcd\fP
+コマンドによって変更できる。
+.SH コマンド
+\fBdebugfs\fP がサポートするコマンドの一覧を以下に示す。
+.TP 
+\fIblocks filespace\fP
+\fIfilespec\fP で指定した inode のブロックを標準出力に出力する。
+.TP 
+\fIbmap filespec logical_block\fP
+\fIfilespec\fP で指定した inode における論理ブロック番号 \fIlogical_block\fP に対応する物理ブロック番号を表示する。
+.TP 
+\fIcat filespec\fP
+\fIfilespec\fP で指定した inode の内容を標準出力へダンプする。
+.TP 
+\fIcd filespec\fP
+カレントワーキングディレクトリを \fIfilespec\fP で指定したディレクトリに変更する。
+.TP 
+\fIchroot filespec\fP
+ルートディレクトリを \fIfilespec\fP で指定したディレクトリに変更する。
+.TP 
+\fIclose [\-a]\fP
+現在オープンしているファイルシステムをクローズする。\fI\-a\fP
+オプションを指定した場合、スーパーブロックとブロックグループディスクリプタに対する変更を、マスタースーパーブロックだけでなく、すべてのバックアップスーパーブロックに書き込む。
+.TP 
+\fIclri file\fP
+\fIfile\fP で指定した inode の内容をクリアする。
+.TP 
+\fIdirsearch filespec filename\fP
+\fIfilename\fP をディレクトリ \fIfilespec\fP で検索する。
+.TP 
+\fIdump [\-p] filespec out_file\fP
+\fIfilespec\fP で指定した inode の内容を \fIout_file\fP で指定したファイルにダンプする。 \fI\-p\fP オプションを与えると、
+\fIout_file\fP の所有者 (owner)、所有グループ (group)、パーミッション (permission) を \fIfilespec\fP
+と同じにする。
+.TP 
+\fIdump_mmp\fP
+複数マウント防止 (multiple\-mount protection, mmp) フィールドの値を表示する。
+.TP 
+\fIdx_hash [\-h hash_alg] [\-s hash_seed] filename\fP
+\fIfilename\fP のディレクトリハッシュを計算する。\fI\-h\fP に指定できるハッシュアルゴリズムは "legacy" "half_md4"
+"tea" である。\fI\-s\fP に指定するハッシュシードは UUID 形式でなければならない。
+.TP 
+\fIdump_extents [\-n] [\-l] filespec\fP
+\fIfilespec\fP で指定した inode のエクステントツリーをダンプする。\fI\-n\fP フラグを指定すると、\fIdump_extents\fP
+はエクステントツリーの内部ノードのみを表示する。\fI\-l\fP フラグを指定すると、\fIdump_extents\fP
+はエクステントツリーのリーフノードのみを表示する。
+.IP
+(内部ノードの最終エクステントのブロックの長さと範囲は、エクステントのライブラリ関数で評価されるだけで、ファイルシステムのデータ構造には格納されていない点に注意してほしい。そのため、表示される値は、ファイルシステムの問題や破損を示すのに充分なほど正確ではない。)
+.TP 
+\fIexpand_dir filespec\fP
+\fIfilespec\fP で指定したディレクトリを展開する。
+.TP 
+\fIfeature [fs_feature] [\-fs_feature] ...\fP
+スーパーブロックの様々なファイルシステム属性をセット/クリアする。 要求のあった属性をセット/クリアした後は、
+ファイルシステム属性の現在状態の一覧を表示する。
+.TP 
+\fIfilefrag [\-dvr] filespec\fP
+\fIfilespec\fP に含まれる連続するエクステントの数を表示する。\fIfilespec\fP がディレクトリで、\fI\-d\fP
+オプションが指定されていない場合、\fIfilefrag\fP はディレクトリ内のファイルの連続するエクステント数を表示する。\fI\-v\fP
+オプションを指定すると、\fIfilefrag\fP はファイル内の連続するエクステントを表形式で表示する。\fI\-r\fP
+オプションをを指定すると、\fIfilefrag\fP はディレクトリを再帰的にリスト表示する。
+.TP 
+\fIfind_free_block [count [goal]]\fP
+\fIgoal\fP から始まる最初の \fIcount\fP 分の空きブロックを探し、その空きブロックをアロケート (allocate) する。
+.TP 
+\fIfind_free_inode [dir [mode]]\fP
+空き inode を探し、その inode をアロケートする。 \fIdir\fP を指定すると、 これはその inode を置くべきディレクトリの
+inode と解釈される。 さらに \fImode\fP を指定すると、 これは新しい inode のパーミッションと解釈される。 (\fImode\fP
+にディレクトリであることを指定するビットが立っている場合、 アロケートルーチンの挙動は異なるものになる。)
+.TP 
+\fIfreeb block [count]\fP
+ブロック番号 \fIblock\fP をアロケートされていないものとしてマークする。 省略可能な引数 \fIcount\fP を指定すると、ブロック番号
+\fIblock\fP から始まる \fIcount\fP 分のブロックをアロケートされていないものとしてマークする。
+.TP 
+\fIfreefrag [\-c chunk_kb ]\fP
+現在オープンしているファイルシステムの空きスペースのフラグメンテーション (断片化状態) を表示する。\fI\-c\fP が指定されると、filefrag
+コマンドはファイルシステムにサイズ \fIchunk_kb\fP の空きチャンクがいくつあるかを表示する。チャンクサイズは 2
+の乗数で、かつファイルシステムブロックサイズより大きい必要がある。
+.TP 
+\fIfreei filespec\fP
+\fIfilespec\fP で指定した inode を解放する。
+.TP 
+\fIhelp\fP
+\fBdebugfs\fP で利用できるコマンドのリストを表示する。
+.TP 
+\fIhtree_dump filespec\fP
+ハッシュでインデックスづけされたディレクトリ \fIfilespec\fP をダンプし、ツリー構造を表示する。
+.TP 
+\fIicheck block ...\fP
+コマンドラインに与えたブロック (複数指定可)  を利用している inode のリストを表示する。
+.TP 
+\fIimap filespec\fP
+\fIfilespec\fP で指定された inode の (inode テーブルにおける)  inode データ構造の場所を表示する。
+.TP 
+\fIinit_filesys device blocksize\fP
+\fIdevice\fP 上に、デバイスサイズ \fIblocksize\fP の ext2 ファイルシステムを作成する。
+このコマンドは、すべてのデータ構造を完全に初期化するわけではない。 これをしたい場合は \fBmke2fs\fP(8)  プログラムを用いること。
+このコマンドは、単にスーパーブロックとブロックディスクリプタを設定する 低レベルライブラリを呼び出すだけである。
+.TP 
+\fIkill_file filespec\fP
+\fIfilespec\fP で指定した inode と、 その inode が使用しているブロックをアロケートから外す (deallocate)。
+なお、その inode に対応するディレクトリエントリは削除しないことに注意。 ファイルを unlink したい場合は \fIrm\fP
+コマンドを参照のこと。
+.TP 
+\fIlcd directory\fP
+\fBdebugfs\fP プロセスのカレントワーキングディレクトリを ネイティブファイルシステム (訳註: 作業対象のものではなく、 debugfs
+が呼び出され、稼働しているファイルシステム) 上の \fIdirectory\fP に変更する。
+.TP 
+\fIln filespec dest_file\fP
+\fIfilespec\fP を指すリンク \fIdest_file\fP を作成する。 この際 inode の参照数 (reference counts)
+は変更しないことに注意。
+.TP 
+\fIlogdump [\-acs] [\-b<block>] [\-i<filespec>] [\-f<journal_file>] [output_file]\fP
+ext3 ジャーナルの内容をダンプする。 デフォルトではジャーナル inode はスーパーブロックで指定される。 しかし \fI\-i\fP
+オプションで上書きすることも可能である。 \fI\-i\fP オプションは使用されるジャーナルを指定する inode 指定子を使う。
+ジャーナルデータが書かれたファイルは、 \fI\-f\fP オプションを使って指定することができる。 そして \fI\-s\fP
+オプションはスーパーブロックにあるバックアップ情報を使って、 ジャーナルをアロケートする。
+.IP
+\fI\-a\fP オプションを指定すると、 \fIlogdump\fP プログラムは全てのディスクリプタブロックの内容を表示する。 \fI\-b\fP
+オプションを指定すると、 \fIlogdump\fP プログラムは指定されたブロックを参照する全てのジャーナルレコードを表示する。 \fI\-c\fP
+オプションを指定すると、 \fI\-a\fP と \fI\-b\fP オプションで選択された全てのデータブロックの内容を表示する。
+.TP 
+\fIls [\-l] [\-d] [\-p] filespec\fP
+ディレクトリ \fIfilespec\fP 内のファイルのリストを表示する。\fI\-l\fP フラグを指定すると、より詳細なフォーマットで表示する。\fI\-d\fP
+フラグを指定すると、ディレクトリ内の削除されたエントリを表示する。\fI\-p\fP
+フラグを指定すると、スクリプトで解析しやすいフォーマットで表示する。加えて、ファイル名の最後にスペースや非表示文字がある場合にも、わかりやすくマークづけする。
+.TP 
+\fImodify_inode filespec\fP
+\fIfilespec\fP で指定した inode にある inode 構造体の内容を変更する。
+.TP 
+\fImkdir filespec\fP
+ディレクトリを作成する。
+.TP 
+\fImknod filespec [p|[[c|b] major minor]]\fP
+スペシャルデバイスファイル (名前付きパイプ、キャラクタデバイス、ブロックデバイス)  を作成する。
+キャラクタデバイスおよびブロックデバイスを作成する場合は、 デバイス番号として \fImajor\fP および \fIminor\fP を指定しなければならない。
+.TP 
+\fIncheck [\-c] inode_num ...\fP
+inode 番号のリストを引数とし、inode に対応するパス名のリストを表示する。\fI\-c\fP
+フラグを指定すると、ディレクトリエントリのファイルタイプのチェックを有効にして、inode タイプにマッチするかを確認する。
+.TP 
+\fIopen [\-w] [\-e] [\-f] [\-i] [\-c] [\-D] [\-b blocksize] [\-s superblock] device\fP
+編集の対象とするファイルシステムをオープンする。 \fI\-f\fP フラグをつけると、通 常ではオープンできないような、
+不明なファイルシステムや非互換なファイルシス テムでも 強制的にオープンする。 \fI\-e\fP フラグをつけるとファイルシステムを排他
+モードでオープンする。 \fI\-b\fP, \fI\-c\fP, \fI\-i\fP, \fI\-s\fP, \fI\-w\fP, \fI\-D\fP オプションを 指定した場合の動作は、
+\fBdebugfs\fP に同名のコマンドラインオプションを指定した 場合と同じである。
+.TP 
+\fIpunch filespec start_blk [end_blk]\fP
+\fIstart_blk\fP から \fIend_blk\fP の範囲の inode のブロックを削除する。\fIend_blk\fP
+を省略すると、切り詰めるためのコマンドとなり、\fIstart_blk\fP からファイルの最後までを解放する。
+.TP 
+\fIpwd\fP
+カレントワーキングディレクトリを表示する。
+.TP 
+\fIquit\fP
+\fBdebugfs\fP を終了する。
+.TP 
+\fIrdump directory destination\fP
+\fIdirectory\fP と (通常のファイル・シンボリックリンク・ その他のディレクトリを含む) そのディレクトリの全ての内容を、
+\fIdestination\fP という名前のディレクトリに再帰的にダンプする。 \fIdestination\fP
+はネイティブファイルシステム上に存在するディレクトリでなければならない。
+.TP 
+\fIrm pathname\fP
+\fIpathname\fP で指定したパス名を unlink する。 \fIpathname\fP の示す inode が何も参照しなくなった場合には、
+ファイルのアロケートを外す。 このコマンドは unlink() システムコールのように動作する。
+.TP 
+\fIrmdir filespec\fP
+\fIfilespec\fP で指定したディレクトリを消去する。
+.TP 
+\fIsetb block [count]\fP
+ブロック番号 \fIblock\fP をアロケートされているものとしてマークする。 省略可能な引数 \fIcount\fP を指定すると、ブロック番号
+\fIblock\fP から始まる \fIcount\fP 分のブロックをアロケートされているものとしてマークする。
+.TP 
+\fIset_block_group bgnum field value\fP
+\fIbgnum\fP で指定されたブロックグループディスクリプタを変更し、フィールド \fIfield\fP が値 \fIvalue\fP を持つようにする。
+.TP 
+\fIseti filespec\fP
+inode ビットマップに、 \fIfilespec\fP で指定した inode が使用中であるとマークする。
+.TP 
+\fIset_inode_field filespec field value\fP
+\fIfilespec\fP で指定された inode を変更し、inode フィールド \fIfield\fP が値 \fIvalue\fP を持つようにする。
+このコマンドで設定が可能な、正しい inode フィールドのリストは、 \fBset_inode_field \-l\fP コマンドによって表示できる。
+.TP 
+\fIset_mmp_value field value\fP
+複数マウント防止 (multiple\-mount protection, mmp) データを変更し、mmp フィールド \fIfield\fP が値
+\fIvalue\fP を持つようにする。このコマンドで設定可能な、正しい mmp フィールドのリストは、\fBset_mmp_value \-l\fP
+コマンドによって表示できる。
+.TP 
+\fIset_super_value field value\fP
+スーパーブロックフィールド \fIfield\fP を \fIvalue\fP にする。このコマンドで設定が可能な、 正しいスーパーブロックフィールドのリストは、
+\fBset_super_value \-l\fP コマンドによって表示できる。
+.TP 
+\fIshow_super_stats [\-h]\fP
+スーパーブロックとブロックグループディスクリプタの内容を表示する。 \fI\-h\fP フラグが与えられると、 スーパーブロックの内容だけを表示する。
+.TP 
+\fIstat filespec\fP
+\fIfilespec\fP で指定した inode の inode 構造体の内容を表示する。
+.TP 
+\fItestb block [count]\fP
+ブロック番号 \fIblock\fP がブロックビットマップにおいてアロケートになっているかどうか調べる。 省略可能な引数 \fIcount\fP
+を指定すると、ブロック番号 \fIblock\fP から始まる \fIcount\fP 分のブロックを検査する。
+.TP 
+\fItesti filespec\fP
+\fIfilespec\fP で指定した inode が inode ビットマップにおいてアロケートになっているかどうか調べる。
+.TP 
+\fIundel <inode num> [pathname]\fP
+(アングルブラケットで囲って) 指定した inode 番号の削除を取り消す。inodeとそのブロックは、使用中の印がつけられ、オプションとして復旧させた
+inode を指定したパスにリンクさせることもできる。 削除したファイルを \fBundel\fP コマンドで復旧させた後で、\fBe2fsck\fP
+コマンドを常に実行すべきである。
+.IP
+多くの削除したファイルを復旧して、inode
+をディレクトリにリンクする場合、ディレクトリを拡張する必要があり、まだ削除を取り消していないファイルが使っていたブロックを確保してしまう可能性がある。
+そのため、inode すべての削除の取り消しをする場合には、リンク先パスを指定せずに実行する方が安全である。そののち、別々のパスで debugfs
+\fBlink\fP コマンドを使って inode をパス名にリンクさせるか、\fBe2fsck\fP を使ってファイルシステムをチェックし、復旧したすべての
+inode を lost+found ディレクトリにリンクさせるとよい。
+.TP 
+\fIunlink pathname\fP
+\fIpathname\fP で指定した、ある inode を指すリンクを削除する。 なおこの際、inode 参照数は変更しないことに注意。
+.TP 
+\fIwrite source_file out_file\fP
+ファイルシステム内に \fIout_file\fP で指定したファイルを作成し、 \fIsource_file\fP の内容をそのファイルにコピーする。
+.SH 環境変数
+.TP 
+\fBDEBUGFS_PAGER, PAGER\fP
+\fBdebugfs\fP はいくつかのコマンドの出力を常にページャプログラムにパイプする。 そのようなコマンドとしては、
+\fIshow_super_stats\fP, \fIlist_directory\fP, \fIshow_inode_info\fP,
+\fIlist_deleted_inodes\fP, \fIhtree_dump\fP がある。 特定のページャを環境変数 \fBDEBUGFS_PAGER\fP
+で明示的に指定することができる。 この環境変数が設定されていない場合は、環境変数 \fBPAGER\fP で指定される。
+.IP
+1 つのページャが常に使われるので、 \fBless\fP(1)  ページャは特に適さない点に注意すること。 \fBless\fP(1)
+はコマンドの表示を表示する前にスクリーンをクリアしたり、 ページャが終了するときにスクリーンへの出力をクリアしてしまうからである。 多くのユーザは
+\fBless\fP(1)  ページャをいろいろな目的に使うのを好んでいる。 これが環境変数 \fBDEBUGFS_PAGER\fP で、より一般的な環境変数
+\fBPAGER\fP を上書きできる理由である。
+.SH 作者
+\fBdebugfs\fP は Theodore Ts'o <tytso@mit.edu> が作成した。
+.SH 関連項目
+\fBdumpe2fs\fP(8), \fBtune2fs\fP(8), \fBe2fsck\fP(8), \fBmke2fs\fP(8)

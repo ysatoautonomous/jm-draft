@@ -1,0 +1,77 @@
+.\" Copyright 2001 Andreas Dilger (adilger@turbolinux.com)
+.\"
+.\" This man page was created for libblkid.so.1.0 from e2fsprogs-1.24.
+.\"
+.\" This file may be copied under the terms of the GNU Public License.
+.\"
+.\" Created  Wed Sep 14 12:02:12 2001, Andreas Dilger
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.\" Japanese Version Copyright (c) 2004 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun Mar  7 02:13:15 JST 2004
+.\"         by Yuichi SATO <ysato444@yahoo.co.jp>
+.\"
+.TH LIBBLKID 3 "February 2012" "E2fsprogs version 1.42.1" 
+.SH 名前
+libblkid \- ブロックデバイスの識別ライブラリ
+.SH 書式
+\fB#include <blkid/blkid.h>\fP
+.sp
+\fBcc\fP \fIfile.c\fP \fB\-lblkid\fP
+.SH 説明
+\fBlibblkid\fP ライブラリは、ブロックデバイスのコンテンツ (たとえばファイルシステムタイプ) や ファイルシステムのラベル名・ボリューム名、
+ユニークな識別番号・シリアル番号などの付加的な情報を使って、 ブロックデバイス (ディスク) を識別するのに使われる。 一般的な使い方として、
+特定のブロックデバイス名を設定ファイルにハードコードする代わりに、 LABEL= と UUID= タグを使うことができる。
+.P
+ブロックデバイスの情報は、通常キャッシュファイル \fI/etc/blkid.tab\fP に保存され、
+ユーザに返される前に現在も有効であるかが検証される
+(ユーザに raw ブロックデバイスの読み込み権限がある場合は検証されるが、
+ない場合は検証されない)。
+また、キャッシュファイルにより、非特権ユーザもラベルや ID でデバイスを
+見つけることができる (通常は非特権ユーザは root 以外の全ユーザや
+"disk" グループに所属しないユーザが該当する)。
+キャッシュファイルの標準の場所は環境変数 BLKID_FILE で上書きすることができる。
+.P
+ユーザが既知の 1 つのデバイスの情報を取得しようとした場合、 (ユーザがブロックデバイスを直接読めない限り)
+キャッシュを使うか使わないかはパフォーマンスには影響しない。 複数のデバイスを扱う場合、 (たとえ空であっても) キャッシュを使うことを特に推奨する。
+これは、複数のデバイスが 1 回でスキャンされ、 可能であればディスク上のキャッシュが更新されるからである。 このキャッシュを使わない理由は稀である。
+.P
+(モジュラカーネルなど) いくつかのケースでは、 ブロックデバイスにアクセスした後でないと見えないことがあるので、
+見えているデバイスのみを列挙するのではなく、 見えていないデバイスも探し出す 何らかの方法があることが重要になる。
+このような状況ではキャッシュファイルを使用することが\fB必要\fPとされる。
+.SH 作者
+\fBlibblkid\fP は、 Andreas Dilger が Ted Ts'o からの情報提供をうけ、 ext2
+ファイルシステムユーティリティのために書いた。 このライブラリはその後 Ted Ts'o によってかなり修正された。
+.SH ファイル
+.TP 
+\fI/etc/blkid.tab\fP
+認識されたブロックデバイスから抽出したキャッシュデータ。
+.SH 入手方法
+\fBlibblkid\fP は、バージョン 1.33 から e2fsprogs パッケージの一部であり、
+http://e2fsprogs.sourceforge.net から入手できる。
+.SH 著作権
+\fBlibblkid\fP は GNU Library General Public License (LGPL), version 2
+(もしくは裁量により以降のバージョン) の元で入手可能である。LGPL のコピーはこのライブラリの COPYING
+ファイルとして含まれていなけければならない。もし含まれていない場合、
+.RS
+Free Software Foundation, Inc.
+.br
+51 Franklin St
+.br
+Fifth Floor
+.br
+Boston, MA 02110\-1301 USA
+.RE
+.PP
+に連絡するか、
+.UR http://www.gnu.org/licenses/licenses.html#LGPL
+http://www.gnu.org/licenses/licenses.html#LGPL
+.UE
+を見てほしい。
+.SH 関連項目
+\fBblkid\fP(8)

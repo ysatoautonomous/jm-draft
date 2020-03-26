@@ -1,0 +1,357 @@
+.\" -*- nroff -*-
+.\" Copyright 1993, 1994, 1995 by Theodore Ts'o.  All Rights Reserved.
+.\" This file may be copied under the terms of the GNU Public License.
+.\"
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\" 
+.\" Japanese Version Copyright 1998 by MATSUMOTO Shoji. All Rights Reserved.
+.\" Translated Wed Mar 11 03:38:49 JST 1998 by MATSUMOTO Shoji.
+.\" Updated Sat 23 Oct 1999 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated Tue 16 Nov 1999 by NAKANO Takeo
+.\" Updated & Modified Sun Sep  2 23:23:05 JST 2001
+.\"         by Yuichi SATO <ysato@h4.dion.ne.jp>
+.\" Updated Sun 6 Oct 2002 by NAKANO Takeo
+.\" Updated & Modified Sat Apr 17 14:16:33 JST 2004
+.\"         by Yuichi SATO <ysato444@yahoo.co.jp>, v1.35
+.\" Updated & Modified Tue May  3 06:43:13 JST 2005 by Yuichi SATO, v1.37
+.\" Updated & Modified Sat Feb 17 02:05:53 JST 2007 by Yuichi SATO, v1.39
+.\"
+.TH MKE2FS 8 "February 2012" "E2fsprogs version 1.42.1" 
+.SH 名前
+mke2fs \- ext2/ext3/ext4 ファイルシステムを作成する
+.SH 書式
+\fBmke2fs\fP [ \fB\-c\fP | \fB\-l\fP \fIfilename\fP ] [ \fB\-b\fP \fIblock\-size\fP ] [ \fB\-f\fP
+\fIfragment\-size\fP ] [ \fB\-g\fP \fIblocks\-per\-group\fP ] [ \fB\-G\fP \fInumber\-of\-groups\fP
+] [ \fB\-i\fP \fIbytes\-per\-inode\fP ] [ \fB\-I\fP \fIinode\-size\fP ] [ \fB\-j\fP ] [ \fB\-J\fP
+\fIjournal\-options\fP ] [ \fB\-N\fP \fInumber\-of\-inodes\fP ] [ \fB\-n\fP ] [ \fB\-m\fP
+\fIreserved\-blocks\-percentage\fP ] [ \fB\-o\fP \fIcreator\-os\fP ] [ \fB\-O\fP
+\fIfeature\fP[,...] ] [ \fB\-q\fP ] [ \fB\-r\fP \fIfs\-revision\-level\fP ] [ \fB\-E\fP
+\fIextended\-options\fP ] [ \fB\-v\fP ] [ \fB\-F\fP ] [ \fB\-L\fP \fIvolume\-label\fP ] [ \fB\-M\fP
+\fIlast\-mounted\-directory\fP ] [ \fB\-S\fP ] [ \fB\-t\fP \fIfs\-type\fP ] [ \fB\-T\fP
+\fIusage\-type\fP ] [ \fB\-U\fP \fIUUID\fP ] [ \fB\-V\fP ] \fIdevice\fP [ \fIblocks\-count\fP ]
+.sp
+.\" No external-journal specific journal options yet (size is ignored)
+.\" [
+.\" .B \-J
+.\" .I journal-options
+.\" ]
+\fBmke2fs \-O journal_dev\fP [ \fB\-b\fP \fIblock\-size\fP ] [ \fB\-L\fP \fIvolume\-label\fP ] [
+\fB\-n\fP ] [ \fB\-q\fP ] [ \fB\-v\fP ] \fIexternal\-journal\fP [ \fIblocks\-count\fP ]
+.SH 説明
+\fBmke2fs\fP は、ext2, ext3, ext4 ファイルシステムを、通常はディスクのパーティションに作成する。\fIdevice\fP
+はデバイスに対応するスペシャルファイルである (例: \fI/dev/hdXX\fP)。\fIblocks\-count\fP
+はデバイスのブロック数である。省略すると \fBmke2fs\fP が自動的にファイルシステムサイズを計算する。\fBmkfs.ext3\fP
+として起動されると、\fB\-j\fP オプションが指定された場合のようにジャーナルを作る。
+.PP
+新規作成されるファイルシステムのパラメータのデフォルト値は、以下に示すオプションで上書きされない限り、\fB/etc/mke2fs.conf\fP
+設定ファイルで制御される。詳細は \fBmke2fs.conf\fP(5) マニュアルページを参照すること。
+.SH オプション
+.TP 
+\fB\-b\fP\fI block\-size\fP
+ブロックサイズをバイト単位で指定する。指定できるブロックサイズはブロックあたり 1024, 2048, 4096 バイトである。省略すると、
+\fBmke2fs\fP はファイルシステムのサイズと予想されるファイルシステムの利用法 (\fB\-T\fP オプションを見よ)
+とからブロックサイズをヒューリスティック (heuristic) に基づいて決定する。\fIblock\-size\fP が負の数である場合、\fBmke2fs\fP
+はヒューリスティックを使って適切なブロックサイズを決定する。この場合、ブロックサイズを少なくとも \fIblock\-size\fP
+バイトにするという制限を付ける。これは、ブロックサイズが 2k の倍数でなければいけない特定のハードウェアなどで役に立つ。
+.TP 
+\fB\-c\fP
+デバイスにファイルシステムを作成する前に不良ブロックを検査する。 このオプションを 2 つ指定すると、 より遅い read\-write テストを用いる。
+1 つの場合は高速な read\-only テストを用いる。
+.TP 
+\fB\-E\fP\fI extended\-options\fP
+ファイルシステムの拡張オプションを設定する。 拡張オプションはコンマで区切られ、 引き数がある場合は「= (イコール)」記号を使って指定する。
+\fB\-E\fP オプションは、以前のバージョンの \fBmke2fs\fP では \fB\-R\fP であった。 後方互換として \fB\-R\fP
+オプションはまだ受け付けられる。 以下のオプションがサポートされている:
+.RS 1.2i
+.TP 
+\fBmmp_update_interval=\fP\fIinterval\fP
+MMP 更新間隔の初期値を \fIinterval\fP 秒にする。\fIinterval\fP を 0 に設定すると、デフォルトの更新間隔を使う。間隔は 300
+秒より短くしなければならない。\fBmmp\fP feature を有効にしておく必要がある。
+.TP 
+\fBstride=\fP\fIstride\-size\fP
+RAID アレイのファイルシステムに対して、\fIstride\-size\fP
+ファイルシステムブロックに設定する。次のディスクに移動するまで、このブロック数で読み書きされ、\fIチャンクサイズ\fPとも呼ばれる。このサイズはビットマップのようなファイルシステムメタデータの配置に影響する。\fBmke2fs\fP
+の実行時にメタデータを 1 つのディスクに置くと、性能を害する可能性がある。また、このサイズはブロックアロケータでも使われる。
+.TP 
+\fBstripe_width=\fP\fIstripe\-width\fP
+RAID アレイのファイルシステムに対して、1 ストライプあたりのファイルシステムブロックを　\fIstripe\-width\fP
+に設定する。一般的にこのサイズは、 N を RAID のデータ格納ディスクとしたとき、stride\-size * N である (例えば、RAID 5
+ではパリティディスクが 1 つなので、N はアレイのディスク数 \- 1 である)。これにより、データが書き込まれる時に、ブロックアロケータが RAID
+ストライプにパリティの読み込み\-修正\-書き込みを行うのを防止する。
+.TP 
+\fBresize=\fP\fImax\-online\-resize\fP
+ブロック数が \fImax\-online\-resize\fP のファイルシステムをサポートするために、 ブロックグループディスクリプタテーブルを拡大できる
+十分な領域を予約する。
+.TP 
+\fBlazy_itable_init\fP[\fB= \fP\fI<0 無効, 1 有効>\fP]
+このオプションを有効にして、かつ uninit_bg feature を有効にした場合、inode テーブルは \fBmke2fs\fP
+では完全には初期化されない。これでファイルシステムの初期化は劇的にスピードアップするが、ファイルシステムが初めてマウントされる時に、カーネルはバックグラウンドでファイルシステムの初期化を完了させる必要がある。このオプションで値を省略した場合の
+デフォルトは 1 であり、inode テーブルの 0 での遅延初期化が有効になる。
+.TP 
+\fBlazy_journal_init\fP[\fB= \fP\fI<0 無効, 1 有効>\fP]
+このオプションを有効にすると、\fBmke2fs\fP はジャーナル inode を完全には 0
+にしない。これでファイルシステムの初期化は劇的にスピードアップするが、ジャーナルが完全に 1
+度上書きされる前にシステムがクラッシュするという、小さなリスクを引きずっている。このオプションで値を省略した場合のデフォルトは 1 であり、ジャーナル
+inode の 0 での遅延初期化が有効になる。
+.TP 
+\fBtest_fs\fP
+ファイルシステムスーパーブロックのフラグを設定し、ext4dev ファイルシステムのような、実験的なカーネルコードを使ってマウントするようにする。
+.TP 
+\fBdiscard\fP
+mkfs の実行時にブロックを破棄する (最初にブロックを破棄するのは、ソリッドステートデバイスとスパース (sparse) /
+シンプロビジョニングされたストレージでは有益である)。デバイスが 0 のデータ (破棄の後の読み込みと書き込みの前に 0 を返す)
+を破棄するように宣言すると、まだ 0 で初期化化されていない inode テーブルを 0
+としてマークする。　これはファイルシステムの初期化を劇的にスピードアップする。これはデフォルトで設定される。
+.TP 
+\fBnodiscard\fP
+mkfs の実行時にブロックを破棄しないようにする。
+.TP 
+\fBquotatype\fP
+クォータ (quota) タイプ ('usr' または 'grp') を指定して、初期化する。このオプションは \fBquota\fP feature
+が設定されている場合にのみ有効である。この拡張オプションが設定されない場合、デフォルトでは、ユーザとグループの両方のクォータが初期化される。
+.RE
+.TP 
+\fB\-f\fP\fI fragment\-size\fP
+フラグメントサイズをバイト単位で指定する。
+.TP 
+\fB\-F\fP
+指定したデバイスがブロックスペシャルデバイスのパーティションでない場合や、他のパラメータが意味をなさない場合にも、\fBmke2fs\fP
+に強制的にファイルシステムを作成させる。ファイルシステムが使用中であったり、マウントされている場合でも、\fBmke2fs\fP
+にファイルシステムを作成させる。(これはとても危険なことなので、) このオプションは 2 度指定すべきである。
+.TP 
+\fB\-g\fP\fI blocks\-per\-group\fP
+ブロックグループに含まれるブロック数を指定する。 デフォルトでファイルシステムに最適な値であるため、
+ユーザがこのパラメータを設定する一般的な理由はない。 (RAID アレイ上にファイルシステムを作成しようとする管理者にとっては、
+グループ毎のブロック数を操作するよりも、 \fB\-E\fP オプションの一部として \fIstride\fP RAID パラメータを使う方がよい。)
+一般にこのオプションは、テストケースを開発する開発者が使う。
+.TP 
+\fB\-G\fP\fI number\-of\-groups\fP
+このリレーションは、ext4 ファイルシステムで 1 つのラージ仮想ブロックグループ (または "flex_bg group")
+にパックするブロックグループ数を指定する。これによりメタデータに大きな負荷がかかる場合に、メタデータを局在化し、性能を改善する。グループ数は 2
+の乗数にする必要があり、\fBflex_bg\fP ファイルシステム feature が有効化されている場合にのみ設定できる。
+.TP 
+\fB\-i\fP\fI bytes\-per\-inode\fP
+バイト数/inode 数の比率を指定する。 \fBmke2fs\fP は、ディスク上の各 \fIbytes\-per\-inode\fP バイトの領域に対してひとつの
+inode を生成する。 \fIbytes\-per\-inode\fP 比を大きくすると、作成される inode の数は少なくなる。
+この値は、一般にはファイルシステムのブロックサイズより小さくすべきではない。 の場合には、理論的に使用できる数以上の inode
+が作られてしまうからである。 注意してほしいが、一度ファイルシステムを作成したら、 あとから inode の数を増やすことはできない。
+したがって、このパラメータには正しい値を与えるよう、慎重になってほしい。
+.TP 
+\fB\-I\fP\fI inode\-size\fP
+inode のサイズをバイト単位で指定する。\fBmke2fs\fP はデフォルトでは 256 バイトで inodes を作成する。カーネル 2.6.10
+以降と、それ以前のいくつかのベンダーのカーネルでは、128 バイトより大きい inode
+を使って、拡張属性を格納することで、性能を改善できる。\fIinode\-size\fP の値は、2 の乗数で 128
+以上でなければならない。\fIinode\-size\fP を大きくすると、inode
+テーブルで消費される領域が大きくなる。これにより、ファイルシステムで使える領域が小さくなり、性能への悪い影響がおこる可能性がある。大きな inode
+に格納される拡張属性は、古いカーネルでは見ることができず、2.4
+カーネルでは全くマウントできない。この値はファイルシステムを作成した後では変更できない。
+.TP 
+\fB\-j\fP
+ext3 ジャーナルを持ったファイルシステムを作成する。 \fB\-J\fP オプションが指定されていない場合は、 デフォルトのジャーナルパラメータが用いられ、
+(ファイルシステムのサイズに対して) 適切な大きさのジャーナルを作成して ファイルシステムに格納する。 実際にジャーナルを利用するためには、 ext3
+をサポートしたカーネルが必要である。
+.TP 
+\fB\-J\fP\fI journal\-options\fP
+コマンドラインで指定されたオプションを使って ext3 ジャーナルを作成する。 ジャーナルオプションはコンマで区切り、 引き数がある場合は「=
+(イコール)」記号を使って指定する。 以下のオプションがサポートされている:
+.RS 1.2i
+.TP 
+\fBsize=\fP\fIjournal\-size\fP
+(ファイルシステムの内部に格納される) 内部ジャーナルをサイズ \fIjournal\-size\fP メガバイトで作成する。ジャーナルのサイズは、少なくとも
+1024 ファイルシステムブロックでなければならない。(つまり、1k ブロックの場合 1MB、4k ブロックの場合 4MB
+である)。さらに、10,240,000 ファイルシステムブロック、もしくは全ファイルシステムサイズの半分の、いずれか小さい方よりも小さい必要がある。
+.TP 
+\fBdevice=\fP\fIexternal\-journal\fP
+ファイルシステムを \fIexternal\-journal\fP にあるジャーナルブロックデバイスにアタッチする。 外部ジャーナルは、前もって
+.IP
+\fBmke2fs \-O journal_dev\fP \fIexternal\-journal\fP
+.IP
+コマンドで作成しておかなければならない。 また \fIexternal\-journal\fP は、新しいファイルシステムと同じブロックサイズで
+作成しなければならない。 さらに、1 つの外部ジャーナルに対して 複数ファイルシステムをアタッチすることはサポートされているが、現時点では、 Linux
+カーネルと \fBe2fsck\fP(8)  は外部ジャーナルの共有をサポートしていない。
+.IP
+デバイス名を直接指定する代わりに、
+\fBLABEL=\fP\fIlabel\fP や \fBUUID=\fP\fIUUID\fP という形式で \fIexternal\-journal\fP を指定することもできる。
+この形式では、外部ジャーナルの場所を、 ジャーナルの先頭の ext2 スーパーブロックに格納されている
+UUID やボリュームラベルで指定する。 ジャーナルデバイスのボリュームラベルと
+UUID を表示するには、 \fBdumpe2fs\fP(8) を使うこと。 \fBtune2fs\fP(8)  の \fB\-L\fP オプションも参照のこと。
+.RE
+.IP
+ひとつのファイルシステムに対しては、 \fBsize\fP オプションと \fBdevice\fP オプションのどちらか一方しか指定できない。
+.TP 
+\fB\-l\fP\fI filename\fP
+不良ブロックのリストを \fIfilename\fP から読み込む。このリストのブロック番号は、 \fBmke2fs\fP
+の用いるブロックサイズと同じもので作る必要がある。 よって、フォーマットの前にディスクの不良ブロックをチェックするには、 \fBmke2fs\fP の
+\fB\-c\fP オプションを用いるほうが、ずっと単純かつ間違いの起こりにくい方法である。 このオプションを指定すれば、 \fBmke2fs\fP
+は自動的に正しいパラメータを \fBbadblocks\fP に渡すからである。
+.TP 
+\fB\-L\fP\fI new\-volume\-label\fP
+ファイルシステムのボリュームラベルを \fInew\-volume\-label\fP に設定する。 ボリュームラベルの最大長は 16 バイトである。
+.TP 
+\fB\-m\fP\fI reserved\-blocks\-percentage\fP
+スーパーユーザのみが利用できる予約ブロックのパーセンテージを指定する。 このオプションは断片化を防ぐとともに、
+非特権プロセスによるファイルシステムへの書き込みが防止された後でも、 root が所有する \fBsyslogd\fP(8)
+といったデーモンが正しく機能し続けるようにする。 デフォルトのパーセンテージは 5% である。
+.TP 
+\fB\-M\fP\fI last\-mounted\-directory\fP
+ファイルシステムに、「最後にマウントされたディレクトリ」を設定する。 ファイルシステムがマウントされたディレクトリを検知して、
+どこにファイルシステムをマウントすべきかを決定するような ユーティリティに対して有用。
+.TP 
+\fB\-n\fP
+実際にはファイルシステムを作らないが、 あたかもファイルシステムを作成しているかのように表示を出す。
+このオプションは、ある特定のファイルシステムのバックアップスーパーブロックの 位置を知るのに利用できる。 ただしこの際 \fBmke2fs\fP
+にはそのファイルシステムを作ったときと 同じパラメータを渡す必要がある (もちろん \fB\-n\fP は加えてよい!)。
+.TP 
+\fB\-N\fP\fI number\-of\-inodes\fP
+このファイルシステムに作成すべき inode の個数に関するデフォルトの計算値を変更する (計算値はブロックの個数と
+\fIbytes\-per\-inode\fP 比をもとにしている)。 これによりユーザが必要な inode の個数を直接指定できる。
+.TP 
+\fB\-o\fP\fI creator\-os\fP
+ファイルシステムの "creator operating system" フィールドのデフォルト値を上書きする。creator
+フィールドは、デフォルトでは実行ファイル \fBmke2fs\fP がコンパイルされた OS 名となる。
+.TP 
+\fB\-O \fP\fIfeature\fP[,...]
+指定された feature (ファイルシステムオプション)
+で、デフォルトのファイルシステムオプションを上書きして、ファイルシステムを作成する。デフォルトで有効にされる feature は、設定ファイル
+\fB/etc/mke2fs.conf\fP の \fIbase_features\fP リレーションと \fI[defaults]\fP セクション、または、\fB\-T\fP
+オプションで指定される \fI[fs_types]\fP サブセクションの usage type で設定される。さらにファイルシステムと usage type
+は、\fI[fs_types]\fP サブセクションの \fIfeatures\fP リレーションで変更できる。より詳細は、\fBmke2fs.conf\fP(5)
+マニュアルページを参照すること。\fI[fs_types]\fP セクションに書かれたファイルシステムタイプ独自の設定は、グローバルなデフォルト
+\fI[defaults]\fP を上書きする。
+.sp
+ファイルシステム feature のセットは、このオプションで指定される feature
+で変更できる。このオプションが指定されない場合、\fIdefault_features\fP リレーション、または設定ファイルの \fI[defaults]\fP
+セクションでファイルシステムが作成される。
+.sp
+ファイルシステム属性セットは、 コンマで区切った属性のリストとして構成されており、 これに含まれる属性が有効にされる。
+属性を無効にする場合は、単に属性名の前にキャレット ('^') 文字を置けばよい。 仮想的なファイルシステム属性 "none" は、
+全てのファイルシステム属性をクリアする。
+.RS 1.2i
+.TP 
+\fBdir_index\fP
+ハッシュ B ツリーを使い、 ファイルが多いディレクトリ内での検索を高速化する。
+.TP 
+\fBextent\fP
+inode
+のデータブロックの場所を格納するために、間接ブロックスキーマを使うのではなく、エクステントを使う。これはエンコーディングをより効率的にするので、特に大きなファイルについて、ファイルシステムアクセスをスピードアップする。
+.TP 
+\fBfiletype\fP
+ディレクトリエントリにファイルタイプ情報を格納する。
+.TP 
+\fBflex_bg\fP
+ブロックごとのグループメタデータ (アロケーションビットマップと inode テーブル) をストレージメディアの任意の場所に置けるようにする。さらに
+\fBmke2fs\fP はブロックごとのグループメタデータを、各 "flex_bg group"
+の最初のブロックグループとともに置くこともできる。flex_bg グループのサイズは、\fB\-G\fP オプションで指定できる。
+.TP 
+\fBhas_journal\fP
+(\fB\-j\fP オプションを使った場合のように) ext3 ジャーナルを作成する。
+.TP 
+\fBjournal_dev\fP
+ext3 ジャーナルを、通常の ext2 ファイルシステム上にではなく、 指定されたデバイス上に作成する。 \fIexternal\-journal\fP
+は、それが使われるファイルシステムと 同じブロックサイズで作成されなければならない。
+.TP 
+\fBlarge_file\fP
+ファイルシステムが 2GB より大きいファイルを格納できる。(最近のカーネルは、2GB より大きいファイルが作られるときに、この feature
+を自動的に設定する。)
+.TP 
+\fBquota\fP
+クォータ inode (inode# 3 がユーザクォータ、inode# 4 がグループクォータ) を作成し、スーパーブロックに設定する。この
+feature を設定すると、ファイルシステムがマウントされた際に、クォータが自動的に有効になる。
+.TP 
+\fBresize_inode\fP
+ブロックグループディスクリプタテーブルを 将来大きくできるように、領域を予約しておく。 \fBresize2fs\fP
+を使ってオンラインでサイズ変更をするときに役立つ。 \fBmke2fs\fP はデフォルトで十分な領域を予約するので、 ファイルシステムは初期サイズの
+1024 倍まで大きくできる。 これは \fBresize\fP 拡張オプションを使って変更できる。
+.TP 
+\fBsparse_super\fP
+スーパーブロックのバックアップコピーを少なくした ファイルシステムを作成する (大きなファイルシステムでは使用量を少なくできる)。
+.TP 
+\fBuninit_bg\fP
+すべてのブロックグループを初期化せずにファイルシステムを作成する。この feature は、各ブロックグループのチェックサムと最高位 inode
+利用状況の統計を有効にする。この feature は (lazy_itable_init が有効にされている場合)
+フィルシステム作成時間を特にスピードアップし、\fBe2fsck\fP の時間を劇的に短くする。これは、ext4 ファイルシステムと最近の Linux
+カーネルでのみサポートされている。
+.RE
+.TP 
+\fB\-q\fP
+表示を抑制する。 \fBmke2fs\fP をスクリプト内で実行する場合に有用。
+.TP 
+\fB\-r\fP\fI revision\fP
+新しいファイルシステムに対してファイルシステムリビジョンを設定する。 1.2 系のカーネルはリビジョン 0 のファイルシステムにしか対応していない。
+デフォルトではリビジョン 1 のファイルシステムを作成する。
+.TP 
+\fB\-S\fP
+.\" .TP
+.\" .BI \-t " test"
+.\" Check the device for bad blocks before creating the file system
+.\" using the specified test.
+スーパーブロックとグループディスクリプタのみを書き出す。 スーパーブロックもそのバックアップも壊れてしまい、 復旧の最終手段が必要な場合に有用。
+このオプションを使用すると mke2fs はスーパーブロックとグループディスクリプタを再初期化する。 inode テーブルとブロックそのものと
+inode ビットマップには手をつけない。 このオプションを使用した場合、ただちに \fBe2fsck\fP プログラムを使用しなければならない。
+また、データが救済されるかどうかは保証の限りではない。 このオプションを使う際には、現在のファイルシステムの ブロックサイズを指定することが重要である。
+さもなければ、復帰できる見込みはない。
+.TP 
+\fB\-t\fP\fI fs\-type\fP
+作成するファイルシステムタイプ (ext2, ext3, ext4 など) を指定する。このオプションが指定されない場合、 \fBmke2fs\fP
+はコマンド実行時のデフォルト(例えば mkfs.ext2, mkfs.ext3 などの名前が使われたか)、または
+\fB/etc/mke2fs.conf\fP(5) ファイルで定義されるデフォルトを使う。このオプションは、\fB/etc/mke2fs.conf\fP(5) の
+\fBfstypes\fP 節に基づいて、デフォルトでどのファイルシステムオプションが使われるかを制御する。
+.sp
+\fB\-O\fP オプションは、新規作成されるファイルシステムで使われるファイルシステムオプションを明示的に追加または削除する。指定された
+\fIfs\-type\fP によっては、サポートされない場合もある。(例えば、"\fBmke2fs \-t ext3 \-O extent /dev/sdXX\fP"
+は、Linux カーネルの ext3 実装ではサポートされないファイルシステムが作成される。また、"\fBmke2fs \-t ext3 \-O
+^has_journal /dev/hdXX\fP" はジャーナルを持たないファイルシステムが作成される。なぜなら、ジャーナルありの ext3
+ファイルシステムコードが Linux カーネルでサポートされていないからである。)
+.TP 
+\fB\-T\fP\fI usage\-type[,...]\fP
+ファイルシステムの利用用途を指定し、\fBmke2fs\fP が使うオプションのシステムパラメータを選べるようにする。サポートされている usage type
+は設定ファイル \fB/etc/mke2fs.conf\fP(5) に定義されている。ユーザはカンマ区切りリストで 1 つ以上の usage type
+を指定できる。
+.sp
+このオプションが指定されない場合、\fBmke2fs\fP は作成されるファイルシステムのサイズによって、1
+つのデフォルトを選択する。ファイルシステムサイズが 3MB 以下である場合、\fBmke2fs\fP はファイルシステムタイプ \fIfloppy\fP
+を使う。ファイルシステムサイズが 3MB より大きく 512MB 以下である場合、\fBmke2fs\fP(8) はファイルシステムタイプ \fIsmall\fP
+を使う。ファイルシステムサイズが 4TB より大きく 16TB 以下である場合、\fBmke2fs\fP(8) はファイルシステムタイプ \fIbig\fP
+を使う。ファイルシステムサイズが 16TB より大きい場合、\fBmke2fs\fP(8) はファイルシステムタイプ \fIhuge\fP
+を使う。その他の場合、\fBmke2fs\fP(8) はデフォルトのファイルシステムタイプ \fIdefault\fP を使う。
+.TP 
+\fB\-U\fP\fI UUID\fP
+指定した UUID でファイルシステムを作成する。
+.TP 
+\fB\-v\fP
+詳細な表示をする。
+.TP 
+\fB\-V\fP
+\fBmke2fs\fP のバージョンを表示して終了する。
+.SH 環境変数
+.TP 
+\fBMKE2FS_SYNC\fP
+0 でない整数を指定すると、inode テーブル初期化時に \fBsync\fP(2) を呼ぶ頻度として指定される。
+.TP 
+\fBMKE2FS_CONFIG\fP
+設定ファイル (\fBmke2fs.conf\fP(5) を参照) の場所を決定する。
+.TP 
+\fBMKE2FS_FIRST_META_BG\fP
+0 でない整数を指定すると、最初のメタブロックグループを決定するために使われる。これは主にデバッグ用である。
+.TP 
+\fBMKE2FS_DEVICE_SECTSIZE\fP
+0 でない整数を指定すると、\fIdevice\fP の物理セクタサイズを決定するのに使われる。
+.TP 
+\fBMKE2FS_SKIP_CHECK_MSG\fP
+この環境変数が設定されると、マウント回数やチェック間隔で自動チェックされるファイルシステムのメッセージを表示しない。
+.SH 作者
+このバージョンの \fBmke2fs\fP は Theodore Ts'o <tytso@mit.edu> によって作成された。
+.SH バグ
+\fBmke2fs\fP には \fB\-f\fP オプションを付けることができるが、現時点では無視される。 現時点の ext2
+ファイルシステムはフラグメントに対応していないからである。
+.br
+たぶん他にもあるだろう。見つけたら作者に連絡してほしい。
+.SH 入手方法
+\fBmke2fs\fP は e2fsprogs パッケージの一部であり、 http://e2fsprogs.sourceforge.net から入手できる。
+.SH 関連項目
+\fBmke2fs.conf\fP(5), \fBbadblocks\fP(8), \fBdumpe2fs\fP(8), \fBe2fsck\fP(8),
+\fBtune2fs\fP(8)

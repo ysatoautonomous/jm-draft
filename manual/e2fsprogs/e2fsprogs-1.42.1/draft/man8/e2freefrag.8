@@ -1,0 +1,80 @@
+.\" -*- nroff -*-
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.TH E2FREEFRAG 8 "February 2012" "E2fsprogs version 1.42.1" 
+.SH 名前
+e2freefrag \- 空きスペースの断片化情報を表示する
+.SH 書式
+\fBe2freefrag\fP [ \fB\-c chunk_kb\fP ] [ \fB\-h\fP ] \fBfilesys\fP
+
+.SH 説明
+\fBe2freefrag\fP は ext2/3/4 ファイルシステムの空きスペースの断片化情報を表示するのに使われる。\fIfilesys\fP
+はファイルシステムデバイス名 (例 \fI/dev/hdc1\fP, \fI/dev/md0\fP) である。\fBe2freefrag\fP
+プログラムはブロックビットマップ情報をスキャンし、連続した並びの空きブロックがいくつ存在しするかをチェックする。連続した空きブロックのサイズと、並び
+\fIchunk_kb\fP
+の割合を表示する。さらに、ファイルシステムの空きチャンクサイズの最小/最大/平均と、すべての空きチャンクのヒストグラムも表示する。この情報はファイルシステムの空きスペース断片化レベルのゲージとして使うことができる。
+.SH オプション
+.TP 
+\fB\-c\fP\fI chunk_kb\fP
+チャンクサイズを指定すると、\fBe2freefrag\fP は空きチャンク \fIchunk_kb\fP キロバイト (Kb)
+単位がいくつあるを表示する。チャンクサイズは 2 の乗数で、かつファイルシステムブロックサイズより大きくなければならない。
+.TP 
+\fB\-h\fP
+このプログラムの使用法を表示する。
+.SH 例
+# e2freefrag /dev/vgroot/lvhome
+.br
+Device: /dev/vgroot/lvhome
+.br
+Blocksize: 4096 bytes
+.br
+Total blocks: 1504085
+.br
+Free blocks: 292995 (19.5%)
+.br
+
+Min. free extent: 4 KB
+.br
+Max. free extent: 24008 KB
+.br
+Avg. free extent: 252 KB
+.br
+
+HISTOGRAM OF FREE EXTENT SIZES:
+.br
+Extent Size Range : Free extents Free Blocks Percent
+.br
+    4K...    8K\- :           704           704     0.2%
+.br
+    8K...   16K\- :           810          1979     0.7%
+.br
+   16K...   32K\- :           843          4467     1.5%
+.br
+   32K...   64K\- :           579          6263     2.1%
+.br
+   64K...  128K\- :           493         11067     3.8%
+.br
+  128K...  256K\- :           394         18097     6.2%
+.br
+  256K...  512K\- :           281         25477     8.7%
+.br
+  512K... 1024K\- :           253         44914    15.3%
+.br
+    1M...    2M\- :           143         51897    17.7%
+.br
+    2M...    4M\- :            73         50683    17.3%
+.br
+    4M...    8M\- :            37         52417    17.9%
+.br
+    8M...   16M\- :             7         19028     6.5%
+.br
+   16M...   32M\- :             1          6002     2.0%
+.SH 作者
+このバージョンの e2freefrag は Rupesh Thakare が作成し、
+Andreas Dilger <adilger@sun.com> と Kalpak Shah が変更した。
+.SH 関連項目
+\fIdebugfs\fP(8), \fIdumpe2fs\fP(8), \fIe2fsck\fP(8)

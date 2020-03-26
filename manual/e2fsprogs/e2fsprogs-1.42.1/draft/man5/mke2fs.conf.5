@@ -1,0 +1,262 @@
+.\" -*- nroff -*-
+.\" Copyright 2006 by Theodore Ts'o.  All Rights Reserved.
+.\" This file may be copied under the terms of the GNU Public License.
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.TH mke2fs.conf 5 "February 2012" "E2fsprogs version 1.42.1" 
+.SH 名前
+mke2fs.conf \- mke2fs の設定ファイル
+.SH 説明
+\fImke2fs.conf\fP は \fBmke2fs\fP(8) の設定ファイルである。このファイルにより \fBmke2fs\fP(8) が ext2, ext3
+ファイルシステムを作成する際のデフォルトパラメータを制御する。
+.PP
+.\" Tags can be assigned multiple values
+\fImke2fs.conf\fP ファイルでは INI 形式のフォーマットが使用される。節 (stanza)または最上位のセクションは、角括弧: [ ]
+で区切られる。 各セクション内では、各行でリレーションが定義され、 タグに値を割り当てたり、タグにサブセクションを割り当てたりする。
+サブセクションには、更にリレーションとサブセクションが含まれる。 この設定ファイルで使用される INI 方式のフォーマットの例は、以下の通り:
+.P
+  [section1]
+.br
+  tag1 = value_a
+.br
+  tag1 = value_b
+.br
+  tag2 = value_c
+.P
+  [section 2]
+.br
+  tag3 = {
+.br
+  subtag1 = subtag_value_a
+.br
+  subtag1 = subtag_value_b
+.br
+  subtag2 = subtag_value_c
+.br
+  }
+.br
+  tag1 = value_d
+.br
+  tag2 = value_e
+.br
+  }
+.P
+コメントは、先頭のセミコロン (';') または ハッシュ ('#') 文字で区切られ、行末文字で終わる。
+.P
+タグと値にスペースが含まれる場合は、ダブルクォートで括らなければならない。
+ダブルクォートで括った文字列内では、標準的なバックスラッシュの解釈が適用される:
+"\en" (改行文字), "\et" (タブ文字), "\eb" (バックスペース文字),
+"\e\e" (バックスラッシュ文字)。
+.P
+ブール値を想定するリレーションもある。パーサーはとても自由で、\*(lqyes\*(rq, '`y\*(rq, \*(lqtrue\*(rq, \*(lqt\*(rq, \*(lq1\*(rq,
+\*(lqon\*(rq などをブール値 true として認識し、\*(lqno\*(rq, \*(lqn\*(rq, \*(lqfalse\*(rq, \*(lqnil\*(rq, \*(lq0\*(rq, \*(lqoff\*(rq
+をブール値 false として認識する。
+.P
+以下の節が \fImke2fs.conf\fP ファイルで使用されている。これらの節は、このドキュメントの後のセクションで詳しく説明される。
+.TP  
+\fI[defaults]\fP
+\fBmke2fs\fP(8) で使用されるデフォルトパラメータを定義するリレーションを含む。一般的に、デフォルト値は \fBfs_types\fP
+節で上書きされるか、ユーザによってコマンドラインオプションとして指定された値で上書きされる。
+.TP  
+\fI[fs_types]\fP
+特定のファイルシステムタイプで使用されるデフォルトを定義するリレーションを含む。ファイルシステムタイプは \fBmke2fs\fP(8) の \fB\-T\fP
+オプションで明示的に指定できる。
+.SH "[defaults] 節"
+以下のリレーションが \fI[defaults]\fP 節で定義される。
+.TP 
+\fIbase_features\fP
+このリレーションは新しく作成されたファイルシステムで有効にされるファイルシステム特性を指定する。これはファイルシステムの
+\fIbase_features\fP リレーション、または \fI[fs_types]\fP 節の利用 (usage) タイプサブセクションで上書きできる。
+.TP 
+\fIdefault_features\fP
+このリレーションでは、\fIbase_features\fP リレーションで指定された特性に、追加または削除する特性を指定する。これはファイルシステム特有の
+\fIdefault_features\fP、または \fI[fs_types]\fP の利用タイプサブセクション、または \fBmke2fs\fP(8) の \fB\-O\fP
+コマンドラインオプションで上書きできる。
+.TP 
+\fIenable_periodic_fsck\fP
+このブール値のリレーションは、ブート時の定期的なファイルシステムチェックを行うか否かを設定する。true に設定した場合、180
+日毎、またはマウントされたランダムな回数でチェックを強制される。この値は、\fBtune2fs\fP(8) の \fB\-i\fP と \fB\-c\fP
+コマンドラインオプションで、後から変更できる。
+.TP 
+\fIforce_undo\fP
+このブール値のリレーションを true に設定すると、\fBmke2fs\fP は undo ファイルを常に作成する。undo ファイルは巨大で、inode
+テーブルの初期化を遅延できないため、ファイルシステムイメージの作成に時間がかかる。
+.TP 
+\fIfs_type\fP
+このリレーションではデフォルトのファイルシステムを指定する。\fB\-t\fP オプションが指定されない場合、または \fBmke2fs\fP が
+\fBmkfs.\fP\fIfs\-type\fP の形式で起動されていない場合に使用される。デフォルトファイルシステムタイプをユーザが指定せず、
+\fBmke2fs.conf\fP ファイルでも指定されない場合、mke2fs はコマンドラインオプションでジャーナルが指定されている場合は \fIext3\fP
+をデフォルトファイルシステムタイプとし、ジャーナルが指定されていない場合は、 \fIext2\fP とする。
+.TP 
+\fIblocksize\fP
+このリレーションではデフォルトのブロックサイズを設定する。ユーザがコマンドラインでブロックサイズが指定しない場合、かつ設定ファイルのファイルシステムタイプ独自のセクションでブロックサイズが指定されない場合に使用される。
+.TP 
+\fIhash_alg\fP
+このリレーションでは、ハッシュ付き b\-tree
+ディレクトリを含む新しいファイルシステムで使われるデフォルトのハッシュアルゴリズムを設定する。指定可能なアルゴリズムは \fIlegacy\fP,
+\fIhalf_md4\fP, \fItea\fP である。
+.TP 
+\fIinode_ratio\fP
+このリレーションではデフォルトの inode
+率を設定する。ユーザがコマンドラインで指定しない場合、かつ設定ファイルのファイルシステム独自のセクションでデフォルトの inode
+率を指定しない場合に使われる。
+.TP 
+\fIinode_size\fP
+このリレーションではデフォルトの inode
+サイズを設定する。ユーザがコマンドラインで指定しない場合、かつ設定ファイルのファイルシステム独自のセクションでデフォルトの inode
+サイズを指定しない場合に使われる。
+.TP 
+\fIreserved_ratio\fP
+このリレーションではスーパーユーザのために予約されたデフォルトのファイルシステムブロックのパーセンテージを設定する。ユーザがコマンドラインで指定しない場合、かつ設定ファイルのファイルシステム独自のセクションでデフォルトの予約率を指定しない場合に使われる。この値は小数で指定する。
+.TP 
+\fIundo_dir\fP
+このリレーションでは undo ファイルを置くディレクトリを設定する。
+これは環境変数 \fBE2FSPROGS_UNDO_DIR\fP を上書きする。
+ディレクトリの場所を \fInone\fP に設定した場合、\fBmke2fs\fP は undo ファイルを作成しない。
+.SH "[fs_types] 節"
+\fI[fs_types]\fP 節の各タグは、ファイルシステムタイプまたは利用タイプを設定する。これは、それぞれ　\fBmke2fs\fP(8)　の \fB\-t\fP
+と \fB\-T\fP で設定できる。
+.P
+\fBmke2fs\fP プログラムは、ファイルシステムタイプ (例えば ext2, ext3 など) と利用タイプを使って、 fs_types
+のリストを構築する。ほとんどの設定オプションについて、\fBmke2fs\fP は構築リストの各エントリに対応する　\fI[fs_types]\fP
+節のサブセクションを探す。後に出てくるエントリで、初めに出てくるファイルシステムと利用タイプを上書きする。例えば、以下のような
+\fBmke2fs.conf\fP の一部を考えてみよう。
+.P
+[defaults]
+.br
+  base_features = sparse_super,filetype,resize_inode,dir_index
+.br
+  blocksize = 4096
+.br
+  inode_size = 256
+.br
+  inode_ratio = 16384
+.br
+
+.br
+[fs_types]
+.br
+  ext3 = {
+.br
+  features = has_journal
+.br
+  }
+.br
+  ext4 = {
+.br
+  features = extents,flex_bg
+.br
+  inode_size = 256
+.br
+  }
+.br
+  small = {
+.br
+  blocksize = 1024
+.br
+  inode_ratio = 4096
+.br
+  }
+.br
+  floppy = {
+.br
+  features = ^resize_inode
+.br
+  blocksize = 1024
+.br
+  inode_size = 128
+.br
+  }
+.P
+mke2fs がプログラム名 \fBmke2fs.ext4\fP で起動されると、ファイルシステムタイプ ext4 が使われる。ファイルシステムが 3MB
+より小さく、利用タイプが指定されていない場合、 \fBmke2fs\fP はデフォルトの利用タイプ \fIfloppy\fP を使う。その結果 fs_types
+リストは "ext4, floppy" となる。ext4 サブセクションと floppy サブセクションはともに、\fIinode_size\fP
+リレーションを定義しているが、 fs_types の後のエントリが先のエントリを上書きするので、設定パラメータ
+fs_types.floppy.inode_size が使われ、ファイルシステムの inode サイズは 128 になる。
+.P
+この解決法の例外は \fIfeatures\fP タグであり、ファイルシステムで使われる feature
+の集合を指定して、それを合算したものが使われる。上の例では、最初の設定リレーション defaults.base_features で
+sparse_super, filetype, resize_inode, dir_index が有効化される。次に、設定リレーション
+fs_types.ext4.features で extents, flex_bg が有効化される。最後に、設定リレーション
+fs_types.floppy.features で resize_inode が削除される。結果として、feature
+のセットは、sparse_super, filetype, resize_inode, dir_index, extents, flex_bg となる。
+.P
+各ファイルシステムタイプについて、fs_type サブセクションで以下のタグが使われる。
+.TP 
+\fIbase_features\fP
+このリレーションではファイルシステムで最初に有効化したい feature を設定する。1つの \fIbase_features\fP
+だけが使われるため、fs_types のリスト中に、\fIbase_features\fP
+を定義しているサブセクションが複数のエントリにあった場合、\fBmke2fs\fP(8)は最後の定義のみを使う。
+.TP 
+\fIfeatures\fP
+このリレーションではカンマ区切りの feature のリストを設定し、新しく作成されるファイルシステムで使われる feature
+のセットを編集する。記法は \fBmke2fs\fP(8) の \fB\-O\fP コマンドラインオプションと同じである。キャレット ('^') を前につけた
+feature は無効化される。fs_types のリストに指定された各 \fIfeature\fP リレーションは、指定された順に適用される。
+.TP 
+\fIdefault_features\fP
+このリレーションでは、\fIbase_features\fP と \fIfeatures\fP にリストされた feature を適用した後に、有効または無効にする
+feature を設定する。これは、\fBmke2fs\fP(8) の \fB\-O\fP コマンドラインオプションで上書きできる。
+.TP 
+\fIauto_64\-bit_support\fP
+このリレーションはブール値で、ファイルシステムのブロック数が 64bit feature を有効化する必要がある場合に、\fBmke2fs\fP(8)
+が自動的に追加するか否かを指定する。resize_inode feature は 64bit ブロック数をサポートしていないので自動的に無効化される。
+.TP 
+\fIdefault_mntopts\fP
+このリレーションでは、デフォルトで有効化されるマウントオプションのセットを設定する。これは \fBtune2fs\fP(8) の \fB\-o\fP
+オプションで後から変更できる。
+.TP 
+\fIblocksize\fP
+このリレーションではデフォルトのブロックサイズを設定する。これは、ユーザがコマンドラインでブロックサイズを指定しない場合に使われる。
+.TP 
+\fIlazy_itable_init\fP
+このブール値のリレーションは、inode テーブルを遅延初期化するか否かを設定する。これは、uninit_bg feature
+が有効である時にのみ意味がある。lazy_itable_init が true で、uninit_bg feature が有効の場合、 inode
+テーブルは \fBmke2fs\fP(8)
+では完全には初期化されない。これによってファイルシステムの初期化は劇的にスピードアップするが、ファイルシステムが最初にマウントされるときに、カーネルがバックグラウンドで初期化を完了させる必要が生まれる。
+.TP 
+\fIinode_ratio\fP
+このリレーションはユーザが inode 率を指定しない場合のデフォルトを設定する。
+.TP 
+\fIinode_size\fP
+このリレーションはユーザが inode サイズを指定しない場合のデフォルトを設定する。
+.TP 
+\fIreserved_ratio\fP
+このリレーションはスーパーユーザのために予約されたファイルシステムブロックのデフォルトの割合を設定する。このリレーションは、ユーザがコマンドラインで指定しない場合に使われる。
+.TP 
+\fIhash_alg\fP
+このリレーションでは、ハッシュ付き b\-tree
+ディレクトリを含む新しいファイルシステムで使われるデフォルトのハッシュアルゴリズムを設定する。指定可能なアルゴリズムは \fIlegacy\fP,
+\fIhalf_md4\fP, \fItea\fP である。
+.TP 
+\fIflex_bg_size\fP
+このリレーションは、ext4 ファイルシステムで 1
+つのラージ仮想ブロックグループにパックするブロックグループ数を指定する。これにより、メタデータに大きな負荷がかかる場合に、メタデータを局所化し、性能を改善する。グループ数は
+2 の乗数にする必要があり、flex_bg ファイルシステム feature が有効化されている場合にのみ設定できる。\fIoptions\fP
+このリレーションは、\fBmke2fs\fP(8) で扱われる追加の拡張オプションを設定する。この拡張オプションは、\fB\-E\fP
+オプションの引数の前に追加される。このリレーションでは、\fBmke2fs\fP(8)
+で使われるファイルシステムタイプごとのデフォルトの拡張オプションを設定できる。
+.TP 
+\fIdiscard\fP
+このブール値のリレーションは、\fBmke2fs\fP(8) がファイルシステム作成に先立ってデバイスを破棄するか否かを設定する。
+.TP 
+\fIcluster_size\fP
+このリレーションは、bigalloc ファイルシステム feature
+が有効になっている場合に、デフォルトクラスタサイズを設定する。これは、\fBmke2fs\fP(8) の \fB\-C\fP コマンドラインオプションで上書きできる。
+.SH "[devices] 節"
+\fI[devices]\fP 節の各タグにはデバイス名を設定し、デバイスごとのデフォルトを設定する。
+.TP 
+\fIfs_type\fP
+このリレーションは、\fB\-t\fP オプションがコマンドラインで指定されない場合の、デフォルトパラメータを設定する。
+.TP 
+\fIusage_types\fP
+このリレーションは、\fB\-T\fP オプションがコマンドラインで指定されない場合の、デフォルトパラメータを設定する。
+.SH ファイル
+.TP 
+\fI/etc/mke2fs.conf\fP
+\fBmke2fs\fP(8) の設定ファイル
+.SH 関連項目
+\fBmke2fs\fP(8)

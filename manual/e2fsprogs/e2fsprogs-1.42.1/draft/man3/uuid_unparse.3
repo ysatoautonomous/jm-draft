@@ -1,0 +1,71 @@
+.\" Copyright 1999 Andreas Dilger (adilger@enel.ucalgary.ca)
+.\"
+.\" %Begin-Header%
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, and the entire permission notice in its entirety,
+.\"    including the disclaimer of warranties.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. The name of the author may not be used to endorse or promote
+.\"    products derived from this software without specific prior
+.\"    written permission.
+.\" THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
+.\" WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+.\" OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, ALL OF
+.\" WHICH ARE HEREBY DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE
+.\" LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+.\" CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+.\" OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+.\" BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+.\" LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+.\" (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+.\" USE OF THIS SOFTWARE, EVEN IF NOT ADVISED OF THE POSSIBILITY OF SUCH
+.\" DAMAGE.
+.\" %End-Header%
+.\" Created  Wed Mar 10 17:42:12 1999, Andreas Dilger
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.\" Japanese Version Copyright 1999 by NAKANO Takeo. All Rights Reserved.
+.\" Translated Wed Oct 20 1999 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated Tue 16 Nov 1999 by NAKANO Takeo
+.\" Updated & Modified Thu May  5 01:09:52 JST 2005
+.\"         by Yuichi SATO <ysato444@yahoo.co.jp>
+.\"
+.TH UUID_UNPARSE 3 "February 2012" "E2fsprogs version 1.42.1" 
+.SH 名前
+uuid_unparse \- UUID をバイナリ表現から文字列に変換する
+.SH 書式
+.nf
+\fB#include <uuid/uuid.h>\fP
+.sp
+\fBvoid uuid_unparse(uuid_t \fP\fIuu\fP\fB, char *\fP\fIout\fP\fB);\fP
+\fBvoid uuid_unparse_upper(uuid_t \fP\fIuu\fP\fB, char *\fP\fIout\fP\fB);\fP
+\fBvoid uuid_unparse_lower(uuid_t \fP\fIuu\fP\fB, char *\fP\fIout\fP\fB);\fP
+.fi
+.SH 説明
+\fBuuid_unparse\fP 関数は、与えられた UUID \fIuu\fP をバイナリ表現から 36 バイトの文字列 (と末尾文字 '\e0')
+に変換する。文字列フォーマットは 1b4e28ba\-2fa1\-11d2\-883f\-0016d3cca427 のようなもので、これは \fBout\fP
+が指す文字列に保存される。 \fBuuid_unparse\fP で返される 16 進数が大文字であるか小文字であるかは、
+システム固有のローカルなデフォルトに依存する。
+.PP
+16 進数が大文字であるか小文字であるかが重要な場合は、 関数 \fBuuid_unparse_upper\fP と
+\fBuuid_unparse_lower\fP を使用することができる。
+.SH 準拠
+OSF DCE 1.1
+.SH 作者
+Theodore Y. Ts'o
+.SH 入手方法
+.UR http://e2fsprogs.sourceforge.net/
+http://e2fsprogs.sourceforge.net/
+.UE
+.SH 関連項目
+\fBuuid\fP(3), \fBuuid_clear\fP(3), \fBuuid_compare\fP(3), \fBuuid_copy\fP(3),
+\fBuuid_generate\fP(3), \fBuuid_time\fP(3), \fBuuid_is_null\fP(3), \fBuuid_parse\fP(3)
