@@ -1,0 +1,188 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of CHATTR</TITLE>
+</HEAD><BODY>
+<H1>CHATTR</H1>
+Section: User Commands  (1)<BR>Updated: February 2012<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+chattr - Linux ファイルシステム上のファイルの属性を変更する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>chattr</B> [ <B>-RVf</B> ] [ <B>-v</B> <I>version</I> ] [ <I>mode</I> ] <I>files...</I>
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>chattr</B> は Linux ファイルシステム上のファイルの属性 (attribute) を変更する。
+<P>
+
+mode の記法フォーマットは +-=[acdeijstuADST] である。
+<P>
+
+`+' オペレータを使用すると、選択した属性がファイルに付加される。 `-' オペレータを使用すると解除される。 `='
+オペレータを使用すると、ファイルは指定した属性だけを持つことになる。
+<P>
+
+`acdeijstuADST' がファイルに新たに指定できる属性である。 (a) 追加のみ許可 (append only)、(c) 圧縮
+(compressed)、 (d) ダンプしない (no dump)、(e) エクステント形式、(i) 変更不可 (immutable)、 (j)
+データのジャーナリング (data journalling)、 (s) 安全な削除 (secure deletion)、(t) 末尾マージをしない
+(no tail-merging)、 (u) 復活可能 (undeletable)、 (A) atime を更新しない、 (D) ディレクトリの同期更新
+(synchronous directory updates)、 (S) 同期更新 (synchronous updates)、 (T)
+ディレクトリ階層のトップ。
+<P>
+
+次の属性は読み出し専用で、<B><A HREF="../man1/lsattr.1.html">lsattr</A></B>(1) で表示することはできるが、
+chattr で変更することはできない。
+(h) ヒュージファイル、(E) 圧縮エラー、(I) 索引付きのディレクトリ、
+(X) 圧縮への直接アクセス、(Z) dirty な圧縮ファイル。
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-R</B><DD>
+再帰的にディレクトリやその中身の属性を変更する。
+<DT><B>-V</B><DD>
+属性の変更を詳細に表示する。
+<DT><B>-f</B><DD>
+ほとんどのエラーメッセージを出力しないようにする。
+<DT><B>-v</B><I> version</I><DD>
+ファイルシステムのバージョン/世代を設定する。
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>属性</H2>
+
+'A' 属性が設定されているファイルは、 アクセスされても atime レコードが変更されない。 これはラップトップシステムのディスク I/O
+をある程度軽減する。
+<P>
+
+`a' 属性が設定されているファイルは、 書き込みの際に追加モードでしかオープンできない。 スーパーユーザーまたは
+CAP_LINUX_IMMUTABLE ケーパビリティ (capability) を持つプロセスだけが、 この属性を設定・解除できる。
+<P>
+
+`c' 属性が設定されているファイルは、 ディスク上に置かれるときカーネルによって自動的に圧縮される。
+このファイルを読み出すと、伸長されたデータが返ってくる。 このファイルに書き込むと、ディスク上に保存する前にデータが圧縮される。 注意:
+このドキュメントの最後にある 「バグと制限」のセクションを読んで確かめてほしい。
+<P>
+
+`D' 属性が設定されているディレクトリは、 変更されると同時にディスクにもその内容が書き込まれる。 これは `dirsync' マウントオプションを、
+それらのファイルだけに適用するのと同じことである。
+<P>
+
+`d' 属性が設定されているファイルは、 <B><A HREF="../man8/dump.8.html">dump</A></B>(8)  プログラムを起動した際にバックアップされない。
+<P>
+
+'E' 属性は実験的な圧縮パッチが用いるもので、 圧縮ファイルに圧縮エラーがあることを示す。 この属性は <B><A HREF="../man1/chattr.1.html">chattr</A></B>(1)
+によって設定したり解除したりすることはできないが、 <B><A HREF="../man1/lsattr.1.html">lsattr</A></B>(1)  を用いて表示させることはできる。
+<P>
+
+'e' 属性は、そのファイルをディスク上のブロックにマッピングする際に
+エクステントが使用されていることを示す。
+この属性は <B><A HREF="../man1/chattr.1.html">chattr</A></B>(1) で削除することはできない。
+<P>
+
+`I' 属性は htree コードによって用いられ、 ディレクトリがハッシュツリーを使って索引を付けられることを示す。 この属性は
+<B><A HREF="../man1/chattr.1.html">chattr</A></B>(1)  によって設定したり解除したりすることはできないが、 <B><A HREF="../man1/lsattr.1.html">lsattr</A></B>(1)  を用いて表示させることはできる。
+<P>
+
+'h' 属性は、そのファイルのブロックがセクター単位ではなくファイルシステムのブロックサイズ単位で格納されていることを示す。
+これは、そのファイルのサイズが 2TB 超である (または一度でも 2TB 超になったことがある) ことを意味する。 <B><A HREF="../man1/lsattr.1.html">lsattr</A></B>(1)
+で表示することはできるが、 <B><A HREF="../man1/chattr.1.html">chattr</A></B>(1) でこの属性の設定、解除を行うことはできない。
+<P>
+
+`i' 属性が設定されているファイルは、変更することができない。 すなわち、削除、名前の変更、このファイルを指すリンクの作成、
+このファイルに対するデータの書き込みが禁止される。 スーパーユーザーまたは CAP_LINUX_IMMUTABLE ケーパビリティを持つプロセスだけが、
+この属性を設定・解除できる。
+<P>
+
+`j' 属性が設定されているファイルは、 ファイルシステムが &quot;data=ordered&quot; または &quot;data=writeback&quot; オプションで
+マウントされている場合、 ファイルそのものに書き出される前に、 ext3 のジャーナルにデータが書き出される。 ファイルシステムが
+&quot;data=journal&quot; オプションでマウントされている場合、 全てのファイルデータは既にジャーナルに記録されているので、
+この属性は何も影響しない。 スーパーユーザーまたは CAP_SYS_RESOURCE ケーパビリティを持つプロセスだけが、 この属性を設定・解除できる。
+<P>
+
+`s' 属性が設定されているファイルが削除されると、 割り当てられていたブロックの中身が 0 にされ、ディスクに書き戻される。 注意:
+このドキュメントの最後にある 「バグと制限」のセクションを読んで確かめてほしい。
+<P>
+
+`S' 属性が設定されているファイルが変更されると、 変更は同期的にディスクに書き込まれる (すなわち変更が直ちにディスク上に反映される)。 これは
+mount オプションの `sync' を それらのファイルだけに適用するのと同じことである。
+<P>
+
+`T' 属性が設定されているディレクトリは、
+Orlovブロックアロケータのためのディレクトリ階層のトップとして扱われる。これはext3とext4で使われるブロックアロケータへのヒントになる。このディレクトリのサブディレクトリは関連付けが行われず、アロケーションのために拡張される。例えば
+/home ディレクトリに `T' 属性を設定しておくのはよい考えである。そうすれば、/home/john と /home/mary
+は別々のブロックグループに置かれる。この属性が設定されていないディレクトリについて、Orlovブロックアロケータは可能であればサブディレクトリをなるべく近くにグループ化する。
+<P>
+
+`t' 属性が設定されているファイルは、 そのファイルが他のファイルとマージされたときに 部分的ブロックのフラグメントを末尾に作らない (末尾マージ
+(tail-merging) をサポートしているファイルシステムの場合)。 これは LILO のような、ファイルシステムを直接読みにいき、
+かつ末尾マージされたファイルのことを理解しないような アプリケーションに対して必要となる。 注: この man ページを書いている時点で、ext2 と
+ext3 ファイルシステムは (まだ非常に実験的なパッチ以外では)  末尾マージをサポートしていない。
+<P>
+
+`u' 属性が設定されているファイルを削除すると、 その内容は保護される。 これにより、ユーザがファイルを復活させることが可能になる。 注意:
+このドキュメントの最後にある 「バグと制限」のセクションを読んで確かめてほしい。
+<P>
+
+`X' 属性は実験的な圧縮パッチによって用いられ、 圧縮ファイルの内容が圧縮状態のまま直接アクセス可能であることを示す。 この属性は現在のところ
+<B><A HREF="../man1/chattr.1.html">chattr</A></B>(1)  によって設定したり解除したりすることはできないが、 <B><A HREF="../man1/lsattr.1.html">lsattr</A></B>(1)  を用いて表示させることはできる。
+<P>
+
+`Z' 属性は実験的な圧縮パッチによって用いられ、 圧縮ファイルが汚染されている (dirty) ことを示す。 この属性は <B><A HREF="../man1/chattr.1.html">chattr</A></B>(1)
+によって設定したり解除したりすることはできないが、 <B><A HREF="../man1/lsattr.1.html">lsattr</A></B>(1)  を用いて表示させることはできる。
+<P>
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>作者</H2>
+
+<B>chattr</B> は、Remy Card &lt;<A HREF="mailto:Remy.Card@linux.org">Remy.Card@linux.org</A>&gt; によって作成された。 現在は Theodore
+Ts'o &lt;<A HREF="mailto:tytso@alum.mit.edu">tytso@alum.mit.edu</A>&gt; によってメンテナンスされている。
+<A NAME="lbAH">&nbsp;</A>
+<H2>バグと制限</H2>
+
+`c', 's', `u' 属性への対応は、現在主流になっている Linux カーネルで 実装されている ext2 と ext3
+ファイルシステムに含まれていない。 これらの属性は将来の ext2 と ext3 に実装されるかもしれない。
+<P>
+
+`j' オプションは、ext3 でマウントされた ファイルシステムについてのみ有効である。
+<P>
+
+`D' オプションは Linux カーネル 2.5.19 以降でのみ利用できる。
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+<B>chattr</B> は e2fsprogs パッケージの一部であり、 <A HREF="http://e2fsprogs.sourceforge.net">http://e2fsprogs.sourceforge.net</A> から入手できる。
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/lsattr.1.html">lsattr</A></B>(1)
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">属性</A><DD>
+<DT><A HREF="#lbAG">作者</A><DD>
+<DT><A HREF="#lbAH">バグと制限</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 18:50:55 GMT, March 26, 2020
+</BODY>
+</HTML>

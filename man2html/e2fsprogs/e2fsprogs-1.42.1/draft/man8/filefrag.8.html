@@ -1,0 +1,66 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of FILEFRAG</TITLE>
+</HEAD><BODY>
+<H1>FILEFRAG</H1>
+Section: Maintenance Commands (8)<BR>Updated: February 2012<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+filefrag - ファイルの断片化を報告する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>filefrag</B> [ <B>-Bbsvx</B> ] [ <I>files...</I> ]
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>filefrag</B> は特定のファイルがどのくらい酷く断片化されているかを報告する。 このプログラムは、ext2 と ext3 ファイルシステムの
+間接ブロックを許しているが、 全てのファイルシステム上のファイルに使うことができる。
+<P>
+
+<B>filefrag</B> は最初に、より効率的で高速な FIEMAP ioctl を使って、エクステント情報を取得しようとする。もし FIEMAP
+がサポートされていない場合、 filefrag は FIBMAP を使う。
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-B</B><DD>
+テストのため、 FIEMAP ioctl ではなく、古い FIBMAP ioctl を強制的に使用する。
+<DT><B>-b</B><DD>
+1024 バイトブロックサイズを出力に使う。
+<DT><B>-s</B><DD>
+マッピングをリクエストする前にファイルを同期する。
+<DT><B>-v</B><DD>
+ファイルの断片化をチェックするときに、詳細に報告する。
+<DT><B>-x</B><DD>
+拡張属性のマッピングを表示する。
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>作者</H2>
+
+<B>filefrag</B> は Theodore Ts'o &lt;<A HREF="mailto:tytso@mit.edu">tytso@mit.edu</A>&gt; が作成した。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">作者</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 18:50:56 GMT, March 26, 2020
+</BODY>
+</HTML>

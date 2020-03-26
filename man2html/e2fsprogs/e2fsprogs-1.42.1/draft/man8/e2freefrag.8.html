@@ -1,0 +1,140 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of E2FREEFRAG</TITLE>
+</HEAD><BODY>
+<H1>E2FREEFRAG</H1>
+Section: Maintenance Commands (8)<BR>Updated: February 2012<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+e2freefrag - 空きスペースの断片化情報を表示する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>e2freefrag</B> [ <B>-c chunk_kb</B> ] [ <B>-h</B> ] <B>filesys</B>
+<P>
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>e2freefrag</B> は ext2/3/4 ファイルシステムの空きスペースの断片化情報を表示するのに使われる。<I>filesys</I>
+はファイルシステムデバイス名 (例 <I>/dev/hdc1</I>, <I>/dev/md0</I>) である。<B>e2freefrag</B>
+プログラムはブロックビットマップ情報をスキャンし、連続した並びの空きブロックがいくつ存在しするかをチェックする。連続した空きブロックのサイズと、並び
+<I>chunk_kb</I>
+の割合を表示する。さらに、ファイルシステムの空きチャンクサイズの最小/最大/平均と、すべての空きチャンクのヒストグラムも表示する。この情報はファイルシステムの空きスペース断片化レベルのゲージとして使うことができる。
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-c</B><I> chunk_kb</I><DD>
+チャンクサイズを指定すると、<B>e2freefrag</B> は空きチャンク <I>chunk_kb</I> キロバイト (Kb)
+単位がいくつあるを表示する。チャンクサイズは 2 の乗数で、かつファイルシステムブロックサイズより大きくなければならない。
+<DT><B>-h</B><DD>
+このプログラムの使用法を表示する。
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>例</H2>
+
+# e2freefrag /dev/vgroot/lvhome
+<BR>
+
+Device: /dev/vgroot/lvhome
+<BR>
+
+Blocksize: 4096 bytes
+<BR>
+
+Total blocks: 1504085
+<BR>
+
+Free blocks: 292995 (19.5%)
+<BR>
+
+<P>
+Min. free extent: 4 KB
+<BR>
+
+Max. free extent: 24008 KB
+<BR>
+
+Avg. free extent: 252 KB
+<BR>
+
+<P>
+HISTOGRAM OF FREE EXTENT SIZES:
+<BR>
+
+Extent Size Range : Free extents Free Blocks Percent
+<BR>
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;4K...&nbsp;&nbsp;&nbsp;&nbsp;8K-&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;704&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;704&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.2%
+<BR>
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;8K...&nbsp;&nbsp;&nbsp;16K-&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;810&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1979&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.7%
+<BR>
+
+<BR>&nbsp;&nbsp;&nbsp;16K...&nbsp;&nbsp;&nbsp;32K-&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;843&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4467&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.5%
+<BR>
+
+<BR>&nbsp;&nbsp;&nbsp;32K...&nbsp;&nbsp;&nbsp;64K-&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;579&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6263&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.1%
+<BR>
+
+<BR>&nbsp;&nbsp;&nbsp;64K...&nbsp;&nbsp;128K-&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;493&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11067&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.8%
+<BR>
+
+<BR>&nbsp;&nbsp;128K...&nbsp;&nbsp;256K-&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;394&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;18097&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6.2%
+<BR>
+
+<BR>&nbsp;&nbsp;256K...&nbsp;&nbsp;512K-&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;281&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;25477&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8.7%
+<BR>
+
+<BR>&nbsp;&nbsp;512K...&nbsp;1024K-&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;253&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;44914&nbsp;&nbsp;&nbsp;&nbsp;15.3%
+<BR>
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;1M...&nbsp;&nbsp;&nbsp;&nbsp;2M-&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;143&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;51897&nbsp;&nbsp;&nbsp;&nbsp;17.7%
+<BR>
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;2M...&nbsp;&nbsp;&nbsp;&nbsp;4M-&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;73&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50683&nbsp;&nbsp;&nbsp;&nbsp;17.3%
+<BR>
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;4M...&nbsp;&nbsp;&nbsp;&nbsp;8M-&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;37&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;52417&nbsp;&nbsp;&nbsp;&nbsp;17.9%
+<BR>
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;8M...&nbsp;&nbsp;&nbsp;16M-&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;19028&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6.5%
+<BR>
+
+<BR>&nbsp;&nbsp;&nbsp;16M...&nbsp;&nbsp;&nbsp;32M-&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6002&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.0%
+<A NAME="lbAG">&nbsp;</A>
+<H2>作者</H2>
+
+このバージョンの e2freefrag は Rupesh Thakare が作成し、
+Andreas Dilger &lt;<A HREF="mailto:adilger@sun.com">adilger@sun.com</A>&gt; と Kalpak Shah が変更した。
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<I><A HREF="../man8/debugfs.8.html">debugfs</A></I>(8), <I><A HREF="../man8/dumpe2fs.8.html">dumpe2fs</A></I>(8), <I><A HREF="../man8/e2fsck.8.html">e2fsck</A></I>(8)
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">例</A><DD>
+<DT><A HREF="#lbAG">作者</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 18:50:56 GMT, March 26, 2020
+</BODY>
+</HTML>

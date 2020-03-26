@@ -1,0 +1,291 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of DEBUGFS</TITLE>
+</HEAD><BODY>
+<H1>DEBUGFS</H1>
+Section: Maintenance Commands (8)<BR>Updated: February 2012<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+debugfs - ext2/ext3/ext4 ファイルシステムデバッガ
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>debugfs</B> [ <B>-DVwci</B> ] [ <B>-b</B> blocksize ] [ <B>-s</B> superblock ] [ <B>-f</B>
+cmd_file ] [ <B>-R</B> request ] [ <B>-d</B> data_source_device ] [ device ]
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>debugfs</B> は対話的なファイルシステムのデバッガである。 ext2/ext3/ext4 ファイルシステムの状態の調査・変更に利用できる。
+<BR>
+
+<I>device</I> は、ファイルシステムを含むデバイスに対応する スペシャルファイルである。(例: /dev/hdXX)
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><I>-w</I><DD>
+ファイルシステムを read/write モードでオープンする。 このオプションを指定しない場合は、 ファイルシステムは read-only
+モードでオープンされる。
+<DT><I>-c</I><DD>
+ファイルシステムを catastrophic (甚大な破損が起こった場合の) モードでオープンする。 このモードでは inode
+とグループビットを最初に読み込まない。 これは重度に破損したファイルシステムに対しては有効なことがあるが、 一方このため catastrophic
+モードではファイルシステムを read-only でしかオープンできない。
+<DT><I>-i</I><DD>
+<I>device</I> が <B>e2image</B> プログラムによって作成された ext2 イメージファイルであることを指定する。 ext2
+イメージファイルは、スーパーブロック・ ブロックグループディスクリプタ・ブロックアロケーションビットマップ・ inode
+アローケションビットマップ・inode テーブルしか持たないので、 <B>debugfs</B> の多くのコマンドが正しく機能しない。 <B>警告:</B>
+安全性のチェックは行わない。 また、 <I>-d</I> オプションによって <I>data_source_device</I> を指定せずに、 <I>ls</I>,
+<I>dump</I> などのコマンドを実行した場合には <B>debugfs</B> は変な風に失敗するかもしれない。 <B>debugfs</B>
+はデバッグ用のツールなので、洗練された部分のみであるとは限らない!
+<DT><I>-d data_source_device</I><DD>
+<I>-i</I> オプションと共に使用され、 読み込みブロックが ext2 イメージファイルに見つからない場合には、 指定された
+<I>data_source_device</I> が使用される。 このデバイスにはデータ・ディレクトリ・間接 (indirect) ブロックが含まれる。
+<DT><I>-b blocksize</I><DD>
+通常のように正しいブロックサイズを検出する動作を行わず、 指定したブロックサイズをそのファイルシステムに用いる。
+<DT><I>-s superblock</I><DD>
+ファイルシステムのスーパーブロックを、プライマリスーパーブロック (ファイルシステムの先頭からオフセット 1024 バイトの位置)
+ではなく、指定されたブロック数から読み込む。<I>-s</I> オプションを指定した場合、ファイルシステムのブロックサイズを <I>-b</I>
+オプションで指定する必要がある。
+<DT><I>-f cmd_file</I><DD>
+<B>debugfs</B> に、 <I>cmd_file</I> からコマンドを読み込ませ、実行させる。 コマンドの実行を終了すると、 <B>debugfs</B>
+は終了する。
+<DT><I>-D</I><DD>
+<B>debugfs</B> がデバイスをオープンする際に、バッファキャッシュをバイパスして、ダイレクト I/O を使う。これを書いている時点では、いくつかの
+Linux デバイス、特にデバイスマッパーはダイレクト I/O をサポートしていない。
+<DT><I>-R request</I><DD>
+<I>request</I> というひとつのコマンドを実行し、終了する。
+<DT><I>-V</I><DD>
+<B>debugfs</B> のバージョンを表示して終了する。
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>ファイル指定</H2>
+
+
+
+<B>debugfs</B> のコマンドの多くは、 debugfs が現在オープンしているファイルシステムにおける inode (パス名ではない) を示す
+<I>filespec</I> という引数を取る。 <I>filespec</I> には 2 種類の表記法がある。ひとつは、inode 番号を &lt;&gt;
+で囲む方法である (例: <I>&lt;2&gt;</I>)。 もうひとつはパス名で指定する方法である。 パス名が「/ (スラッシュ)」ではじまる場合、
+<B>debugfs</B> が現在オープンしているファイルシステムのルートからの相対パスを表す。
+「/」で始まらない場合、カレントワーキングディレクトリからの相対パスを表す。 カレントワーキングディレクトリは <B>debugfs</B> の <I>cd</I>
+コマンドによって変更できる。
+<A NAME="lbAG">&nbsp;</A>
+<H2>コマンド</H2>
+
+<B>debugfs</B> がサポートするコマンドの一覧を以下に示す。
+<DL COMPACT>
+<DT><I>blocks filespace</I><DD>
+<I>filespec</I> で指定した inode のブロックを標準出力に出力する。
+<DT><I>bmap filespec logical_block</I><DD>
+<I>filespec</I> で指定した inode における論理ブロック番号 <I>logical_block</I> に対応する物理ブロック番号を表示する。
+<DT><I>cat filespec</I><DD>
+<I>filespec</I> で指定した inode の内容を標準出力へダンプする。
+<DT><I>cd filespec</I><DD>
+カレントワーキングディレクトリを <I>filespec</I> で指定したディレクトリに変更する。
+<DT><I>chroot filespec</I><DD>
+ルートディレクトリを <I>filespec</I> で指定したディレクトリに変更する。
+<DT><I>close [-a]</I><DD>
+現在オープンしているファイルシステムをクローズする。<I>-a</I>
+オプションを指定した場合、スーパーブロックとブロックグループディスクリプタに対する変更を、マスタースーパーブロックだけでなく、すべてのバックアップスーパーブロックに書き込む。
+<DT><I>clri file</I><DD>
+<I>file</I> で指定した inode の内容をクリアする。
+<DT><I>dirsearch filespec filename</I><DD>
+<I>filename</I> をディレクトリ <I>filespec</I> で検索する。
+<DT><I>dump [-p] filespec out_file</I><DD>
+<I>filespec</I> で指定した inode の内容を <I>out_file</I> で指定したファイルにダンプする。 <I>-p</I> オプションを与えると、
+<I>out_file</I> の所有者 (owner)、所有グループ (group)、パーミッション (permission) を <I>filespec</I>
+と同じにする。
+<DT><I>dump_mmp</I><DD>
+複数マウント防止 (multiple-mount protection, mmp) フィールドの値を表示する。
+<DT><I>dx_hash [-h hash_alg] [-s hash_seed] filename</I><DD>
+<I>filename</I> のディレクトリハッシュを計算する。<I>-h</I> に指定できるハッシュアルゴリズムは &quot;legacy&quot; &quot;half_md4&quot;
+&quot;tea&quot; である。<I>-s</I> に指定するハッシュシードは UUID 形式でなければならない。
+<DT><I>dump_extents [-n] [-l] filespec</I><DD>
+<I>filespec</I> で指定した inode のエクステントツリーをダンプする。<I>-n</I> フラグを指定すると、<I>dump_extents</I>
+はエクステントツリーの内部ノードのみを表示する。<I>-l</I> フラグを指定すると、<I>dump_extents</I>
+はエクステントツリーのリーフノードのみを表示する。
+<DT><DD>
+(内部ノードの最終エクステントのブロックの長さと範囲は、エクステントのライブラリ関数で評価されるだけで、ファイルシステムのデータ構造には格納されていない点に注意してほしい。そのため、表示される値は、ファイルシステムの問題や破損を示すのに充分なほど正確ではない。)
+<DT><I>expand_dir filespec</I><DD>
+<I>filespec</I> で指定したディレクトリを展開する。
+<DT><I>feature [fs_feature] [-fs_feature] ...</I><DD>
+スーパーブロックの様々なファイルシステム属性をセット/クリアする。 要求のあった属性をセット/クリアした後は、
+ファイルシステム属性の現在状態の一覧を表示する。
+<DT><I>filefrag [-dvr] filespec</I><DD>
+<I>filespec</I> に含まれる連続するエクステントの数を表示する。<I>filespec</I> がディレクトリで、<I>-d</I>
+オプションが指定されていない場合、<I>filefrag</I> はディレクトリ内のファイルの連続するエクステント数を表示する。<I>-v</I>
+オプションを指定すると、<I>filefrag</I> はファイル内の連続するエクステントを表形式で表示する。<I>-r</I>
+オプションをを指定すると、<I>filefrag</I> はディレクトリを再帰的にリスト表示する。
+<DT><I>find_free_block [count [goal]]</I><DD>
+<I>goal</I> から始まる最初の <I>count</I> 分の空きブロックを探し、その空きブロックをアロケート (allocate) する。
+<DT><I>find_free_inode [dir [mode]]</I><DD>
+空き inode を探し、その inode をアロケートする。 <I>dir</I> を指定すると、 これはその inode を置くべきディレクトリの
+inode と解釈される。 さらに <I>mode</I> を指定すると、 これは新しい inode のパーミッションと解釈される。 (<I>mode</I>
+にディレクトリであることを指定するビットが立っている場合、 アロケートルーチンの挙動は異なるものになる。)
+<DT><I>freeb block [count]</I><DD>
+ブロック番号 <I>block</I> をアロケートされていないものとしてマークする。 省略可能な引数 <I>count</I> を指定すると、ブロック番号
+<I>block</I> から始まる <I>count</I> 分のブロックをアロケートされていないものとしてマークする。
+<DT><I>freefrag [-c chunk_kb ]</I><DD>
+現在オープンしているファイルシステムの空きスペースのフラグメンテーション (断片化状態) を表示する。<I>-c</I> が指定されると、filefrag
+コマンドはファイルシステムにサイズ <I>chunk_kb</I> の空きチャンクがいくつあるかを表示する。チャンクサイズは 2
+の乗数で、かつファイルシステムブロックサイズより大きい必要がある。
+<DT><I>freei filespec</I><DD>
+<I>filespec</I> で指定した inode を解放する。
+<DT><I>help</I><DD>
+<B>debugfs</B> で利用できるコマンドのリストを表示する。
+<DT><I>htree_dump filespec</I><DD>
+ハッシュでインデックスづけされたディレクトリ <I>filespec</I> をダンプし、ツリー構造を表示する。
+<DT><I>icheck block ...</I><DD>
+コマンドラインに与えたブロック (複数指定可)  を利用している inode のリストを表示する。
+<DT><I>imap filespec</I><DD>
+<I>filespec</I> で指定された inode の (inode テーブルにおける)  inode データ構造の場所を表示する。
+<DT><I>init_filesys device blocksize</I><DD>
+<I>device</I> 上に、デバイスサイズ <I>blocksize</I> の ext2 ファイルシステムを作成する。
+このコマンドは、すべてのデータ構造を完全に初期化するわけではない。 これをしたい場合は <B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8)  プログラムを用いること。
+このコマンドは、単にスーパーブロックとブロックディスクリプタを設定する 低レベルライブラリを呼び出すだけである。
+<DT><I>kill_file filespec</I><DD>
+<I>filespec</I> で指定した inode と、 その inode が使用しているブロックをアロケートから外す (deallocate)。
+なお、その inode に対応するディレクトリエントリは削除しないことに注意。 ファイルを unlink したい場合は <I>rm</I>
+コマンドを参照のこと。
+<DT><I>lcd directory</I><DD>
+<B>debugfs</B> プロセスのカレントワーキングディレクトリを ネイティブファイルシステム (訳註: 作業対象のものではなく、 debugfs
+が呼び出され、稼働しているファイルシステム) 上の <I>directory</I> に変更する。
+<DT><I>ln filespec dest_file</I><DD>
+<I>filespec</I> を指すリンク <I>dest_file</I> を作成する。 この際 inode の参照数 (reference counts)
+は変更しないことに注意。
+<DT><I>logdump [-acs] [-b&lt;block&gt;] [-i&lt;filespec&gt;] [-f&lt;journal_file&gt;] [output_file]</I><DD>
+ext3 ジャーナルの内容をダンプする。 デフォルトではジャーナル inode はスーパーブロックで指定される。 しかし <I>-i</I>
+オプションで上書きすることも可能である。 <I>-i</I> オプションは使用されるジャーナルを指定する inode 指定子を使う。
+ジャーナルデータが書かれたファイルは、 <I>-f</I> オプションを使って指定することができる。 そして <I>-s</I>
+オプションはスーパーブロックにあるバックアップ情報を使って、 ジャーナルをアロケートする。
+<DT><DD>
+<I>-a</I> オプションを指定すると、 <I>logdump</I> プログラムは全てのディスクリプタブロックの内容を表示する。 <I>-b</I>
+オプションを指定すると、 <I>logdump</I> プログラムは指定されたブロックを参照する全てのジャーナルレコードを表示する。 <I>-c</I>
+オプションを指定すると、 <I>-a</I> と <I>-b</I> オプションで選択された全てのデータブロックの内容を表示する。
+<DT><I>ls [-l] [-d] [-p] filespec</I><DD>
+ディレクトリ <I>filespec</I> 内のファイルのリストを表示する。<I>-l</I> フラグを指定すると、より詳細なフォーマットで表示する。<I>-d</I>
+フラグを指定すると、ディレクトリ内の削除されたエントリを表示する。<I>-p</I>
+フラグを指定すると、スクリプトで解析しやすいフォーマットで表示する。加えて、ファイル名の最後にスペースや非表示文字がある場合にも、わかりやすくマークづけする。
+<DT><I>modify_inode filespec</I><DD>
+<I>filespec</I> で指定した inode にある inode 構造体の内容を変更する。
+<DT><I>mkdir filespec</I><DD>
+ディレクトリを作成する。
+<DT><I>mknod filespec [p|[[c|b] major minor]]</I><DD>
+スペシャルデバイスファイル (名前付きパイプ、キャラクタデバイス、ブロックデバイス)  を作成する。
+キャラクタデバイスおよびブロックデバイスを作成する場合は、 デバイス番号として <I>major</I> および <I>minor</I> を指定しなければならない。
+<DT><I>ncheck [-c] inode_num ...</I><DD>
+inode 番号のリストを引数とし、inode に対応するパス名のリストを表示する。<I>-c</I>
+フラグを指定すると、ディレクトリエントリのファイルタイプのチェックを有効にして、inode タイプにマッチするかを確認する。
+<DT><I>open [-w] [-e] [-f] [-i] [-c] [-D] [-b blocksize] [-s superblock] device</I><DD>
+編集の対象とするファイルシステムをオープンする。 <I>-f</I> フラグをつけると、通 常ではオープンできないような、
+不明なファイルシステムや非互換なファイルシス テムでも 強制的にオープンする。 <I>-e</I> フラグをつけるとファイルシステムを排他
+モードでオープンする。 <I>-b</I>, <I>-c</I>, <I>-i</I>, <I>-s</I>, <I>-w</I>, <I>-D</I> オプションを 指定した場合の動作は、
+<B>debugfs</B> に同名のコマンドラインオプションを指定した 場合と同じである。
+<DT><I>punch filespec start_blk [end_blk]</I><DD>
+<I>start_blk</I> から <I>end_blk</I> の範囲の inode のブロックを削除する。<I>end_blk</I>
+を省略すると、切り詰めるためのコマンドとなり、<I>start_blk</I> からファイルの最後までを解放する。
+<DT><I>pwd</I><DD>
+カレントワーキングディレクトリを表示する。
+<DT><I>quit</I><DD>
+<B>debugfs</B> を終了する。
+<DT><I>rdump directory destination</I><DD>
+<I>directory</I> と (通常のファイル・シンボリックリンク・ その他のディレクトリを含む) そのディレクトリの全ての内容を、
+<I>destination</I> という名前のディレクトリに再帰的にダンプする。 <I>destination</I>
+はネイティブファイルシステム上に存在するディレクトリでなければならない。
+<DT><I>rm pathname</I><DD>
+<I>pathname</I> で指定したパス名を unlink する。 <I>pathname</I> の示す inode が何も参照しなくなった場合には、
+ファイルのアロケートを外す。 このコマンドは unlink() システムコールのように動作する。
+<DT><I>rmdir filespec</I><DD>
+<I>filespec</I> で指定したディレクトリを消去する。
+<DT><I>setb block [count]</I><DD>
+ブロック番号 <I>block</I> をアロケートされているものとしてマークする。 省略可能な引数 <I>count</I> を指定すると、ブロック番号
+<I>block</I> から始まる <I>count</I> 分のブロックをアロケートされているものとしてマークする。
+<DT><I>set_block_group bgnum field value</I><DD>
+<I>bgnum</I> で指定されたブロックグループディスクリプタを変更し、フィールド <I>field</I> が値 <I>value</I> を持つようにする。
+<DT><I>seti filespec</I><DD>
+inode ビットマップに、 <I>filespec</I> で指定した inode が使用中であるとマークする。
+<DT><I>set_inode_field filespec field value</I><DD>
+<I>filespec</I> で指定された inode を変更し、inode フィールド <I>field</I> が値 <I>value</I> を持つようにする。
+このコマンドで設定が可能な、正しい inode フィールドのリストは、 <B>set_inode_field -l</B> コマンドによって表示できる。
+<DT><I>set_mmp_value field value</I><DD>
+複数マウント防止 (multiple-mount protection, mmp) データを変更し、mmp フィールド <I>field</I> が値
+<I>value</I> を持つようにする。このコマンドで設定可能な、正しい mmp フィールドのリストは、<B>set_mmp_value -l</B>
+コマンドによって表示できる。
+<DT><I>set_super_value field value</I><DD>
+スーパーブロックフィールド <I>field</I> を <I>value</I> にする。このコマンドで設定が可能な、 正しいスーパーブロックフィールドのリストは、
+<B>set_super_value -l</B> コマンドによって表示できる。
+<DT><I>show_super_stats [-h]</I><DD>
+スーパーブロックとブロックグループディスクリプタの内容を表示する。 <I>-h</I> フラグが与えられると、 スーパーブロックの内容だけを表示する。
+<DT><I>stat filespec</I><DD>
+<I>filespec</I> で指定した inode の inode 構造体の内容を表示する。
+<DT><I>testb block [count]</I><DD>
+ブロック番号 <I>block</I> がブロックビットマップにおいてアロケートになっているかどうか調べる。 省略可能な引数 <I>count</I>
+を指定すると、ブロック番号 <I>block</I> から始まる <I>count</I> 分のブロックを検査する。
+<DT><I>testi filespec</I><DD>
+<I>filespec</I> で指定した inode が inode ビットマップにおいてアロケートになっているかどうか調べる。
+<DT><I>undel &lt;inode num&gt; [pathname]</I><DD>
+(アングルブラケットで囲って) 指定した inode 番号の削除を取り消す。inodeとそのブロックは、使用中の印がつけられ、オプションとして復旧させた
+inode を指定したパスにリンクさせることもできる。 削除したファイルを <B>undel</B> コマンドで復旧させた後で、<B>e2fsck</B>
+コマンドを常に実行すべきである。
+<DT><DD>
+多くの削除したファイルを復旧して、inode
+をディレクトリにリンクする場合、ディレクトリを拡張する必要があり、まだ削除を取り消していないファイルが使っていたブロックを確保してしまう可能性がある。
+そのため、inode すべての削除の取り消しをする場合には、リンク先パスを指定せずに実行する方が安全である。そののち、別々のパスで debugfs
+<B>link</B> コマンドを使って inode をパス名にリンクさせるか、<B>e2fsck</B> を使ってファイルシステムをチェックし、復旧したすべての
+inode を lost+found ディレクトリにリンクさせるとよい。
+<DT><I>unlink pathname</I><DD>
+<I>pathname</I> で指定した、ある inode を指すリンクを削除する。 なおこの際、inode 参照数は変更しないことに注意。
+<DT><I>write source_file out_file</I><DD>
+ファイルシステム内に <I>out_file</I> で指定したファイルを作成し、 <I>source_file</I> の内容をそのファイルにコピーする。
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT><B>DEBUGFS_PAGER, PAGER</B><DD>
+<B>debugfs</B> はいくつかのコマンドの出力を常にページャプログラムにパイプする。 そのようなコマンドとしては、
+<I>show_super_stats</I>, <I>list_directory</I>, <I>show_inode_info</I>,
+<I>list_deleted_inodes</I>, <I>htree_dump</I> がある。 特定のページャを環境変数 <B>DEBUGFS_PAGER</B>
+で明示的に指定することができる。 この環境変数が設定されていない場合は、環境変数 <B>PAGER</B> で指定される。
+<DT><DD>
+1 つのページャが常に使われるので、 <B><A HREF="../man1/less.1.html">less</A></B>(1)  ページャは特に適さない点に注意すること。 <B><A HREF="../man1/less.1.html">less</A></B>(1)
+はコマンドの表示を表示する前にスクリーンをクリアしたり、 ページャが終了するときにスクリーンへの出力をクリアしてしまうからである。 多くのユーザは
+<B><A HREF="../man1/less.1.html">less</A></B>(1)  ページャをいろいろな目的に使うのを好んでいる。 これが環境変数 <B>DEBUGFS_PAGER</B> で、より一般的な環境変数
+<B>PAGER</B> を上書きできる理由である。
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>作者</H2>
+
+<B>debugfs</B> は Theodore Ts'o &lt;<A HREF="mailto:tytso@mit.edu">tytso@mit.edu</A>&gt; が作成した。
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/dumpe2fs.8.html">dumpe2fs</A></B>(8), <B><A HREF="../man8/tune2fs.8.html">tune2fs</A></B>(8), <B><A HREF="../man8/e2fsck.8.html">e2fsck</A></B>(8), <B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8)
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">ファイル指定</A><DD>
+<DT><A HREF="#lbAG">コマンド</A><DD>
+<DT><A HREF="#lbAH">環境変数</A><DD>
+<DT><A HREF="#lbAI">作者</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 18:50:56 GMT, March 26, 2020
+</BODY>
+</HTML>

@@ -1,0 +1,323 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of mke2fs.conf</TITLE>
+</HEAD><BODY>
+<H1>mke2fs.conf</H1>
+Section: File Formats (5)<BR>Updated: February 2012<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+mke2fs.conf - mke2fs の設定ファイル
+<A NAME="lbAC">&nbsp;</A>
+<H2>説明</H2>
+
+<I>mke2fs.conf</I> は <B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8) の設定ファイルである。このファイルにより <B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8) が ext2, ext3
+ファイルシステムを作成する際のデフォルトパラメータを制御する。
+<P>
+
+
+<I>mke2fs.conf</I> ファイルでは INI 形式のフォーマットが使用される。節 (stanza)または最上位のセクションは、角括弧: [ ]
+で区切られる。 各セクション内では、各行でリレーションが定義され、 タグに値を割り当てたり、タグにサブセクションを割り当てたりする。
+サブセクションには、更にリレーションとサブセクションが含まれる。 この設定ファイルで使用される INI 方式のフォーマットの例は、以下の通り:
+<P>
+
+<BR>&nbsp;&nbsp;[section1]
+<BR>
+
+<BR>&nbsp;&nbsp;tag1&nbsp;=&nbsp;value_a
+<BR>
+
+<BR>&nbsp;&nbsp;tag1&nbsp;=&nbsp;value_b
+<BR>
+
+<BR>&nbsp;&nbsp;tag2&nbsp;=&nbsp;value_c
+<P>
+
+<BR>&nbsp;&nbsp;[section&nbsp;2]
+<BR>
+
+<BR>&nbsp;&nbsp;tag3&nbsp;=&nbsp;{
+<BR>
+
+<BR>&nbsp;&nbsp;subtag1&nbsp;=&nbsp;subtag_value_a
+<BR>
+
+<BR>&nbsp;&nbsp;subtag1&nbsp;=&nbsp;subtag_value_b
+<BR>
+
+<BR>&nbsp;&nbsp;subtag2&nbsp;=&nbsp;subtag_value_c
+<BR>
+
+<BR>&nbsp;&nbsp;}
+<BR>
+
+<BR>&nbsp;&nbsp;tag1&nbsp;=&nbsp;value_d
+<BR>
+
+<BR>&nbsp;&nbsp;tag2&nbsp;=&nbsp;value_e
+<BR>
+
+<BR>&nbsp;&nbsp;}
+<P>
+
+コメントは、先頭のセミコロン (';') または ハッシュ ('#') 文字で区切られ、行末文字で終わる。
+<P>
+
+タグと値にスペースが含まれる場合は、ダブルクォートで括らなければならない。
+ダブルクォートで括った文字列内では、標準的なバックスラッシュの解釈が適用される:
+&quot;\n&quot; (改行文字), &quot;\t&quot; (タブ文字), &quot;\b&quot; (バックスペース文字),
+&quot;\\&quot; (バックスラッシュ文字)。
+<P>
+
+ブール値を想定するリレーションもある。パーサーはとても自由で、``yes'', '`y'', ``true'', ``t'', ``1'',
+``on'' などをブール値 true として認識し、``no'', ``n'', ``false'', ``nil'', ``0'', ``off''
+をブール値 false として認識する。
+<P>
+
+以下の節が <I>mke2fs.conf</I> ファイルで使用されている。これらの節は、このドキュメントの後のセクションで詳しく説明される。
+<DL COMPACT>
+<DT><I>[defaults]</I><DD>
+<B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8) で使用されるデフォルトパラメータを定義するリレーションを含む。一般的に、デフォルト値は <B>fs_types</B>
+節で上書きされるか、ユーザによってコマンドラインオプションとして指定された値で上書きされる。
+<DT><I>[fs_types]</I><DD>
+特定のファイルシステムタイプで使用されるデフォルトを定義するリレーションを含む。ファイルシステムタイプは <B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8) の <B>-T</B>
+オプションで明示的に指定できる。
+</DL>
+<A NAME="lbAD">&nbsp;</A>
+<H2>[defaults] 節</H2>
+
+以下のリレーションが <I>[defaults]</I> 節で定義される。
+<DL COMPACT>
+<DT><I>base_features</I><DD>
+このリレーションは新しく作成されたファイルシステムで有効にされるファイルシステム特性を指定する。これはファイルシステムの
+<I>base_features</I> リレーション、または <I>[fs_types]</I> 節の利用 (usage) タイプサブセクションで上書きできる。
+<DT><I>default_features</I><DD>
+このリレーションでは、<I>base_features</I> リレーションで指定された特性に、追加または削除する特性を指定する。これはファイルシステム特有の
+<I>default_features</I>、または <I>[fs_types]</I> の利用タイプサブセクション、または <B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8) の <B>-O</B>
+コマンドラインオプションで上書きできる。
+<DT><I>enable_periodic_fsck</I><DD>
+このブール値のリレーションは、ブート時の定期的なファイルシステムチェックを行うか否かを設定する。true に設定した場合、180
+日毎、またはマウントされたランダムな回数でチェックを強制される。この値は、<B><A HREF="../man8/tune2fs.8.html">tune2fs</A></B>(8) の <B>-i</B> と <B>-c</B>
+コマンドラインオプションで、後から変更できる。
+<DT><I>force_undo</I><DD>
+このブール値のリレーションを true に設定すると、<B>mke2fs</B> は undo ファイルを常に作成する。undo ファイルは巨大で、inode
+テーブルの初期化を遅延できないため、ファイルシステムイメージの作成に時間がかかる。
+<DT><I>fs_type</I><DD>
+このリレーションではデフォルトのファイルシステムを指定する。<B>-t</B> オプションが指定されない場合、または <B>mke2fs</B> が
+<B>mkfs.</B><I>fs-type</I> の形式で起動されていない場合に使用される。デフォルトファイルシステムタイプをユーザが指定せず、
+<B>mke2fs.conf</B> ファイルでも指定されない場合、mke2fs はコマンドラインオプションでジャーナルが指定されている場合は <I>ext3</I>
+をデフォルトファイルシステムタイプとし、ジャーナルが指定されていない場合は、 <I>ext2</I> とする。
+<DT><I>blocksize</I><DD>
+このリレーションではデフォルトのブロックサイズを設定する。ユーザがコマンドラインでブロックサイズが指定しない場合、かつ設定ファイルのファイルシステムタイプ独自のセクションでブロックサイズが指定されない場合に使用される。
+<DT><I>hash_alg</I><DD>
+このリレーションでは、ハッシュ付き b-tree
+ディレクトリを含む新しいファイルシステムで使われるデフォルトのハッシュアルゴリズムを設定する。指定可能なアルゴリズムは <I>legacy</I>,
+<I>half_md4</I>, <I>tea</I> である。
+<DT><I>inode_ratio</I><DD>
+このリレーションではデフォルトの inode
+率を設定する。ユーザがコマンドラインで指定しない場合、かつ設定ファイルのファイルシステム独自のセクションでデフォルトの inode
+率を指定しない場合に使われる。
+<DT><I>inode_size</I><DD>
+このリレーションではデフォルトの inode
+サイズを設定する。ユーザがコマンドラインで指定しない場合、かつ設定ファイルのファイルシステム独自のセクションでデフォルトの inode
+サイズを指定しない場合に使われる。
+<DT><I>reserved_ratio</I><DD>
+このリレーションではスーパーユーザのために予約されたデフォルトのファイルシステムブロックのパーセンテージを設定する。ユーザがコマンドラインで指定しない場合、かつ設定ファイルのファイルシステム独自のセクションでデフォルトの予約率を指定しない場合に使われる。この値は小数で指定する。
+<DT><I>undo_dir</I><DD>
+このリレーションでは undo ファイルを置くディレクトリを設定する。
+これは環境変数 <B>E2FSPROGS_UNDO_DIR</B> を上書きする。
+ディレクトリの場所を <I>none</I> に設定した場合、<B>mke2fs</B> は undo ファイルを作成しない。
+</DL>
+<A NAME="lbAE">&nbsp;</A>
+<H2>[fs_types] 節</H2>
+
+<I>[fs_types]</I> 節の各タグは、ファイルシステムタイプまたは利用タイプを設定する。これは、それぞれ　<B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8)　の <B>-t</B>
+と <B>-T</B> で設定できる。
+<P>
+
+<B>mke2fs</B> プログラムは、ファイルシステムタイプ (例えば ext2, ext3 など) と利用タイプを使って、 fs_types
+のリストを構築する。ほとんどの設定オプションについて、<B>mke2fs</B> は構築リストの各エントリに対応する　<I>[fs_types]</I>
+節のサブセクションを探す。後に出てくるエントリで、初めに出てくるファイルシステムと利用タイプを上書きする。例えば、以下のような
+<B>mke2fs.conf</B> の一部を考えてみよう。
+<P>
+
+[defaults]
+<BR>
+
+<BR>&nbsp;&nbsp;base_features&nbsp;=&nbsp;sparse_super,filetype,resize_inode,dir_index
+<BR>
+
+<BR>&nbsp;&nbsp;blocksize&nbsp;=&nbsp;4096
+<BR>
+
+<BR>&nbsp;&nbsp;inode_size&nbsp;=&nbsp;256
+<BR>
+
+<BR>&nbsp;&nbsp;inode_ratio&nbsp;=&nbsp;16384
+<BR>
+
+<P>
+<BR>
+
+[fs_types]
+<BR>
+
+<BR>&nbsp;&nbsp;ext3&nbsp;=&nbsp;{
+<BR>
+
+<BR>&nbsp;&nbsp;features&nbsp;=&nbsp;has_journal
+<BR>
+
+<BR>&nbsp;&nbsp;}
+<BR>
+
+<BR>&nbsp;&nbsp;ext4&nbsp;=&nbsp;{
+<BR>
+
+<BR>&nbsp;&nbsp;features&nbsp;=&nbsp;extents,flex_bg
+<BR>
+
+<BR>&nbsp;&nbsp;inode_size&nbsp;=&nbsp;256
+<BR>
+
+<BR>&nbsp;&nbsp;}
+<BR>
+
+<BR>&nbsp;&nbsp;small&nbsp;=&nbsp;{
+<BR>
+
+<BR>&nbsp;&nbsp;blocksize&nbsp;=&nbsp;1024
+<BR>
+
+<BR>&nbsp;&nbsp;inode_ratio&nbsp;=&nbsp;4096
+<BR>
+
+<BR>&nbsp;&nbsp;}
+<BR>
+
+<BR>&nbsp;&nbsp;floppy&nbsp;=&nbsp;{
+<BR>
+
+<BR>&nbsp;&nbsp;features&nbsp;=&nbsp;^resize_inode
+<BR>
+
+<BR>&nbsp;&nbsp;blocksize&nbsp;=&nbsp;1024
+<BR>
+
+<BR>&nbsp;&nbsp;inode_size&nbsp;=&nbsp;128
+<BR>
+
+<BR>&nbsp;&nbsp;}
+<P>
+
+mke2fs がプログラム名 <B>mke2fs.ext4</B> で起動されると、ファイルシステムタイプ ext4 が使われる。ファイルシステムが 3MB
+より小さく、利用タイプが指定されていない場合、 <B>mke2fs</B> はデフォルトの利用タイプ <I>floppy</I> を使う。その結果 fs_types
+リストは &quot;ext4, floppy&quot; となる。ext4 サブセクションと floppy サブセクションはともに、<I>inode_size</I>
+リレーションを定義しているが、 fs_types の後のエントリが先のエントリを上書きするので、設定パラメータ
+fs_types.floppy.inode_size が使われ、ファイルシステムの inode サイズは 128 になる。
+<P>
+
+この解決法の例外は <I>features</I> タグであり、ファイルシステムで使われる feature
+の集合を指定して、それを合算したものが使われる。上の例では、最初の設定リレーション defaults.base_features で
+sparse_super, filetype, resize_inode, dir_index が有効化される。次に、設定リレーション
+fs_types.ext4.features で extents, flex_bg が有効化される。最後に、設定リレーション
+fs_types.floppy.features で resize_inode が削除される。結果として、feature
+のセットは、sparse_super, filetype, resize_inode, dir_index, extents, flex_bg となる。
+<P>
+
+各ファイルシステムタイプについて、fs_type サブセクションで以下のタグが使われる。
+<DL COMPACT>
+<DT><I>base_features</I><DD>
+このリレーションではファイルシステムで最初に有効化したい feature を設定する。1つの <I>base_features</I>
+だけが使われるため、fs_types のリスト中に、<I>base_features</I>
+を定義しているサブセクションが複数のエントリにあった場合、<B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8)は最後の定義のみを使う。
+<DT><I>features</I><DD>
+このリレーションではカンマ区切りの feature のリストを設定し、新しく作成されるファイルシステムで使われる feature
+のセットを編集する。記法は <B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8) の <B>-O</B> コマンドラインオプションと同じである。キャレット ('^') を前につけた
+feature は無効化される。fs_types のリストに指定された各 <I>feature</I> リレーションは、指定された順に適用される。
+<DT><I>default_features</I><DD>
+このリレーションでは、<I>base_features</I> と <I>features</I> にリストされた feature を適用した後に、有効または無効にする
+feature を設定する。これは、<B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8) の <B>-O</B> コマンドラインオプションで上書きできる。
+<DT><I>auto_64-bit_support</I><DD>
+このリレーションはブール値で、ファイルシステムのブロック数が 64bit feature を有効化する必要がある場合に、<B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8)
+が自動的に追加するか否かを指定する。resize_inode feature は 64bit ブロック数をサポートしていないので自動的に無効化される。
+<DT><I>default_mntopts</I><DD>
+このリレーションでは、デフォルトで有効化されるマウントオプションのセットを設定する。これは <B><A HREF="../man8/tune2fs.8.html">tune2fs</A></B>(8) の <B>-o</B>
+オプションで後から変更できる。
+<DT><I>blocksize</I><DD>
+このリレーションではデフォルトのブロックサイズを設定する。これは、ユーザがコマンドラインでブロックサイズを指定しない場合に使われる。
+<DT><I>lazy_itable_init</I><DD>
+このブール値のリレーションは、inode テーブルを遅延初期化するか否かを設定する。これは、uninit_bg feature
+が有効である時にのみ意味がある。lazy_itable_init が true で、uninit_bg feature が有効の場合、 inode
+テーブルは <B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8)
+では完全には初期化されない。これによってファイルシステムの初期化は劇的にスピードアップするが、ファイルシステムが最初にマウントされるときに、カーネルがバックグラウンドで初期化を完了させる必要が生まれる。
+<DT><I>inode_ratio</I><DD>
+このリレーションはユーザが inode 率を指定しない場合のデフォルトを設定する。
+<DT><I>inode_size</I><DD>
+このリレーションはユーザが inode サイズを指定しない場合のデフォルトを設定する。
+<DT><I>reserved_ratio</I><DD>
+このリレーションはスーパーユーザのために予約されたファイルシステムブロックのデフォルトの割合を設定する。このリレーションは、ユーザがコマンドラインで指定しない場合に使われる。
+<DT><I>hash_alg</I><DD>
+このリレーションでは、ハッシュ付き b-tree
+ディレクトリを含む新しいファイルシステムで使われるデフォルトのハッシュアルゴリズムを設定する。指定可能なアルゴリズムは <I>legacy</I>,
+<I>half_md4</I>, <I>tea</I> である。
+<DT><I>flex_bg_size</I><DD>
+このリレーションは、ext4 ファイルシステムで 1
+つのラージ仮想ブロックグループにパックするブロックグループ数を指定する。これにより、メタデータに大きな負荷がかかる場合に、メタデータを局所化し、性能を改善する。グループ数は
+2 の乗数にする必要があり、flex_bg ファイルシステム feature が有効化されている場合にのみ設定できる。<I>options</I>
+このリレーションは、<B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8) で扱われる追加の拡張オプションを設定する。この拡張オプションは、<B>-E</B>
+オプションの引数の前に追加される。このリレーションでは、<B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8)
+で使われるファイルシステムタイプごとのデフォルトの拡張オプションを設定できる。
+<DT><I>discard</I><DD>
+このブール値のリレーションは、<B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8) がファイルシステム作成に先立ってデバイスを破棄するか否かを設定する。
+<DT><I>cluster_size</I><DD>
+このリレーションは、bigalloc ファイルシステム feature
+が有効になっている場合に、デフォルトクラスタサイズを設定する。これは、<B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8) の <B>-C</B> コマンドラインオプションで上書きできる。
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>[devices] 節</H2>
+
+<I>[devices]</I> 節の各タグにはデバイス名を設定し、デバイスごとのデフォルトを設定する。
+<DL COMPACT>
+<DT><I>fs_type</I><DD>
+このリレーションは、<B>-t</B> オプションがコマンドラインで指定されない場合の、デフォルトパラメータを設定する。
+<DT><I>usage_types</I><DD>
+このリレーションは、<B>-T</B> オプションがコマンドラインで指定されない場合の、デフォルトパラメータを設定する。
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>ファイル</H2>
+
+<DL COMPACT>
+<DT><I>/etc/mke2fs.conf</I><DD>
+<B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8) の設定ファイル
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8)
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">説明</A><DD>
+<DT><A HREF="#lbAD">[defaults] 節</A><DD>
+<DT><A HREF="#lbAE">[fs_types] 節</A><DD>
+<DT><A HREF="#lbAF">[devices] 節</A><DD>
+<DT><A HREF="#lbAG">ファイル</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 18:50:56 GMT, March 26, 2020
+</BODY>
+</HTML>
