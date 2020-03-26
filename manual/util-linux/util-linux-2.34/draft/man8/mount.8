@@ -402,68 +402,120 @@ UUID の文字列表現は、小文字になる。
 オプションを指定すると \fBmount\fR は fork し、
 それぞれのファイルシステムが同時にマウントされる。
 .LP
-When mounting a filesystem mentioned in
+.\"O When mounting a filesystem mentioned in
+.\"O .I fstab
+.\"O or
+.\"O .IR mtab ,
+.\"O it suffices to specify on the command line only the device, or only the mount point.
 .I fstab
-or
-.IR mtab ,
-it suffices to specify on the command line only the device, or only the mount point.
+または
+.I mtab
+で指定されたファイルシステムをマウントする場合、
+コマンドラインにはデバイス、またはマウントポイントを指定すれば充分である。
 .sp
-The programs
+.\"O The programs
+.\"O .B mount
+.\"O and
+.\"O .B umount
+.\"O traditionally maintained a list of currently mounted filesystems in the file
+.\"O .IR /etc/mtab .
+プログラム
 .B mount
-and
+と
 .B umount
-traditionally maintained a list of currently mounted filesystems in the file
-.IR /etc/mtab .
-The support for regular classic
+は、現在マウントされているファイルシステムをファイル
 .I /etc/mtab
-is completely disabled in compile time by default, because on current Linux
-systems it is better to make it a symlink to
+で昔から管理している。
+.\"O The support for regular classic
+.\"O .I /etc/mtab
+.\"O is completely disabled in compile time by default, because on current Linux
+.\"O systems it is better to make it a symlink to
+.\"O .I /proc/mounts
+.\"O instead. The regular mtab file maintained in userspace cannot reliably
+.\"O work with namespaces, containers and other advanced Linux features.
+.\"O If the regular mtab support is enabled than it's possible to
+.\"O use the file as well as the symlink.
+伝統的な通常の
+.I /etc/mtab
+のサポートはコンパイル時にデフォルトで完全に無効化できる。
+なぜなら、現在の Linux システムはで、代わりに
 .I /proc/mounts
-instead. The regular mtab file maintained in userspace cannot reliably
-work with namespaces, containers and other advanced Linux features.
-If the regular mtab support is enabled than it's possible to
-use the file as well as the symlink.
+へのシンボリックリンクにする方が良いからである。
+ユーザ空間で管理されている通常の mtab ファイルは、
+名前空間、コンテナ、その他の先進的な Linux 機能とともに使う場合には、
+信頼性を持って動作できない。
+通常の mtab のサポートが有効である場合、
+ファイルもシンボリックリンクと同様に使うことができる。
 .sp
-If no arguments are given to
-.BR mount ,
-the list of mounted filesystems is printed.
+.\"O If no arguments are given to
+.\"O .BR mount ,
+.\"O the list of mounted filesystems is printed.
+.B mount
+に引き数を何も指定しない場合、
+マウントされているファイルシステムが表示される。
 .sp
-If you want to override mount options from
+.\"O If you want to override mount options from
+.\"O .I /etc/fstab
+.\"O you have to use the \fB\-o\fR option:
 .I /etc/fstab
-you have to use the \fB\-o\fR option:
+で指定されているマウントオプションを上書きしたい場合、
+\fB\-o\fR を使う必要がある:
 .RS
 .sp
 .BI mount " device" \fR| "dir " \-o " options"
 .sp
 .RE
-and then the mount options from the command line will be appended to
-the list of options from
-.IR /etc/fstab .
-This default behaviour is possible to change by command line
-option \fB\-\-options\-mode\fR.
-The usual behavior is that the last option wins if there are conflicting
-ones.
-.sp
-The
-.B mount
-program does not read the
+.\"O and then the mount options from the command line will be appended to
+.\"O the list of options from
+.\"O .IR /etc/fstab .
+.\"O This default behaviour is possible to change by command line
+.\"O option \fB\-\-options\-mode\fR.
+.\"O The usual behavior is that the last option wins if there are conflicting
+.\"O ones.
+コマンドラインで指定されたマウントオプションは、
 .I /etc/fstab
-file if both
+で指定されたオプションのリストに追加される。
+このデフォルトの動作は、コマンドラインオプション
+\fB\-\-options\-mode\fR で変更できる。
+通常の挙動では、衝突するオプションがある場合、最後のオプションが勝つ。
+.sp
+.\"O The
+.\"O .B mount
+.\"O program does not read the
+.\"O .I /etc/fstab
+.\"O file if both
+.\"O .I device
+.\"O (or LABEL, UUID, PARTUUID or PARTLABEL) and
+.\"O .I dir
+.\"O are specified.  For example, to mount device
+.\"O .BR foo " at " /dir :
 .I device
-(or LABEL, UUID, PARTUUID or PARTLABEL) and
+(または LABEL, UUID, PARTUUID, PARTLABEL) と
 .I dir
-are specified.  For example, to mount device
-.BR foo " at " /dir :
+の両方が指定された場合、
+.B mount
+プログラムは
+.I /etc/fstab
+ファイルを読み込まない。
+例えば、デバイス
+.BR foo " を " /dir
+にマウントする場合、以下のように指定する:
 .RS
 .sp
 .B "mount /dev/foo /dir"
 .sp
 .RE
-This default behaviour is possible to change by command line option
-\fB\-\-options\-source\-force\fR to always read configuration from fstab. For
-non-root users
+.\"O This default behaviour is possible to change by command line option
+.\"O \fB\-\-options\-source\-force\fR to always read configuration from fstab. For
+.\"O non-root users
+.\"O .B mount
+.\"O always read fstab configuration.
+このデフォルトの挙動は、コマンドラインオプション
+\fB\-\-options\-source\-force\fR
+で変更し、fstab から設定を読み込ませることができる。
+ルート以外のユーザーでは、
 .B mount
-always read fstab configuration.
+は常に fstab の設定を読み込む。
 
 .\"O .SS Non-superuser mounts
 .SS スーパーユーザー以外でのマウント
@@ -495,11 +547,19 @@ always read fstab configuration.
 .sp
 .RE
 によってマウントできる。
-Note that \fBmount\fR is very strict about non-root users and all paths
-specified on command line are verified before fstab is parsed or a helper
-program is executed. It's strongly recommended to use a valid mountpoint to
-specify filesystem, otherwise \fBmount\fR may fail. For example it's bad idea
-to use NFS or CIFS source on command line.
+.\"O Note that \fBmount\fR is very strict about non-root users and all paths
+.\"O specified on command line are verified before fstab is parsed or a helper
+.\"O program is executed. It's strongly recommended to use a valid mountpoint to
+.\"O specify filesystem, otherwise \fBmount\fR may fail. For example it's bad idea
+.\"O to use NFS or CIFS source on command line.
+\fBmount\fR は root 以外のユーザーにはとても厳格で、
+fstab が解析されたり、ヘルパープログラムが実行される前に、
+コマンドラインで指定された全てのパスが検証される。
+ファイルシステムを指定するために、有効なマウントポイントを使うことが
+強く推奨される。
+さもないと、\fBmount\fR は失敗する。
+例えば、NFS や CIFS のマウント元をコマンドラインから指定するのは、
+良くない考えである。
 .PP
 .\"O For more details, see
 .\"O .BR fstab (5).
@@ -549,8 +609,11 @@ to use NFS or CIFS source on command line.
 オプションと) 似ているが、ユーザーがそのスペシャルファイルの
 グループのメンバでなければならないという制限がある。
 
-.SS Bind mount operation
-Remount part of the file hierarchy somewhere else.  The call is:
+.\"O .SS Bind mount operation
+.SS bind マウントオプション
+.\"O Remount part of the file hierarchy somewhere else.  The call is:
+ファイル階層の一部をどこか別の場所に再マウントすることができる。
+使い方は以下の通りである:
 
 .RS
 .br
@@ -558,7 +621,8 @@ Remount part of the file hierarchy somewhere else.  The call is:
 .I olddir newdir
 .RE
 
-or by using this fstab entry:
+.\"O or by using this fstab entry:
+もしくは、fstab エントリで、このオプションを使う:
 
 .RS
 .br
@@ -567,26 +631,40 @@ or by using this fstab entry:
 .B none bind
 .RE
 
-After this call the same contents are accessible in two places.
+.\"O After this call the same contents are accessible in two places.
+この呼び出しの後、同じ内容を 2 つの場所でアクセスできる。
 
-It is important to understand that "bind" does not to create any second-class
-or special node in the kernel VFS. The "bind" is just another operation to
-attach a filesystem. There is nowhere stored information that the filesystem
-has been attached by "bind" operation. The \fIolddir\fR and \fInewdir\fR are
-independent and the \fIolddir\fR may be umounted.
+.\"O It is important to understand that "bind" does not to create any second-class
+.\"O or special node in the kernel VFS. The "bind" is just another operation to
+.\"O attach a filesystem. There is nowhere stored information that the filesystem
+.\"O has been attached by "bind" operation. The \fIolddir\fR and \fInewdir\fR are
+.\"O independent and the \fIolddir\fR may be umounted.
+"bind" がカーネル VFS にセカンドクラスまたはスペシャルノードを
+作成しないという点を理解することが重要である。
+"bind" は、単にファイルシステムをアタッチする別の操作である。
+"bind" 操作でアタッチされたファイルシステムの情報を格納する場所はない。
+\fIolddir\fR と \fInewdir\fR は独立であり、
+\fIolddir\fR はアンマウントできる。
 
-One can also remount a single file (on a single file).  It's also
-possible to use the bind mount to create a mountpoint from a regular
-directory, for example:
+.\"O One can also remount a single file (on a single file).  It's also
+.\"O possible to use the bind mount to create a mountpoint from a regular
+.\"O directory, for example:
+1 つのファイル (を 1 つのファイル) に再マウントできる。
+bind マウントを使って通常ディレクトリからマウントポイントを作ることができる。
+例えば:
 
 .RS
 .br
 .B mount \-\-bind foo foo
 .RE
 
-The bind mount call attaches only (part of) a single filesystem, not possible
-submounts.  The entire file hierarchy including submounts is attached
-a second place by using:
+.\"O The bind mount call attaches only (part of) a single filesystem, not possible
+.\"O submounts.  The entire file hierarchy including submounts is attached
+.\"O a second place by using:
+bind マウントコールで 1 つのファイルシステム (の一部) のみをアタッチし、
+サブマウントはできない。
+次のようにして、サブマウントを含む全てのファイル階層は、
+2 つ目の場所にアタッチできる:
 
 .RS
 .br
