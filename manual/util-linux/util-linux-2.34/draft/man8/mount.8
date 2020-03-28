@@ -1024,20 +1024,35 @@ mount コマンドは、ファイルシステムのマウント元とマウン�
 推奨される方法は、\fBfindmnt \-\-verify\fR を使うことである。
 .TP
 .BR \-B , " \-\-bind"
-Remount a subtree somewhere else (so that its contents are available
-in both places).  See above, under \fBBind mounts\fR.
+.\"O Remount a subtree somewhere else (so that its contents are available
+.\"O in both places).  See above, under \fBBind mounts\fR.
+サブツリーをどこか別の場所に再マウントする
+(それにより、ファイルシステムの内容は両方の場所で利用可能になる)。
+上記の \fBbind マウント\fR を参照すること。
 .TP
 .BR \-c , " \-\-no\-canonicalize"
-Don't canonicalize paths.  The mount command canonicalizes all paths
-(from command line or fstab) by default.  This option can be used
-together with the
+.\"O Don't canonicalize paths.  The mount command canonicalizes all paths
+.\"O (from command line or fstab) by default.  This option can be used
+.\"O together with the
+.\"O .B \-f
+.\"O flag for already canonicalized absolute paths.  The option is designed for mount
+.\"O helpers which call \fBmount -i\fR.  It is strongly recommended to not use this
+.\"O command-line option for normal mount operations.
+パスを正則化 (canonicalize) しない。
+マウントコマンドは、全てのパスを (コマンドラインからであっても、fstab からであっても)
+デフォルトで正則化する。
+このオプションは、正則化した絶対パスに対して、
 .B \-f
-flag for already canonicalized absolute paths.  The option is designed for mount
-helpers which call \fBmount -i\fR.  It is strongly recommended to not use this
-command-line option for normal mount operations.
+フラグとともに使うことができる。
+このオプションは、\fBmount -i\fR を呼び出すマウントヘルパーのために、
+設計されている。
+このコマンドラインオプションを通常のマウント操作として
+使わないことを、強く推奨する。
 .sp
-Note that \fBmount\fR(8) does not pass this option to the
-\fB/sbin/mount.\fItype\fR helpers.
+.\"O Note that \fBmount\fR(8) does not pass this option to the
+.\"O \fB/sbin/mount.\fItype\fR helpers.
+\fBmount\fR(8) は、このオプションを
+\fB/sbin/mount.\fItype\fR ヘルパーに渡さない。
 .TP
 .BR \-F , " \-\-fork"
 .\"O (Used in conjunction with
@@ -1086,16 +1101,23 @@ Note that \fBmount\fR(8) does not pass this option to the
 また以前に \fB\-n\fR オプションを用いてマウントされたデバイスのエントリーを
 .I /etc/mtab
 に書き込む目的にも用いることができる。
-The \fB\-f\fR option
-checks for an existing record in /etc/mtab and fails when the record already
-exists (with a regular non-fake mount, this check is done by the kernel).
+.\"O The \fB\-f\fR option
+.\"O checks for an existing record in /etc/mtab and fails when the record already
+.\"O exists (with a regular non-fake mount, this check is done by the kernel).
+\fB\-f\fR オプションは、/etc/mtab の既存のレコードをチェックし、
+レコードが既に存在する場合、失敗する。
+(通常のフェイクでないマウントがチェックされる。このチェックは、
+カーネルで行われる。)
 .IP "\fB\-i, \-\-internal\-only\fP"
 .\"O Don't call the \fB/sbin/mount.\fIfilesystem\fR helper even if it exists.
 \fB/sbin/mount.\fIfilesystem\fR ヘルパがあっても、呼び出さない。
 .TP
 .BR \-L , " \-\-label " \fIlabel
-Mount the partition that has the specified
-.IR label .
+.\"O Mount the partition that has the specified
+.\"O .IR label .
+指定した
+.I label
+を持つパーティションをマウントする。
 .TP
 .BR \-l , " \-\-show\-labels"
 .\"O Add the labels in the mount output.  \fBmount\fR must have
@@ -1120,8 +1142,10 @@ reiserfs のラベルを設定するには
 を用いればよい。
 .TP
 .BR \-M , " \-\-move"
-Move a subtree to some other place.  See above, the subsection
-\fBThe move operation\fR.
+.\"O Move a subtree to some other place.  See above, the subsection
+.\"O \fBThe move operation\fR.
+サブツリーをどこか別の場所に移動する。
+上記のサブセクション \fBmove 操作\fR を参照すること。
 .TP
 .BR \-n , " \-\-no\-mtab"
 .\"O Mount without writing in
