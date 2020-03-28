@@ -610,7 +610,7 @@ fstab が解析されたり、ヘルパープログラムが実行される前�
 グループのメンバでなければならないという制限がある。
 
 .\"O .SS Bind mount operation
-.SS bind マウントオプション
+.SS bind マウント操作
 .\"O Remount part of the file hierarchy somewhere else.  The call is:
 ファイル階層の一部をどこか別の場所に再マウントすることができる。
 使い方は以下の通りである:
@@ -672,29 +672,47 @@ bind マウントコールで 1 つのファイルシステム (の一部) の�
 .I olddir newdir
 .RE
 
-Note that the filesystem mount options maintained by kernel will remain the same as those
-on the original mount point.  The userspace mount options (e.g. _netdev) will not be copied
-by
+.\"O Note that the filesystem mount options maintained by kernel will remain the same as those
+.\"O on the original mount point.  The userspace mount options (e.g. _netdev) will not be copied
+.\"O by
+.\"O .BR mount (8)
+.\"O and it's necessary explicitly specify the options on mount command line.
+カーネルによって管理されるファイルシステムのマウントオプションは、
+元々のマウントポイントのマウントオプションと同じである点に注意すること。
+ユーザー空間のマウントオプション (例えば、_netdev) は、
 .BR mount (8)
-and it's necessary explicitly specify the options on mount command line.
+によってコピーされず、
+mount のコマンドラインオプションで明示的に指定する必要がある。
 
+.\"O .BR mount (8)
+.\"O since v2.27 allows to change the mount options by passing the
+.\"O relevant options along with
+.\"O .BR \-\-bind .
+.\"O For example:
 .BR mount (8)
-since v2.27 allows to change the mount options by passing the
-relevant options along with
-.BR \-\-bind .
-For example:
+は v2.27 以降で、関連するオプションを
+.B \-\-bind
+と一緒に渡すことで、マウントオプションを変更することができる。
+例えば:
 
 .RS
 .br
 .B mount -o bind,ro foo foo
 .RE
 
-This feature is not supported by the Linux kernel; it is implemented in userspace
-by an additional \fBmount\fR(2) remounting system call.
-This solution is not atomic.
+.\"O This feature is not supported by the Linux kernel; it is implemented in userspace
+.\"O by an additional \fBmount\fR(2) remounting system call.
+.\"O This solution is not atomic.
+この機能は、Linux カーネルではサポートされておらず、
+追加の \fBmount\fR(2) の再マウントシステムコールを発行することで、
+ユーザー空間で実装されている。
+この方法はアトミックではない。
 
-The alternative (classic) way to create a read-only bind mount is to use the remount
-operation, for example:
+.\"O The alternative (classic) way to create a read-only bind mount is to use the remount
+.\"O operation, for example:
+読み込みのみの bind マウントを作成する別の (昔からの) 方法は、
+再マウント操作を使うことである。
+例えば:
 
 .RS
 .br
@@ -705,37 +723,69 @@ operation, for example:
 .I olddir newdir
 .RE
 
-Note that a read-only bind will create a read-only mountpoint (VFS entry),
-but the original filesystem superblock will still be writable, meaning that the
+.\"O Note that a read-only bind will create a read-only mountpoint (VFS entry),
+.\"O but the original filesystem superblock will still be writable, meaning that the
+.\"O .I olddir
+.\"O will be writable, but the
+.\"O .I newdir
+.\"O will be read-only.
+読み込みのみの bind は読み込みのみのマウントポイント (VFS エントリ) を作成するが、
+元々のファイルシステムのスーパーブロックは書き込み可能のままである。
+つまり、
 .I olddir
-will be writable, but the
+は書き込み可能であるが、
 .I newdir
-will be read-only.
+は読み込みのみということである。
 
-It's also possible to change nosuid, nodev, noexec, noatime, nodiratime and
-relatime VFS entry flags by "remount,bind" operation.  The another (for example
-filesystem specific flags) are silently ignored.  It's impossible to change mount
-options recursively (for example with \fB-o rbind,ro\fR).
+.\"O It's also possible to change nosuid, nodev, noexec, noatime, nodiratime and
+.\"O relatime VFS entry flags by "remount,bind" operation.  The another (for example
+.\"O filesystem specific flags) are silently ignored.  It's impossible to change mount
+.\"O options recursively (for example with \fB-o rbind,ro\fR).
+nosuid, nodev, noexec, noatime, nodiratime, relatime VFS エントリフラグを、
+"remount,bind" 操作で変更することができる。
+他の (例えば、ファイルシステム固有のフラグ) は黙って無視される。
+マウントオプションを (例えば \fB-o rbind,ro\fR で) 再帰的に変更することはできない。
 
+.\"O .BR mount (8)
+.\"O since v2.31 ignores the \fBbind\fR flag from
+.\"O .I /etc/fstab
+.\"O on
+.\"O .B remount operation
+.\"O (if "-o remount" specified on command line). This is necessary to fully control
+.\"O mount options on remount by command line. In the previous versions the bind
+.\"O flag has been always applied and it was impossible to re-define mount options
+.\"O without interaction with the bind semantic. This
+.\"O .BR mount (8)
+.\"O behavior does not affect situations when "remount,bind" is specified in the
+.\"O .I /etc/fstab
+.\"O file.
 .BR mount (8)
-since v2.31 ignores the \fBbind\fR flag from
+は v2.31 以降で、
+.B 再マウント操作時
+("-o remount" がコマンドラインで指定されている場合) に
 .I /etc/fstab
-on
-.B remount operation
-(if "-o remount" specified on command line). This is necessary to fully control
-mount options on remount by command line. In the previous versions the bind
-flag has been always applied and it was impossible to re-define mount options
-without interaction with the bind semantic. This
+に指定された \fBbind\fR フラグを無視するようになった。
+コマンドラインで再マウントをする場合、
+マウントオプションを完全に制御する必要がある。
+以前のバージョンでは、bind フラグは常に適用され、
+bind を操作することなしに、
+マウントオプションを再定義することができなかった。
+この
 .BR mount (8)
-behavior does not affect situations when "remount,bind" is specified in the
+の挙動は、"remount,bind" が
 .I /etc/fstab
-file.
+ファイルに指定されている場合に、影響しない。
+.\"Osato: semantic が訳出できない。
 .RE
 
-.SS The move operation
-Move a
-.B mounted tree
-to another place (atomically).  The call is:
+.\"O .SS The move operation
+.SS move 操作
+.\"O Move a
+.\"O .B mounted tree
+.\"O to another place (atomically).  The call is:
+.B マウントされたツリー
+を (纏めて) 他の場所に移動することが可能になった。
+使い方は以下の通りである:
 
 .RS
 .br
@@ -743,32 +793,57 @@ to another place (atomically).  The call is:
 .I olddir newdir
 .RE
 
-This will cause the contents which previously appeared under
+.\"O This will cause the contents which previously appeared under
+.\"O .I olddir
+.\"O to now be accessible under
+.\"O .IR newdir .
+.\"O The physical location of the files is not changed.
+.\"O Note that
+.\"O .I olddir
+.\"O has to be a mountpoint.
+これにより、前に
 .I olddir
-to now be accessible under
-.IR newdir .
-The physical location of the files is not changed.
-Note that
+に現れていた内容が、
+.I newdir
+でアクセスできる。
+ファイルの物理的な場所は変更されない。
 .I olddir
-has to be a mountpoint.
+がマウントポイントになる点に注意すること。
 
-Note also that moving a mount residing under a shared mount is invalid and
-unsupported.  Use
+.\"O Note also that moving a mount residing under a shared mount is invalid and
+.\"O unsupported.  Use
+.\"O .B findmnt \-o TARGET,PROPAGATION
+.\"O to see the current propagation flags.
+shared マウント以下にあった move マウントオプションは、
+無効でありサポートされない。
+現在の伝搬されているフラグを見るには、
 .B findmnt \-o TARGET,PROPAGATION
-to see the current propagation flags.
+を使うこと。
 
-.SS Shared subtree operations
-Since Linux 2.6.15 it is possible to mark a mount and its submounts as shared,
-private, slave or unbindable.  A shared mount provides the ability to create mirrors
-of that mount such that mounts and unmounts within any of the mirrors propagate
-to the other mirror.  A slave mount receives propagation from its master, but
-not vice versa.  A private mount carries no propagation abilities.  An
-unbindable mount is a private mount which cannot be cloned through a bind
-operation.  The detailed semantics are documented in
+.\"O .SS Shared subtree operations
+.SS 共有 (shared) サブツリー操作
+.\"O Since Linux 2.6.15 it is possible to mark a mount and its submounts as shared,
+.\"O private, slave or unbindable.  A shared mount provides the ability to create mirrors
+.\"O of that mount such that mounts and unmounts within any of the mirrors propagate
+.\"O to the other mirror.  A slave mount receives propagation from its master, but
+.\"O not vice versa.  A private mount carries no propagation abilities.  An
+.\"O unbindable mount is a private mount which cannot be cloned through a bind
+.\"O operation.  The detailed semantics are documented in
+.\"O .I Documentation/filesystems/sharedsubtree.txt
+.\"O file in the kernel source tree.
+Linux 2.6.15 からマウントとサブマウントを
+shared, private, slave, unbindable としてマークできる。
+共有 (shared) マウントはマウントのミラーを作成するために提供される。
+ミラーのマウントとアンマウントは、他のミラーに伝搬 (propagation) される。
+スレーブ (slave) マウントはマスターからの伝搬は受けるが、逆の伝搬は受けない。
+プライベート (private) マウントは伝搬をさせない。
+バインド不可 (unbindable) マウントは bind 操作でクローンされないプライベートマウントである。
+詳細な意味は、カーネルソースツリーの
 .I Documentation/filesystems/sharedsubtree.txt
-file in the kernel source tree.
+ファイルにドキュメント化されている。
 
-Supported operations are:
+.\"O Supported operations are:
+サポートされている操作は、以下の通り:
 
 .RS
 .nf
@@ -779,8 +854,10 @@ Supported operations are:
 .fi
 .RE
 
-The following commands allow one to recursively change the type of all the
-mounts under a given mountpoint.
+.\"O The following commands allow one to recursively change the type of all the
+.\"O mounts under a given mountpoint.
+以下のコマンドは、指定されたマウントポイント以下の
+全てのマウントのタイプを再帰的に変更する。
 
 .RS
 .nf
@@ -791,25 +868,54 @@ mounts under a given mountpoint.
 .fi
 .RE
 
+.\"O .BR mount (8)
+.\"O .B does not read
+.\"O .BR fstab (5)
+.\"O when a \fB\-\-make-\fR* operation is requested.  All necessary information has to be
+.\"O specified on the command line.
 .BR mount (8)
-.B does not read
+は、\fB\-\-make-\fR* 操作が要求された場合、
 .BR fstab (5)
-when a \fB\-\-make-\fR* operation is requested.  All necessary information has to be
-specified on the command line.
+を読まない。
+全ての必要な情報はコマンドラインで指定しなければならない。
 
-Note that the Linux kernel does not allow to change multiple propagation flags
-with a single
+.\"O Note that the Linux kernel does not allow to change multiple propagation flags
+.\"O with a single
+.\"O .BR mount (2)
+.\"O system call, and the flags cannot be mixed with other mount options and operations.
+Linux カーネルは、1 回の
 .BR mount (2)
-system call, and the flags cannot be mixed with other mount options and operations.
+システムコールで複数の伝搬フラグを変更できない。
+そして、このフラグは他のマウントオプションや操作と組み合わせることが
+できない。
 
-Since util-linux 2.23 the \fBmount\fR command allows to do more propagation
-(topology) changes by one mount(8) call and do it also together with other
-mount operations.  This feature is EXPERIMENTAL.  The propagation flags are applied
-by additional \fBmount\fR(2) system calls when the preceding mount operations
-were successful.  Note that this use case is not atomic.  It is possible to
-specify the propagation flags in
+.\"O Since util-linux 2.23 the \fBmount\fR command allows to do more propagation
+.\"O (topology) changes by one mount(8) call and do it also together with other
+.\"O mount operations.  This feature is EXPERIMENTAL.  The propagation flags are applied
+.\"O by additional \fBmount\fR(2) system calls when the preceding mount operations
+.\"O were successful.  Note that this use case is not atomic.  It is possible to
+.\"O specify the propagation flags in
+.\"O .BR fstab (5)
+.\"O as mount options
+.\"O .RB ( private ,
+.\"O .BR slave ,
+.\"O .BR shared ,
+.\"O .BR unbindable ,
+.\"O .BR rprivate ,
+.\"O .BR rslave ,
+.\"O .BR rshared ,
+.\"O .BR runbindable ).
+util-linux 2.23 以降で \fBmount\fR コマンドは、
+1 回の mount(8) 呼び出しで、
+より多くの伝搬オプション (トポロジー) 変更が可能で、
+他のマウントオプションと一緒に指定できる。
+この機能は「実験的」である。
+伝搬フラグは、先に呼び出されたマウント操作が成功した場合、
+追加の \fBmount\fR(2) システムコールを呼び出すことで適用できる。
+この利用方法はアトミックではない点に注意すること。
+伝搬フラグを
 .BR fstab (5)
-as mount options
+でマウントオプション
 .RB ( private ,
 .BR slave ,
 .BR shared ,
@@ -817,9 +923,11 @@ as mount options
 .BR rprivate ,
 .BR rslave ,
 .BR rshared ,
-.BR runbindable ).
+.BR runbindable )
+を指定できる。
 
-For example:
+.\"O For example:
+例:
 
 .RS
 .nf
@@ -827,7 +935,8 @@ For example:
 .fi
 .RE
 
-is the same as:
+.\"O is the same as:
+は、以下と同じである:
 
 .RS
 .nf
