@@ -969,9 +969,13 @@ util-linux 2.23 以降で \fBmount\fR コマンドは、
 .BR \-r " または " \-w
 オプションが指定されている場合には、それらが適用される。
 
-The command \fBmount\fR does not pass all command-line options to the
-\fB/sbin/mount.\fIsuffix\fR mount helpers.  The interface between \fBmount\fR
-and the mount helpers is described below in the section \fBEXTERNAL HELPERS\fR.
+.\"O The command \fBmount\fR does not pass all command-line options to the
+.\"O \fB/sbin/mount.\fIsuffix\fR mount helpers.  The interface between \fBmount\fR
+.\"O and the mount helpers is described below in the section \fBEXTERNAL HELPERS\fR.
+コマンド \fBmount\fR は、\fB/sbin/mount.\fIsuffix\fR マウントヘルパーに
+全てのオプションを渡すわけではない。
+\fBmount\fR とマウントヘルパーのインタフェースは、
+以下の\fB外部ヘルパー\fRのセクションで記載されている。
 .sp
 .\"O Command-line options available for the
 .\"O .B mount
@@ -993,18 +997,31 @@ and the mount helpers is described below in the section \fBEXTERNAL HELPERS\fR.
 ファイルシステムは
 .I fstab
 の順番に従ってマウントされる。
-The mount command compares filesystem source, target (and fs root for bind
-mount or btrfs) to detect already mounted filesystems. The kernel table with
-already mounted filesystems is cached during \fBmount \-\-all\fR. It means
-that all duplicated fstab entries will be mounted.
+.\"O The mount command compares filesystem source, target (and fs root for bind
+.\"O mount or btrfs) to detect already mounted filesystems. The kernel table with
+.\"O already mounted filesystems is cached during \fBmount \-\-all\fR. It means
+.\"O that all duplicated fstab entries will be mounted.
+mount コマンドは、ファイルシステムのマウント元とマウント先
+(加えて、bind マウントまたは btrfs についてはファイルシステムのルート) を比較し、
+既にマウントされているファイルシステムを検知する。
+既にマウントされているファイルシステムのカーネルテーブルは、
+\fBmount \-\-all\fR でキャッシュされる。
+これは、複製された fstab エントリがマウントされるという意味である。
 .sp
-The option \fB\-\-all\fR is possible to use for remount operation too. In this
-case all filters (\fB\-t\fR and \fB\-O\fR) are applied to the table of already
-mounted filesystems.
+.\"O The option \fB\-\-all\fR is possible to use for remount operation too. In this
+.\"O case all filters (\fB\-t\fR and \fB\-O\fR) are applied to the table of already
+.\"O mounted filesystems.
+オプション \fB\-\-all\fR は、再マウント操作でも使うことができる。
+この場合、全てのフィルタ (\fB\-t\fR と \fB\-O\fR) は、
+既にマウントされているファイルシステムのテーブルに適用される。
 .sp
-Note that it is a bad practice to use \fBmount \-a\fR for
+.\"O Note that it is a bad practice to use \fBmount \-a\fR for
+.\"O .I fstab
+.\"O checking. The recommended solution is \fBfindmnt \-\-verify\fR.
+\fBmount \-a\fR を
 .I fstab
-checking. The recommended solution is \fBfindmnt \-\-verify\fR.
+のチェックに使うのは、良くない方法である点に注意すること。
+推奨される方法は、\fBfindmnt \-\-verify\fR を使うことである。
 .TP
 .BR \-B , " \-\-bind"
 Remount a subtree somewhere else (so that its contents are available
