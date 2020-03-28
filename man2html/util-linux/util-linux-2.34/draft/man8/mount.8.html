@@ -1,0 +1,4743 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MOUNT</TITLE>
+</HEAD><BODY>
+<H1>MOUNT</H1>
+Section: System Administration (8)<BR>Updated: August 2015<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+mount - ファイルシステムをマウントする
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>mount</B>
+
+[<B>-l</B>|<B>-h</B>|<B>-V</B>]
+
+<P>
+
+<B>mount -a</B>
+
+[<B>-fFnrsvw</B>]
+
+[<B>-t</B>
+
+<I>fstype</I>]
+
+[<B>-O</B>
+
+<I>optlist</I>]
+
+<P>
+
+<B>mount</B>
+
+[<B>-fnrsvw</B>]
+
+[<B>-o</B>
+
+<I>options</I>]
+
+<I>device</I>|<I>dir</I>
+
+<P>
+
+<B>mount</B>
+
+[<B>-fnrsvw</B>]
+
+[<B>-t</B>
+
+<I>fstype</I><B>]</B>
+
+[<B>-o</B>
+
+<I>options</I>]
+
+<I>device dir</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+
+
+Unix のシステムにおいては、アクセスできるファイルはすべて 1 つの大きな
+ツリー構造にまとめられている。
+これは
+<I>/</I>
+
+をルート (root:根) とする階層構造をなしている。
+これらのファイル群は複数のデバイスにわたって配置することができる。
+<B>mount</B>
+
+コマンドはあるデバイス上のファイルシステムを
+この大きなツリー構造に接続するために用いられる。
+逆に接続を解除する際には
+<B><A HREF="../man8/umount.8.html">umount</A></B>(8)
+
+コマンドが用いられる。
+ファイルシステムは、データをどのようにデバイスに格納するかを
+制御するために使われる。
+また、ネットワークや他のサービスで仮想的な方法で提供するかを
+制御するために使われる。
+<P>
+
+
+
+<B>mount</B>
+
+コマンドの標準形は次の通りである:
+<DL COMPACT><DT><DD>
+<P>
+<BR>
+
+<B>mount -t</B><I> type device dir</I>
+
+<BR>
+
+<P>
+</DL>
+
+
+
+
+
+
+
+これは
+<I>device</I>
+
+上にあるファイルシステム (タイプ
+<I>type</I>)
+
+をディレクトリ
+<I>dir</I>
+
+に接続するよう、カーネルに伝える。
+
+
+
+
+<B>-t </B><I>type</I> は、オプションである。
+<B>mount</B>
+
+コマンドは通常はファイルシステムを検知できる。
+デフォルトでは、ファイルシステムをマウントするには、root 権限が必要である。
+詳細は「スーパーユーザー以外でのマウント」のセクションを参照すること。
+
+
+
+
+
+
+
+このファイルシステムがマウントされている間は、ディレクトリ
+<I>dir</I>
+
+のもとの中身 (もしあれば)、ディレクトリ自身の所有者、
+パーミッションモードは見えなくなる。
+<I>dir</I>
+
+によって指定されるパスは
+<I>device</I>
+
+上のファイルシステムのルートを参照することになる。
+<P>
+
+ディレクトリまたはデバイスのみが指定された場合、以下のようになる:
+<DL COMPACT><DT><DD>
+<P>
+<B>mount /dir</B>
+
+<P>
+</DL>
+
+
+
+
+
+
+
+
+<B>mount</B> は
+<I>/etc/fstab</I>
+
+ファイルのマウントポイントを調べる (なければ、デバイスを調べる)。
+<B>--target</B>
+
+または
+<B>--source</B>
+
+オプションを使って指定した引き数が曖昧になるのを防ぐことができる。
+例えば:
+<DL COMPACT><DT><DD>
+<P>
+<B>mount --target /mountpoint</B>
+
+<P>
+</DL>
+
+<P>
+
+
+
+
+
+
+同じファイルシステムを複数回マウントできる。
+同様なケースで (例えばネットワークファイルシステムで) 同じファイルシステムを
+同じマウントポイントで複数回マウントできる。
+マウントコマンドはこの挙動を制御するポリシーを実装していない。
+全ての挙動はカーネルで制御され、通常はファイルシステムドライバの仕様である。
+例外は、<B>--all</B> であり、このオプションが指定された場合、
+既にマウントされているファイルシステムは無視される
+(詳細は以下の <B>--all</B> を参照すること)。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H3>マウントのリスト表示</H3>
+
+
+リスト表示モードは後方互換のためにのみ維持されている。
+<P>
+
+
+
+
+<B>特にスクリプトにおいては</B>、より強力でカスタマイズ可能な出力には、
+<B><A HREF="../man8/findmnt.8.html">findmnt</A></B>(8)
+
+を使うこと。
+マウントポイント名に含まれる制御文字は、'?' に置換される点に注意すること。
+<P>
+
+
+以下のコマンドでは、(タイプ
+<I>type</I>
+
+の) 全てのマウントされたファイルシステムのリストを表示する:
+<DL COMPACT><DT><DD>
+<P>
+<B>mount </B>[<B>-l</B>] [<B>-t </B><I>type/</I>]
+
+<P>
+</DL>
+
+
+オプション <B>-l</B> を付けると、ラベルをリストに追加する。
+下記を参照すること。
+<P>
+
+<A NAME="lbAF">&nbsp;</A>
+<H3>デバイスとファイルシステムの指定</H3>
+
+
+
+
+
+
+
+ほとんどの場合、デバイスは (ブロックスペシャルデバイスの) ファイル名で
+指定する (例:
+<I>/dev/sda1</I>)。
+
+しかし例外もある。例えば NFS を通してマウントする場合には、
+<I>device</I>
+
+は
+<I>knuth.cwi.nl:/dir</I>
+
+のようになる。
+
+
+
+
+ブロックスペシャルデバイスの指定には、ボリュームラベルや UUID を
+用いることができる (以下の <B>-L</B> および <B>-U</B>  オプションを見よ)。
+また、パーティションラベル、または UUID を用いることができる。
+パーティション識別子は、例えば、GUID パーティションテーブル (GPT) をサポートする。
+<P>
+
+
+
+
+ディスクパーティションのデバイス名は不安定である。
+ハードウェアの認識でデバイスの追加や削除を行った場合、
+名前が変わる可能性がある。
+これが、ファイルシステムやパーティションの識別子に、
+UUID やラベルを使うのを強く推奨する理由である。
+<P>
+
+
+
+コマンド <B>lsblk --fs</B> は、利用可能なブロックデバイスの
+ファイルシステム、ラベル、UUID の概要を表示する。
+コマンド <B>blkid -p &lt;device&gt;</B> は、
+指定されたデバイス上のファイルシステムの詳細を表示する。
+<P>
+
+
+
+
+デバイスを移動、共有、コピーする場合、
+UUID とラベルが実際に一意である保証がないことを忘れてはいけない。
+システム上で UUID が実際に一意であるかを検証するには、
+<B>lsblk -o +UUID,PARTUUID</B>
+
+を使うこと。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+<I>/etc/fstab</I>
+
+ファイルでは、
+<I>/dev/disk/by-{label,uuid,partuuid,partlabel}</I>
+
+udev シンボリックリンクより、
+タグ (例えば <B>UUID=</B><I>uuid</I>) を使った設定が推奨される。
+タグは、より読みやすく、堅牢で、移植性が高い。
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+は内部的に udev シンボリックリンクを使っているので、
+/etc/fstab でシンボリックリンクを使うのは、タグを使うのに比べて、
+何の利点もない。
+より詳細は
+<B><A HREF="../man3/libblkid.3.html">libblkid</A></B>(3)
+
+を参照すること。
+<P>
+
+
+
+
+
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+は UUID を文字列として使っている点に注意すること。
+コマンドライン、または
+<B><A HREF="../man5/fstab.5.html">fstab</A></B>(5)
+
+から指定された UUID は内部的なバイナリ表現に変換されない。
+UUID の文字列表現は、小文字になる。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+<I>proc</I>
+
+ファイルシステムはスペシャルデバイスには関連付けられていないので、
+マウントする際には
+<I>proc</I>
+
+のような適当なキーワードをデバイス指定の代わりに用いる。
+(通常用いられている
+<I>none</I>
+
+はあまりお勧めできない:
+<B>mount</B>
+
+が `none already mounted' というエラーメッセージを出すことになるので、
+混乱の原因となりかねない。)
+<P>
+
+<A NAME="lbAG">&nbsp;</A>
+<H3>ファイル /etc/fstab, /etc/mtab, /proc/mounts</H3>
+
+
+
+
+
+
+
+
+
+
+
+
+ファイル
+<I>/etc/fstab</I>
+
+(<B><A HREF="../man5/fstab.5.html">fstab</A></B>(5)
+
+を見よ) は、それぞれのデバイスが通常マウントされる場所を、
+オプションとともに記述したものである。
+<B><A HREF="../man5/fstab.5.html">fstab</A></B>(5)
+
+ファイルのデフォルトの場所は、
+<B>--fstab</B><I> path</I>
+
+コマンドラインオプションで上書きできる
+(より詳細は下記を参照すること)。
+<P>
+
+
+コマンド
+<DL COMPACT><DT><DD>
+<P>
+<B>mount -a</B>
+
+[<B>-t</B>
+
+<I>type</I>]
+
+[<B>-O</B>
+
+<I>optlist</I>]
+
+<P>
+</DL>
+
+
+
+
+
+
+
+
+
+
+が (通常は起動スクリプトから) 実行されると、
+<I>fstab</I>
+
+に記述されているすべてのファイルシステムが
+(適当なオプションの有無に関わらず、それぞれ適当なタイプで) マウントされる。
+ただしキーワード
+<B>noauto</B>
+
+を含む行はマウントされない。
+<B>-F</B>
+
+オプションを指定すると <B>mount</B> は fork し、
+それぞれのファイルシステムが同時にマウントされる。
+<P>
+
+
+
+
+
+
+<I>fstab</I>
+
+または
+<I>mtab</I>
+
+で指定されたファイルシステムをマウントする場合、
+コマンドラインにはデバイス、またはマウントポイントを指定すれば充分である。
+<P>
+
+
+
+
+
+
+プログラム
+<B>mount</B>
+
+と
+<B>umount</B>
+
+は、現在マウントされているファイルシステムをファイル
+<I>/etc/mtab</I>
+
+で昔から管理している。
+
+
+
+
+
+
+
+
+
+伝統的な通常の
+<I>/etc/mtab</I>
+
+のサポートはコンパイル時にデフォルトで完全に無効化できる。
+なぜなら、現在の Linux システムはで、代わりに
+<I>/proc/mounts</I>
+
+へのシンボリックリンクにする方が良いからである。
+ユーザ空間で管理されている通常の mtab ファイルは、
+名前空間、コンテナ、その他の先進的な Linux 機能とともに使う場合には、
+信頼性を持って動作できない。
+通常の mtab のサポートが有効である場合、
+ファイルもシンボリックリンクと同様に使うことができる。
+<P>
+
+
+
+<B>mount</B>
+
+に引き数を何も指定しない場合、
+マウントされているファイルシステムが表示される。
+<P>
+
+
+
+<I>/etc/fstab</I>
+
+で指定されているマウントオプションを上書きしたい場合、
+<B>-o</B> を使う必要がある:
+<DL COMPACT><DT><DD>
+<P>
+<B>mount</B><I> device</I><B></B>|<I>dir </I><B>-o</B><I> options</I>
+
+<P>
+</DL>
+
+
+
+
+
+
+
+
+コマンドラインで指定されたマウントオプションは、
+<I>/etc/fstab</I>
+
+で指定されたオプションのリストに追加される。
+このデフォルトの動作は、コマンドラインオプション
+<B>--options-mode</B> で変更できる。
+通常の挙動では、衝突するオプションがある場合、最後のオプションが勝つ。
+<P>
+
+
+
+
+
+
+
+
+
+
+<I>device</I>
+
+(または LABEL, UUID, PARTUUID, PARTLABEL) と
+<I>dir</I>
+
+の両方が指定された場合、
+<B>mount</B>
+
+プログラムは
+<I>/etc/fstab</I>
+
+ファイルを読み込まない。
+例えば、デバイス
+<B>foo</B> を <B>/dir</B>
+
+にマウントする場合、以下のように指定する:
+<DL COMPACT><DT><DD>
+<P>
+<B>mount /dev/foo /dir</B>
+
+<P>
+</DL>
+
+
+
+
+
+
+このデフォルトの挙動は、コマンドラインオプション
+<B>--options-source-force</B>
+で変更し、fstab から設定を読み込ませることができる。
+ルート以外のユーザーでは、
+<B>mount</B>
+
+は常に fstab の設定を読み込む。
+<P>
+
+<A NAME="lbAH">&nbsp;</A>
+<H3>スーパーユーザー以外でのマウント</H3>
+
+
+
+
+
+
+
+通常はスーパーユーザーのみがマウントを行うことができるが、
+<I>fstab</I>
+
+中の行に
+<B>user</B>
+
+オプションが含まれていれば、その行で指定されているファイルシステムは
+誰でもマウントすることができる。
+<P>
+
+
+したがって
+<DL COMPACT><DT><DD>
+<P>
+<B>/dev/cdrom  /cd  iso9660  ro,user,noauto,unhide</B>
+
+<P>
+</DL>
+
+
+
+という行があれば、誰でも挿入された CDROM 上の iso9660 ファイルシステムを
+<DL COMPACT><DT><DD>
+<B>mount /cd</B>
+
+<P>
+</DL>
+
+によってマウントできる。
+
+
+
+
+
+<B>mount</B> は root 以外のユーザーにはとても厳格で、
+fstab が解析されたり、ヘルパープログラムが実行される前に、
+コマンドラインで指定された全てのパスが検証される。
+ファイルシステムを指定するために、有効なマウントポイントを使うことが
+強く推奨される。
+さもないと、<B>mount</B> は失敗する。
+例えば、NFS や CIFS のマウント元をコマンドラインから指定するのは、
+良くない考えである。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+詳細は
+<B><A HREF="../man5/fstab.5.html">fstab</A></B>(5)
+
+を参照のこと。
+ファイルシステムをマウントしたユーザーだけが、
+それをアンマウントすることができる。
+他のユーザーでもアンマウントを行えるようにしたい場合は、
+<I>fstab</I>
+
+の行の指定を
+<B>user</B>
+
+の代わりに
+<B>users</B>
+
+とすること。
+
+
+
+
+
+
+
+
+<B>owner</B>
+
+オプションは
+<B>user</B>
+
+オプションと似ているが、ユーザーがそのスペシャルファイルの
+所有者でなければならないという制限がある。
+これはたとえばログインスクリプトがコンソールのユーザーを
+<I>/dev/fd</I>
+
+の所有者にする場合、このデバイスに用いると便利だろう。
+
+
+
+
+<B>group</B>
+
+オプションは (訳註:
+<B>user</B>
+
+オプションと) 似ているが、ユーザーがそのスペシャルファイルの
+グループのメンバでなければならないという制限がある。
+<P>
+
+<A NAME="lbAI">&nbsp;</A>
+<H3>bind マウント操作</H3>
+
+
+ファイル階層の一部をどこか別の場所に再マウントすることができる。
+使い方は以下の通りである:
+<P>
+<DL COMPACT><DT><DD>
+<BR>
+
+<B>mount --bind</B>
+
+<I>olddir newdir</I>
+
+</DL>
+
+<P>
+
+もしくは、fstab エントリで、このオプションを使う:
+<P>
+<DL COMPACT><DT><DD>
+<BR>
+
+<B>/</B><I>olddir</I>
+
+<B>/</B><I>newdir</I>
+
+<B>none bind</B>
+
+</DL>
+
+<P>
+
+この呼び出しの後、同じ内容を 2 つの場所でアクセスできる。
+<P>
+
+
+
+
+
+&quot;bind&quot; がカーネル VFS にセカンドクラスまたはスペシャルノードを
+作成しないという点を理解することが重要である。
+&quot;bind&quot; は、単にファイルシステムをアタッチする別の操作である。
+&quot;bind&quot; 操作でアタッチされたファイルシステムの情報を格納する場所はない。
+<I>olddir</I> と <I>newdir</I> は独立であり、
+<I>olddir</I> はアンマウントできる。
+<P>
+
+
+
+1 つのファイル (を 1 つのファイル) に再マウントできる。
+bind マウントを使って通常ディレクトリからマウントポイントを作ることができる。
+例えば:
+<P>
+<DL COMPACT><DT><DD>
+<BR>
+
+<B>mount --bind foo foo</B>
+
+</DL>
+
+<P>
+
+
+
+bind マウントコールで 1 つのファイルシステム (の一部) のみをアタッチし、
+サブマウントはできない。
+次のようにして、サブマウントを含む全てのファイル階層は、
+2 つ目の場所にアタッチできる:
+<P>
+<DL COMPACT><DT><DD>
+<BR>
+
+<B>mount --rbind</B>
+
+<I>olddir newdir</I>
+
+</DL>
+
+<P>
+
+
+
+
+
+カーネルによって管理されるファイルシステムのマウントオプションは、
+元々のマウントポイントのマウントオプションと同じである点に注意すること。
+ユーザー空間のマウントオプション (例えば、_netdev) は、
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+によってコピーされず、
+mount のコマンドラインオプションで明示的に指定する必要がある。
+<P>
+
+
+
+
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+は v2.27 以降で、関連するオプションを
+<B>--bind</B>
+
+と一緒に渡すことで、マウントオプションを変更することができる。
+例えば:
+<P>
+<DL COMPACT><DT><DD>
+<BR>
+
+<B>mount -o bind,ro foo foo</B>
+
+</DL>
+
+<P>
+
+
+
+この機能は、Linux カーネルではサポートされておらず、
+追加の <B><A HREF="../man2/mount.2.html">mount</A></B>(2) の再マウントシステムコールを発行することで、
+ユーザー空間で実装されている。
+この方法はアトミックではない。
+<P>
+
+
+読み込みのみの bind マウントを作成する別の (昔からの) 方法は、
+再マウント操作を使うことである。
+例えば:
+<P>
+<DL COMPACT><DT><DD>
+<BR>
+
+<B>mount --bind</B>
+
+<I>olddir newdir</I>
+
+<BR>
+
+<B>mount -o remount,bind,ro</B>
+
+<I>olddir newdir</I>
+
+</DL>
+
+<P>
+
+
+
+
+
+
+読み込みのみの bind は読み込みのみのマウントポイント (VFS エントリ) を作成するが、
+元々のファイルシステムのスーパーブロックは書き込み可能のままである。
+つまり、
+<I>olddir</I>
+
+は書き込み可能であるが、
+<I>newdir</I>
+
+は読み込みのみということである。
+<P>
+
+
+
+
+nosuid, nodev, noexec, noatime, nodiratime, relatime VFS エントリフラグを、
+&quot;remount,bind&quot; 操作で変更することができる。
+他の (例えば、ファイルシステム固有のフラグ) は黙って無視される。
+マウントオプションを (例えば <B>-o rbind,ro</B> で) 再帰的に変更することはできない。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+は v2.31 以降で、
+<B>再マウント操作時</B>
+
+(&quot;-o remount&quot; がコマンドラインで指定されている場合) に
+<I>/etc/fstab</I>
+
+に指定された <B>bind</B> フラグを無視するようになった。
+コマンドラインで再マウントをする場合、
+マウントオプションを完全に制御する必要がある。
+以前のバージョンでは、bind フラグは常に適用され、
+bind を操作することなしに、
+マウントオプションを再定義することができなかった。
+この
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+の挙動は、&quot;remount,bind&quot; が
+<I>/etc/fstab</I>
+
+ファイルに指定されている場合に、影響しない。
+
+
+<P>
+
+<A NAME="lbAJ">&nbsp;</A>
+<H3>move 操作</H3>
+
+
+
+
+<B>マウントされたツリー</B>
+
+を (纏めて) 他の場所に移動することが可能になった。
+使い方は以下の通りである:
+<P>
+<DL COMPACT><DT><DD>
+<BR>
+
+<B>mount --move</B>
+
+<I>olddir newdir</I>
+
+</DL>
+
+<P>
+
+
+
+
+
+
+
+
+これにより、前に
+<I>olddir</I>
+
+に現れていた内容が、
+<I>newdir</I>
+
+でアクセスできる。
+ファイルの物理的な場所は変更されない。
+<I>olddir</I>
+
+がマウントポイントになる点に注意すること。
+<P>
+
+
+
+
+shared マウント以下にあった move マウントオプションは、
+無効でありサポートされない。
+現在の伝搬されているフラグを見るには、
+<B>findmnt -o TARGET,PROPAGATION</B>
+
+を使うこと。
+<P>
+
+<A NAME="lbAK">&nbsp;</A>
+<H3>共有 (shared) サブツリー操作</H3>
+
+
+
+
+
+
+
+
+
+
+Linux 2.6.15 からマウントとサブマウントを
+shared, private, slave, unbindable としてマークできる。
+共有 (shared) マウントはマウントのミラーを作成するために提供される。
+ミラーのマウントとアンマウントは、他のミラーに伝搬 (propagation) される。
+スレーブ (slave) マウントはマスターからの伝搬は受けるが、逆の伝搬は受けない。
+プライベート (private) マウントは伝搬をさせない。
+バインド不可 (unbindable) マウントは bind 操作でクローンされないプライベートマウントである。
+詳細な意味は、カーネルソースツリーの
+<I>Documentation/filesystems/sharedsubtree.txt</I>
+
+ファイルにドキュメント化されている。
+<P>
+
+サポートされている操作は、以下の通り:
+<P>
+<DL COMPACT><DT><DD>
+<PRE>
+<B>mount --make-shared </B><I>mountpoint</I>
+<B>mount --make-slave </B><I>mountpoint</I>
+<B>mount --make-private </B><I>mountpoint</I>
+<B>mount --make-unbindable </B><I>mountpoint</I>
+</PRE>
+
+</DL>
+
+<P>
+
+
+以下のコマンドは、指定されたマウントポイント以下の
+全てのマウントのタイプを再帰的に変更する。
+<P>
+<DL COMPACT><DT><DD>
+<PRE>
+<B>mount --make-rshared </B><I>mountpoint</I>
+<B>mount --make-rslave </B><I>mountpoint</I>
+<B>mount --make-rprivate </B><I>mountpoint</I>
+<B>mount --make-runbindable </B><I>mountpoint</I>
+</PRE>
+
+</DL>
+
+<P>
+
+
+
+
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+は、<B>--make-</B>* 操作が要求された場合、
+<B><A HREF="../man5/fstab.5.html">fstab</A></B>(5)
+
+を読まない。
+全ての必要な情報はコマンドラインで指定しなければならない。
+<P>
+
+
+
+
+Linux カーネルは、1 回の
+<B><A HREF="../man2/mount.2.html">mount</A></B>(2)
+
+システムコールで複数の伝搬フラグを変更できない。
+そして、このフラグは他のマウントオプションや操作と組み合わせることが
+できない。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+util-linux 2.23 以降で <B>mount</B> コマンドは、
+1 回の <A HREF="../man8/mount.8.html">mount</A>(8) 呼び出しで、
+より多くの伝搬オプション (トポロジー) 変更が可能で、
+他のマウントオプションと一緒に指定できる。
+この機能は「実験的」である。
+伝搬フラグは、先に呼び出されたマウント操作が成功した場合、
+追加の <B><A HREF="../man2/mount.2.html">mount</A></B>(2) システムコールを呼び出すことで適用できる。
+この利用方法はアトミックではない点に注意すること。
+伝搬フラグを
+<B><A HREF="../man5/fstab.5.html">fstab</A></B>(5)
+
+でマウントオプション
+(<B>private</B>,
+
+<B>slave</B>,
+
+<B>shared</B>,
+
+<B>unbindable</B>,
+
+<B>rprivate</B>,
+
+<B>rslave</B>,
+
+<B>rshared</B>,
+
+<B>runbindable</B>)
+
+を指定できる。
+<P>
+
+例:
+<P>
+<DL COMPACT><DT><DD>
+<PRE>
+<B>mount --make-private --make-unbindable /dev/sda1 /foo</B>
+</PRE>
+
+</DL>
+
+<P>
+
+は、以下と同じである:
+<P>
+<DL COMPACT><DT><DD>
+<PRE>
+<B>mount /dev/sda1 /foox</B>
+<B>mount --make-private /foo</B>
+<B>mount --make-unbindable /foo</B>
+</PRE>
+
+</DL>
+
+<P>
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>コマンドラインオプション</H2>
+
+
+
+
+
+
+
+
+
+
+
+<B>mount</B>
+
+の実行時に用いられるオプションは以下のようにして決定される。
+まずそのファイルシステムに特有のオプションが
+<I>fstab</I>
+
+中の対応する行から抽出される。
+次にコマンドラインの
+<B>-o</B>
+
+引き数によって指定されたオプション、最後に
+<B>-r</B> または <B>-w</B>
+
+オプションが指定されている場合には、それらが適用される。
+<P>
+
+
+
+コマンド <B>mount</B> は、<B>/sbin/mount.</B><I>suffix</I> マウントヘルパーに
+全てのオプションを渡すわけではない。
+<B>mount</B> とマウントヘルパーのインタフェースは、
+以下の<B>外部ヘルパー</B>のセクションで記載されている。
+<P>
+
+
+
+<B>mount</B>
+
+コマンドで利用できるコマンドラインオプションは以下の通り:
+<DL COMPACT>
+<DT><B>-a</B>,<B> --all</B>
+
+<DD>
+
+
+
+
+
+
+<I>fstab</I>
+
+に記載されている (指定したタイプの) ファイルシステムを
+(<B>noauto</B>
+
+キーワードが含まれている行を除き) すべてマウントする。
+ファイルシステムは
+<I>fstab</I>
+
+の順番に従ってマウントされる。
+
+
+
+
+mount コマンドは、ファイルシステムのマウント元とマウント先
+(加えて、bind マウントまたは btrfs についてはファイルシステムのルート) を比較し、
+既にマウントされているファイルシステムを検知する。
+既にマウントされているファイルシステムのカーネルテーブルは、
+<B>mount --all</B> でキャッシュされる。
+これは、複製された fstab エントリがマウントされるという意味である。
+<P>
+
+
+
+オプション <B>--all</B> は、再マウント操作でも使うことができる。
+この場合、全てのフィルタ (<B>-t</B> と <B>-O</B>) は、
+既にマウントされているファイルシステムのテーブルに適用される。
+<P>
+
+
+
+<B>mount -a</B> を
+<I>fstab</I>
+
+のチェックに使うのは、良くない方法である点に注意すること。
+推奨される方法は、<B>findmnt --verify</B> を使うことである。
+<DT><B>-B</B>,<B> --bind</B>
+
+<DD>
+Remount a subtree somewhere else (so that its contents are available
+in both places).  See above, under <B>Bind mounts</B>.
+<DT><B>-c</B>,<B> --no-canonicalize</B>
+
+<DD>
+Don't canonicalize paths.  The mount command canonicalizes all paths
+(from command line or fstab) by default.  This option can be used
+together with the
+<B>-f</B>
+
+flag for already canonicalized absolute paths.  The option is designed for mount
+helpers which call <B>mount -i</B>.  It is strongly recommended to not use this
+command-line option for normal mount operations.
+<P>
+Note that <B><A HREF="../man8/mount.8.html">mount</A></B>(8) does not pass this option to the
+<B>/sbin/mount.</B><I>type</I> helpers.
+<DT><B>-F</B>,<B> --fork</B>
+
+<DD>
+
+
+
+
+
+
+
+
+
+
+
+(<B>-a</B>
+
+とともに用いる)
+それぞれのデバイスごとに fork して新しい <B>mount</B> プロセスを生成する。
+別々のデバイス、別々の NFS サーバに対するマウントを並行して行うことになる。
+利点は動作が高速になること、
+また NFS タイムアウトが並行して計測されることである。
+逆に欠点としては、マウントの順序が規定されないことである。
+したがって、
+<I>/usr</I>
+
+と
+<I>/usr/spool</I>
+
+の両方を同時にマウントするときには、このオプションを用いることは
+できない。
+<DT><B>-f, --fake</B><DD>
+
+
+
+
+
+
+
+
+
+
+実際のシステムコール以外を除いてすべての動作をする。
+もうちょっとわかりやすく言うと、
+ファイルシステムのマウント動作を「行うふり」をする。
+このオプションは
+<B>-v</B>
+
+フラグとともに用いると便利で、
+<B>mount</B>
+
+コマンドが行おうとすることを確認できる。
+また以前に <B>-n</B> オプションを用いてマウントされたデバイスのエントリーを
+<I>/etc/mtab</I>
+
+に書き込む目的にも用いることができる。
+The <B>-f</B> option
+checks for an existing record in /etc/mtab and fails when the record already
+exists (with a regular non-fake mount, this check is done by the kernel).
+<DT><B>-i, --internal-only</B><DD>
+
+<B>/sbin/mount.</B><I>filesystem</I> ヘルパがあっても、呼び出さない。
+<DT><B>-L</B>,<B> --label </B><I>label</I>
+
+<DD>
+Mount the partition that has the specified
+<I>label</I>.
+
+<DT><B>-l</B>,<B> --show-labels</B>
+
+<DD>
+
+
+
+
+
+
+
+
+ラベルを mount の出力に追加する。
+これを行うには、<B>mount</B> にディスクデバイスの読み取り権限が必要である
+(つまり set-user-ID root されている必要がある)。
+このような ext2, ext3, ext4 のラベルを設定するには
+<B><A HREF="../man8/e2label.8.html">e2label</A></B>(8)
+
+ユーティリティを用いればよい。
+また、XFS のラベルを設定するには
+<B><A HREF="../man8/xfs_admin.8.html">xfs_admin</A></B>(8)
+
+を用いればよい。
+reiserfs のラベルを設定するには
+<B><A HREF="../man8/reiserfstune.8.html">reiserfstune</A></B>(8)
+
+を用いればよい。
+<DT><B>-M</B>,<B> --move</B>
+
+<DD>
+Move a subtree to some other place.  See above, the subsection
+<B>The move operation</B>.
+<DT><B>-n</B>,<B> --no-mtab</B>
+
+<DD>
+
+
+
+
+
+マウントの際に
+<I>/etc/mtab</I>
+
+に書き込みを行わない。
+これが必要になるのは、例えば
+<I>/etc</I>
+
+がリードオンリーのファイルシステムの場合などである。
+<DT><B>-N</B>,<B> --namespace </B><I>ns</I>
+
+<DD>
+Perform mount in namespace specified by <I>ns</I>.
+<I>ns</I> is either PID of process running in that namespace
+or special file representing that namespace.
+<P>
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+switches to the namespace when it reads /etc/fstab, writes /etc/mtab (or writes to /run/mount) and calls
+<B><A HREF="../man2/mount.2.html">mount</A></B>(2)
+
+system call, otherwise it runs in the original namespace. It means that the target namespace does not have
+to contain any libraries or another requirements necessary to execute
+<B><A HREF="../man2/mount.2.html">mount</A></B>(2)
+
+command.
+<P>
+See <B><A HREF="../man7/namespaces.7.html">namespaces</A></B>(7) for more information.
+<DT><B>-O</B>,<B> --test-opts </B><I>opts</I>
+
+<DD>
+Limit the set of filesystems to which the
+<B>-a</B>
+
+option applies.  In this regard it is like the
+<B>-t</B>
+
+option except that
+<B>-O</B>
+
+is useless without
+<B>-a</B>.
+
+For example, the command:
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+<P>
+<B>mount -a -O no_netdev</B>
+
+<P>
+</DL>
+
+mounts all filesystems except those which have the option
+<I>_netdev</I>
+
+specified in the options field in the
+<I>/etc/fstab</I>
+
+file.
+<P>
+It is different from
+<B>-t</B>
+
+in that each option is matched exactly; a leading
+<B>no</B>
+
+at the beginning of one option does not negate the rest.
+<P>
+The
+<B>-t</B>
+
+and
+<B>-O</B>
+
+options are cumulative in effect; that is, the command
+<DL COMPACT><DT><DD>
+<P>
+<B>mount -a -t ext2 -O _netdev</B>
+
+<P>
+</DL>
+
+mounts all ext2 filesystems with the _netdev option, not all filesystems
+that are either ext2 or have the _netdev option specified.
+</DL>
+
+<DT><B>-o</B>,<B> --options </B><I>opts</I>
+
+<DD>
+Use the specified mount options.  The <I>opts</I> argument is
+a comma-separated list.  For example:
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+<P>
+<B>mount LABEL=mydisk -o noatime,nodev,nosuid</B>
+
+<P>
+</DL>
+
+<P>
+For more details, see the
+<B>FILESYSTEM-INDEPENDENT MOUNT OPTIONS</B>
+
+and
+<B>FILESYSTEM-SPECIFIC MOUNT OPTIONS</B>
+
+sections.
+</DL>
+
+<P>
+<DT><B>--options-mode </B><I>mode</I>
+
+<DD>
+Controls how to combine options from fstab/mtab with options from command line.
+<I>mode</I> can be one of
+<B>ignore</B>, <B>append</B>, <B>prepend</B> or <B>replace</B>.
+
+For example <B>append</B> means that options from fstab are appended to options from command line.
+Default value is <B>prepend</B> -- it means command line options are evaluated after fstab options.
+Note that the last option wins if there are conflicting ones.
+<P>
+<DT><B>--options-source </B><I>source</I>
+
+<DD>
+Source of default options.
+<I>source</I> is comma separated list of
+<B>fstab</B>, <B>mtab</B> and <B>disable</B>.
+
+<B>disable</B> disables
+<B>fstab</B> and <B>mtab</B>
+
+and disables <B>--options-source-force</B>.
+Default value is <B>fstab,mtab</B>.
+<P>
+<DT><B>--options-source-force</B>
+
+<DD>
+Use options from fstab/mtab even if both <I>device</I> and <I>dir</I> are specified.
+<P>
+<DT><B>-R</B>,<B> --rbind</B>
+
+<DD>
+Remount a subtree and all possible submounts somewhere else (so that its
+contents are available in both places).  See above, the subsection
+<B>Bind mounts</B>.
+<DT><B>-r</B>,<B> --read-only</B>
+
+<DD>
+Mount the filesystem read-only.  A synonym is
+<B>-o ro</B>.
+
+<P>
+Note that, depending on the filesystem type, state and kernel behavior, the
+system may still write to the device.  For example, ext3 and ext4 will replay the
+journal if the filesystem is dirty.  To prevent this kind of write access, you
+may want to mount an ext3 or ext4 filesystem with the <B>ro,noload</B> mount
+options or set the block device itself to read-only mode, see the
+<B><A HREF="../man8/blockdev.8.html">blockdev</A></B>(8)
+
+command.
+<DT><B>-s</B>
+
+<DD>
+Tolerate sloppy mount options rather than failing.  This will ignore mount
+options not supported by a filesystem type.  Not all filesystems support this
+option.  Currently it's supported by the <B>mount.nfs</B> mount helper only.
+<DT><B>--source</B><I> device</I>
+
+<DD>
+If only one argument for the mount command is given then the argument might be
+interpreted as target (mountpoint) or source (device).  This option allows to
+explicitly define that the argument is the mount source.
+<DT><B>--target</B><I> directory</I>
+
+<DD>
+If only one argument for the mount command is given then the argument might be
+interpreted as target (mountpoint) or source (device).  This option allows to
+explicitly define that the argument is the mount target.
+<DT><B>-T</B>,<B> --fstab </B><I>path</I>
+
+<DD>
+Specifies an alternative fstab file.  If <I>path</I> is a directory then the files
+in the directory are sorted by
+<B><A HREF="../man3/strverscmp.3.html">strverscmp</A></B>(3);
+
+files that start with &quot;.&quot; or without an .fstab extension are ignored.  The option
+can be specified more than once.  This option is mostly designed for initramfs
+or chroot scripts where additional configuration is specified beyond standard
+system configuration.
+<P>
+Note that <B><A HREF="../man8/mount.8.html">mount</A></B>(8) does not pass the option <B>--fstab</B> to the
+<B>/sbin/mount.</B><I>type</I> helpers, meaning that the alternative fstab files will be
+invisible for the helpers.  This is no problem for normal mounts, but user
+(non-root) mounts always require fstab to verify the user's rights.
+<DT><DT><B>-t</B>,<B> --types </B><I>fstype</I>
+
+<DD>
+<DD>
+
+
+
+
+
+
+
+
+
+<B>-t</B>
+
+に続く引き数はファイルシステムタイプを指定するのに用いられる。
+現在サポートされているファイルシステムは動作しているカーネルに
+依存する。
+完全なファイルシステムのリストは、
+<I>/proc/filesystems</I>
+
+と
+<I>/lib/modules/$(uname -r)/kernel/fs</I>
+
+を参照すること。
+もっとも一般的なファイルシステムは、ext2, ext3, ext4,
+xfs, btrfs, vfat, sysfs, proc, nfs, cifs である。
+<P>
+The programs
+<B>mount</B>
+
+and
+<B>umount</B>
+
+support filesystem subtypes.  The subtype is defined by a '.subtype' suffix.  For
+example  'fuse.sshfs'.  It's recommended to use subtype notation rather than add
+any prefix to the mount source (for example 'sshfs#example.com' is
+deprecated).
+<P>
+
+
+
+
+
+<B>-t</B>
+
+オプションが与えられなかった場合や、
+<B>auto</B>
+
+タイプが指定された場合、
+<B>mount</B>
+
+は適切なタイプを推測する。
+
+
+
+
+
+
+
+
+
+
+
+
+<B>mount</B>
+
+はファイルシステムタイプの推測に blkid ライブラリを使う。
+このプローブに失敗すると、<B>mount</B> はファイル
+<I>/etc/filesystems</I>
+
+を読み込もうとする。
+さらにこのファイルがなければ
+<I>/proc/filesystems</I>
+
+を読み込もうとする。
+そして、読み込んだファイルにリストされているファイルシステムがテストされる。
+ただし &quot;nodev&quot; ラベルの付いているもの (すなわち
+<I>devpts</I>,
+
+<I>proc</I>,
+
+<I>nfs</I>)
+
+はテストから除かれる。
+
+
+
+
+
+
+<I>/etc/filesystems</I>
+
+が * のみの行で終わっている場合、
+<B>mount</B>
+
+はその後に
+<I>/proc/filesystems</I>
+
+を読み込む。
+While trying, all filesystem types will be
+mounted with the mount option <B>silent</B>.
+<P>
+
+
+
+
+
+
+
+<B>auto</B>
+
+タイプはフロッピーを一般ユーザーがマウントする場合に特に便利であろう。
+プローブの順序を変更したい場合
+(例えば msdos の前に vfat の試行をしたい場合や
+ext2 の前に ext3 を試行したい場合) や、
+カーネルモジュールの自動ローダを利用している場合には、
+<I>/etc/filesystems</I>
+
+ファイルを作っておくと便利である。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+複数のタイプをコンマで区切ったリストで指定することもできる。
+for option
+<B>-t</B>
+
+as well as in an
+<I>/etc/fstab</I>
+
+entry.  The list of filesystem types for option
+<B>-t</B>
+
+can be prefixed with
+<B>no</B>
+
+to specify the filesystem types on which no action should be taken.
+The prefix
+<B>no</B>
+
+has no effect when specified in an
+<I>/etc/fstab</I>
+
+entry.
+<P>
+
+
+
+
+
+プレフィックス
+<B>no</B>
+
+は
+
+オプションとともに指定すると意味がある。
+例えば以下のコマンド:
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+<P>
+<B>mount -a -t nomsdos,smbfs</B>
+
+<P>
+</DL>
+
+
+
+
+
+は
+<I>msdos</I>
+
+および
+<I>smbfs</I>
+
+を除くすべてのファイルシステムをマウントする。
+<P>
+For most types all the
+<B>mount</B>
+
+program has to do is issue a simple
+<B><A HREF="../man2/mount.2.html">mount</A></B>(2)
+
+system call, and no detailed knowledge of the filesystem type is required.
+For a few types however (like nfs, nfs4, cifs, smbfs, ncpfs) an ad hoc code is
+necessary.  The nfs, nfs4, cifs, smbfs, and ncpfs filesystems
+have a separate mount program.  In order to make it possible to
+treat all types in a uniform way, <B>mount</B> will execute the program
+<B>/sbin/mount.</B><I>type</I>
+
+(if that exists) when called with type
+<I>type</I>.
+
+Since different versions of the
+<B>smbmount</B>
+
+program have different calling conventions,
+<B>/sbin/mount.smbfs</B>
+
+may have to be a shell script that sets up the desired call.
+</DL>
+
+<DT><B>-U</B>,<B> --uuid </B><I>uuid</I>
+
+<DD>
+Mount the partition that has the specified
+<I>uuid</I>.
+
+<DT><B>-v</B>,<B> --verbose</B>
+
+<DD>
+Verbose mode.
+<DT><B>-w</B>,<B> --rw</B>,<B> --read-write</B>
+
+<DD>
+Mount the filesystem read/write. The read-write is kernel default.  A synonym is
+<B>-o rw</B>.
+
+<P>
+Note that specify <B>-w</B> on command line forces <B>mount</B> command
+to never try read-only mount on write-protected devices. The default is
+try read-only if the previous mount syscall with read-write flags failed.
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+Display version information and exit.
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+Display help text and exit.
+<P>
+</DL>
+<A NAME="lbAM">&nbsp;</A>
+<H2>FILESYSTEM-INDEPENDENT MOUNT OPTIONS</H2>
+
+
+
+
+オプションの指定を行うには、
+<B>-o</B>
+
+フラグに続けて各オプションをコンマで区切った文字列を書く。
+オプションには、
+<I>/etc/fstab</I>
+
+の中でのみ意味を持つものもある。
+<P>
+Some of these options could be enabled or disabled by default
+in the system kernel.  To check the current setting see the options
+in /proc/mounts.  Note that filesystems also have per-filesystem
+specific default mount options (see for example <B>tune2fs -l</B>
+output for extN filesystems).
+<P>
+
+
+
+
+以下のオプションはマウントされるすべての
+ファイルシステムに適用できるものである
+(但し、全てのファイルシステムがこれらのオプションを引き受けるとは限らない。
+例えば、
+<B>sync</B>
+
+オプションは現在 ext2, ext3, ext4, fat, vfat, ufs, xfs でのみ効果をもつ):
+<P>
+<DL COMPACT>
+<DT><B>async</B>
+
+<DD>
+
+
+
+そのファイルシステムに対するすべての I/O が非同期 (asynchronous) に行われる。
+(<B>sync</B>
+
+オプションも参照すること。)
+<DT><B>atime</B>
+
+<DD>
+Do not use the <B>noatime</B> feature, so the inode access time is controlled
+by kernel defaults.  See also the descriptions of the <B>relatime</B> and
+<B>strictatime</B>
+
+mount options.
+<DT><B>noatime</B>
+
+<DD>
+Do not update inode access times on this filesystem (e.g. for faster
+access on the news spool to speed up news servers).  This works for all
+inode types (directories too), so it implies <B>nodiratime</B>.
+<DT><B>auto</B>
+
+<DD>
+
+
+
+<B>-a</B>
+
+が指定されたときにマウントされる。
+<DT><B>noauto</B>
+
+<DD>
+Can only be mounted explicitly (i.e., the
+<B>-a</B>
+
+option will not cause the filesystem to be mounted).
+<DT>
+<DD>
+<B>context=</B><I>context</I>, <B>fscontext=</B><I>context</I>, <B>defcontext=</B><I>context</I>, and <B>rootcontext=</B><I>context</I>
+
+
+The
+<B>context=</B>
+
+option is useful when mounting filesystems that do not support
+extended attributes, such as a floppy or hard disk formatted with VFAT, or
+systems that are not normally running under SELinux, such as an ext3 or ext4 formatted
+<P>
+disk from a non-SELinux workstation.  You can also use
+<B>context=</B>
+
+on filesystems you do not trust, such as a floppy.  It also helps in compatibility with
+xattr-supporting filesystems on earlier 2.4.&lt;x&gt; kernel versions.  Even where
+xattrs are supported, you can save time not having to label every file by
+assigning the entire disk one security context.
+<P>
+A commonly used option for removable media is
+<B>context=system_u:object_r:removable_t</B>.
+
+<P>
+Two other options are
+<B>fscontext=</B>
+
+and
+<B>defcontext=</B>,
+
+both of which are mutually exclusive of the context option.  This means you
+can use fscontext and defcontext with each other, but neither can be used with
+context.
+<P>
+The
+<B>fscontext=</B>
+
+option works for all filesystems, regardless of their xattr
+support.  The fscontext option sets the overarching filesystem label to a
+specific security context.  This filesystem label is separate from the
+individual labels on the files.  It represents the entire filesystem for
+certain kinds of permission checks, such as during mount or file creation.
+Individual file labels are still obtained from the xattrs on the files
+themselves.  The context option actually sets the aggregate context that
+fscontext provides, in addition to supplying the same label for individual
+files.
+<P>
+You can set the default security context for unlabeled files using
+<B>defcontext=</B>
+
+option.  This overrides the value set for unlabeled files in the policy and requires a
+filesystem that supports xattr labeling.
+<P>
+The
+<B>rootcontext=</B>
+
+option allows you to explicitly label the root inode of a FS being mounted
+before that FS or inode becomes visible to userspace.  This was found to be
+useful for things like stateless linux.
+<P>
+Note that the kernel rejects any remount request that includes the context
+option, <B>even</B> when unchanged from the current context.
+<P>
+<B>Warning: the </B><I>context</I> value might contain commas,
+
+in which case the value has to be properly quoted, otherwise
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+will interpret the comma as a separator between mount options.  Don't forget that
+the shell strips off quotes and thus
+<B>double quoting is required</B>.
+
+For example:
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+<P>
+<PRE>
+<B>mount -t tmpfs none /mnt -o \</B>
+<B>&nbsp;&nbsp;'context=system_u:object_r:tmp_t:s0:c127,c456,noexec'</B>
+</PRE>
+
+<P>
+</DL>
+
+For more details, see
+<B><A HREF="../man8/selinux.8.html">selinux</A></B>(8).
+
+</DL>
+
+<P>
+<DT><B>defaults</B>
+
+<DD>
+
+
+デフォルトのオプション:
+<B>rw</B>, <B>suid</B>, <B>dev</B>, <B>exec</B>, <B>auto</B>, <B>nouser</B>, <B>async</B>
+
+を用いる。
+<P>
+Note that the real set of all default mount options depends on kernel
+and filesystem type.  See the beginning of this section for more details.
+<DT><B>dev</B>
+
+<DD>
+
+ファイルシステム上の
+キャラクタ・スペシャル・デバイスや
+ブロック・スペシャル・デバイスを
+利用できるようにする。
+<DT><B>nodev</B>
+
+<DD>
+Do not interpret character or block special devices on the file
+system.
+<DT><B>diratime</B>
+
+<DD>
+Update directory inode access times on this filesystem.  This is the default.
+(This option is ignored when <B>noatime</B> is set.)
+<DT><B>nodiratime</B>
+
+<DD>
+Do not update directory inode access times on this filesystem.
+(This option is implied when <B>noatime</B> is set.)
+<DT><B>dirsync</B>
+
+<DD>
+All directory updates within the filesystem should be done synchronously.
+This affects the following system calls: creat, link, unlink, symlink,
+mkdir, rmdir, mknod and rename.
+<DT><B>exec</B>
+
+<DD>
+
+バイナリの実行を許可する。
+<DT><B>noexec</B>
+
+<DD>
+Do not permit direct execution of any binaries on the mounted filesystem.
+<DT><B>group</B>
+
+<DD>
+
+
+通常のユーザーの属するグループのうちの 1 つが
+デバイスのグループとマッチした場合に、
+そのユーザーがファイルシステムをマウントするのを許可する。
+
+
+
+
+このオプションはオプション
+<B>nosuid</B> と <B>nodev</B>
+
+を暗黙のうちに指定する
+(ただし、オプション行で
+<B>group,dev,suid</B>
+
+のようにして、その後のオプションで上書きしない限り)。
+<DT><B>iversion</B>
+
+<DD>
+Every time the inode is modified, the i_version field will be incremented.
+<DT><B>noiversion</B>
+
+<DD>
+Do not increment the i_version inode field.
+<DT><B>mand</B>
+
+<DD>
+
+
+このファイルシステム上での強制 (mandatory) ロックを許可する。
+<B><A HREF="../man2/fcntl.2.html">fcntl</A></B>(2)
+
+を参照すること。
+<DT><B>nomand</B>
+
+<DD>
+Do not allow mandatory locks on this filesystem.
+<DT><B>_netdev</B>
+
+<DD>
+
+
+
+ネットワークアクセスが必要なデバイス上にあるファイルシステム
+(システムでネットワークが使用可能になるまでは、
+ファイルシステムをマウントさせないために使われる)。
+<DT><B>nofail</B>
+
+<DD>
+Do not report errors for this device if it does not exist.
+<DT><B>relatime</B>
+
+<DD>
+Update inode access times relative to modify or change time.  Access
+time is only updated if the previous access time was earlier than the
+current modify or change time.  (Similar to <B>noatime</B>, but it doesn't
+break <B>mutt</B> or other applications that need to know if a file has been
+read since the last time it was modified.)
+<P>
+Since Linux 2.6.30, the kernel defaults to the behavior provided by this
+option (unless
+<B>noatime</B>
+
+was specified), and the
+<B>strictatime</B>
+
+option is required to obtain traditional semantics.  In addition, since Linux
+2.6.30, the file's last access time is always updated if it is more than 1
+day old.
+<DT><B>norelatime</B>
+
+<DD>
+Do not use the
+<B>relatime</B>
+
+feature.  See also the
+<B>strictatime</B>
+
+mount option.
+<DT><B>strictatime</B>
+
+<DD>
+Allows to explicitly request full atime updates.  This makes it
+possible for the kernel to default to
+<B>relatime</B>
+
+or
+<B>noatime</B>
+
+but still allow userspace to override it.  For more details about the default
+system mount options see /proc/mounts.
+<DT><B>nostrictatime</B>
+
+<DD>
+Use the kernel's default behavior for inode access time updates.
+<DT><B>lazytime</B>
+
+<DD>
+Only update times (atime, mtime, ctime) on the in-memory version of the file inode.
+<P>
+This mount option significantly reduces writes to the inode table for
+workloads that perform frequent random writes to preallocated files.
+<P>
+The on-disk timestamps are updated only when:
+<P>
+<DL COMPACT><DT><DD>
+- the inode needs to be updated for some change unrelated to file timestamps
+<P>
+- the application employs
+<B><A HREF="../man2/fsync.2.html">fsync</A></B>(2),
+
+<B><A HREF="../man2/syncfs.2.html">syncfs</A></B>(2),
+
+or
+<B><A HREF="../man2/sync.2.html">sync</A></B>(2)
+
+<P>
+- an undeleted inode is evicted from memory
+<P>
+- more than 24 hours have passed since the i-node was written to disk.
+</DL>
+
+<P>
+<DT><B>nolazytime</B>
+
+<DD>
+Do not use the lazytime feature.
+<DT><B>suid</B>
+
+<DD>
+Honor set-user-ID and set-group-ID bits or file capabilities when
+executing programs from this filesystem.
+<DT><B>nosuid</B>
+
+<DD>
+Do not honor set-user-ID and set-group-ID bits or file capabilities when
+executing programs from this filesystem.
+<DT><B>silent</B>
+
+<DD>
+Turn on the silent flag.
+<DT><B>loud</B>
+
+<DD>
+Turn off the silent flag.
+<DT><B>owner</B>
+
+<DD>
+
+
+通常のユーザーがデバイスの所有者とマッチした場合に、
+そのユーザーがファイルシステムをマウントするのを許可する。
+
+
+
+
+このオプションはオプション
+<B>nosuid</B> と <B>nodev</B>
+
+を暗黙のうちに指定する
+(ただし、オプション行で
+<B>owner,dev,suid</B>
+
+のようにして、その後のオプションで上書きしない限り)。
+<DT><B>remount</B>
+
+<DD>
+
+
+
+すでにマウントされているファイルシステムを再マウントしようとする。
+これは通常ファイルシステムのマウントフラグを変更するとき
+(特にリードオンリーのファイルシステムを書き込み可能にするとき) に用いられる。
+デバイスとマウントポイントを変更しない。
+<P>
+The remount operation together with the
+<B>bind</B>
+
+flag has special semantic. See above, the subsection <B>Bind mounts</B>.
+<P>
+The remount functionality follows the standard way the mount command works
+with options from fstab.  This means that <B>mount</B> does not
+read fstab (or mtab) only when both
+<I>device</I>
+
+and
+<I>dir</I>
+
+are specified.
+<P>
+
+<B>mount -o remount,rw /dev/foo /dir</B>
+
+
+<P>
+After this call all old mount options are replaced and arbitrary stuff from
+fstab (or mtab) is ignored, except the loop= option which is internally
+generated and maintained by the mount command.
+<P>
+
+<B>mount -o remount,rw  /dir</B>
+
+
+<P>
+After this call, mount reads fstab and merges these options with
+the options from the command line (<B>-o</B>).
+If no mountpoint is found in fstab, then a remount with unspecified source is
+allowed.
+<P>
+<A HREF="../man8/mount.8.html">mount</A>(8) allows to use <B>--all</B> to remount all already mounted filesystems
+which match a specified filter (<B>-O</B> and <B>-t</B>).  For example:
+<P>
+
+<B>mount --all -o remount,ro -t vfat</B>
+
+
+<P>
+remounts all already mounted vfat filesystems in read-only mode. The each of the
+filesystems is remounted by &quot;mount -o remount,ro /dir&quot; semantic. It means the
+mount command reads fstab or mtab and merges these options with the options
+from the command line.
+<DT><B>ro</B>
+
+<DD>
+
+ファイルシステムをリードオンリーでマウントする。
+<DT><B>rw</B>
+
+<DD>
+
+ファイルシステムを読み書き可能なモードでマウントする。
+<DT><B>sync</B>
+
+<DD>
+
+
+
+そのファイルシステムに対する I/O がすべて同期的 (synchronous) に行われる。
+In the case of
+media with a limited number of write cycles
+(e.g. some flash drives), <B>sync</B> may cause life-cycle shortening.
+<DT><B>user</B>
+
+<DD>
+
+
+
+
+
+
+
+
+一般ユーザーでもファイルシステムをマウントできるようにする。
+マウントを行ったユーザーの名前が mtab (or to the private
+libmount file in /run/mount on systems without a regular mtab) に書き込まれ、
+そのユーザーがアンマウントできるようになる。
+このオプションを指定すると、同時に
+<B>noexec</B>, <B>nosuid</B>, <B>nodev</B>
+
+が指定されたことになる。
+ただし続けて指定すれば上書きは可能。
+すなわち
+<B>user,exec,dev,suid</B>
+
+のような行を指定すればよい。
+<DT><B>nouser</B>
+
+<DD>
+Forbid an ordinary user to mount the filesystem.
+This is the default; it does not imply any other options.
+<DT><B>users</B>
+
+<DD>
+
+
+
+
+
+
+even when some other ordinary user mounted it
+全てのユーザーがファイルシステムをマウント・アンマウント出来るようにする。
+このオプションを指定すると、同時に
+<B>noexec</B>, <B>nosuid</B>, <B>nodev</B>
+
+が指定されたことになる。
+ただし続けて指定すれば上書きは可能。
+すなわち
+<B>users,exec,dev,suid</B>
+
+のような行を指定すればよい。
+<DT><B>X-*</B>
+
+<DD>
+All options prefixed with &quot;X-&quot; are interpreted as comments or as userspace
+application-specific options.  These options are not stored in the user space (e.g. mtab file),
+nor sent to the mount.<I>type</I> helpers nor to the
+<B><A HREF="../man2/mount.2.html">mount</A></B>(2)
+
+system call.  The suggested format is <B>X-</B><I>appname</I>.<I>option</I>.
+<DT><B>x-*</B>
+
+<DD>
+The same as <B>X-*</B> options, but stored permanently in the user space. It
+means the options are also available for umount or another operations.  Note
+that maintain mount options in user space is tricky, because it's necessary use
+libmount based tools and there is no guarantee that the options will be always
+available (for example after a move mount operation or in unshared namespace).
+<P>
+Note that before util-linux v2.30 the x-* options have not been maintained by
+libmount and stored in user space (functionality was the same as have X-* now),
+but due to growing number of use-cases (in initrd, systemd etc.) the
+functionality have been extended to keep existing fstab configurations usable
+without a change.
+<DT><B>X-mount.mkdir</B>[<B>=</B><I>mode</I><B>]</B>
+
+<DD>
+Allow to make a target directory (mountpoint).  The optional argument
+<I>mode</I>
+
+specifies the filesystem access mode used for
+<B><A HREF="../man2/mkdir.2.html">mkdir</A></B>(2)
+
+in octal notation.  The default mode is 0755.  This functionality is supported
+only for root users.  The option is also supported as x-mount.mkdir, this notation
+is deprecated for mount.mkdir since v2.30.
+<P>
+
+</DL>
+<A NAME="lbAN">&nbsp;</A>
+<H2>ファイルシステム独自のマウントオプション</H2>
+
+You should consult the respective man page for the filesystem first.
+If you want to know what options the ext4 filesystem supports, then check the
+<B><A HREF="../man5/ext4.5.html">ext4</A></B>(5)
+
+man page.
+If that doesn't exist, you can also check the corresponding mount page like
+<B><A HREF="../man8/mount.cifs.8.html">mount.cifs</A></B>(8).
+
+Note that you might have to install the respective userland tools.
+<P>
+
+
+
+
+以下のオプションは特定のファイルシステムにのみ適用される。
+ファイルシステムの順に並べてある。
+すべて
+<B>-o</B>
+
+フラグに続けて指定する。
+<P>
+
+どのようなオプションがサポートされているかは、
+実行されているカーネルに少々依存する。
+
+
+より詳しい情報はカーネルソースのサブディレクトリ
+<I>Documentation/filesystems</I>
+
+で見つけることができる。
+<P>
+
+<A NAME="lbAO">&nbsp;</A>
+<H3>adfs のマウントオプション</H3>
+
+<DL COMPACT>
+<DT>
+<DD>
+<B>uid=</B>,<I>value</I> と <B>gid=</B>,<I>value</I>
+
+このファイルシステムのファイルの所有者とグループを設定する
+(デフォルトは uid=gid=0)。
+<DT>
+<DD>
+<B>ownmask=</B>,<I>value</I> と <B>othmask=</B>,<I>value</I>
+
+
+それぞれ ADFS の「所有者」属性と「その他」属性に対する
+パーミッションマスクを設定する
+(デフォルトはそれぞれ 0700 と 0777)。
+
+
+<I>/usr/src/linux/Documentation/filesystems/adfs.txt</I>
+
+も参照のこと。
+<P>
+
+</DL>
+<A NAME="lbAP">&nbsp;</A>
+<H3>affs のマウントオプション</H3>
+
+<DL COMPACT>
+<DT>
+<DD>
+<B>uid=</B>,<I>value</I> と <B>gid=</B>,<I>value</I>
+
+
+
+
+
+
+ファイルシステムのルートの所有者とグループを設定する
+(デフォルトは uid=gid=0。
+ただしオプション
+<B>uid</B>
+
+や
+<B>gid</B>
+
+を値なしで指定すると、カレントプロセスの UID および GID が用いられる)。
+<DT>
+<DD>
+<B>setuid=</B>,<I>value</I> と <B>setgid=</B>,<I>value</I>
+
+すべてのファイルの所有者とグループを設定する。
+<DT><B>mode=</B><I>value</I>
+
+<DD>
+
+
+
+
+
+すべてのファイルの許可属性を
+<I>value</I> &amp; 0777
+
+に設定する。
+元の許可属性は無視される。
+読み込みが許可されているディレクトリには検索許可の属性を付加する。
+この値は 8 進数で与える。
+<DT><B>protect</B>
+
+<DD>
+
+ファイルシステムの保護ビットへのいかなる変更も許可しない。
+<DT><B>usemp</B>
+
+<DD>
+
+
+
+ファイルシステムのルートの UID と GID を
+マウントポイントの UID と GID に設定する。
+ただしこの設定は最初の sync または umount の際に実行され、
+その後にこのオプションはクリアされる。変なの。
+<DT><B>verbose</B>
+
+<DD>
+
+それぞれのマウントが成功するごとにメッセージを表示する。
+<DT><B>prefix=</B><I>string</I>
+
+<DD>
+
+リンクをたどる際にボリューム名の前に用いられるプレフィックス (prefix)。
+<DT><B>volume=</B><I>string</I>
+
+<DD>
+
+シンボリックリンクをたどる際に '/' の前に用いられるプレフィックス。
+最長 30 文字。
+<DT><B>reserved=</B><I>value</I>
+
+<DD>
+
+デバイススタート時の未使用ブロックの数。デフォルトは 2。
+<DT><B>root=</B><I>value</I>
+
+<DD>
+
+ルートブロックの位置を明示的に与える。
+<DT><B>bs=</B><I>value</I>
+
+<DD>
+
+ブロックサイズを与える。有効な値は 512, 1024, 2048, 4096 のいずれか。
+<DT><B>grpquota</B>|<B>noquota</B>|<B>quota</B>|<B>usrquota</B>
+
+<DD>
+
+
+
+これらのオプションは指定可能であるが、単に無視される。
+(但し、 quota ユーティリティは
+<I>/etc/fstab</I>
+
+にこのような文字列があると反応する)
+<P>
+</DL>
+<A NAME="lbAQ">&nbsp;</A>
+<H3>Mount options for debugfs</H3>
+
+The debugfs filesystem is a pseudo filesystem, traditionally mounted on
+<I>/sys/kernel/debug</I>.
+
+
+
+As of kernel version 3.4, debugfs has the following options:
+<DL COMPACT>
+<DT><B>uid=</B><I>n</I><B>, gid=</B><I>n</I>
+
+<DD>
+Set the owner and group of the mountpoint.
+<DT><B>mode=</B><I>value</I>
+
+<DD>
+Sets the mode of the mountpoint.
+<P>
+
+</DL>
+<A NAME="lbAR">&nbsp;</A>
+<H3>devpts のマウントオプション</H3>
+
+
+
+
+
+
+
+
+
+devpts ファイルシステムは擬似ファイルシステムで、
+通例としては
+<I>/dev/pts</I>
+
+にマウントされる。プロセスは擬似端末 (pseudo terminal) を取得するために、
+<I>/dev/ptmx</I>
+
+をオープンする。
+するとそのプロセスは番号を通して擬似端末を使えるようになり、
+擬似端末のスレーブに
+<I>/dev/pts/</I>&lt;number&gt;
+
+経由でアクセスできるようになる。
+
+<DL COMPACT>
+<DT>
+<DD>
+<B>uid=</B>,<I>value</I> と <B>gid=</B>,<I>value</I>
+
+
+
+
+
+
+新たに作成される PTY の所有者と所有グループを設定する。
+何も指定しないと、作成したプロセスの UID と GID になる。
+例えば tty グループの GID が 5 であったとすると、
+<B>gid=5</B>
+
+とすれば新たに作成された PTY は tty グループに属することになる。
+<DT><B>mode=</B><I>value</I>
+
+<DD>
+
+
+
+
+
+
+
+新たに作成される PTY のモードを設定する。
+デフォルトは 0600 である。
+<B>mode=620</B>
+
+と
+<B>gid=5</B>
+
+を設定すると、新たに生成される PTY は、
+&quot;mesg y&quot; がデフォルトになる。
+<DT><B>newinstance<DD>
+Create a private instance of devpts filesystem, such that
+indices of ptys allocated in this new instance are
+independent of indices created in other instances of devpts.
+<P>
+All mounts of devpts without this
+newinstance</B>
+
+option share the same set of pty indices (i.e. legacy mode).
+Each mount of devpts with the
+<B>newinstance</B>
+
+option has a private set of pty indices.
+<P>
+This option is mainly used to support containers in the
+linux kernel.  It is implemented in linux kernel versions
+starting with 2.6.29.  Further, this mount option is valid
+only if CONFIG_DEVPTS_MULTIPLE_INSTANCES is enabled in the
+kernel configuration.
+<P>
+To use this option effectively,
+<I>/dev/ptmx</I>
+
+must be a symbolic link to
+<I>pts/ptmx.</I>
+
+See
+<I>Documentation/filesystems/devpts.txt</I>
+
+in the linux kernel source tree for details.
+<DT><B>ptmxmode=</B><I>value</I>
+
+<DD>
+<P>
+Set the mode for the new
+<I>ptmx</I>
+
+device node in the devpts filesystem.
+<P>
+With the support for multiple instances of devpts (see
+<B>newinstance</B>
+
+option above), each instance has a private
+<I>ptmx</I>
+
+node in the root of the devpts filesystem (typically
+<I>/dev/pts/ptmx</I>).
+
+<P>
+For compatibility with older versions of the kernel, the
+default mode of the new
+<I>ptmx</I>
+
+node is 0000.
+<B>ptmxmode=</B><I>value</I>
+
+specifies a more useful mode for the
+<I>ptmx</I>
+
+node and is highly recommended when the
+<B>newinstance</B>
+
+option is specified.
+<P>
+This option is only implemented in linux kernel versions
+starting with 2.6.29.  Further, this option is valid only if
+CONFIG_DEVPTS_MULTIPLE_INSTANCES is enabled in the kernel
+configuration.
+<P>
+
+</DL>
+<A NAME="lbAS">&nbsp;</A>
+<H3>fat のマウントオプション</H3>
+
+
+
+
+
+
+
+
+
+(注意:
+<I>fat</I>
+
+は独立したファイルシステムではなく、
+<I>msdos</I>,
+
+<I>umsdos</I>,
+
+<I>vfat</I>
+
+各ファイルシステムの共通部分である。)
+<DL COMPACT>
+<DT><B>blocksize=</B>{<B>512</B>|<B>1024</B>|<B>2048</B>}
+
+<DD>
+
+ブロックサイズを設定する (デフォルトは 512)。
+このオプションは古い。
+<DT>
+<DD>
+<B>uid=</B>,<I>value</I> と<B>gid=</B>,<I>value</I>
+
+
+すべてのファイルの所有者とグループを設定する
+(デフォルトはカレントプロセスの UID と GID)。
+<DT><B>umask=</B><I>value</I>
+
+<DD>
+
+
+
+
+umask を設定する (umask とは許可属性のビットマスクで、
+立て<B>ない</B>ビットを立てたもの)。
+デフォルトはカレントプロセスの umask。値は 8 進数で与える。
+<DT><B>dmask=</B><I>value</I>
+
+<DD>
+
+
+
+ディレクトリにのみ適用される umask を設定する。
+デフォルトはカレントプロセスの umask。
+値は 8 進数で与える。
+<DT><B>fmask=</B><I>value</I>
+
+<DD>
+
+
+
+通常のファイルにのみ適用される umask を設定する。
+デフォルトはカレントプロセスの umask。
+値は 8 進数で与える。
+<DT><B>allow_utime=</B><I>value</I>
+
+<DD>
+This option controls the permission check of mtime/atime.
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>20</B>
+
+<DD>
+If current process is in group of file's group ID, you can change timestamp.
+<DT><B>2</B>
+
+<DD>
+Other users can change timestamp.
+</DL>
+<P>
+
+The default is set from `dmask' option. (If the directory is writable,
+<B><A HREF="../man2/utime.2.html">utime</A></B>(2)
+
+is also allowed.  I.e. <FONT SIZE="+3">~</FONT>dmask &amp; 022)
+<P>
+Normally
+<B><A HREF="../man2/utime.2.html">utime</A></B>(2)
+
+checks current process is owner of the file, or it has
+CAP_FOWNER capability.  But FAT filesystem doesn't have UID/GID on disk, so
+normal check is too inflexible.  With this option you can relax it.
+</DL>
+
+<DT><B>check=</B><I>value</I>
+
+<DD>
+Three different levels of pickiness can be chosen:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>r</B>[<B>elaxed</B>]
+
+<DD>
+
+
+
+
+
+
+大文字と小文字を受け付け、それぞれ等価と見なす。
+ロングネームの部分は切り捨てられる
+(すなわち
+<I>verylongname.foobar</I>
+
+は
+<I>verylong.foo</I>
+
+となる)。
+スペース文字を名前のそれぞれの部分 (本体と拡張子) に用いることができる。
+<DT><B>n</B>[<B>ormal</B>]
+
+<DD>
+
+
+&quot;relaxed&quot; と似ているが、多くの特殊文字 (*, ?, &lt;, スペースなど) は
+用いることができない。デフォルト。
+<DT><B>s</B>[<B>trict</B>]
+
+<DD>
+
+
+
+&quot;normal&quot; と似ているが、名前には長い部分を含むことができない。
+また Linux では用いることができるが MS-DOS では受け入れられない特殊文字
+(+, =, など) を用いることができない。
+</DL>
+</DL>
+
+<DT><B>codepage=</B><I>value</I>
+
+<DD>
+
+
+FAT や VFAT ファイルシステムで、短いファイル名に変換するときに
+用いる文字のコードページを設定する。
+デフォルトではコードページ 437 が用いられる。
+<DT><B>conv=</B><I>mode</I>
+
+<DD>
+This option is obsolete and may fail or being ignored.
+<DT><B>cvf_format=</B><I>module</I>
+
+<DD>
+
+
+
+
+
+自動検知の結果ではなく、CVF (Compressed Volume File:
+圧縮ボリュームファイル) モジュール
+cvf_<I>module</I>
+
+を使うよう、ドライバに強制する。
+カーネルが kmod をサポートしていれば、
+cvf_format=xxx オプションとしてもオンデマンドで CVF モジュールをロードできる。
+このオプションは古い。
+<DT><B>cvf_option=</B><I>option</I>
+
+<DD>
+
+CVF モジュールに渡すオプション。
+このオプションは古い。
+<DT><B>debug</B>
+
+<DD>
+
+
+
+
+
+<I>debug</I>
+
+フラグを ON にする。
+バージョン文字とファイルシステムのパラメータが表示される
+(これらのデータはパラメータが一貫していないような場合にも表示される)。
+<DT><B>discard</B>
+
+<DD>
+If set, causes discard/TRIM commands to be issued to the block device
+when blocks are freed.  This is useful for SSD devices and
+sparse/thinly-provisioned LUNs.
+<DT><B>dos1xfloppy</B>
+
+<DD>
+If set, use a fallback default BIOS Parameter Block configuration, determined
+by backing device size.  These static parameters match defaults assumed by DOS
+1.x for 160 kiB, 180 kiB, 320 kiB, and 360 kiB floppies and floppy images.
+<DT><B>errors=</B>{<B>panic</B>|<B>continue</B>|<B>remount-ro</B>}
+
+<DD>
+Specify FAT behavior on critical errors: panic, continue without doing
+anything, or remount the partition in read-only mode (default behavior).
+<DT><B>fat=</B>{<B>12</B>|<B>16</B>|<B>32</B>}
+
+<DD>
+
+
+12 ビット fat か 16 ビット fat か 32 ビット fat かを特定する。
+これは FAT 形式の自動認識ルーチンによる設定を上書きする。
+用いる際には注意すること。
+<DT><B>iocharset=</B><I>value</I>
+
+<DD>
+
+
+
+8 ビットの文字を 16 ビットの Unicode 文字に変換する (あるいはその逆)
+ときに用いる文字セット (character set)。デフォルトは iso8859-1 である。
+長いファイル名は、ディスクには Unicode フォーマットで保存されている。
+<DT><B>nfs=</B>{<B>stale_rw</B>|<B>nostale_ro</B>}
+
+<DD>
+Enable this only if you want to export the FAT filesystem over NFS.
+<P>
+<B>stale_rw</B>:
+
+This option maintains an index (cache) of directory inodes which is used by the
+nfs-related code to improve look-ups.  Full file operations (read/write) over
+NFS are supported but with cache eviction at NFS server, this could result in
+spurious
+<B>ESTALE</B>
+
+errors.
+<P>
+<B>nostale_ro</B>:
+
+This option bases the inode number and file handle
+on the on-disk location of a file in the FAT directory entry.
+This ensures that
+<B>ESTALE</B>
+
+will not be returned after a file is
+evicted from the inode cache.  However, it means that operations
+such as rename, create and unlink could cause file handles that
+previously pointed at one file to point at a different file,
+potentially causing data corruption.  For this reason, this
+option also mounts the filesystem readonly.
+<P>
+To maintain backward compatibility, '-o nfs' is also accepted,
+defaulting to
+<B>stale_rw</B>.
+
+<DT><B>tz=UTC</B>
+
+<DD>
+This option disables the conversion of timestamps
+between local time (as used by Windows on FAT) and UTC
+(which Linux uses internally).  This is particularly
+useful when mounting devices (like digital cameras)
+that are set to UTC in order to avoid the pitfalls of
+local time.
+<DT><B>time_offset=</B><I>minutes</I>
+
+<DD>
+Set offset for conversion of timestamps from local time used by FAT to UTC.
+I.e.,
+<I>minutes</I>
+
+will be subtracted from each timestamp to convert it to UTC used
+internally by Linux.  This is useful when the time zone set in the kernel via
+<B><A HREF="../man2/settimeofday.2.html">settimeofday</A></B>(2)
+
+is not the time zone used by the filesystem.  Note
+that this option still does not provide correct time stamps in all cases in
+presence of DST - time stamps in a different DST setting will be off by one
+hour.
+<DT><B>quiet</B>
+
+<DD>
+
+
+
+
+<I>quiet</I>
+
+フラグを ON にする。
+ファイルを chown や chmod しようとしたときにもエラーを返さず、単に失敗する。
+用いる際には注意すること！
+<DT><B>rodir</B>
+
+<DD>
+FAT has the ATTR_RO (read-only) attribute.  On Windows, the ATTR_RO of the
+directory will just be ignored, and is used only by applications as a flag
+(e.g. it's set for the customized folder).
+<P>
+If you want to use ATTR_RO as read-only flag even for the directory, set this
+option.
+<DT><B>showexec</B>
+
+<DD>
+If set, the execute permission bits of the file will be allowed only if
+the extension part of the name is .EXE, .COM, or .BAT.  Not set by default.
+<DT><B>sys_immutable</B>
+
+<DD>
+If set, ATTR_SYS attribute on FAT is handled as IMMUTABLE flag on Linux.
+Not set by default.
+<DT><B>flush</B>
+
+<DD>
+If set, the filesystem will try to flush to disk more early than normal.
+Not set by default.
+<DT><B>usefree</B>
+
+<DD>
+Use the &quot;free clusters&quot; value stored on FSINFO.  It'll
+be used to determine number of free clusters without
+scanning disk.  But it's not used by default, because
+recent Windows don't update it correctly in some
+case.  If you are sure the &quot;free clusters&quot; on FSINFO is
+correct, by this option you can avoid scanning disk.
+<DT><B>dots</B>, <B>nodots</B>, <B>dotsOK=</B>[<B>yes</B>|<B>no</B>]
+
+<DD>
+
+
+FAT ファイルシステムに Unix または DOS のしきたりを
+強制しようとするさまざまな試み。
+おそらくは用いるべきでない。
+<P>
+
+</DL>
+<A NAME="lbAT">&nbsp;</A>
+<H3>hfs のマウントオプション</H3>
+
+<DL COMPACT>
+<DT><B>creator=</B><I>cccc</I><B>, type=</B><I>cccc</I>
+
+<DD>
+
+
+新しいファイルを作成する際に、
+MacOS の finder で表示されるクリエータとタイプを設定する。
+デフォルト値は '????' である。
+<DT><B>uid=</B><I>n</I><B>, gid=</B><I>n</I>
+
+<DD>
+
+
+すべてのファイルの所有者とグループを設定する
+(デフォルトはカレントプロセスの UID と GID)。
+<DT><B>dir_umask=</B><I>n</I><B>, file_umask=</B><I>n</I><B>, umask=</B><I>n</I>
+
+<DD>
+
+
+全てのディレクトリ・全ての通常ファイル・
+全てのファイルとディレクトリに対して使用される umask を設定する。
+デフォルトはカレントプロセスの umask である。
+<DT><B>session=</B><I>n</I>
+
+<DD>
+
+
+
+マウントする CDROM のセッションを選択する。
+デフォルトでは CDROM ドライバに決定を任せる。
+下層にあるデバイスが CDROM でない場合、このオプションは失敗する。
+<DT><B>part=</B><I>n</I>
+
+<DD>
+
+
+
+デバイスのパーティション番号 n を選択する。
+CDROM に対してのみ意味を持つ。
+デフォルトではパーティションテーブルを全く解釈しない。
+<DT><B>quiet</B>
+
+<DD>
+
+不正なマウントオプションに対して苦情を出さない。
+<P>
+
+</DL>
+<A NAME="lbAU">&nbsp;</A>
+<H3>hpfs のマウントオプション</H3>
+
+<DL COMPACT>
+<DT>
+<DD>
+<B>uid=</B>,<I>value</I> と <B>gid=</B>,<I>value</I>
+
+
+すべてのファイルの所有者とグループを設定する
+(デフォルトはカレントプロセスの UID と GID)。
+<DT><B>umask=</B><I>value</I>
+
+<DD>
+
+
+
+
+umask を設定する (umask とは許可属性のビットマスクで、立って
+<B>いない</B>
+
+ビットを立てたもの)。
+デフォルトはカレントプロセスの umask。
+値は 8 進数で与える。
+<DT><B>case=</B>{<B>lower</B>|<B>asis</B>}
+
+<DD>
+
+
+
+すべてのファイルのファイル名を小文字に変換するか、
+あるいはそのままにするかを指定する
+(デフォルトは
+<B>case=lower</B>)
+
+<DT><B>conv=</B><I>mode</I>
+
+<DD>
+This option is obsolete and may fail or being ignored.
+<DT><B>nocheck</B>
+
+<DD>
+
+ファイルシステムの整合性チェックに失敗しても、マウントを中断しない。
+<P>
+
+</DL>
+<A NAME="lbAV">&nbsp;</A>
+<H3>iso9660 のマウントオプション</H3>
+
+
+
+
+
+ISO 9660 は CD-ROM で使われているファイルシステム構造を記述している。
+(このファイルシステムタイプは DVD で使われていることもある。
+<I>udf</I>
+
+ファイルシステムも参照すること。)
+<P>
+
+
+
+
+
+
+<I>iso9660</I>
+
+における通常のファイル名は 8.3 形式である
+(すなわちファイル名の長さに関しては DOS と同じ制限)。
+またすべての文字は大文字でなければならない。
+また所有者や保護属性、リンク数、ブロックデバイスか
+キャラクタデバイスかなどを表すフィールドも存在しない。
+<P>
+
+
+
+
+
+Rock Ridge は iso9660 の拡張で、上に示した UNIX 的機能をすべて与える。
+基本的にはそれぞれのディレクトリレコードを拡張して、
+付加的な情報を与えるものである。
+Rock Ridge が用いられると、ファイルシステムは通常の 
+UNIX ファイルシステムとは区別できなくなる
+(もちろんリードオンリーであることを除いて、だが)。
+<DL COMPACT>
+<DT><B>norock</B>
+
+<DD>
+
+
+Rock Ridge 拡張が利用できる場合でもこれを無効にする。
+<B>map</B>
+
+も参照のこと。
+<DT><B>nojoliet</B>
+
+<DD>
+
+
+Microsoft Joliet 拡張が利用できる場合でもこれを無効にする。
+<B>map</B>
+
+も参照のこと。
+<DT><B>check=r[elaxed]</B> / <B>check=s[trict]</B>
+
+<DD>
+
+
+
+
+
+
+
+
+
+<B>check=relaxed</B>
+
+が指定されると、ファイル名はまず小文字に変換されてから照合される。
+これは
+<B>norock</B>
+
+および
+<B>map=normal</B>
+
+とともに用いた場合にだけ意味がある。
+(デフォルトは
+<B>check=strict</B>。)
+
+<DT>
+<DD>
+<B>uid=</B>,<I>value</I> と <B>gid=</B>,<I>value</I>
+
+
+
+
+ファイルシステム中のすべてのファイルのユーザー id、
+グループ id を設定する。
+Rock Ridge 拡張で指定されている情報を上書きできる。
+デフォルトは
+<B>uid=0,gid=0</B>。
+
+<DT><B>map=</B>{<B>n</B>[<B>ormal</B>]|<B>o</B>[<B>ff</B>]|<B>a</B>[<B>corn</B>]}
+
+<DD>
+
+
+
+
+
+
+
+
+Rock Ridge 拡張がされていないボリュームに対して normal が指定されると、
+ファイル名の大文字が小文字の ASCII にマップされ、
+最後の `;1' は削除され、`;' はすべて `.' に変換される。
+<B>map=off</B>
+
+が指定されると、ファイル名の変換は行わない。
+<B>norock</B>を見よ。
+
+デフォルトは
+<B>map=normal</B>。
+
+
+
+
+
+<B>map=acorn</B>
+
+は
+<B>map=normal</B>
+
+と似ているが、Acorn 拡張があればそれを適用する。
+<DT><B>mode=</B><I>value</I>
+
+<DD>
+
+
+
+Rock Ridge 拡張がされていないボリュームに対して、
+すべてのファイルのモードを指定された値にする。
+(デフォルトは、すべてのユーザーに対する読み込みと実行属性。)
+8 進数は 0 で始める必要がある。
+<DT><B>unhide</B>
+
+<DD>
+
+hidden 属性のファイルや、それに関連付けられたファイルも表示する。
+
+
+(通常のファイルがそれに関連付けられたファイルまたは hidden 属性のファイルと
+同じファイル名である場合、通常のファイルはアクセスできなくなる。)
+<DT><B>block=</B>{<B>512</B>|<B>1024</B>|<B>2048</B>}
+
+<DD>
+
+
+
+ブロックサイズを指定する。デフォルトは
+<B>block=1024</B>。
+
+<DT><B>conv=</B><I>mode</I>
+
+<DD>
+This option is obsolete and may fail or being ignored.
+<DT><B>cruft</B>
+
+<DD>
+
+
+
+ファイルサイズの上位バイトがゴミを含んでいる場合、
+このオプションを指定することで上位バイトを無視できる。
+このオプションを指定すると、ファイルの大きさは 16&nbsp;MB に制限される。
+<DT><B>session=</B><I>x</I>
+
+<DD>
+
+マルチセッション CD でのセッション数を選択する。
+<DT><B>sbsector=</B><I>xxx</I>
+
+<DD>
+
+セッションをセクタ xxx から始める。
+</DL>
+<P>
+
+
+
+以下のオプションは vfat のものと同じで、
+Microsoft Joliet 拡張でエンコードされた
+ディスクを使うときにしか意味がない。
+<DL COMPACT>
+<DT><B>iocharset=</B><I>value</I>
+
+<DD>
+
+
+CD 上の 16 ビットの Unicode 文字を
+8 ビットの文字に変換するときに用いる文字セット。
+デフォルトは iso8859-1 である。
+<DT><B>utf8</B>
+
+<DD>
+
+CD 上の 16 ビットの Unicode 文字を UTF-8 に変換する。
+<P>
+
+</DL>
+<A NAME="lbAW">&nbsp;</A>
+<H3>jfs のマウントオプション</H3>
+
+<DL COMPACT>
+<DT><B>iocharset=</B><I>name</I>
+
+<DD>
+
+
+
+
+
+
+
+Unicode から ASCII に変換する際に使う文字セット。
+デフォルトでは変換を行わない。
+UTF8 変換を行う場合は、
+<B>iocharset=utf8</B>
+
+を使うこと。
+これを行うには、カーネルの
+<I>.config</I>
+
+ファイルに CONFIG_NLS_UTF8 が設定されている必要がある。
+<DT><B>resize=</B><I>value</I>
+
+<DD>
+
+
+
+
+
+
+ボリュームを
+<I>value</I>
+
+ブロックに変更する。
+JFS ではボリュームを増やすことのみがサポートされており、
+減らすことはサポートされていない。
+ボリュームが読み書き可能でマウントされている場合、
+このオプションは再マウントの間のみ有効である。
+<B>resize</B>
+
+キーワードに値を指定しないと、
+ボリュームはパーティションの最大サイズまで増やされる。
+<DT><B>nointegrity</B>
+
+<DD>
+
+
+
+ジャーナルに書き込まない。
+このオプションの主な目的は、
+バックアップメディアからボリュームを復旧する際に、
+性能の向上を可能にすることである。
+システムが異常終了した場合、ボリュームの完全性は保証されない。
+<DT><B>integrity</B>
+
+<DD>
+
+
+
+
+デフォルト。
+メタデータの変更をジャーナルに記録する。
+以前に
+<B>nointegrity</B>
+
+オプションが指定されたボリュームを通常の状態に戻すために
+再マウントするときは、このオプションを使用すること。
+<DT><B>errors=</B>{<B>continue</B>|<B>remount-ro</B>|<B>panic</B>}
+
+<DD>
+
+
+
+エラーが起こったときの振る舞いを指定する。
+(エラーを無視し、ファイルシステムに問題があることを記録だけして続ける /
+ファイルシステムをリードオンリーでマウントしなおす /
+パニックを起こしてシステムを停止する)
+<DT><B>noquota</B>|<B>quota</B>|<B>usrquota</B>|<B>grpquota</B>
+
+<DD>
+
+これらのオプションは指定可能であるが、単に無視される。
+<P>
+
+</DL>
+<A NAME="lbAX">&nbsp;</A>
+<H3>msdos のマウントオプション</H3>
+
+
+
+
+
+
+
+fat のマウントオプションを見よ。
+<I>msdos</I>
+
+ファイルシステムに不整合が発見されるとエラーが報告され、
+ファイルシステムはリードオンリーとなる。
+再マウントすることによって書き込み可能にすることができる。
+<P>
+
+<A NAME="lbAY">&nbsp;</A>
+<H3>ncpfs のマウントオプション</H3>
+
+
+
+
+
+
+
+
+
+
+<I>nfs</I> と同様に、<I>ncpfs</I>
+
+の実装では mount システムコールの際にバイナリの引き数
+(<I>struct ncp_mount_data</I>)
+
+を用いる。
+この引き数は
+<B><A HREF="../man8/ncpmount.8.html">ncpmount</A></B>(8)
+
+によって渡すことができる。
+現在のバージョンの
+<B>mount</B>
+
+(2.12) は ncpfs を扱うことができない。
+<P>
+
+<A NAME="lbAZ">&nbsp;</A>
+<H3>ntfs のマウントオプション</H3>
+
+<DL COMPACT>
+<DT><B>iocharset=</B><I>name</I>
+
+<DD>
+
+
+
+ファイル名を返すときに用いる文字セット。
+VFAT とは異なり、NTFS は変換できない文字を含む名前を抑制する。
+
+このオプションは推奨されない。
+<DT><B>nls=</B><I>name</I>
+
+<DD>
+
+
+以前は
+<I>iocharset</I>
+
+という名前であったオプションの新しい名前。
+<DT><B>utf8</B>
+
+<DD>
+
+ファイル名の変換に UTF-8 を用いる。
+<DT><B>uni_xlate=</B>{<B>0</B>|<B>1</B>|<B>2</B>}
+
+<DD>
+
+
+
+
+
+0 (または `no' または `false') とすると、
+不明な Unicode 文字に対してエスケープシーケンスを使わない。
+1 (または `yes' または `true') または 2 とすると、
+&quot;:&quot; で始まる VFAT スタイルの 4 バイトのエスケープシーケンスを用いる。
+2 の場合は、もとのファイル名をリトルエンディアンとみなしてエンコードする。
+1 の場合は、もとのファイル名をバイト順が入れ換えられた
+ビッグエンディアンとみなしてエンコードする。
+<DT><B>posix=[0|1]</B>
+
+<DD>
+
+
+
+有効になっている (posix=1) と、ファイルシステムは大文字小文字を区別する。
+この場合には 8.3 形式の別名がハードリンクとして実現される。
+このオプションは古い。
+<DT>
+<DD>
+<B>uid=</B>,<I>value</I>, <B>gid=</B>,<I>value</I>, <B>umask=</B>,<I>value</I>
+
+
+
+ファイルシステムにあるファイルの許可属性を設定する。
+umask の値は 8 進数で指定する。
+デフォルトではファイルは root が所有し、
+他のユーザーからは読み取り不可になっている。
+<P>
+</DL>
+<A NAME="lbBA">&nbsp;</A>
+<H3>Mount options for overlay</H3>
+
+Since Linux 3.18 the overlay pseudo filesystem implements a union mount for
+other filesystems.
+<P>
+An overlay filesystem combines two filesystems - an <B>upper</B> filesystem and
+a <B>lower</B> filesystem.  When a name exists in both filesystems, the object
+in the upper filesystem is visible while the object in the lower filesystem is
+either hidden or, in the case of directories, merged with the upper object.
+<P>
+The lower filesystem can be any filesystem supported by Linux and does not need
+to be writable.  The lower filesystem can even be another overlayfs.  The upper
+filesystem will normally be writable and if it is it must support the creation
+of trusted.* extended attributes, and must provide a valid d_type in readdir
+responses, so NFS is not suitable.
+<P>
+A read-only overlay of two read-only filesystems may use any filesystem type.
+The options <B>lowerdir</B> and <B>upperdir</B> are combined into a merged
+directory by using:
+<P>
+<DL COMPACT><DT><DD>
+<BR>
+
+<PRE>
+<B>mount -t overlay  overlay  \</B>
+<B>  -olowerdir=/lower,upperdir=/upper,workdir=/work  /merged</B>
+</PRE>
+
+<BR>
+
+</DL>
+
+<P>
+<DL COMPACT>
+<DT><B>lowerdir=</B><I>directory</I>
+
+<DD>
+Any filesystem, does not need to be on a writable filesystem.
+<DT><B>upperdir=</B><I>directory</I>
+
+<DD>
+The upperdir is normally on a writable filesystem.
+<DT><B>workdir=</B><I>directory</I>
+
+<DD>
+The workdir needs to be an empty directory on the same filesystem as upperdir.
+<P>
+
+</DL>
+<A NAME="lbBB">&nbsp;</A>
+<H3>reiserfs のマウントオプション</H3>
+
+
+reiserfs はジャーナリングファイルシステムである。
+<DL COMPACT>
+<DT><B>conv</B>
+
+<DD>
+
+
+
+バージョン 3.6 の reiserfs ソフトウェアに
+バージョン 3.5 のファイルシステムをマウントさせる。
+新しく作成されたオブジェクトには 3.6 の形式が使われる。
+このようにしたファイルシステムは reiserfs 3.5 のツールとは互換性がなくなる。
+<DT><B>hash=</B>{<B>rupasov</B>|<B>tea</B>|<B>r5</B>|<B>detect</B>}
+
+<DD>
+
+reiserfs がディレクトリ内でファイルを見付けるのに、
+どのハッシュ関数を使うかを選択する。
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>rupasov</B>
+
+<DD>
+
+
+
+
+Yury Yu. Rupasov が発明したハッシュ。
+このハッシュは高速であり、
+辞書順で近いファイル名を近いハッシュ値に対応づけることで
+近接関係 (locality) が保存される。
+高い確率でハッシュの衝突が起こるので、このオプションは使うべきではない。
+<DT><B>tea</B>
+
+<DD>
+
+
+
+
+Jeremy Fitzhardinge が実装した Davis-Meyer 関数。
+ハッシュ名にハッシュ置換ビットを使う。
+ランダム性が高いので、使用される CPU コストに対してハッシュ衝突の確率が低い。
+このオプションは、r5 ハッシュで EHASHCOLLISION エラーが起こる場合に使われる。
+<DT><B>r5</B>
+
+<DD>
+
+
+
+rupasov ハッシュの修正版。
+デフォルトではこれが使用され、非常に多くのディレクトリや
+変わったファイル名のパターンがファイルシステムにない限り、
+もっとも良い選択肢である。
+<DT><B>detect</B>
+
+<DD>
+
+
+
+
+
+
+現在マウントされているファイルシステムを
+<I>mount</I>
+
+コマンドに調べさせ、どのハッシュ関数が使われているかを検出 (detect) させる。
+さらに、この情報を reiserfs のスーパーブロックに書き込ませる。
+古い形式のファイルシステムを初めてマウントするときにのみ役立つ。
+</DL>
+</DL>
+
+<DT><B>hashed_relocation</B>
+
+<DD>
+
+
+ブロックアロケータを有効にする。
+ある状況下では性能の向上が見られるかもしれない。
+<DT><B>no_unhashed_relocation</B>
+
+<DD>
+
+
+ブロックアロケータを有効にする。
+ある状況下では性能の向上が見られるかもしれない。
+<DT><B>noborder</B>
+
+<DD>
+
+
+Yury Yu. Rupasov が発明した境界アロケータアルゴリズムを無効にする。
+ある状況下では性能の向上が見られるかもしれない。
+<DT><B>nolog</B>
+
+<DD>
+
+
+
+
+
+
+
+ジャーナリングを無効にする。
+reiserfs が持つクラッシュからの高速な回復は失われるが、
+ある状況下では僅かな性能の向上が見られる。
+このオプションが有効になっている場合でも、
+reiserfs は、ジャーナリング領域への実際の書き込みを保存するといった
+全てのジャーナリング操作を行っている。
+<I>nolog</I>
+
+の実装は進行中の作業である。
+<DT><B>notail</B>
+
+<DD>
+
+
+
+
+デフォルトでは、reiserfs は小さなファイルや「ファイルの末尾」を
+ツリーの中に直接格納する。
+これが
+<B><A HREF="../man8/LILO.8.html">LILO</A></B>(8)
+
+のようなユーティリティを混乱させてしまう。
+このオプションはファイルをツリーの中に格納させないようにする。
+<DT><B>replayonly</B>
+
+<DD>
+
+
+
+ジャーナルにあるトランザクションをやり直させる。
+実際にはファイルシステムをマウントしない。
+主に
+<I>reiserfsck</I>
+
+が使う。
+<DT><B>resize=</B><I>number</I>
+
+<DD>
+
+
+
+
+
+
+reiserfs パーティションのオンラインでの領域拡張を許可する
+再マウントオプション。
+そのデバイスが
+<I>number</I>
+
+ブロック数であると reiserfs に仮定させる。
+このオプションは、論理的なボリューム管理 (LVM) 下にある
+デバイスに対して使うように設計されている。
+
+
+
+
+<I><A HREF="ftp://ftp.namesys.com/pub/reiserfsprogs">ftp://ftp.namesys.com/pub/reiserfsprogs</A></I>
+
+から特別な
+<I>resizer</I>
+
+ユーティリティが取得できる。
+<P>
+<DT><B>user_xattr</B>
+
+<DD>
+Enable Extended User Attributes.  See the
+<B><A HREF="../man5/attr.5.html">attr</A></B>(5)
+
+manual page.
+<DT><B>acl</B>
+
+<DD>
+Enable POSIX Access Control Lists.  See the
+<B><A HREF="../man5/acl.5.html">acl</A></B>(5)
+
+manual page.
+<DT>
+<DD>
+<B>barrier=none</B> / <B>barrier=flush</B>
+
+This disables / enables the use of write barriers in the journaling code.
+barrier=none disables, barrier=flush enables (default).  This also requires an
+IO stack which can support barriers, and if reiserfs gets an error on a barrier
+write, it will disable barriers again with a warning.  Write barriers enforce
+proper on-disk ordering of journal commits, making volatile disk write caches
+safe to use, at some performance penalty.  If your disks are battery-backed in
+one way or another, disabling barriers may safely improve performance.
+<P>
+</DL>
+<A NAME="lbBC">&nbsp;</A>
+<H3>Mount options for ubifs</H3>
+
+UBIFS is a flash filesystem which works on top of UBI volumes.  Note that
+<B>atime</B> is not supported and is always turned off.
+<DL COMPACT>
+<DT>The device name may be specified as<DD>
+<DL COMPACT><DT><DD>
+<B>ubiX_Y</B>
+
+UBI device number
+<B>X</B>,
+
+volume number
+<B>Y</B>
+
+<DL COMPACT>
+<DT><B>ubiY</B>
+
+<DD>
+UBI device number
+<B>0</B>,
+
+volume number
+<B>Y</B>
+
+<DT><B>ubiX:NAME</B>
+
+<DD>
+UBI device number
+<B>X</B>,
+
+volume with name
+<B>NAME</B>
+
+<DT><B>ubi:NAME</B>
+
+<DD>
+UBI device number
+<B>0</B>,
+
+volume with name
+<B>NAME</B>
+
+</DL>
+</DL>
+
+Alternative
+<B>!</B>
+
+separator may be used instead of
+<B>:</B>.
+
+<DT>The following mount options are available:<DD>
+<DT><B>bulk_read</B>
+
+<DD>
+Enable bulk-read.  VFS read-ahead is disabled because it slows down the file
+system.  Bulk-Read is an internal optimization.  Some flashes may read faster if
+the data are read at one go, rather than at several read requests.  For
+example, OneNAND can do &quot;read-while-load&quot; if it reads more than one NAND page.
+<DT><B>no_bulk_read</B>
+
+<DD>
+Do not bulk-read.  This is the default.
+<DT><B>chk_data_crc</B>
+
+<DD>
+Check data CRC-32 checksums.  This is the default.
+<DT><B>no_chk_data_crc</B>.
+
+<DD>
+Do not check data CRC-32 checksums.  With this option, the filesystem does not
+check CRC-32 checksum for data, but it does check it for the internal indexing
+information.  This option only affects reading, not writing.  CRC-32 is always
+calculated when writing the data.
+<DT><B>compr=</B>{<B>none</B>|<B>lzo</B>|<B>zlib</B>}
+
+<DD>
+Select the default compressor which is used when new files are written.  It is
+still possible to read compressed files if mounted with the
+<B>none</B>
+
+option.
+<P>
+
+</DL>
+<A NAME="lbBD">&nbsp;</A>
+<H3>udf のマウントオプション</H3>
+
+
+
+
+
+
+
+UDF は OSTA, Optical Storage Technology Association で定義されている
+&quot;Universal Disk Format&quot; ファイルシステムであり、DVD-ROM で多く使用される。
+frequently
+in the form of a hybrid UDF/ISO-9660 filesystem. It is, however,
+perfectly usable by itself on disk drives, flash drives and other block devices.
+<I>iso9660</I>
+
+も参照すること。
+<DL COMPACT>
+<DT><B>uid=</B>
+
+<DD>
+Make all files in the filesystem belong to the given user.
+uid=forget can be specified independently of (or usually in
+addition to) uid=&lt;user&gt; and results in UDF
+not storing uids to the media. In fact the recorded uid
+is the 32-bit overflow uid -1 as defined by the UDF standard.
+The value is given as either &lt;user&gt; which is a valid user name or the corresponding
+decimal user id, or the special string &quot;forget&quot;.
+<DT><B>gid=</B>
+
+<DD>
+Make all files in the filesystem belong to the given group.
+gid=forget can be specified independently of (or usually in
+addition to) gid=&lt;group&gt; and results in UDF
+not storing gids to the media. In fact the recorded gid
+is the 32-bit overflow gid -1 as defined by the UDF standard.
+The value is given as either &lt;group&gt; which is a valid group name or the corresponding
+decimal group id, or the special string &quot;forget&quot;.
+<DT><B>umask=</B>
+
+<DD>
+Mask out the given permissions from all inodes read from the filesystem.
+
+値は 8 進数で指定する。
+<DT><B>mode=</B>
+
+<DD>
+If mode= is set the permissions of all non-directory inodes read from the
+filesystem will be set to the given mode. The value is given in octal.
+<DT><B>dmode=</B>
+
+<DD>
+If dmode= is set the permissions of all directory inodes read from the
+filesystem will be set to the given dmode. The value is given in octal.
+<DT><B>bs=</B>
+
+<DD>
+Set the block size. Default value prior to kernel version 2.6.30 was
+2048. Since 2.6.30 and prior to 4.11 it was logical device block size with
+fallback to 2048. Since 4.11 it is logical block size with fallback to
+any valid block size between logical device block size and 4096.
+<P>
+For other details see the <B><A HREF="../man8/mkudffs.8.html">mkudffs</A></B>(8) 2.0+ manpage, sections
+<B>COMPATIBILITY</B> and <B>BLOCK SIZE</B>.
+<DT><B>unhide</B>
+
+<DD>
+
+隠しファイルも見せる。
+<DT><B>undelete</B>
+
+<DD>
+
+削除されたファイルもリストに見せる。
+<DT><B>adinicb</B>
+
+<DD>
+Embed data in the inode. (default)
+<DT><B>noadinicb</B>
+
+<DD>
+Don't embed data in the inode.
+<DT><B>shortad</B>
+
+<DD>
+Use short UDF address descriptors.
+<DT><B>longad</B>
+
+<DD>
+Use long UDF address descriptors. (default)
+<DT><B>nostrict</B>
+
+<DD>
+
+厳密に適合させない。
+<DT><B>iocharset=</B>
+
+<DD>
+
+NLS 文字セットを設定する。
+This requires kernel compiled with CONFIG_UDF_NLS option.
+<DT><B>utf8</B>
+
+<DD>
+Set the UTF-8 character set.
+</DL>
+<A NAME="lbBE">&nbsp;</A>
+<H3>Mount options for debugging and disaster recovery</H3>
+
+<DL COMPACT>
+<DT><B>novrs</B>
+
+<DD>
+
+Ignore the Volume Recognition Sequence and attempt to mount anyway.
+<DT><B>session=</B>
+
+<DD>
+
+Select the session number for multi-session recorded optical media. (default= last session)
+<DT><B>anchor=</B>
+
+<DD>
+
+標準のアンカーの位置を上書きする。(デフォルトは 256)
+<DT><B>lastblock=</B>
+
+<DD>
+Set the last block of the filesystem.
+</DL>
+<A NAME="lbBF">&nbsp;</A>
+<H3>Unused historical mount options that may be encountered and should be removed</H3>
+
+<DL COMPACT>
+<DT><B>uid=ignore</B>
+
+<DD>
+Ignored, use uid=&lt;user&gt; instead.
+<DT><B>gid=ignore</B>
+
+<DD>
+Ignored, use gid=&lt;group&gt; instead.
+<DT><B>volume=</B>
+
+<DD>
+
+未実装であり、無視される。
+<DT><B>partition=</B>
+
+<DD>
+
+未実装であり、無視される。
+<DT><B>fileset=</B>
+
+<DD>
+
+未実装であり、無視される。
+<DT><B>rootdir=</B>
+
+<DD>
+
+未実装であり、無視される。
+<P>
+
+</DL>
+<A NAME="lbBG">&nbsp;</A>
+<H3>ufs のマウントオプション</H3>
+
+<DL COMPACT>
+<DT><B>ufstype=</B><I>value</I>
+
+<DD>
+
+
+
+
+
+
+UFS は他の OS で広く用いられているファイルシステムである。
+ただし実装が OS によって異なっているのが問題である。
+ある種の実装における機能には文書化されていないものがあり、
+ufs の形式を自動的に認識するのは難しい。
+したがってユーザーは ufs の形式をマウントオプションで指定しなければならない。
+指定できる値は以下の通り:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>old</B>
+
+<DD>
+
+ufs の古い形式。これがデフォルトで、リードオンリー
+
+(-r オプションを忘れずに指定すること)。
+<DT><B>44bsd</B>
+
+<DD>
+
+BSD ライクなシステム (NetBSD, FreeBSD, OpenBSD)
+で作られたファイルシステムに用いる。
+<DT><B>ufs2</B>
+
+<DD>
+Used in FreeBSD 5.x supported as read-write.
+<DT><B>5xbsd</B>
+
+<DD>
+Synonym for ufs2.
+<DT><B>sun</B>
+
+<DD>
+
+SunOS や Solaris on Sparc
+で作られたファイルシステムに用いる。
+<DT><B>sunx86</B>
+
+<DD>
+
+Solaris on x86
+で作られたファイルシステムに用いる。
+<DT><B>hp</B>
+
+<DD>
+
+HP-UX で作られたファイルシステムに用いる。リードオンリー。
+<DT><B>nextstep</B>
+
+<DD>
+
+(NeXT ステーションの) NeXTStep
+で作られたファイルシステムに用いる (現在はリードオンリー)。
+<DT><B>nextstep-cd</B>
+
+<DD>
+
+NeXTStep CDROM (block_size == 2048) に用いる。リードオンリー。
+<DT><B>openstep</B>
+
+<DD>
+
+OpenStep で作られたファイルシステムに用いる (現在はリードオンリー)。
+
+同じファイルシステムが Mac OS X でも使われている。
+</DL>
+</DL>
+
+<P>
+<DT><B>onerror=</B><I>value</I>
+
+<DD>
+
+エラー時の振る舞いを設定する:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>panic</B>
+
+<DD>
+
+エラーが起こったらカーネルパニックを起こす。
+<DT>[<B>lock</B>|<B>umount</B>|<B>repair</B>]
+
+<DD>
+
+
+現在のところはこれらのオプションはなにもしない。
+エラーが起こるとコンソールメッセージが表示されるだけである。
+</DL>
+</DL>
+
+<P>
+
+</DL>
+<A NAME="lbBH">&nbsp;</A>
+<H3>umsdos のマウントオプション</H3>
+
+
+
+
+
+
+msdos のマウントオプションを見よ。
+<B>dotsOK</B>
+
+オプションは
+<I>umsdos</I>
+
+では当然無効である。
+<P>
+
+<A NAME="lbBI">&nbsp;</A>
+<H3>vfat のマウントオプション</H3>
+
+
+
+
+
+
+
+
+
+まず
+<I>fat</I>
+
+のマウントオプションが認識される。
+<B>dotsOK</B>
+
+オプションは
+<I>vfat</I>
+
+では当然無効である。
+さらに以下のオプションが存在する。
+<DL COMPACT>
+<DT><B>uni_xlate</B>
+
+<DD>
+
+
+
+
+
+
+
+扱うことのできない Unicode 文字を特殊なエスケープシーケンスに変換する。
+これは Unicode 文字を含むファイルをバックアップ、
+レストアするのに用いることができる。
+このオプションを指定しないと、変換できない場合には `?' が用いられる。
+エスケープ文字には `:' が用いられる
+(これは通常 vfat ファイルシステムでは用いることのできない文字であるため)。
+用いられるエスケープシーケンスは u を Unicode 文字とすると以下の通り。
+':', (u &amp; 0x3f), ((u&gt;&gt;6) &amp; 0x3f), (u&gt;&gt;12)。
+<DT><B>posix</B>
+
+<DD>
+
+
+大文字か小文字かだけが異なる 2 つのファイル名を識別できるようにする。
+このオプションは古い。
+<DT><B>nonumtail</B>
+
+<DD>
+
+
+
+<I>name</I><FONT SIZE="+3"><I>~</I></FONT><I>num.ext</I>
+
+を用いる前に、まずシーケンス番号のない短縮名に変換しようとする。
+<DT><B>utf8</B>
+
+<DD>
+
+
+
+
+UTF8 は、コンソールで用いられる Unicode の 8 ビットエンコードに対して
+安全なファイルシステムである。
+このオプションを指定すると UTF8 が有効になる。
+また、utf8=0, utf8=no, utf8=false のいずれかで無効になる。
+'uni_xlate' が設定されていると UTF8 は無効になる。
+<DT><B>shortname=</B><I>mode</I>
+
+<DD>
+
+
+
+8.3 形式の文字列に合うようなファイル名を
+生成したり表示したりする動作を定義する。
+ファイルにロングネームがある場合は、いつでも指定された動作で表示する。
+以下の 4 つの <I>mode</I> がある:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>lower</B>
+
+<DD>
+
+
+ショートネームを表示する際に小文字にする。
+ショートネームに小文字が含まれる場合は、ロングネームで生成する。
+<DT><B>win95</B>
+
+<DD>
+
+
+ショートネームを表示する際に大文字にする。
+ショートネームに小文字が含まれる場合は、ロングネームで生成する。
+<DT><B>winnt</B>
+
+<DD>
+
+
+ショート名をそのまま表示する。
+ショートネームが全て小文字または全て大文字でない場合は、
+ロングネームで生成する。
+<DT><B>mixed</B>
+
+<DD>
+
+
+ショート名をそのまま表示する。
+ショートネームに小文字が含まれる場合は、ロングネームで生成する。
+このモードは、Linux 2.6.32 以降のデフォルトである。
+</DL>
+</DL>
+
+<P>
+
+</DL>
+<A NAME="lbBJ">&nbsp;</A>
+<H3>usbfs のマウントオプション</H3>
+
+<DL COMPACT>
+<DT>
+<DD>
+
+
+<B>devuid=</B>,<I>uid</I>, <B>devgid=</B>,<I>gid</I>, <B>devmode=</B>,<I>mode</I>
+usbfs ファイルシステムにあるデバイスファイルの
+所有者・グループ・モードを設定する
+(デフォルトは uid=gid=0, mode=0644)。
+このモードは 8 進数で指定する。
+<DT>
+<DD>
+
+
+<B>busuid=</B>,<I>uid</I>, <B>busgid=</B>,<I>gid</I>, <B>busmode=</B>,<I>mode</I>
+usbfs ファイルシステムにあるバスディレクトリの
+所有者・グループ・モードを設定する
+(デフォルトは uid=gid=0, mode=0555)。
+このモードは 8 進数で指定する。
+<DT>
+<DD>
+
+
+
+<B>listuid=</B>,<I>uid</I>, <B>listgid=</B>,<I>gid</I>, <B>listmode=</B>,<I>mode</I>
+ファイル
+<I>devices</I>
+
+の所有者・グループ・モードを設定する
+(デフォルトは uid=gid=0, mode=0444)。
+このモードは 8 進数で指定する。
+<P>
+
+</DL>
+<A NAME="lbBK">&nbsp;</A>
+<H2>loop デバイス</H2>
+
+
+
+残ったタイプとしてもう 1 つ、loop デバイスを用いたマウントがある。
+例えば以下のコマンド
+<DL COMPACT><DT><DD>
+<P>
+<B>mount /tmp/disk.img /mnt -t vfat -o loop=/dev/loop3</B>
+
+<P>
+</DL>
+
+
+
+
+
+
+
+は loop デバイス
+<I>/dev/loop3</I>
+
+をファイル
+<I>/tmp/disk.img</I>
+
+に関連付け、そしてこのデバイスを
+<I>/mnt</I>
+
+にマウントする。
+<P>
+If no explicit loop device is mentioned
+(but just an option `<B>-o loop</B>' is given), then
+<B>mount</B>
+
+will try to find some unused loop device and use that, for example
+<DL COMPACT><DT><DD>
+<P>
+<B>mount /tmp/disk.img /mnt -o loop</B>
+
+<P>
+</DL>
+
+The mount command
+<B>automatically</B>
+
+creates a loop device from a regular file if a filesystem type is
+not specified or the filesystem is known for libblkid, for example:
+<DL COMPACT><DT><DD>
+<P>
+<B>mount /tmp/disk.img /mnt</B>
+
+<P>
+<B>mount -t ext4 /tmp/disk.img /mnt</B>
+
+<P>
+</DL>
+
+
+
+
+
+
+
+このタイプのマウントの際には 3 つのオプションが指定できる。
+<B>loop</B>, <B>offset</B>, <B>sizelimit</B>
+
+である。
+これらは実際には
+<B><A HREF="../man8/losetup.8.html">losetup</A></B>(8)
+
+のオプションである。
+(これらのオプションはファイルシステムタイプに固有のオプションの他に
+使用することができる。)
+<P>
+
+
+
+
+
+
+
+Since Linux 2.6.25 auto-destruction of loop devices is supported,
+meaning that any loop device allocated by
+<B>mount</B>
+
+will be freed by
+<B>umount</B>
+
+independently of
+<I>/etc/mtab</I>.
+
+<P>
+
+
+You can also free a loop device by hand, using
+<B>losetup -d </B>or<B> umount -d</B>.
+
+<P>
+
+
+
+
+Since util-linux v2.29 mount command re-uses the loop device rather than
+initialize a new device if the same backing file is already used for some loop
+device with the same offset and sizelimit. This is necessary to avoid
+a filesystem corruption.
+<P>
+
+<A NAME="lbBL">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+<B>mount</B>
+
+は以下のコードを返す (ビットは OR できる):
+<DL COMPACT>
+<DT><B>0</B>
+
+<DD>
+
+成功した。
+<DT><B>1</B>
+
+<DD>
+
+呼び出しやパーミッションが正しくない。
+<DT><B>2</B>
+
+<DD>
+
+システムエラー (メモリ不足、fork できなかった、loop デバイスが足りない)。
+<DT><B>4</B>
+
+<DD>
+
+
+
+<B>mount</B>
+
+の内部のバグ
+<DT><B>8</B>
+
+<DD>
+
+ユーザーによる中断。
+<DT><B>16</B>
+
+<DD>
+
+/etc/mtab の書き込み時またはロック時の問題がある。
+<DT><B>32</B>
+
+<DD>
+
+マウントに失敗した。
+<DT><B>64</B>
+
+<DD>
+
+(訳註: &quot;mount -a&quot; などで) 一部が成功した。
+
+<P>
+The command <B>mount -a</B> returns 0 (all succeeded), 32 (all failed), or 64 (some
+failed, some succeeded).
+<P>
+</DL>
+<A NAME="lbBM">&nbsp;</A>
+<H2>EXTERNAL HELPERS</H2>
+
+The syntax of external mount helpers is:
+<P>
+
+<B>/sbin/mount.</B><I>suffix</I>
+
+<I>spec dir</I>
+
+[<B>-sfnv</B>]
+
+[<B>-N</B>
+
+<I>namespace</I>]
+
+[<B>-o</B>
+
+<I>options</I>]
+
+[<B>-t</B>
+
+<I>type</I><B>.</B><I>subtype</I>]
+
+
+<P>
+where the <I>suffix</I> is the filesystem type and the <B>-sfnvoN</B> options have
+the same meaning as the normal mount options.  The <B>-t</B> option is used for
+filesystems with subtypes support (for example
+<B>/sbin/mount.fuse -t fuse.sshfs</B>).
+
+<P>
+The command <B>mount</B> does not pass the mount options
+<B>unbindable</B>,
+
+<B>runbindable</B>,
+
+<B>private</B>,
+
+<B>rprivate</B>,
+
+<B>slave</B>,
+
+<B>rslave</B>,
+
+<B>shared</B>,
+
+<B>rshared</B>,
+
+<B>auto</B>,
+
+<B>noauto</B>,
+
+<B>comment</B>,
+
+<B>x-*</B>,
+
+<B>loop</B>,
+
+<B>offset</B>
+
+and
+<B>sizelimit</B>
+
+to the mount.&lt;suffix&gt; helpers.  All other options are used in a
+comma-separated list as argument to the <B>-o</B> option.
+<P>
+
+<A NAME="lbBN">&nbsp;</A>
+<H2>ファイル</H2>
+
+
+上記の &quot;<B>/etc/fstab, /etc/mtab, /proc/mounts</B>&quot; セクションも参照すること。
+<DL COMPACT>
+<DT><I>/etc/fstab</I>
+
+<DD>
+
+ファイルシステムの一覧表
+<DT><I>/run/mount</I>
+
+<DD>
+libmount private runtime directory
+<DT><I>/etc/mtab</I>
+
+<DD>
+
+マウントされたファイルシステムの一覧表、または /proc/mounts へのシンボリックリンク。
+<DT><I>/etc/mtab</I><FONT SIZE="+3"><I>~</I></FONT><I></I>
+
+<DD>
+
+ロックファイル (mtab がシンボリックリンクのシステムでは使われない)。
+<DT><I>/etc/mtab.tmp</I>
+
+<DD>
+
+テンポラリファイル (mtab がシンボリックリンクのシステムでは使われない)。
+<DT><I>/etc/filesystems</I>
+
+<DD>
+
+試行するファイルシステムタイプの一覧
+
+</DL>
+<A NAME="lbBO">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT>LIBMOUNT_FSTAB=&lt;path&gt;<DD>
+overrides the default location of the fstab file (ignored for suid)
+<DT>LIBMOUNT_MTAB=&lt;path&gt;<DD>
+overrides the default location of the mtab file (ignored for suid)
+<DT>LIBMOUNT_DEBUG=all<DD>
+enables libmount debug output
+<DT>LIBBLKID_DEBUG=all<DD>
+enables libblkid debug output
+<DT>LOOPDEV_DEBUG=all<DD>
+enables loop device setup debug output
+
+</DL>
+<A NAME="lbBP">&nbsp;</A>
+<H2>関連項目</H2>
+
+
+<B><A HREF="../man2/mount.2.html">mount</A></B>(2),
+
+<B><A HREF="../man2/umount.2.html">umount</A></B>(2),
+
+<B><A HREF="../man8/umount.8.html">umount</A></B>(8),
+
+<B><A HREF="../man5/fstab.5.html">fstab</A></B>(5),
+
+<B><A HREF="../man5/nfs.5.html">nfs</A></B>(5),
+
+<B><A HREF="../man5/xfs.5.html">xfs</A></B>(5),
+
+<B><A HREF="../man8/e2label.8.html">e2label</A></B>(8),
+
+<B><A HREF="../man8/findmnt.8.html">findmnt</A></B>(8),
+
+<B><A HREF="../man8/losetup.8.html">losetup</A></B>(8),
+
+<B><A HREF="../man8/mke2fs.8.html">mke2fs</A></B>(8),
+
+<B><A HREF="../man8/mountd.8.html">mountd</A></B>(8),
+
+<B><A HREF="../man8/nfsd.8.html">nfsd</A></B>(8),
+
+<B><A HREF="../man8/swapon.8.html">swapon</A></B>(8),
+
+<B><A HREF="../man8/tune2fs.8.html">tune2fs</A></B>(8),
+
+<B><A HREF="../man8/xfs_admin.8.html">xfs_admin</A></B>(8)
+
+
+
+<A NAME="lbBQ">&nbsp;</A>
+<H2>バグ</H2>
+
+
+ファイルシステムに整合性がないと、クラッシュを引き起こす場合がある。
+<P>
+
+
+
+
+
+
+
+
+Linux のファイルシステムのなかには
+<B>-o sync</B> と <B>-o dirsync</B>
+
+をサポートしていないものがある。
+(ext2, ext3, ext4, fat, vfat ファイルシステムは
+BSD 流の同期更新をサポートして<I>いる</I>。
+<B>sync</B>
+
+オプションとともにマウントすれば良い。)
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B>-o remount</B>
+
+でマウントパラメータが変更されないことがある (例えば
+<I>ext2fs</I>
+
+特有のパラメータは、
+<B>sb</B>
+
+を除いてすべて remount で変更可能であるが、
+<I>fatfs</I>
+
+では
+<B>gid</B>
+
+や
+<B>umask</B>
+
+を変更できない)。
+<P>
+
+It is possible that the files
+<I>/etc/mtab</I>
+
+and
+<I>/proc/mounts</I>
+
+don't match on systems with a regular mtab file.  The first file is based only on
+the mount command options, but the content of the second file also depends on
+the kernel and others settings (e.g. on a remote NFS server -- in certain cases
+the mount command may report unreliable information about an NFS mount point
+and the /proc/mounts file usually contains more reliable information.)  This is
+another reason to replace the mtab file with a symlink to the
+<I>/proc/mounts</I>
+
+file.
+<P>
+
+Checking files on NFS filesystems referenced by file descriptors (i.e. the
+<B>fcntl</B>
+
+and
+<B>ioctl</B>
+
+families of functions) may lead to inconsistent results due to the lack of
+a consistency check in the kernel even if noac is used.
+<P>
+
+The
+<B>loop</B>
+
+option with the
+<B>offset</B>
+
+or
+<B>sizelimit</B>
+
+options used may fail when using older kernels if the
+<B>mount</B>
+
+command can't confirm that the size of the block device has been configured
+as requested.  This situation can be worked around by using
+the
+<B>losetup</B>
+
+command manually before calling
+<B>mount</B>
+
+with the configured loop device.
+
+<A NAME="lbBR">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+<B>mount</B>
+
+コマンドは Version 5 の AT&amp;T UNIX には存在していた。
+
+<A NAME="lbBS">&nbsp;</A>
+<H2>著者</H2>
+
+<PRE>
+Karel Zak &lt;<A HREF="mailto:kzak@redhat.com">kzak@redhat.com</A>&gt;
+</PRE>
+
+
+<A NAME="lbBT">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+mount コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DL>
+<DT><A HREF="#lbAE">マウントのリスト表示</A><DD>
+<DT><A HREF="#lbAF">デバイスとファイルシステムの指定</A><DD>
+<DT><A HREF="#lbAG">ファイル /etc/fstab, /etc/mtab, /proc/mounts</A><DD>
+<DT><A HREF="#lbAH">スーパーユーザー以外でのマウント</A><DD>
+<DT><A HREF="#lbAI">bind マウント操作</A><DD>
+<DT><A HREF="#lbAJ">move 操作</A><DD>
+<DT><A HREF="#lbAK">共有 (shared) サブツリー操作</A><DD>
+</DL>
+<DT><A HREF="#lbAL">コマンドラインオプション</A><DD>
+<DT><A HREF="#lbAM">FILESYSTEM-INDEPENDENT MOUNT OPTIONS</A><DD>
+<DT><A HREF="#lbAN">ファイルシステム独自のマウントオプション</A><DD>
+<DL>
+<DT><A HREF="#lbAO">adfs のマウントオプション</A><DD>
+<DT><A HREF="#lbAP">affs のマウントオプション</A><DD>
+<DT><A HREF="#lbAQ">Mount options for debugfs</A><DD>
+<DT><A HREF="#lbAR">devpts のマウントオプション</A><DD>
+<DT><A HREF="#lbAS">fat のマウントオプション</A><DD>
+<DT><A HREF="#lbAT">hfs のマウントオプション</A><DD>
+<DT><A HREF="#lbAU">hpfs のマウントオプション</A><DD>
+<DT><A HREF="#lbAV">iso9660 のマウントオプション</A><DD>
+<DT><A HREF="#lbAW">jfs のマウントオプション</A><DD>
+<DT><A HREF="#lbAX">msdos のマウントオプション</A><DD>
+<DT><A HREF="#lbAY">ncpfs のマウントオプション</A><DD>
+<DT><A HREF="#lbAZ">ntfs のマウントオプション</A><DD>
+<DT><A HREF="#lbBA">Mount options for overlay</A><DD>
+<DT><A HREF="#lbBB">reiserfs のマウントオプション</A><DD>
+<DT><A HREF="#lbBC">Mount options for ubifs</A><DD>
+<DT><A HREF="#lbBD">udf のマウントオプション</A><DD>
+<DT><A HREF="#lbBE">Mount options for debugging and disaster recovery</A><DD>
+<DT><A HREF="#lbBF">Unused historical mount options that may be encountered and should be removed</A><DD>
+<DT><A HREF="#lbBG">ufs のマウントオプション</A><DD>
+<DT><A HREF="#lbBH">umsdos のマウントオプション</A><DD>
+<DT><A HREF="#lbBI">vfat のマウントオプション</A><DD>
+<DT><A HREF="#lbBJ">usbfs のマウントオプション</A><DD>
+</DL>
+<DT><A HREF="#lbBK">loop デバイス</A><DD>
+<DT><A HREF="#lbBL">返り値</A><DD>
+<DT><A HREF="#lbBM">EXTERNAL HELPERS</A><DD>
+<DT><A HREF="#lbBN">ファイル</A><DD>
+<DT><A HREF="#lbBO">環境変数</A><DD>
+<DT><A HREF="#lbBP">関連項目</A><DD>
+<DT><A HREF="#lbBQ">バグ</A><DD>
+<DT><A HREF="#lbBR">履歴</A><DD>
+<DT><A HREF="#lbBS">著者</A><DD>
+<DT><A HREF="#lbBT">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:21:44 GMT, March 28, 2020
+</BODY>
+</HTML>
