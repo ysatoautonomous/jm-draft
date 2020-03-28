@@ -1,0 +1,572 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SADC</TITLE>
+</HEAD><BODY>
+<H1>SADC</H1>
+Section: Linux User's Manual (8)<BR>Updated: DECEMBER 2016<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+sadc - システム活性度のデータ収集を行う。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>/usr/lib64/sa/sadc [ -C</B>
+
+<I>comment</I>
+
+<B>] [ -D ] [ -F ] [ -L ] [ -V ] [ -S { DISK | INT | IPV6 | POWER | SNMP | XDISK | ALL | XALL [,...] } ] [</B>
+
+<I>interval</I>
+
+<B>[</B>
+
+<I>count</I>
+
+<B>] ] [</B>
+
+<I>outfile</I>
+
+<B>]</B>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+
+
+
+<B>sadc</B>
+
+コマンドは、指定した回数
+(<I>count</I>) と指定した間隔 (秒数)
+(<I>interval</I>) でシステムデータのサンプリングを行う。
+このコマンドはバイナリ形式で、指定した
+<I>outfile</I>
+
+を書き出すか、標準出力に書き出す。
+<I>outfile</I>
+
+が - に設定された場合、
+<B>sadc</B>
+
+は標準システム活性度日次データファイル
+(standard system activity daily data file) に書き出す (下記を参照)。
+
+
+
+この場合、ファイルが既に存在するときは、もし前月のものであれば
+<B>sadc</B>
+
+は上書きする。
+
+
+
+デフォルトでは
+<B>sadc</B>
+
+はカーネルからほとんどのデータを収集する。
+
+
+
+
+しかし、オプションの指標がある場合、
+明示的に関連するオプションを渡して
+<B>sadc</B>
+
+に収集させることができる (下記のオプション -S を参照)。
+<P>
+
+
+
+
+
+
+
+
+標準システム活性度日次データファイルは、
+<B>-D</B>
+
+が指定されない限り、
+<I>saDD</I>
+
+という名前である。
+指定された場合、
+<I>saYYYYMMDD</I>
+
+という名前である。
+ここで、YYYY は現在の年、MM は月、DD は日である。
+
+
+
+
+
+
+
+
+デフォルトでは
+<I>/var/log/sa</I>
+
+ディレクトリにある。
+ファイルの場所は別のディレクトリを指定することもできる。
+<I>outfile</I>
+
+が (プレーンファイルではなく) ディレクトリの場合、
+標準システム活性度日次データファイルが保存される
+ディレクトリと解釈される。
+<P>
+
+
+
+
+
+<I>count</I>
+
+パラメータが指定されない場合、
+<B>sadc</B>
+
+はデータを終わりなく書きつづける。
+
+
+
+
+
+
+
+<I>interval</I>
+
+と
+<I>count</I>
+
+の両方が指定されない場合、かつオプション -C が使われない場合、
+ダミーレコードが書かれる。
+ダミーレコードは、カウンターを 0 からリスタートさせるときに、
+システムのスタートアップの時間をマークするために使われる。
+
+
+例えば、システムのスタートアップスクリプトの 1 つには、
+日次データファイルにリスタートのマークを書き込むために、
+下記のコマンドラインのエントリが含まれているだろう。
+<P>
+<B>/usr/lib64/sa/sadc -</B>
+
+<P>
+
+
+
+
+
+<B>sadc</B>
+
+コマンドは
+<B>sar</B>
+
+コマンドのバックエンドとして使うことを意図している。
+<P>
+
+
+
+注意:
+<B>sadc</B>
+
+コマンドはローカルの活性度のみをレポートする。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT>-C comment<DD>
+
+
+
+
+
+
+
+
+
+<I>interval</I>
+
+と
+<I>count</I>
+
+パラメータがともに指定されない場合、
+このオプションを指定すると、
+<B>sadc</B>
+
+は指定した
+<I>comment</I>
+
+文字列を含むダミーレコードを書き込む。
+
+
+このコメントは、後から
+<B>sar</B>
+
+のオプション -C で表示できる。
+<DT>-D<DD>
+
+
+
+
+
+標準システム活性度日次データファイルとして、
+<I>saDD</I>
+
+ではなく、
+<I>saYYYYMMDD</I>
+
+を使う。
+<DT>-F<DD>
+
+
+
+
+
+
+
+
+<I>outfile</I>
+
+の作成を強制する。
+ファイルが既に存在し、フォーマットが
+<B>sadc</B>
+
+が認識できない場合、ファイルを切り詰める。
+これは日次データファイルが
+<B>sadc</B>
+
+の古いバージョンで作成されていて、現在のバージョンと既に
+互換性がない場合に役立つ。
+<DT>-L<DD>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B>sadc</B>
+
+は
+<I>outfile</I>
+
+に書き込み、または切り詰めを行う前に、排他ロックを行う。
+既存のファイルへの通常レコード (つまり、ダミーやヘッダでない) の
+書き込みを除いて、ロック取得の失敗が致命的である場合、
+<B>sadc</B>
+
+は次の期間に再度ロックを試みる。
+一般的ではないが、ロックが失敗する理由は、他の
+<B>sadc</B>
+
+プロセスがファイルへの書き込みを待っている場合がある。
+これは
+<B>sadc</B>
+
+の起動に cron を使っている場合に起こる可能性がある。
+
+
+
+
+システムの負荷が高い場合、古い
+<B>sadc</B>
+
+では、cron が新たに
+<B>sadc</B>
+
+を起動する際にまだ動作している場合がある。
+このような場合、ロックがないとシステム活性度ファイルが
+壊れてしまう。
+<DT>-S { DISK | INT | IPV6 | POWER | SNMP | XDISK | ALL | XALL [,...] }<DD>
+
+
+<B>sadc</B>
+
+に収集させるオプションの活性度を指定する。
+
+いくつかの活性度は、データファイルを大きくし過ぎないように
+オプションになっている。
+
+
+
+
+
+<B>DISK</B>
+
+キーワードを指定すると、
+<B>sadc</B>
+
+はブロックデバイスのデータを収集する。
+
+
+
+
+
+<B>INT</B>
+
+キーワードを指定すると、
+<B>sadc</B>
+
+はシステム割り込みのデータを収集する。
+
+
+
+
+
+<B>IPV6</B>
+
+キーワードを指定すると、
+<B>sadc</B>
+
+は IPv6 統計を収集する。
+
+
+
+
+
+<B>POWER</B>
+
+キーワードを指定すると、
+<B>sadc</B>
+
+は電源管理統計を収集する。
+
+
+
+
+
+<B>SNMP</B>
+
+キーワードを指定すると、
+<B>sadc</B>
+
+は SNMP 統計を収集する。
+
+
+
+
+<B>ALL</B>
+
+キーワードは、上記のすべてを指定したのと同じである。
+よって、上記のすべての活性度が収集される。
+<P>
+
+
+
+
+
+
+
+
+<B>XDISK</B>
+
+キーワードは
+<B>DISK</B>
+
+の拡張で、
+<B>sadc</B>
+
+はディスク統計に加えて、
+パーティションとファイルシステム統計を収集する。
+このオプションはカーネル 2.6.25 以降でのみ動作する。
+
+
+
+
+<B>XALL</B>
+
+キーワードは、上記の (キーワード拡張を含む) すべてのキーワードと
+同じであり、指定可能なすべての活性度を収集する。
+<P>
+
+
+重要な注意点: 既存のデータファイルに保存された (オプションを含む) 活性度は、
+オプション -S で選択された活性度より強い。
+
+
+結果として、既存データファイルにデータを追加する場合、
+オプション -S は無視される。
+<DT>-V<DD>
+
+バージョン番号を表示して、終了する。
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>環境変数</H2>
+
+
+
+
+<B>sadc</B>
+
+コマンドは下記の環境変数を利用する。
+<P>
+<DL COMPACT>
+<DT>S_TIME_DEF_TIME<DD>
+
+
+
+
+
+この環境変数が存在し、その値が
+<B>UTC</B>
+
+の場合、
+<B>sadc</B>
+
+はデータを UTC 時間で保存する。
+
+
+
+
+
+<B>sadc</B>
+
+は
+<I>/var/log/sa</I>
+
+ディレクトリにある現在の日次データファイルの時間として、
+ローカル時間ではなく UTC 時間を使う。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+<B>/usr/lib64/sa/sadc 1 10 /tmp/datafile</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒間隔で 10 レコードをバイナリファイル /tmp/datafile に書き出す。
+</DL>
+
+<P>
+<B>/usr/lib64/sa/sadc -C Backup_Start /tmp/datafile</B>
+
+<DL COMPACT><DT><DD>
+
+コメント Backup_Start をファイル /tmp/datafile に追加する。
+</DL>
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+
+
+<B>sadc</B>
+
+コマンドが動作するためには、
+<I>/proc</I>
+
+ファイルシステムがマウントされていなければならない。
+<P>
+
+
+
+使用しているカーネルによっては、すべての統計が利用可能な訳ではない。
+<B>sadc</B>
+
+は少なくとも 2.6 カーネルを使っていることを仮定している。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/var/log/sa/saDD</I>
+
+<BR>
+
+<I>/var/log/sa/saYYYYMMDD</I>
+
+<DL COMPACT><DT><DD>
+
+
+
+標準システム活性度日次データファイルとデフォルトの場所。
+YYYY は現在の年、MM は月、DD は日である。
+<P>
+</DL>
+
+
+
+
+
+<I>/proc</I>
+
+と
+<I>/sys</I>
+
+には、システム統計の様々なファイルが含まれる。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>著者</H2>
+
+Sebastien Godard (sysstat &lt;at&gt; orange.fr)
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/sar.1.html">sar</A></B>(1),
+
+<B><A HREF="../man8/sa1.8.html">sa1</A></B>(8),
+
+<B><A HREF="../man8/sa2.8.html">sa2</A></B>(8),
+
+<B><A HREF="../man1/sadf.1.html">sadf</A></B>(1),
+
+<B><A HREF="../man5/sysstat.5.html">sysstat</A></B>(5)
+
+<P>
+<I><A HREF="http://pagesperso-orange.fr/sebastien.godard/">http://pagesperso-orange.fr/sebastien.godard/</A></I>
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">環境変数</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">バグ</A><DD>
+<DT><A HREF="#lbAI">ファイル</A><DD>
+<DT><A HREF="#lbAJ">著者</A><DD>
+<DT><A HREF="#lbAK">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:57:46 GMT, March 28, 2020
+</BODY>
+</HTML>

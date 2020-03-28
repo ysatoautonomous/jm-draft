@@ -1,0 +1,393 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of CIFSIOSTAT</TITLE>
+</HEAD><BODY>
+<H1>CIFSIOSTAT</H1>
+Section: Linux User's Manual (1)<BR>Updated: JANUARY 2018<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+cifsiostat - CIFS の統計をレポートする。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+
+
+<B>cifsiostat [ -h ] [ -k | -m ] [ -t ] [ -V ] [ --human ] [</B>
+
+
+<I>interval</I>
+
+
+<B>[</B>
+
+
+<I>count</I>
+
+
+<B>] ]</B>
+
+
+
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>cifsiostat</B>
+
+コマンドは CIFS ファイルシステムの読み込みと書き込みの操作の統計を表示する。
+<P>
+
+
+
+
+
+
+<I>interval</I>
+
+パラメータは各レポート間の時間を指定する。
+最初のレポートにはシステムのスタートアップ (ブート) からの統計が含まれる。
+その後のレポートには、前のレポートからの間に収集された統計が
+レポートされる。
+
+
+レポートは CIFS ヘッダ行の後に、
+マウントされている各 CIFS ファイルシステムの統計の行が続く。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<I>count</I>
+
+パラメータは
+<I>interval</I>
+
+パラメータと組み合わせて使われる。
+<I>count</I>
+
+パラメータが指定されると、
+<I>count</I>
+
+は
+<I>interval</I>
+
+秒ごとに生成される回数を決定する。
+<I>count</I>
+
+パラメータを指定せずに
+<I>interval</I>
+
+パラメータを指定すると、
+<B>cifsiostat</B>
+
+コマンドは連続してレポートを生成する。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>レポート</H2>
+
+
+CIFS レポートはマウントされている各 CIFS ファイルシステムの統計を提供する。
+
+レポートには以下のフィールドが表示される。
+<P>
+<B>Filesystem:</B>
+
+<DL COMPACT><DT><DD>
+
+この列には CIFS ファイルシステムのマウントポイントが表示される。
+<P>
+</DL>
+
+<B>rB/s (rkB/s, rMB/s)</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに読み込まれた平均バイト (キロバイト、メガバイト) 数。
+<P>
+</DL>
+
+<B>wB/s (wkB/s, wMB/s)</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに書き込まれた平均バイト (キロバイト、メガバイト) 数。
+<P>
+</DL>
+
+<B>rop/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりにファイルシステムに発行された 'read' 操作の回数。
+<P>
+</DL>
+
+<B>wop/s</B>
+
+<DL COMPACT><DT><DD>
+
+
+1 秒あたりにファイルシステムに発行された 'write' 操作の回数。
+<P>
+</DL>
+
+<B>fo/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりにオープンしたファイル数。
+<P>
+</DL>
+
+<B>fc/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりにクローズしたファイル数。
+<P>
+</DL>
+
+<B>fd/s</B>
+
+<DL COMPACT><DT><DD>
+
+1 秒あたりに削除したファイル数。
+</DL>
+
+
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>オプション</H2>
+
+
+<DL COMPACT>
+<DT>-h<DD>
+
+
+
+CIFS レポートを人間が読みやすいようにする。
+このオプションは、
+<B>--human</B>
+
+を暗黙裡に有効にする。
+<DT>--human<DD>
+
+
+
+サイズを人間が読みやすいフォーマット (例えば 1.0k, 1.2M など) で表示する。
+このオプションで表示される単位は、指標に紐付けられたデフォルトの単位
+(例えば、キロバイト、セクターなど) を上書きする。
+<DT>-k<DD>
+
+1 秒あたりのキロバイトで統計を表示する。
+<DT>-m<DD>
+
+1 秒あたりのメガバイトで統計を表示する。
+<DT>-t<DD>
+
+
+各レポートで時間を表示する。
+タイムスタンプの形式は、S_TIME_FORMAT 環境変数の値に依存する
+(下記を参照)。
+<DT>-V<DD>
+
+バージョン番号を表示して、終了する。
+<P>
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>環境変数</H2>
+
+
+
+
+<B>cifsiostat</B>
+
+コマンドは以下の環境変数を扱う。
+<P>
+<DL COMPACT>
+<DT>S_COLORS<DD>
+
+この環境変数を設定すると、端末上で統計をカラー表示する。
+
+
+
+
+
+
+この環境変数に指定可能な値は、
+<I>never</I>,
+
+<I>always</I>,
+
+<I>auto</I>
+
+である (最後がデフォルトである)。
+<P>
+
+
+
+値を表示する色 (赤、黄、またはその他の色) は、色によって何かの意味を示している訳ではない。
+色は値の範囲を示しているだけである。
+<P>
+<DT>S_COLORS_SGR<DD>
+
+
+
+
+端末で統計を表示する際に、色とその他の属性を指定する。
+この値は、コロン区切りの機能のリストで、デフォルトは
+<B>I=32;22:N=34;1:Z=34;22</B>
+
+である。
+サポートされている機能は以下のとおり。
+<P>
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>I=</B>
+
+<DD>
+
+ファイルシステム名を表示する SGR 部分文字列。
+<P>
+<DT><B>N=</B>
+
+<DD>
+
+0 以外の統計値を表示する SGR 部分文字列。
+<P>
+<DT><B>Z=</B>
+
+<DD>
+
+0 を表示する SGR 部分文字列。
+</DL>
+</DL>
+
+<P>
+<DT>S_TIME_FORMAT<DD>
+
+
+
+
+
+
+この環境変数が存在し、かつ値が
+<B>ISO</B>
+
+の場合、レポートのヘッダの日付を表示する際に、
+現在のロケールを無視する。
+代わりに、
+<B>cifsiostat</B>
+
+コマンドは ISO 8601 フォーマット (YYYY-MM-DD) を使う。
+
+
+-t オプションのタイムスタンプも ISO 8601 フォーマットに従う。
+<P>
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+
+<B>cifsiostat</B>
+
+コマンドが動作するためには、
+<I>/proc</I>
+
+ファイルシステムがマウントされていなければならない。
+<P>
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/proc/fs/cifs/Stats</I>
+
+
+CIFS 統計を保持する。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>著者</H2>
+
+
+Ivana Varekova (varekova &lt;at&gt; redhat.com) によって書かれた。
+<P>
+
+Sebastien Godard (sysstat &lt;at&gt; orange.fr) によってメンテナンスされている。
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/sar.1.html">sar</A></B>(1),
+
+<B><A HREF="../man1/pidstat.1.html">pidstat</A></B>(1),
+
+<B><A HREF="../man1/mpstat.1.html">mpstat</A></B>(1),
+
+<B><A HREF="../man8/vmstat.8.html">vmstat</A></B>(8),
+
+<B><A HREF="../man1/iostat.1.html">iostat</A></B>(1),
+
+<B><A HREF="../man1/tapestat.1.html">tapestat</A></B>(1),
+
+<B><A HREF="../man1/nfsiostat.1.html">nfsiostat</A></B>(1)
+
+<P>
+<I><A HREF="http://pagesperso-orange.fr/sebastien.godard/">http://pagesperso-orange.fr/sebastien.godard/</A></I>
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">レポート</A><DD>
+<DT><A HREF="#lbAF">オプション</A><DD>
+<DT><A HREF="#lbAG">環境変数</A><DD>
+<DT><A HREF="#lbAH">バグ</A><DD>
+<DT><A HREF="#lbAI">ファイル</A><DD>
+<DT><A HREF="#lbAJ">著者</A><DD>
+<DT><A HREF="#lbAK">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:57:45 GMT, March 28, 2020
+</BODY>
+</HTML>

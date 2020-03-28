@@ -1,0 +1,400 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SYSSTAT</TITLE>
+</HEAD><BODY>
+<H1>SYSSTAT</H1>
+Section: Linux User's Manual (5)<BR>Updated: APRIL 2015<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+sysstat - sysstat 設定ファイル。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+このファイルは
+sysstat のツールセットである
+<B><A HREF="../man8/sa1.8.html">sa1</A></B>(8)
+
+と
+<B><A HREF="../man8/sa2.8.html">sa2</A></B>(8)
+
+によって読まれる。
+
+
+このファイルは一連のシェル変数の割り当てで構成されており、
+sysstat のロギングを設定する。
+
+変数と意味は以下のとおり。
+<DL COMPACT>
+<DT><B>COMPRESSAFTER</B>
+
+<DD>
+
+
+
+
+日次データファイルを何日後に圧縮するかを指定する。
+圧縮プログラムは
+<B>ZIP</B>
+
+変数で指定する。
+<P>
+<DT><B>HISTORY</B>
+
+<DD>
+
+
+
+
+
+日次データファイルまたはレポートを何日保持するかを指定する。
+この日数より古い日次ファイルとレポートは、
+<B><A HREF="../man8/sa2.8.html">sa2</A></B>(8)
+
+シェルスクリプトによって削除される。
+
+
+
+
+
+
+データファイルとレポートは通常は /var/log/sa ディレクトリに保存され、
+<I>saDD</I>
+
+(データファイル) または
+<I>sarDD</I>
+
+(レポート) という名前になる。
+ここで DD は現在の日である。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/var/log/sa ディレクトリに保持されるファイル数は、
+<B>HISTORY</B>
+
+の値よりわずかに多い。
+これは
+<B>sa2</B>
+
+スクリプトがどのファイルを削除するかを算出する方法による
+(以下の
+「<B><A HREF="../man8/sa2.8.html">sa2</A></B>(8)
+
+スクリプトが
+<B>HISTORY</B>
+
+値を適用する方法」を参照)。
+値 28 を使うと、1 ヶ月全部のデータが保持される。
+<B>HISTORY</B>
+
+に 28 より大きい数を設定すると、
+<B>sadc</B>
+
+のオプション -D が古いファイルを上書きしないように考慮する必要がある
+(<B><A HREF="../man8/sadc.8.html">sadc</A></B>(8)
+
+のマニュアルページを参照すること)。
+後者の場合、データファイルは
+<I>saYYYYMMDD</I>
+
+で、レポートファイルは
+<I>sarYYYYMMDD</I>
+
+である。
+ここで、YYYY は現在の年、MM は月、DD は日である。
+<P>
+
+
+
+
+
+<B><A HREF="../man8/sa2.8.html">sa2</A></B>(8)
+
+スクリプトが
+<B>HISTORY</B>
+
+値を適用する方法
+<P>
+
+
+
+
+
+
+
+
+
+
+
+<B>sa2</B>
+
+スクリプトは &quot;find&quot; コマンドを &quot;-mtime&quot; オプションを付けて使い、
+どのファイルを削除するかを算出する。
+&quot;find&quot; コマンドは、この値を &quot;N × 24 時間&quot; として解釈し、
+小数部を無視する。
+これは
+<B>HISTORY</B>
+
+が 1 の場合、削除される sa[r]DD データファイルまたは
+レポートファイルの最終修正時刻が、
+少なくとも 2 日前までという意味になる。
+そして、
+<B>HISTORY</B>
+
+が 28 の場合、29 日前までとなる。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B>HISTORY</B>
+
+が 28 の場合に実際にどのように適用されるかは、
+<B>sa2</B>
+
+が &quot;find&quot; コマンドを発行して、
+システムの午前 0 時の直前に古いファイルを削除するかを考える必要がある。
+<B>sadc</B>
+
+の最初のレコードは前日のデータファイルに書かれる
+(よって修正時刻は少しだけずれる) ので、
+<B>sa2</B>
+
+スクリプトは 30 個のファイルを触らずに残す。
+そのため、28 に設定すると、
+現在の日付のデータファイルをカウントし、指定した日の大部分で、
+31 個のファイル (月の日数により 30 ファイル) が /var/log/sa ディレクトリに残る。
+<P>
+
+4月30日: 31 ファイル (3月31日、4月1日-30日)
+<BR>
+
+
+5月1日: 30 ファイル (4月2日-30日、5月1日)
+<P>
+
+
+(指定した日の正午に調べられた場合) 以下の例外がある点に注意すること。
+<P>
+
+2月28日: 31 ファイル (1月29日-31日、2月1日-28日)
+<BR>
+
+
+3月1日: 30 ファイル (1月30日-31日、2月2日-28日、3月1日)
+<BR>
+
+
+3月2日: 29 ファイル (1月31日、2月3日-28日、3月1日-2日)
+<BR>
+
+
+3月3日: 28 ファイル (2月4日-28日、3月1日-3日)
+<BR>
+
+
+3月4日-28日: 28 ファイル
+<BR>
+
+
+3月29日: 29 ファイル
+<BR>
+
+
+3月30日: 30 ファイル
+<BR>
+
+
+3月31日: 31 ファイル
+<P>
+
+
+(閏年の 3 月にいくつのファイルが残るかは、読者への練習に取っておく。)
+<P>
+
+名前フォーマット sa[r]YYYYMMDD を使った場合は、より単純である。
+
+
+
+
+
+
+上記を同じロジックを適用し、指定した日の大部分で、常に
+<B>HISTORY</B>
+
++ 3 ファイルが
+<I>/var/log/sa</I>
+
+ディレクトリにあることが分かるだろう。
+<P>
+<DT><B>REPORTS</B>
+
+<DD>
+
+
+
+
+
+<B>sa2</B>
+
+スクリプトがレポート
+(<I>sarDD</I>
+
+ファイル) を生成しないようにするには、
+この変数を false にすること。
+<P>
+<DT><B>SA_DIR</B>
+
+<DD>
+
+
+
+標準システム活性度日次データファイルとレポートファイルが
+保存されるディレクトリ。
+デフォルト値は
+<I>/var/log/sa</I>
+
+である。
+<P>
+<DT><B>SADC_OPTIONS</B>
+
+<DD>
+
+
+<B><A HREF="../man8/sadc.8.html">sadc</A></B>(8)
+
+に渡されるオプション。
+
+
+
+
+これらのオプション
+(<B><A HREF="../man8/sadc.8.html">sadc</A></B>(8)
+
+マニュアルページを参照) を指定すると、
+日次データファイルに保存される追加データが選択できる。
+
+
+これらのオプションは新しいデータファイルが作成されるときにのみ
+使われる。
+既に存在するデータファイルについては、無視される。
+<P>
+<DT><B>YESTERDAY</B>
+
+<DD>
+
+
+
+
+
+
+
+デフォルトでは
+<B>sa2</B>
+
+スクリプトは昨日のサマリーを生成する。
+それは、cron ジョブが通常は午前 0 時を過ぎた直後に実行されるからである。
+<B>sa2</B>
+
+に同じ日のサマリーを生成させたい場合
+(例えば、cron ジョブを 23:53 に実行する場合)、
+この変数を no に設定すること。
+<P>
+<DT><B>ZIP</B>
+
+<DD>
+
+データファイルとレポートファイルの圧縮に使うプログラム。
+<P>
+
+</DL>
+<A NAME="lbAD">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/etc/sysconfig/sysstat</I>
+
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>著者</H2>
+
+Sebastien Godard (sysstat &lt;at&gt; orange.fr)
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/sadc.8.html">sadc</A></B>(8),
+
+<B><A HREF="../man8/sa1.8.html">sa1</A></B>(8),
+
+<B><A HREF="../man8/sa2.8.html">sa2</A></B>(8)
+
+<P>
+<I><A HREF="http://pagesperso-orange.fr/sebastien.godard/">http://pagesperso-orange.fr/sebastien.godard/</A></I>
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">説明</A><DD>
+<DT><A HREF="#lbAD">ファイル</A><DD>
+<DT><A HREF="#lbAE">著者</A><DD>
+<DT><A HREF="#lbAF">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:57:46 GMT, March 28, 2020
+</BODY>
+</HTML>

@@ -1,0 +1,188 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SA2</TITLE>
+</HEAD><BODY>
+<H1>SA2</H1>
+Section: Linux User's Manual (8)<BR>Updated: JUNE 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+sa2 - 現在の標準システム活性度日次データファイルからレポートを作成する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>/usr/lib64/sa/sa2</B>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+
+
+<B>sa2</B>
+
+コマンドは
+<B>sar</B>
+
+コマンドを使ったシェルプログラムの一種で、
+日次レポートを
+<I>sarDD</I>
+
+または
+<I>sarYYYYMMDD</I>
+
+ファイルに書き出す。
+ここで、YYYY は現在の年、MM は月、DD は日である。
+
+
+
+デフォルトでは、このレポートは
+<I>/var/log/sa</I>
+
+に置かれている。
+
+
+
+<B>sa2</B>
+
+コマンドはデフォルトでは 1 週間以上前のレポートを削除も行う。
+
+
+
+
+
+
+<B>HISTORY</B>
+
+環境変数を設定することで、レポートの保持期間を長く (もしくは短く) できる。
+詳細は
+<B><A HREF="../man5/sysstat.5.html">sysstat</A></B>(5)
+
+マニュアルページを参照すること。
+<P>
+
+
+
+
+
+<B>sa2</B>
+
+コマンドは
+<B>sar</B>
+
+コマンドの大部分のフラグとパラメータを受け付ける。
+<P>
+
+
+
+<B>sa2</B>
+
+コマンドは cron コマンドから自動的に開始するようにデザインされている。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>例</H2>
+
+
+
+
+<B>sa2</B>
+
+コマンドを毎日起動するには、
+以下のエントリを root の crontab ファイルに追加すること。
+<P>
+<B>5 19 * * 1-5 /usr/lib64/sa/sa2 -A &amp;</B>
+
+<P>
+
+
+
+
+
+
+これはデフォルトの日次レポート
+<I>sarDD</I>
+
+を
+<I>/var/log/sa</I>
+
+に生成する。
+ここで DD パラメータは日を表す。
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/var/log/sa/sarDD</I>
+
+<BR>
+
+<I>/var/log/sa/sarYYYYMMDD</I>
+
+<DL COMPACT><DT><DD>
+
+
+
+標準システム活性度日次データファイル
+(standard system activity daily data file) とデフォルトの場所。
+YYYY は現在の年、MM は月、DD は日である。
+<P>
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>著者</H2>
+
+Sebastien Godard (sysstat &lt;at&gt; orange.fr)
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/sar.1.html">sar</A></B>(1),
+
+<B><A HREF="../man8/sadc.8.html">sadc</A></B>(8),
+
+<B><A HREF="../man8/sa1.8.html">sa1</A></B>(8),
+
+<B><A HREF="../man1/sadf.1.html">sadf</A></B>(1),
+
+<B><A HREF="../man5/sysstat.5.html">sysstat</A></B>(5)
+
+<P>
+<I><A HREF="http://pagesperso-orange.fr/sebastien.godard/">http://pagesperso-orange.fr/sebastien.godard/</A></I>
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">例</A><DD>
+<DT><A HREF="#lbAF">ファイル</A><DD>
+<DT><A HREF="#lbAG">著者</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:57:46 GMT, March 28, 2020
+</BODY>
+</HTML>
