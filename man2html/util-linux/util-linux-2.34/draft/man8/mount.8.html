@@ -1195,22 +1195,37 @@ mount コマンドは、ファイルシステムのマウント元とマウン�
 <DT><B>-B</B>,<B> --bind</B>
 
 <DD>
-Remount a subtree somewhere else (so that its contents are available
-in both places).  See above, under <B>Bind mounts</B>.
+
+
+サブツリーをどこか別の場所に再マウントする
+(それにより、ファイルシステムの内容は両方の場所で利用可能になる)。
+上記の <B>bind マウント</B> を参照すること。
 <DT><B>-c</B>,<B> --no-canonicalize</B>
 
 <DD>
-Don't canonicalize paths.  The mount command canonicalizes all paths
-(from command line or fstab) by default.  This option can be used
-together with the
+
+
+
+
+
+
+
+パスを正則化 (canonicalize) しない。
+マウントコマンドは、全てのパスを (コマンドラインからであっても、fstab からであっても)
+デフォルトで正則化する。
+このオプションは、正則化した絶対パスに対して、
 <B>-f</B>
 
-flag for already canonicalized absolute paths.  The option is designed for mount
-helpers which call <B>mount -i</B>.  It is strongly recommended to not use this
-command-line option for normal mount operations.
+フラグとともに使うことができる。
+このオプションは、<B>mount -i</B> を呼び出すマウントヘルパーのために、
+設計されている。
+このコマンドラインオプションを通常のマウント操作として
+使わないことを、強く推奨する。
 <P>
-Note that <B><A HREF="../man8/mount.8.html">mount</A></B>(8) does not pass this option to the
-<B>/sbin/mount.</B><I>type</I> helpers.
+
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8) は、このオプションを
+<B>/sbin/mount.</B><I>type</I> ヘルパーに渡さない。
 <DT><B>-F</B>,<B> --fork</B>
 
 <DD>
@@ -1266,18 +1281,25 @@ Note that <B><A HREF="../man8/mount.8.html">mount</A></B>(8) does not pass this 
 <I>/etc/mtab</I>
 
 に書き込む目的にも用いることができる。
-The <B>-f</B> option
-checks for an existing record in /etc/mtab and fails when the record already
-exists (with a regular non-fake mount, this check is done by the kernel).
+
+
+
+<B>-f</B> オプションは、/etc/mtab の既存のレコードをチェックし、
+レコードが既に存在する場合、失敗する。
+(通常のフェイクでないマウントがチェックされる。このチェックは、
+カーネルで行われる。)
 <DT><B>-i, --internal-only</B><DD>
 
 <B>/sbin/mount.</B><I>filesystem</I> ヘルパがあっても、呼び出さない。
 <DT><B>-L</B>,<B> --label </B><I>label</I>
 
 <DD>
-Mount the partition that has the specified
-<I>label</I>.
 
+
+指定した
+<I>label</I>
+
+を持つパーティションをマウントする。
 <DT><B>-l</B>,<B> --show-labels</B>
 
 <DD>
@@ -1307,8 +1329,10 @@ reiserfs のラベルを設定するには
 <DT><B>-M</B>,<B> --move</B>
 
 <DD>
-Move a subtree to some other place.  See above, the subsection
-<B>The move operation</B>.
+
+
+サブツリーをどこか別の場所に移動する。
+上記のサブセクション <B>move 操作</B> を参照すること。
 <DT><B>-n</B>,<B> --no-mtab</B>
 
 <DD>
@@ -4738,6 +4762,6 @@ mount コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 16:21:44 GMT, March 28, 2020
+Time: 17:35:47 GMT, March 28, 2020
 </BODY>
 </HTML>
