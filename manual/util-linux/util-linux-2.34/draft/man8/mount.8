@@ -1161,65 +1161,109 @@ reiserfs のラベルを設定するには
 がリードオンリーのファイルシステムの場合などである。
 .TP
 .BR \-N , " \-\-namespace " \fIns
-Perform mount in namespace specified by \fIns\fR.
-\fIns\fR is either PID of process running in that namespace
-or special file representing that namespace.
+.\"O Perform mount in namespace specified by \fIns\fR.
+.\"O \fIns\fR is either PID of process running in that namespace
+.\"O or special file representing that namespace.
+\fIns\fR で指定された名前空間でマウントを実行する。
+\fIns\fR はその名前空間で実行されているプロセスの PID、
+または名前空間を表すスペシャルファイルである。
 .sp
+.\"O .BR mount (8)
+.\"O switches to the namespace when it reads /etc/fstab, writes /etc/mtab (or writes to /run/mount) and calls
+.\"O .BR mount (2)
+.\"O system call, otherwise it runs in the original namespace. It means that the target namespace does not have
+.\"O to contain any libraries or another requirements necessary to execute
+.\"O .BR mount (2)
+.\"O command.
 .BR mount (8)
-switches to the namespace when it reads /etc/fstab, writes /etc/mtab (or writes to /run/mount) and calls
+は、/etc/fstab を読んで /etc/mtab に書き込み (または /run/mount に書き込み)、
 .BR mount (2)
-system call, otherwise it runs in the original namespace. It means that the target namespace does not have
-to contain any libraries or another requirements necessary to execute
+システムコールを呼び出し、名前空間を切り替える。
+さもなければ、元々の名前空間で実行する。
+これは、切り替え先の名前空間には、
 .BR mount (2)
-command.
+コマンドを実行するのに必要なライブラリや他に要求されるものを
+含んでいる必要がないことを意味する。
 .sp
-See \fBnamespaces\fR(7) for more information.
+.\"O See \fBnamespaces\fR(7) for more information.
+より詳細な情報は、\fBnamespaces\fR(7) を参照すること。
 .TP
 .BR \-O , " \-\-test\-opts " \fIopts
-Limit the set of filesystems to which the
+.\"O Limit the set of filesystems to which the
+.\"O .B \-a
+.\"O option applies.  In this regard it is like the
+.\"O .B \-t
+.\"O option except that
+.\"O .B \-O
+.\"O is useless without
+.\"O .BR \-a .
+.\"O For example, the command:
 .B \-a
-option applies.  In this regard it is like the
-.B \-t
-option except that
+オプションを適用するファイルシステムを制限する。
+その点については、
 .B \-O
-is useless without
-.BR \-a .
-For example, the command:
+が
+.B \-a
+なしで指定できない点を除けば、
+.B \-t
+オプションに似ている。
+例えば、コマンド:
 .RS
 .RS
 .sp
 .B "mount \-a \-O no_netdev"
 .sp
 .RE
-mounts all filesystems except those which have the option
+.\"O mounts all filesystems except those which have the option
+.\"O .I _netdev
+.\"O specified in the options field in the
+.\"O .I /etc/fstab
+.\"O file.
+はオプション
 .I _netdev
-specified in the options field in the
+が
 .I /etc/fstab
-file.
+ファイルのオプションフィールドで指定されている
+ファイルシステム以外の全てのファイルシステムをマウントする。
 
-It is different from
+.\"O It is different from
+.\"O .B \-t
+.\"O in that each option is matched exactly; a leading
+.\"O .B no
+.\"O at the beginning of one option does not negate the rest.
 .B \-t
-in that each option is matched exactly; a leading
+オプションが厳密にマッチする点が異なる。
 .B no
-at the beginning of one option does not negate the rest.
+をオプションの前に付けると、残りオプションは無効にされない。
 
-The
+.\"O The
+.\"O .B \-t
+.\"O and
+.\"O .B \-O
+.\"O options are cumulative in effect; that is, the command
 .B \-t
-and
+と
 .B \-O
-options are cumulative in effect; that is, the command
+オプションは機能が足し合わされる。
+つまり、コマンド
 .RS
 .sp
 .B "mount \-a \-t ext2 \-O _netdev"
 .sp
 .RE
-mounts all ext2 filesystems with the _netdev option, not all filesystems
-that are either ext2 or have the _netdev option specified.
+.\"O mounts all ext2 filesystems with the _netdev option, not all filesystems
+.\"O that are either ext2 or have the _netdev option specified.
+は -netdev オプションが付けられた ext2 ファイルシステムをマウントし、
+ext2 ファイルシステム、または _netdev オプションのいずれかの場合は、
+マウントしない。
 .RE
 .TP
 .BR \-o , " \-\-options " \fIopts
-Use the specified mount options.  The \fIopts\fR argument is
-a comma-separated list.  For example:
+.\"O Use the specified mount options.  The \fIopts\fR argument is
+.\"O a comma-separated list.  For example:
+指定されたマウントオプションを使う。
+\fIopts\fR 引き数はカンマ区切りのリストである。
+例:
 .RS
 .RS
 .sp
@@ -1227,35 +1271,59 @@ a comma-separated list.  For example:
 .sp
 .RE
 
-For more details, see the
-.B FILESYSTEM-INDEPENDENT MOUNT OPTIONS
-and
-.B FILESYSTEM-SPECIFIC MOUNT OPTIONS
-sections.
+.\"O For more details, see the
+.\"O .B FILESYSTEM-INDEPENDENT MOUNT OPTIONS
+.\"O and
+.\"O .B FILESYSTEM-SPECIFIC MOUNT OPTIONS
+.\"O sections.
+より詳細は
+.B ファイルシステム非依存の MOUNT オプション
+と
+.B ファイルシステム依存の MOUNT オプション
+のセクションを参照すること。
 .RE
 
 .TP
 .BR "\-\-options\-mode " \fImode
-Controls how to combine options from fstab/mtab with options from command line.
-\fImode\fR can be one of
-.BR ignore ", " append ", " prepend " or " replace .
-For example \fBappend\fR means that options from fstab are appended to options from command line.
-Default value is \fBprepend\fR -- it means command line options are evaluated after fstab options.
-Note that the last option wins if there are conflicting ones.
+.\"O Controls how to combine options from fstab/mtab with options from command line.
+.\"O \fImode\fR can be one of
+.\"O .BR ignore ", " append ", " prepend " or " replace .
+.\"O For example \fBappend\fR means that options from fstab are appended to options from command line.
+.\"O Default value is \fBprepend\fR -- it means command line options are evaluated after fstab options.
+.\"O Note that the last option wins if there are conflicting ones.
+コマンドラインからのオプションを、fstab/mtab のオプションとどのように組み合わせるかを制御する。
+\fImode\fR は
+.BR ignore ", " append ", " prepend ", " replace
+のいずれかである。
+例えば、\fBappend\fR は、fstab のオプションはコマンドラインから
+指定されたオプションに足し合わされる。
+デフォルト値は \fBprepend\fR である。-- これは、コマンドラインオプションが
+fstab オプションの後に評価されることを意味する。
+オプションが衝突する場合、最後のオプションが勝つ点に注意すること。
 
 .TP
 .BR "\-\-options\-source " \fIsource
-Source of default options.
-\fIsource\fR is comma separated list of
-.BR fstab ", " mtab " and " disable .
-\fBdisable\fR disables
-.BR fstab " and " mtab
-and disables \fB\-\-options\-source\-force\fR.
-Default value is \fBfstab,mtab\fR.
+.\"O Source of default options.
+.\"O \fIsource\fR is comma separated list of
+.\"O .BR fstab ", " mtab " and " disable .
+.\"O \fBdisable\fR disables
+.\"O .BR fstab " and " mtab
+.\"O and disables \fB\-\-options\-source\-force\fR.
+.\"O Default value is \fBfstab,mtab\fR.
+デフォルトオプションの指定元。
+\fIsource\fR は
+.BR fstab ", " mtab ", " disable
+をカンマ区切りのリストで指定したものである。
+\fBdisable\fR は
+.BR fstab " と " mtab
+を無効化し、\fB\-\-options\-source\-force\fR を無効化する。
+デフォルト値は \fBfstab,mtab\fR である。
 
 .TP
 .B \-\-options\-source\-force
-Use options from fstab/mtab even if both \fIdevice\fR and \fIdir\fR are specified.
+.\"O Use options from fstab/mtab even if both \fIdevice\fR and \fIdir\fR are specified.
+\fIdevice\fR と \fIdir\fR の両方が指定された場合も、
+fstab/mtab からのオプションを使う。
 
 .TP
 .BR \-R , " \-\-rbind"
