@@ -1352,38 +1352,61 @@ reiserfs のラベルを設定するには
 <DT><B>-N</B>,<B> --namespace </B><I>ns</I>
 
 <DD>
-Perform mount in namespace specified by <I>ns</I>.
-<I>ns</I> is either PID of process running in that namespace
-or special file representing that namespace.
+
+
+
+<I>ns</I> で指定された名前空間でマウントを実行する。
+<I>ns</I> はその名前空間で実行されているプロセスの PID、
+または名前空間を表すスペシャルファイルである。
 <P>
+
+
+
+
+
+
+
 <B><A HREF="../man8/mount.8.html">mount</A></B>(8)
 
-switches to the namespace when it reads /etc/fstab, writes /etc/mtab (or writes to /run/mount) and calls
+は、/etc/fstab を読んで /etc/mtab に書き込み (または /run/mount に書き込み)、
 <B><A HREF="../man2/mount.2.html">mount</A></B>(2)
 
-system call, otherwise it runs in the original namespace. It means that the target namespace does not have
-to contain any libraries or another requirements necessary to execute
+システムコールを呼び出し、名前空間を切り替える。
+さもなければ、元々の名前空間で実行する。
+これは、切り替え先の名前空間には、
 <B><A HREF="../man2/mount.2.html">mount</A></B>(2)
 
-command.
+コマンドを実行するのに必要なライブラリや他に要求されるものを
+含んでいる必要がないことを意味する。
 <P>
-See <B><A HREF="../man7/namespaces.7.html">namespaces</A></B>(7) for more information.
+
+より詳細な情報は、<B><A HREF="../man7/namespaces.7.html">namespaces</A></B>(7) を参照すること。
 <DT><B>-O</B>,<B> --test-opts </B><I>opts</I>
 
 <DD>
-Limit the set of filesystems to which the
+
+
+
+
+
+
+
+
+
 <B>-a</B>
 
-option applies.  In this regard it is like the
-<B>-t</B>
-
-option except that
+オプションを適用するファイルシステムを制限する。
+その点については、
 <B>-O</B>
 
-is useless without
-<B>-a</B>.
+が
+<B>-a</B>
 
-For example, the command:
+なしで指定できない点を除けば、
+<B>-t</B>
+
+オプションに似ている。
+例えば、コマンド:
 <DL COMPACT><DT><DD>
 <DL COMPACT><DT><DD>
 <P>
@@ -1392,29 +1415,44 @@ For example, the command:
 <P>
 </DL>
 
-mounts all filesystems except those which have the option
+
+
+
+
+
+はオプション
 <I>_netdev</I>
 
-specified in the options field in the
+が
 <I>/etc/fstab</I>
 
-file.
+ファイルのオプションフィールドで指定されている
+ファイルシステム以外の全てのファイルシステムをマウントする。
 <P>
-It is different from
+
+
+
+
+
 <B>-t</B>
 
-in that each option is matched exactly; a leading
+オプションが厳密にマッチする点が異なる。
 <B>no</B>
 
-at the beginning of one option does not negate the rest.
+をオプションの前に付けると、残りオプションは無効にされない。
 <P>
-The
+
+
+
+
+
 <B>-t</B>
 
-and
+と
 <B>-O</B>
 
-options are cumulative in effect; that is, the command
+オプションは機能が足し合わされる。
+つまり、コマンド
 <DL COMPACT><DT><DD>
 <P>
 <B>mount -a -t ext2 -O _netdev</B>
@@ -1422,15 +1460,21 @@ options are cumulative in effect; that is, the command
 <P>
 </DL>
 
-mounts all ext2 filesystems with the _netdev option, not all filesystems
-that are either ext2 or have the _netdev option specified.
+
+
+は -netdev オプションが付けられた ext2 ファイルシステムをマウントし、
+ext2 ファイルシステム、または _netdev オプションのいずれかの場合は、
+マウントしない。
 </DL>
 
 <DT><B>-o</B>,<B> --options </B><I>opts</I>
 
 <DD>
-Use the specified mount options.  The <I>opts</I> argument is
-a comma-separated list.  For example:
+
+
+指定されたマウントオプションを使う。
+<I>opts</I> 引き数はカンマ区切りのリストである。
+例:
 <DL COMPACT><DT><DD>
 <DL COMPACT><DT><DD>
 <P>
@@ -1440,44 +1484,68 @@ a comma-separated list.  For example:
 </DL>
 
 <P>
-For more details, see the
-<B>FILESYSTEM-INDEPENDENT MOUNT OPTIONS</B>
 
-and
-<B>FILESYSTEM-SPECIFIC MOUNT OPTIONS</B>
 
-sections.
+
+
+
+より詳細は
+<B>ファイルシステム非依存の MOUNT オプション</B>
+
+と
+<B>ファイルシステム依存の MOUNT オプション</B>
+
+のセクションを参照すること。
 </DL>
 
 <P>
 <DT><B>--options-mode </B><I>mode</I>
 
 <DD>
-Controls how to combine options from fstab/mtab with options from command line.
-<I>mode</I> can be one of
-<B>ignore</B>, <B>append</B>, <B>prepend</B> or <B>replace</B>.
 
-For example <B>append</B> means that options from fstab are appended to options from command line.
-Default value is <B>prepend</B> -- it means command line options are evaluated after fstab options.
-Note that the last option wins if there are conflicting ones.
+
+
+
+
+
+コマンドラインからのオプションを、fstab/mtab のオプションとどのように組み合わせるかを制御する。
+<I>mode</I> は
+<B>ignore</B>, <B>append</B>, <B>prepend</B>, <B>replace</B>
+
+のいずれかである。
+例えば、<B>append</B> は、fstab のオプションはコマンドラインから
+指定されたオプションに足し合わされる。
+デフォルト値は <B>prepend</B> である。-- これは、コマンドラインオプションが
+fstab オプションの後に評価されることを意味する。
+オプションが衝突する場合、最後のオプションが勝つ点に注意すること。
 <P>
 <DT><B>--options-source </B><I>source</I>
 
 <DD>
-Source of default options.
-<I>source</I> is comma separated list of
-<B>fstab</B>, <B>mtab</B> and <B>disable</B>.
 
-<B>disable</B> disables
-<B>fstab</B> and <B>mtab</B>
 
-and disables <B>--options-source-force</B>.
-Default value is <B>fstab,mtab</B>.
+
+
+
+
+
+デフォルトオプションの指定元。
+<I>source</I> は
+<B>fstab</B>, <B>mtab</B>, <B>disable</B>
+
+をカンマ区切りのリストで指定したものである。
+<B>disable</B> は
+<B>fstab</B> と <B>mtab</B>
+
+を無効化し、<B>--options-source-force</B> を無効化する。
+デフォルト値は <B>fstab,mtab</B> である。
 <P>
 <DT><B>--options-source-force</B>
 
 <DD>
-Use options from fstab/mtab even if both <I>device</I> and <I>dir</I> are specified.
+
+<I>device</I> と <I>dir</I> の両方が指定された場合も、
+fstab/mtab からのオプションを使う。
 <P>
 <DT><B>-R</B>,<B> --rbind</B>
 
@@ -4762,6 +4830,6 @@ mount コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 17:35:47 GMT, March 28, 2020
+Time: 05:08:12 GMT, March 29, 2020
 </BODY>
 </HTML>
