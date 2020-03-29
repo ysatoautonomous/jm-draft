@@ -1550,61 +1550,103 @@ fstab/mtab からのオプションを使う。
 <DT><B>-R</B>,<B> --rbind</B>
 
 <DD>
-Remount a subtree and all possible submounts somewhere else (so that its
-contents are available in both places).  See above, the subsection
-<B>Bind mounts</B>.
+
+
+
+サブツリーと利用可能な全てのサブマウントを、どこか他の場所に
+再マウントする
+(その内容は両方の場所で利用可能にする)。
+上記のサブセクション <B>bind マウント</B> を参照すること。
 <DT><B>-r</B>,<B> --read-only</B>
 
 <DD>
-Mount the filesystem read-only.  A synonym is
-<B>-o ro</B>.
 
+
+ファイルシステムを読み込みのみでマウントする。
+別名は
+<B>-o ro</B>
+
+である。
 <P>
-Note that, depending on the filesystem type, state and kernel behavior, the
-system may still write to the device.  For example, ext3 and ext4 will replay the
-journal if the filesystem is dirty.  To prevent this kind of write access, you
-may want to mount an ext3 or ext4 filesystem with the <B>ro,noload</B> mount
-options or set the block device itself to read-only mode, see the
+
+
+
+
+
+
+
+ファイルシステムタイプとファイルシステムの状態とカーネルの
+挙動により、システムがデバイスに書き込むことができる場合もある。
+例えば、ext3 と ext4 では、ファイルシステムがダーティである場合、ジャーナルを再生する。
+このような書き込みアクセスを防止するには、
+ext3 または ext4 ファイルシステムを <B>ro,noload</B> マウントオプションでマウントするか、
+デバイス自身を読み込みのみのモードに設定する。
 <B><A HREF="../man8/blockdev.8.html">blockdev</A></B>(8)
 
-command.
+コマンドを参照すること。
 <DT><B>-s</B>
 
 <DD>
-Tolerate sloppy mount options rather than failing.  This will ignore mount
-options not supported by a filesystem type.  Not all filesystems support this
-option.  Currently it's supported by the <B>mount.nfs</B> mount helper only.
+
+
+
+ずさんな (sloppy) マウントオプションについて、失敗させるのではなく、大目に見る。
+ファイルシステムタイプでサポートされていないマウントオプションを
+無視する。
+全てのファイルシステムが、このオプションをサポートしている
+わけではない。
+現在、<B>mount.nfs</B> マウントヘルパーでのみサポートされている。
 <DT><B>--source</B><I> device</I>
 
 <DD>
-If only one argument for the mount command is given then the argument might be
-interpreted as target (mountpoint) or source (device).  This option allows to
-explicitly define that the argument is the mount source.
+
+
+
+マウントコマンドの引き数が 1 つだけ指定された場合、
+その引き数はマウント先 (マウントポイント) またはマウント元 (デバイス) として
+解釈される。
+このオプションは引き数が明示的にマウント元であることを定義できる。
 <DT><B>--target</B><I> directory</I>
 
 <DD>
-If only one argument for the mount command is given then the argument might be
-interpreted as target (mountpoint) or source (device).  This option allows to
-explicitly define that the argument is the mount target.
+
+
+
+マウントコマンドの引き数が 1 つだけ指定された場合、
+その引き数はマウント先 (マウントポイント) またはマウント元 (デバイス) として
+解釈される。
+このオプションは引き数が明示的にマウント先であることを定義できる。
 <DT><B>-T</B>,<B> --fstab </B><I>path</I>
 
 <DD>
-Specifies an alternative fstab file.  If <I>path</I> is a directory then the files
-in the directory are sorted by
-<B><A HREF="../man3/strverscmp.3.html">strverscmp</A></B>(3);
 
-files that start with &quot;.&quot; or without an .fstab extension are ignored.  The option
-can be specified more than once.  This option is mostly designed for initramfs
-or chroot scripts where additional configuration is specified beyond standard
-system configuration.
+
+
+
+
+
+
+別の fstab ファイルを指定する。
+<I>path</I> がディレクトリの場合、ディレクトリ内のファイルは
+<B><A HREF="../man3/strverscmp.3.html">strverscmp</A></B>(3)
+
+でソートされ、&quot;.&quot; で始まるファイルと、
+.fstab 拡張子のないファイルは無視される。
+このオプションは複数回指定できる。
+このオプションは、ほぼ initramfs または chroot スクリプトのために設計されており、
+追加の設定は、標準のシステム設定の範囲を越えて指定されている。
 <P>
-Note that <B><A HREF="../man8/mount.8.html">mount</A></B>(8) does not pass the option <B>--fstab</B> to the
-<B>/sbin/mount.</B><I>type</I> helpers, meaning that the alternative fstab files will be
-invisible for the helpers.  This is no problem for normal mounts, but user
-(non-root) mounts always require fstab to verify the user's rights.
-<DT><DT><B>-t</B>,<B> --types </B><I>fstype</I>
 
-<DD>
+
+
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8) はオプション <B>--fstab</B> を
+<B>/sbin/mount.</B><I>type</I> ヘルパーに渡さない点に注意すること。
+つまり、別の fstab ファイルはヘルパーから見えない。
+これは通常のマウントでは問題なく、(root 以外の) ユーザーによるマウントは、
+ユーザーの権限をチェックするために、fstab が常に必要がある。
+<DT><B>-t</B>,<B> --types </B><I>fstype</I>
+
 <DD>
 
 
@@ -1630,16 +1672,25 @@ invisible for the helpers.  This is no problem for normal mounts, but user
 もっとも一般的なファイルシステムは、ext2, ext3, ext4,
 xfs, btrfs, vfat, sysfs, proc, nfs, cifs である。
 <P>
-The programs
+
+
+
+
+
+
+
+
+プログラム
 <B>mount</B>
 
-and
+と
 <B>umount</B>
 
-support filesystem subtypes.  The subtype is defined by a '.subtype' suffix.  For
-example  'fuse.sshfs'.  It's recommended to use subtype notation rather than add
-any prefix to the mount source (for example 'sshfs#example.com' is
-deprecated).
+はファイルシステムのサブタイプををサポートする。
+サブタイプは '.subtype' サフィックスで定義される。
+例えば、'fuse.sshfs' のようになる。
+マウント元にプレフィックスを足すよりは、サブタイプの記法を使う方が
+推奨される (例えば 'sshfs#example.com' は推奨されない)。
 <P>
 
 
@@ -1678,7 +1729,8 @@ deprecated).
 <I>/proc/filesystems</I>
 
 を読み込もうとする。
-そして、読み込んだファイルにリストされているファイルシステムがテストされる。
+そして、読み込んだファイルにリストされているファイルシステムが
+テストされる。
 ただし &quot;nodev&quot; ラベルの付いているもの (すなわち
 <I>devpts</I>,
 
@@ -1702,8 +1754,11 @@ deprecated).
 <I>/proc/filesystems</I>
 
 を読み込む。
-While trying, all filesystem types will be
-mounted with the mount option <B>silent</B>.
+
+
+マウントを試す際、
+全てのファイルシステムタイプがマウントオプション
+<B>silent</B> が指定されてマウントされる。
 <P>
 
 
@@ -1714,7 +1769,8 @@ mounted with the mount option <B>silent</B>.
 
 <B>auto</B>
 
-タイプはフロッピーを一般ユーザーがマウントする場合に特に便利であろう。
+タイプはフロッピーを一般ユーザーがマウントする場合に特に
+便利であろう。
 プローブの順序を変更したい場合
 (例えば msdos の前に vfat の試行をしたい場合や
 ext2 の前に ext3 を試行したい場合) や、
@@ -1739,26 +1795,28 @@ ext2 の前に ext3 を試行したい場合) や、
 
 
 複数のタイプをコンマで区切ったリストで指定することもできる。
-for option
+オプション
 <B>-t</B>
 
-as well as in an
+は
 <I>/etc/fstab</I>
 
-entry.  The list of filesystem types for option
+エントリと同様に指定できる。
+オプション
 <B>-t</B>
 
-can be prefixed with
+のファイルシステムタイプのリストは、
 <B>no</B>
 
-to specify the filesystem types on which no action should be taken.
-The prefix
+をプレフィックスにして、そのファイルシステムタイプに対して
+何もしないことを指定する。
+プレフィックス
 <B>no</B>
 
-has no effect when specified in an
+は
 <I>/etc/fstab</I>
 
-entry.
+エントリに指定された場合も何もしない。
 <P>
 
 
@@ -1792,63 +1850,100 @@ entry.
 
 を除くすべてのファイルシステムをマウントする。
 <P>
-For most types all the
+
+
+
+
+
+大部分のタイプに対して、全ての
 <B>mount</B>
 
-program has to do is issue a simple
+プログラムは単純に
 <B><A HREF="../man2/mount.2.html">mount</A></B>(2)
 
-system call, and no detailed knowledge of the filesystem type is required.
-For a few types however (like nfs, nfs4, cifs, smbfs, ncpfs) an ad hoc code is
-necessary.  The nfs, nfs4, cifs, smbfs, and ncpfs filesystems
-have a separate mount program.  In order to make it possible to
-treat all types in a uniform way, <B>mount</B> will execute the program
+システムコールを発行するだけであり、ファイルシステムタイプについての
+詳細な知識は必要ない。
+
+
+
+
+
+
+
+一方で、(nfs, nfs4, cifs, smbfs, ncpfs のような) いくつかのタイプでは、
+アドホックなコードが必要である。
+nfs, nfs4, cifs, smbfs, ncpfs ファイルシステムについては、
+別々のマウントプログラムがある。
+全てのタイプを統一された方法で扱えるようにするため、
+<B>mount</B> は、タイプ
+<I>type</I>
+
+が指定されて呼び出された場合、(存在すれば) プログラム
 <B>/sbin/mount.</B><I>type</I>
 
-(if that exists) when called with type
-<I>type</I>.
+を実行する。
 
-Since different versions of the
+
+
+
+
 <B>smbmount</B>
 
-program have different calling conventions,
+プログラムはバージョン毎には別の呼び出し方があるので、
 <B>/sbin/mount.smbfs</B>
 
-may have to be a shell script that sets up the desired call.
+は、望ましい呼び出しを実現するためのシェルスクリプトにする
+必要がある。
 </DL>
 
 <DT><B>-U</B>,<B> --uuid </B><I>uuid</I>
 
 <DD>
-Mount the partition that has the specified
-<I>uuid</I>.
 
+
+指定された
+<I>uuid</I>
+
+を持つパーティションをマウントする。
 <DT><B>-v</B>,<B> --verbose</B>
 
 <DD>
-Verbose mode.
+
+詳細なモード。
 <DT><B>-w</B>,<B> --rw</B>,<B> --read-write</B>
 
 <DD>
-Mount the filesystem read/write. The read-write is kernel default.  A synonym is
-<B>-o rw</B>.
 
+
+ファイルシステムを読み書きモードでマウントする。
+読み書きモードはカーネルのデフォルトである。
+別名は
+<B>-o rw</B>
+
+である。
 <P>
-Note that specify <B>-w</B> on command line forces <B>mount</B> command
-to never try read-only mount on write-protected devices. The default is
-try read-only if the previous mount syscall with read-write flags failed.
+
+
+
+コマンドラインで <B>-w</B> を指定した場合、<B>mount</B> に
+書き込み禁止されたデバイスに読み込みのみのマウントを試させない。
+デフォルトでは、読み書きフラグでの mount システムコールが失敗した場合、
+読み込みのみのマウントを試す。
 <DT><B>-V</B>,<B> --version</B>
 
 <DD>
-Display version information and exit.
+
+バージョン情報を表示して、終了する。
 <DT><B>-h</B>,<B> --help</B>
 
 <DD>
-Display help text and exit.
+
+ヘルプを表示して、終了する。
 <P>
+
 </DL>
 <A NAME="lbAM">&nbsp;</A>
-<H2>FILESYSTEM-INDEPENDENT MOUNT OPTIONS</H2>
+<H2>ファイルシステム非依存の MOUNT オプション</H2>
 
 
 
@@ -1862,11 +1957,18 @@ Display help text and exit.
 
 の中でのみ意味を持つものもある。
 <P>
-Some of these options could be enabled or disabled by default
-in the system kernel.  To check the current setting see the options
-in /proc/mounts.  Note that filesystems also have per-filesystem
-specific default mount options (see for example <B>tune2fs -l</B>
-output for extN filesystems).
+
+
+
+
+
+これらのオプションのいくつかは、システムカーネルでデフォルトで
+有効または無効にされる。
+現在の設定を見るには、/proc/mounts のオプションを参照すること。
+ファイルシステムにはファイルシステム毎のデフォルトの
+マウントオプションがある
+(例えば extN ファイルシステムについては
+<B>tune2fs -l</B> の出力を参照すること)。
 <P>
 
 
@@ -4789,7 +4891,7 @@ mount コマンドは util-linux パッケージの一部であり、
 <DT><A HREF="#lbAK">共有 (shared) サブツリー操作</A><DD>
 </DL>
 <DT><A HREF="#lbAL">コマンドラインオプション</A><DD>
-<DT><A HREF="#lbAM">FILESYSTEM-INDEPENDENT MOUNT OPTIONS</A><DD>
+<DT><A HREF="#lbAM">ファイルシステム非依存の MOUNT オプション</A><DD>
 <DT><A HREF="#lbAN">ファイルシステム独自のマウントオプション</A><DD>
 <DL>
 <DT><A HREF="#lbAO">adfs のマウントオプション</A><DD>
@@ -4830,6 +4932,6 @@ mount コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 05:08:12 GMT, March 29, 2020
+Time: 08:28:27 GMT, March 29, 2020
 </BODY>
 </HTML>
