@@ -1327,51 +1327,93 @@ fstab/mtab からのオプションを使う。
 
 .TP
 .BR \-R , " \-\-rbind"
-Remount a subtree and all possible submounts somewhere else (so that its
-contents are available in both places).  See above, the subsection
-\fBBind mounts\fR.
+.\"O Remount a subtree and all possible submounts somewhere else (so that its
+.\"O contents are available in both places).  See above, the subsection
+.\"O \fBBind mounts\fR.
+サブツリーと利用可能な全てのサブマウントを、どこか他の場所に
+再マウントする
+(その内容は両方の場所で利用可能にする)。
+上記のサブセクション \fBbind マウント\fR を参照すること。
 .TP
 .BR \-r , " \-\-read\-only"
-Mount the filesystem read-only.  A synonym is
-.BR "\-o ro" .
+.\"O Mount the filesystem read-only.  A synonym is
+.\"O .BR "\-o ro" .
+ファイルシステムを読み込みのみでマウントする。
+別名は
+.B "\-o ro"
+である。
 .sp
-Note that, depending on the filesystem type, state and kernel behavior, the
-system may still write to the device.  For example, ext3 and ext4 will replay the
-journal if the filesystem is dirty.  To prevent this kind of write access, you
-may want to mount an ext3 or ext4 filesystem with the \fBro,noload\fR mount
-options or set the block device itself to read-only mode, see the
+.\"O Note that, depending on the filesystem type, state and kernel behavior, the
+.\"O system may still write to the device.  For example, ext3 and ext4 will replay the
+.\"O journal if the filesystem is dirty.  To prevent this kind of write access, you
+.\"O may want to mount an ext3 or ext4 filesystem with the \fBro,noload\fR mount
+.\"O options or set the block device itself to read-only mode, see the
+.\"O .BR blockdev (8)
+.\"O command.
+ファイルシステムタイプとファイルシステムの状態とカーネルの
+挙動により、システムがデバイスに書き込むことができる場合もある。
+例えば、ext3 と ext4 では、ファイルシステムがダーティである場合、ジャーナルを再生する。
+このような書き込みアクセスを防止するには、
+ext3 または ext4 ファイルシステムを \fBro,noload\fR マウントオプションでマウントするか、
+デバイス自身を読み込みのみのモードに設定する。
 .BR blockdev (8)
-command.
+コマンドを参照すること。
 .TP
 .B \-s
-Tolerate sloppy mount options rather than failing.  This will ignore mount
-options not supported by a filesystem type.  Not all filesystems support this
-option.  Currently it's supported by the \fBmount.nfs\fR mount helper only.
+.\"O Tolerate sloppy mount options rather than failing.  This will ignore mount
+.\"O options not supported by a filesystem type.  Not all filesystems support this
+.\"O option.  Currently it's supported by the \fBmount.nfs\fR mount helper only.
+ずさんな (sloppy) マウントオプションについて、失敗させるのではなく、大目に見る。
+ファイルシステムタイプでサポートされていないマウントオプションを
+無視する。
+全てのファイルシステムが、このオプションをサポートしている
+わけではない。
+現在、\fBmount.nfs\fR マウントヘルパーでのみサポートされている。
 .TP
 .BI \-\-source " device"
-If only one argument for the mount command is given then the argument might be
-interpreted as target (mountpoint) or source (device).  This option allows to
-explicitly define that the argument is the mount source.
+.\"O If only one argument for the mount command is given then the argument might be
+.\"O interpreted as target (mountpoint) or source (device).  This option allows to
+.\"O explicitly define that the argument is the mount source.
+マウントコマンドの引き数が 1 つだけ指定された場合、
+その引き数はマウント先 (マウントポイント) またはマウント元 (デバイス) として
+解釈される。
+このオプションは引き数が明示的にマウント元であることを定義できる。
 .TP
 .BI \-\-target " directory"
-If only one argument for the mount command is given then the argument might be
-interpreted as target (mountpoint) or source (device).  This option allows to
-explicitly define that the argument is the mount target.
+.\"O If only one argument for the mount command is given then the argument might be
+.\"O interpreted as target (mountpoint) or source (device).  This option allows to
+.\"O explicitly define that the argument is the mount target.
+マウントコマンドの引き数が 1 つだけ指定された場合、
+その引き数はマウント先 (マウントポイント) またはマウント元 (デバイス) として
+解釈される。
+このオプションは引き数が明示的にマウント先であることを定義できる。
 .TP
 .BR \-T , " \-\-fstab " \fIpath
-Specifies an alternative fstab file.  If \fIpath\fP is a directory then the files
-in the directory are sorted by
-.BR strverscmp (3);
-files that start with "."\& or without an \&.fstab extension are ignored.  The option
-can be specified more than once.  This option is mostly designed for initramfs
-or chroot scripts where additional configuration is specified beyond standard
-system configuration.
+.\"O Specifies an alternative fstab file.  If \fIpath\fP is a directory then the files
+.\"O in the directory are sorted by
+.\"O .BR strverscmp (3);
+.\"O files that start with "."\& or without an \&.fstab extension are ignored.  The option
+.\"O can be specified more than once.  This option is mostly designed for initramfs
+.\"O or chroot scripts where additional configuration is specified beyond standard
+.\"O system configuration.
+別の fstab ファイルを指定する。
+\fIpath\fP がディレクトリの場合、ディレクトリ内のファイルは
+.BR strverscmp (3)
+でソートされ、"."\& で始まるファイルと、
+\&.fstab 拡張子のないファイルは無視される。
+このオプションは複数回指定できる。
+このオプションは、ほぼ initramfs または chroot スクリプトのために設計されており、
+追加の設定は、標準のシステム設定の範囲を越えて指定されている。
 .sp
-Note that \fBmount\fR(8) does not pass the option \fB\-\-fstab\fP to the
-\fB/sbin/mount.\fItype\fR helpers, meaning that the alternative fstab files will be
-invisible for the helpers.  This is no problem for normal mounts, but user
-(non-root) mounts always require fstab to verify the user's rights.
-.TP
+.\"O Note that \fBmount\fR(8) does not pass the option \fB\-\-fstab\fP to the
+.\"O \fB/sbin/mount.\fItype\fR helpers, meaning that the alternative fstab files will be
+.\"O invisible for the helpers.  This is no problem for normal mounts, but user
+.\"O (non-root) mounts always require fstab to verify the user's rights.
+\fBmount\fR(8) はオプション \fB\-\-fstab\fP を
+\fB/sbin/mount.\fItype\fR ヘルパーに渡さない点に注意すること。
+つまり、別の fstab ファイルはヘルパーから見えない。
+これは通常のマウントでは問題なく、(root 以外の) ユーザーによるマウントは、
+ユーザーの権限をチェックするために、fstab が常に必要がある。
 .TP
 .BR \-t , " \-\-types " \fIfstype
 .\"O The argument following the
@@ -1395,14 +1437,23 @@ invisible for the helpers.  This is no problem for normal mounts, but user
 もっとも一般的なファイルシステムは、ext2, ext3, ext4,
 xfs, btrfs, vfat, sysfs, proc, nfs, cifs である。
 .sp
-The programs
+.\"O The programs
+.\"O .B mount
+.\"O and
+.\"O .B umount
+.\"O support filesystem subtypes.  The subtype is defined by a '.subtype' suffix.  For
+.\"O example  'fuse.sshfs'.  It's recommended to use subtype notation rather than add
+.\"O any prefix to the mount source (for example 'sshfs#example.com' is
+.\"O deprecated).
+プログラム
 .B mount
-and
+と
 .B umount
-support filesystem subtypes.  The subtype is defined by a '.subtype' suffix.  For
-example  'fuse.sshfs'.  It's recommended to use subtype notation rather than add
-any prefix to the mount source (for example 'sshfs#example.com' is
-deprecated).
+はファイルシステムのサブタイプををサポートする。
+サブタイプは '.subtype' サフィックスで定義される。
+例えば、'fuse.sshfs' のようになる。
+マウント元にプレフィックスを足すよりは、サブタイプの記法を使う方が
+推奨される (例えば 'sshfs#example.com' は推奨されない)。
 
 .\"O If no
 .\"O .B \-t
@@ -1435,7 +1486,8 @@ deprecated).
 さらにこのファイルがなければ
 .I /proc/filesystems
 を読み込もうとする。
-そして、読み込んだファイルにリストされているファイルシステムがテストされる。
+そして、読み込んだファイルにリストされているファイルシステムが
+テストされる。
 ただし "nodev" ラベルの付いているもの (すなわち
 .IR devpts ,
 .IR proc ,
@@ -1453,8 +1505,11 @@ deprecated).
 はその後に
 .I /proc/filesystems
 を読み込む。
-While trying, all filesystem types will be
-mounted with the mount option \fBsilent\fR.
+.\"O While trying, all filesystem types will be
+.\"O mounted with the mount option \fBsilent\fR.
+マウントを試す際、
+全てのファイルシステムタイプがマウントオプション
+\fBsilent\fR が指定されてマウントされる。
 .sp
 .\"O The
 .\"O .B auto
@@ -1464,7 +1519,8 @@ mounted with the mount option \fBsilent\fR.
 .\"O can be useful to change the probe order (e.g., to try vfat before msdos
 .\"O or ext3 before ext2) or if you use a kernel module autoloader.
 .B auto
-タイプはフロッピーを一般ユーザーがマウントする場合に特に便利であろう。
+タイプはフロッピーを一般ユーザーがマウントする場合に特に
+便利であろう。
 プローブの順序を変更したい場合
 (例えば msdos の前に vfat の試行をしたい場合や
 ext2 の前に ext3 を試行したい場合) や、
@@ -1488,20 +1544,22 @@ ext2 の前に ext3 を試行したい場合) や、
 .\"O .I /etc/fstab
 .\"O entry.
 複数のタイプをコンマで区切ったリストで指定することもできる。
-for option
+オプション
 .B \-t
-as well as in an
+は
 .I /etc/fstab
-entry.  The list of filesystem types for option
+エントリと同様に指定できる。
+オプション
 .B \-t
-can be prefixed with
+のファイルシステムタイプのリストは、
 .B no
-to specify the filesystem types on which no action should be taken.
-The prefix
+をプレフィックスにして、そのファイルシステムタイプに対して
+何もしないことを指定する。
+プレフィックス
 .B no
-has no effect when specified in an
+は
 .I /etc/fstab
-entry.
+エントリに指定された場合も何もしない。
 .sp
 .\"O The prefix
 .\"O .B no
@@ -1530,47 +1588,84 @@ entry.
 .I smbfs
 を除くすべてのファイルシステムをマウントする。
 .sp
-For most types all the
+.\"O For most types all the
+.\"O .B mount
+.\"O program has to do is issue a simple
+.\"O .BR mount (2)
+.\"O system call, and no detailed knowledge of the filesystem type is required.
+大部分のタイプに対して、全ての
 .B mount
-program has to do is issue a simple
+プログラムは単純に
 .BR mount (2)
-system call, and no detailed knowledge of the filesystem type is required.
-For a few types however (like nfs, nfs4, cifs, smbfs, ncpfs) an ad hoc code is
-necessary.  The nfs, nfs4, cifs, smbfs, and ncpfs filesystems
-have a separate mount program.  In order to make it possible to
-treat all types in a uniform way, \fBmount\fR will execute the program
+システムコールを発行するだけであり、ファイルシステムタイプについての
+詳細な知識は必要ない。
+.\"O For a few types however (like nfs, nfs4, cifs, smbfs, ncpfs) an ad hoc code is
+.\"O necessary.  The nfs, nfs4, cifs, smbfs, and ncpfs filesystems
+.\"O have a separate mount program.  In order to make it possible to
+.\"O treat all types in a uniform way, \fBmount\fR will execute the program
+.\"O .BI /sbin/mount. type
+.\"O (if that exists) when called with type
+.\"O .IR type .
+一方で、(nfs, nfs4, cifs, smbfs, ncpfs のような) いくつかのタイプでは、
+アドホックなコードが必要である。
+nfs, nfs4, cifs, smbfs, ncpfs ファイルシステムについては、
+別々のマウントプログラムがある。
+全てのタイプを統一された方法で扱えるようにするため、
+\fBmount\fR は、タイプ
+.I type
+が指定されて呼び出された場合、(存在すれば) プログラム
 .BI /sbin/mount. type
-(if that exists) when called with type
-.IR type .
-Since different versions of the
+を実行する。
+.\"O Since different versions of the
+.\"O .B smbmount
+.\"O program have different calling conventions,
+.\"O .B /sbin/mount.smbfs
+.\"O may have to be a shell script that sets up the desired call.
 .B smbmount
-program have different calling conventions,
+プログラムはバージョン毎には別の呼び出し方があるので、
 .B /sbin/mount.smbfs
-may have to be a shell script that sets up the desired call.
+は、望ましい呼び出しを実現するためのシェルスクリプトにする
+必要がある。
 .RE
 .TP
 .BR \-U , " \-\-uuid " \fIuuid
-Mount the partition that has the specified
-.IR uuid .
+.\"O Mount the partition that has the specified
+.\"O .IR uuid .
+指定された
+.I uuid
+を持つパーティションをマウントする。
 .TP
 .BR \-v , " \-\-verbose"
-Verbose mode.
+.\"O Verbose mode.
+詳細なモード。
 .TP
 .BR \-w , " \-\-rw" , " \-\-read\-write"
-Mount the filesystem read/write. The read-write is kernel default.  A synonym is
-.BR "\-o rw" .
+.\"O Mount the filesystem read/write. The read-write is kernel default.  A synonym is
+.\"O .BR "\-o rw" .
+ファイルシステムを読み書きモードでマウントする。
+読み書きモードはカーネルのデフォルトである。
+別名は
+.B "\-o rw"
+である。
 
-Note that specify \fB\-w\fR on command line forces \fBmount\fR command
-to never try read-only mount on write-protected devices. The default is
-try read-only if the previous mount syscall with read-write flags failed.
+.\"O Note that specify \fB\-w\fR on command line forces \fBmount\fR command
+.\"O to never try read-only mount on write-protected devices. The default is
+.\"O try read-only if the previous mount syscall with read-write flags failed.
+コマンドラインで \fB\-w\fR を指定した場合、\fBmount\fR に
+書き込み禁止されたデバイスに読み込みのみのマウントを試させない。
+デフォルトでは、読み書きフラグでの mount システムコールが失敗した場合、
+読み込みのみのマウントを試す。
 .TP
 .BR \-V , " \-\-version"
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .TP
 .BR \-h , " \-\-help"
-Display help text and exit.
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
 
-.SH FILESYSTEM-INDEPENDENT MOUNT OPTIONS
+.\"O .SH FILESYSTEM-INDEPENDENT MOUNT OPTIONS
+.SH ファイルシステム非依存の MOUNT オプション
 .\"O Some of these options are only useful when they appear in the
 .\"O .I /etc/fstab
 .\"O file.
@@ -1581,11 +1676,18 @@ Display help text and exit.
 .I /etc/fstab
 の中でのみ意味を持つものもある。
 
-Some of these options could be enabled or disabled by default
-in the system kernel.  To check the current setting see the options
-in /proc/mounts.  Note that filesystems also have per-filesystem
-specific default mount options (see for example \fBtune2fs \-l\fP
-output for extN filesystems).
+.\"O Some of these options could be enabled or disabled by default
+.\"O in the system kernel.  To check the current setting see the options
+.\"O in /proc/mounts.  Note that filesystems also have per-filesystem
+.\"O specific default mount options (see for example \fBtune2fs \-l\fP
+.\"O output for extN filesystems).
+これらのオプションのいくつかは、システムカーネルでデフォルトで
+有効または無効にされる。
+現在の設定を見るには、/proc/mounts のオプションを参照すること。
+ファイルシステムにはファイルシステム毎のデフォルトの
+マウントオプションがある
+(例えば extN ファイルシステムについては
+\fBtune2fs \-l\fP の出力を参照すること)。
 
 .\"O The following options apply to any filesystem that is being
 .\"O mounted (but not every filesystem actually honors them \(en e.g.\&, the
