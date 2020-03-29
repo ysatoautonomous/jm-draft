@@ -1824,27 +1824,46 @@ fscontext オプションは、特定のセキュリティコンテキストに�
 与えられるのに加え、
 fscontext が提供する総計のコンテキストが実際に設定される。
 
-You can set the default security context for unlabeled files using
+.\"O You can set the default security context for unlabeled files using
+.\"O .B defcontext=
+.\"O option.  This overrides the value set for unlabeled files in the policy and requires a
+.\"O filesystem that supports xattr labeling.
 .B defcontext=
-option.  This overrides the value set for unlabeled files in the policy and requires a
-filesystem that supports xattr labeling.
+オプションを使って、デフォルトセキュリティコンテキストを設定し、
+ファイルのラベルを外すことができる。
+このオプションは、ポリシーでラベルが外されたファイルの値セットを
+上書きし、xattr ラベリングをサポートするファイルシステムを必要とする。
 
-The
+.\"O The
+.\"O .B rootcontext=
+.\"O option allows you to explicitly label the root inode of a FS being mounted
+.\"O before that FS or inode becomes visible to userspace.  This was found to be
+.\"O useful for things like stateless linux.
 .B rootcontext=
-option allows you to explicitly label the root inode of a FS being mounted
-before that FS or inode becomes visible to userspace.  This was found to be
-useful for things like stateless linux.
+オプションは、ファイルシステムまたは i ノードがユーザ空間に見える前に、
+マウントされるファイルシステムのルート i ノードに明示的にラベル付けできる。
+これは、ステートレスな Linux で便利なことがわかるだろう。
 
-Note that the kernel rejects any remount request that includes the context
-option, \fBeven\fP when unchanged from the current context.
+.\"O Note that the kernel rejects any remount request that includes the context
+.\"O option, \fBeven\fP when unchanged from the current context.
+カーネルは、現在のコンテキストから\fBたとえ\fP変更されていなくても、
+コンテキストオプションを含む再マウント要求を拒否する。
 
-.BR "Warning: the \fIcontext\fP value might contain commas" ,
-in which case the value has to be properly quoted, otherwise
+.\"O .BR "Warning: the \fIcontext\fP value might contain commas" ,
+.\"O in which case the value has to be properly quoted, otherwise
+.\"O .BR mount (8)
+.\"O will interpret the comma as a separator between mount options.  Don't forget that
+.\"O the shell strips off quotes and thus
+.\"O .BR "double quoting is required" .
+.\"O For example:
+.BR "警告: \fIcontext\fP の値はカンマを含む可能性がある" 。
+この場合、値を正しくクォートしなければならない。
+さもないと、
 .BR mount (8)
-will interpret the comma as a separator between mount options.  Don't forget that
-the shell strips off quotes and thus
-.BR "double quoting is required" .
-For example:
+はカンマをマウントオプションの区切り文字として解釈してしまう。
+シェルがクォートを外してしまうことを忘れてはいけないので、
+.BR "ダブルクォートが必要である" 。
+例:
 .RS
 .RS
 .sp
@@ -1854,8 +1873,11 @@ For example:
 .fi
 .sp
 .RE
-For more details, see
-.BR selinux (8).
+.\"O For more details, see
+.\"O .BR selinux (8).
+より詳細は、
+.BR selinux (8)
+を参照すること。
 .RE
 
 .TP
@@ -1866,39 +1888,51 @@ For more details, see
 .BR rw ", " suid ", " dev ", " exec ", " auto ", " nouser ", " async
 を用いる。
 
-Note that the real set of all default mount options depends on kernel
-and filesystem type.  See the beginning of this section for more details.
+.\"O Note that the real set of all default mount options depends on kernel
+.\"O and filesystem type.  See the beginning of this section for more details.
+全てのデフォルトのマウントオプションの実際の集合は、
+カーネルとファイルシステムタイプに依存する点に注意すること。
+より詳細は、このセクションの最初を参照すること。
 .TP
 .B dev
 .\"O Interpret character or block special devices on the filesystem.
-ファイルシステム上の
-キャラクタ・スペシャル・デバイスや
-ブロック・スペシャル・デバイスを
-利用できるようにする。
+ファイルシステム上のキャラクタ・スペシャル・デバイスや
+ブロック・スペシャル・デバイスを利用できるようにする。
 .TP
 .B nodev
-Do not interpret character or block special devices on the file
-system.
+.\"O Do not interpret character or block special devices on the file
+.\"O system.
+ファイルシステム上のキャラクタ・スペシャル・デバイスや
+ブロック・スペシャル・デバイスを利用できるようにしない。
 .TP
 .B diratime
-Update directory inode access times on this filesystem.  This is the default.
-(This option is ignored when \fBnoatime\fR is set.)
+.\"O Update directory inode access times on this filesystem.  This is the default.
+.\"O (This option is ignored when \fBnoatime\fR is set.)
+ファイルシステム上のディレクトリ i ノードアクセス時刻を更新する。
+これがデフォルトである。
+(このオプションは \fBnoatime\fR が設定されている場合、無視される。)
 .TP
 .B nodiratime
-Do not update directory inode access times on this filesystem.
-(This option is implied when \fBnoatime\fR is set.)
+.\"O Do not update directory inode access times on this filesystem.
+.\"O (This option is implied when \fBnoatime\fR is set.)
+ファイルシステム上のディレクトリ i ノードアクセス時刻を更新しない。
+(このオプションは \fBnoatime\fR が設定されている場合、暗黙のうちに設定される。)
 .TP
 .B dirsync
-All directory updates within the filesystem should be done synchronously.
-This affects the following system calls: creat, link, unlink, symlink,
-mkdir, rmdir, mknod and rename.
+.\"O All directory updates within the filesystem should be done synchronously.
+.\"O This affects the following system calls: creat, link, unlink, symlink,
+.\"O mkdir, rmdir, mknod and rename.
+ファイルシステムの全てのディレクトリの更新が同期的 (synchronously) に行われる。
+これは以下のシステムコールに影響する: creat, link, unlink, symlink,
+mkdir, rmdir, mknod, rename.
 .TP
 .B exec
 .\"O Permit execution of binaries.
 バイナリの実行を許可する。
 .TP
 .B noexec
-Do not permit direct execution of any binaries on the mounted filesystem.
+.\"O Do not permit direct execution of any binaries on the mounted filesystem.
+マウントされているファイルシステム上のバイナリの直接実行を許可しない。
 .TP
 .B group
 .\"O Allow an ordinary user to mount the filesystem if one
@@ -1918,10 +1952,12 @@ Do not permit direct execution of any binaries on the mounted filesystem.
 のようにして、その後のオプションで上書きしない限り)。
 .TP
 .B iversion
-Every time the inode is modified, the i_version field will be incremented.
+.\"O Every time the inode is modified, the i_version field will be incremented.
+i ノードが修正される度に、i_version フィールドを増加させる。
 .TP
 .B noiversion
-Do not increment the i_version inode field.
+.\"O Do not increment the i_version inode field.
+i_version i ノードフィールドを増加させない。
 .TP
 .B mand
 .\"O Allow mandatory locks on this filesystem.  See
@@ -1931,7 +1967,8 @@ Do not increment the i_version inode field.
 を参照すること。
 .TP
 .B nomand
-Do not allow mandatory locks on this filesystem.
+.\"O Do not allow mandatory locks on this filesystem.
+このファイルシステム上での強制 (mandatory) ロックを許可しない。
 .TP
 .B _netdev
 .\"O The filesystem resides on a device that requires network access
@@ -1942,82 +1979,133 @@ Do not allow mandatory locks on this filesystem.
 ファイルシステムをマウントさせないために使われる)。
 .TP
 .B nofail
-Do not report errors for this device if it does not exist.
+.\"O Do not report errors for this device if it does not exist.
+このデバイス上で、エラーがない場合は、報告しない。
 .TP
 .B relatime
-Update inode access times relative to modify or change time.  Access
-time is only updated if the previous access time was earlier than the
-current modify or change time.  (Similar to \fB\%noatime\fR, but it doesn't
-break \fBmutt\fR or other applications that need to know if a file has been
-read since the last time it was modified.)
+.\"O Update inode access times relative to modify or change time.  Access
+.\"O time is only updated if the previous access time was earlier than the
+.\"O current modify or change time.  (Similar to \fB\%noatime\fR, but it doesn't
+.\"O break \fBmutt\fR or other applications that need to know if a file has been
+.\"O read since the last time it was modified.)
+修正時刻や変更時刻と比較して、i ノードのアクセス時刻を更新する。
+以前のアクセス時刻が、現在の修正時刻または変更時刻より前である
+場合にのみ、アクセス時刻が更新される。
+(\fB\%noatime\fR と似ているが、
+ファイルが最後に修正されてから読まれているかを知る必要がある
+\fBmutt\fR や他のアプリケーションを壊さない。)
 
-Since Linux 2.6.30, the kernel defaults to the behavior provided by this
-option (unless
-.B \%noatime
-was specified), and the
+.\"O Since Linux 2.6.30, the kernel defaults to the behavior provided by this
+.\"O option (unless
+.\"O .B \%noatime
+.\"O was specified), and the
+.\"O .B \%strictatime
+.\"O option is required to obtain traditional semantics.  In addition, since Linux
+.\"O 2.6.30, the file's last access time is always updated if it is more than 1
+.\"O day old.
+Linux 2.6.30 以降では、カーネルのデフォルトの挙動は、
+.RB ( \%noatime
+が指定されていない限り) このオプションで提供される。
+これまでの挙動にする場合、
 .B \%strictatime
-option is required to obtain traditional semantics.  In addition, since Linux
-2.6.30, the file's last access time is always updated if it is more than 1
-day old.
+オプションを指定する必要がある。
+加えて、Linux 2.6.30 以降では、
+ファイルの最終アクセス時刻が 1 日より前の場合、常に更新される。
 .TP
 .B norelatime
-Do not use the
+.\"O Do not use the
+.\"O .B relatime
+.\"O feature.  See also the
+.\"O .B strictatime
+.\"O mount option.
 .B relatime
-feature.  See also the
+機能を使わない。
 .B strictatime
-mount option.
+マウントオプションも参照すること。
 .TP
 .B strictatime
-Allows to explicitly request full atime updates.  This makes it
-possible for the kernel to default to
+.\"O Allows to explicitly request full atime updates.  This makes it
+.\"O possible for the kernel to default to
+.\"O .B \%relatime
+.\"O or
+.\"O .B \%noatime
+.\"O but still allow userspace to override it.  For more details about the default
+.\"O system mount options see /proc/mounts.
+完全な atime 更新を明示的に許可する。
+これは
 .B \%relatime
-or
+または
 .B \%noatime
-but still allow userspace to override it.  For more details about the default
-system mount options see /proc/mounts.
+がカーネルのデフォルトに指定された場合に利用可能になるが、
+ユーザー空間で上書きすることもできる。
+デフォルトのシステムマウントオプションの詳細は、
+/proc/mounts を参照すること。
 .TP
 .B nostrictatime
-Use the kernel's default behavior for inode access time updates.
+.\"O Use the kernel's default behavior for inode access time updates.
+i ノードアクセス時刻の更新について、カーネルのデフォルトの挙動を使う。
 .TP
 .B lazytime
-Only update times (atime, mtime, ctime) on the in-memory version of the file inode.
+.\"O Only update times (atime, mtime, ctime) on the in-memory version of the file inode.
+メモリ内のファイル i ノードの時刻 (atime, mtime, ctime) のみを更新する。
 
-This mount option significantly reduces writes to the inode table for
-workloads that perform frequent random writes to preallocated files.
+.\"O This mount option significantly reduces writes to the inode table for
+.\"O workloads that perform frequent random writes to preallocated files.
+このマウントオプションは、事前確保されたファイルに対して
+頻繁なランダム書き込みを行う際の、i ノードテーブルへの書き込みの負荷を顕著に減少させる。
 
-The on-disk timestamps are updated only when:
+.\"O The on-disk timestamps are updated only when:
+ディスク上のタイムスタンプの更新は、以下の場合にのみ行われる:
 .sp
 .RS
-- the inode needs to be updated for some change unrelated to file timestamps
+.\"O - the inode needs to be updated for some change unrelated to file timestamps
+- ファイルのタイムスタンプに関係のない何らかの変更について、
+i ノードが更新される必要があった場合。
 .sp
-- the application employs
+.\"O - the application employs
+.\"O .BR fsync (2),
+.\"O .BR syncfs (2),
+.\"O or
+.\"O .BR sync (2)
+- アプリケーションが
 .BR fsync (2),
 .BR syncfs (2),
-or
 .BR sync (2)
+を呼び出した場合。
 .sp
-- an undeleted inode is evicted from memory
+.\"O - an undeleted inode is evicted from memory
+- 削除されていない i ノードが、メモリから追い出された場合。
 .sp
-- more than 24 hours have passed since the i-node was written to disk.
+.\"O - more than 24 hours have passed since the i-node was written to disk.
+- i ノードがディスクに書かれてから、24 時間以上が経過した場合。
 .RE
 .sp
 .TP
 .B nolazytime
-Do not use the lazytime feature.
+.\"O Do not use the lazytime feature.
+lazytime 機能を使わない。
 .TP
 .B suid
-Honor set-user-ID and set-group-ID bits or file capabilities when
-executing programs from this filesystem.
+.\"O Honor set-user-ID and set-group-ID bits or file capabilities when
+.\"O executing programs from this filesystem.
+このファイルシステムからプログラムを実行する場合、
+set-user-ID と set-group-ID ビット、
+またはファイルのケーパビリティ (capability) を遵守する。
 .TP
 .B nosuid
-Do not honor set-user-ID and set-group-ID bits or file capabilities when
-executing programs from this filesystem.
+.\"O Do not honor set-user-ID and set-group-ID bits or file capabilities when
+.\"O executing programs from this filesystem.
+このファイルシステムからプログラムを実行する場合、
+set-user-ID と set-group-ID ビット、
+またはファイルのケーパビリティ (capability) を遵守しない。
 .TP
 .B silent
-Turn on the silent flag.
+.\"O Turn on the silent flag.
+silent フラグを有効にする。
 .TP
 .B loud
-Turn off the silent flag.
+.\"O Turn off the silent flag.
+silent フラグを無効にする。
 .TP
 .B owner
 .\"O Allow an ordinary user to mount the filesystem if that
