@@ -1277,9 +1277,9 @@ ext2 ファイルシステム、または _netdev オプションのいずれか
 .\"O .B FILESYSTEM-SPECIFIC MOUNT OPTIONS
 .\"O sections.
 より詳細は
-.B ファイルシステム非依存の MOUNT オプション
+.B ファイルシステム非依存のマウントオプション
 と
-.B ファイルシステム依存の MOUNT オプション
+.B ファイルシステム独自のマウントオプション
 のセクションを参照すること。
 .RE
 
@@ -1665,7 +1665,7 @@ nfs, nfs4, cifs, smbfs, ncpfs ファイルシステムについては、
 ヘルプを表示して、終了する。
 
 .\"O .SH FILESYSTEM-INDEPENDENT MOUNT OPTIONS
-.SH ファイルシステム非依存の MOUNT オプション
+.SH ファイルシステム非依存のマウントオプション
 .\"O Some of these options are only useful when they appear in the
 .\"O .I /etc/fstab
 .\"O file.
@@ -1710,15 +1710,25 @@ nfs, nfs4, cifs, smbfs, ncpfs ファイルシステムについては、
 オプションも参照すること。)
 .TP
 .B atime
-Do not use the \fBnoatime\fR feature, so the inode access time is controlled
-by kernel defaults.  See also the descriptions of the \fB\%relatime\fR and
+.\"O Do not use the \fBnoatime\fR feature, so the inode access time is controlled
+.\"O by kernel defaults.  See also the descriptions of the \fB\%relatime\fR and
+.\"O .B strictatime
+.\"O mount options.
+\fBnoatime\fR 機能を使わない。
+よって、i ノードアクセス時刻はデフォルトでカーネルが制御する。
+\fB\%relatime\fR と
 .B strictatime
-mount options.
+マウントオプションの説明を参照すること。
 .TP
 .B noatime
-Do not update inode access times on this filesystem (e.g.\& for faster
-access on the news spool to speed up news servers).  This works for all
-inode types (directories too), so it implies \fB\%nodiratime\fR.
+.\"O Do not update inode access times on this filesystem (e.g.\& for faster
+.\"O access on the news spool to speed up news servers).  This works for all
+.\"O inode types (directories too), so it implies \fB\%nodiratime\fR.
+このファイルシステムの i ノードアクセス時刻を更新しない
+(例えば、ニューススプールのアクセスを速くして、ニュースサーバーを
+スピードアップする)。
+これは全ての i ノードタイプ (ディレクトリを含む) に働くので、
+\fB\%nodiratime\fR を暗黙のうちに指定する。
 .TP
 .B auto
 .\"O Can be mounted with the
@@ -1728,48 +1738,91 @@ inode types (directories too), so it implies \fB\%nodiratime\fR.
 が指定されたときにマウントされる。
 .TP
 .B noauto
-Can only be mounted explicitly (i.e., the
+.\"O Can only be mounted explicitly (i.e., the
+.\"O .B \-a
+.\"O option will not cause the filesystem to be mounted).
+明示的にマウントするのみにする
+(つまり、
 .B \-a
-option will not cause the filesystem to be mounted).
+オプションでファイルシステムをマウントしない)。
 .TP
 .na
-.BR context=\fIcontext ", " fscontext=\fIcontext ", " defcontext=\fIcontext ", and " \%rootcontext=\fIcontext
+.\"O .BR context=\fIcontext ", " fscontext=\fIcontext ", " defcontext=\fIcontext ", and " \%rootcontext=\fIcontext
+.BR context=\fIcontext ", " fscontext=\fIcontext ", " defcontext=\fIcontext ", " \%rootcontext=\fIcontext
 .ad
-The
+.\"O The
+.\"O .B context=
+.\"O option is useful when mounting filesystems that do not support
+.\"O extended attributes, such as a floppy or hard disk formatted with VFAT, or
+.\"O systems that are not normally running under SELinux, such as an ext3 or ext4 formatted
+.\"O 
+.\"O disk from a non-SELinux workstation.  You can also use
+.\"O .B context=
+.\"O on filesystems you do not trust, such as a floppy.  It also helps in compatibility with
+.\"O xattr-supporting filesystems on earlier 2.4.<x> kernel versions.  Even where
+.\"O xattrs are supported, you can save time not having to label every file by
+.\"O assigning the entire disk one security context.
+拡張属性をサポートしないファイルシステムをマウントする際に、
 .B context=
-option is useful when mounting filesystems that do not support
-extended attributes, such as a floppy or hard disk formatted with VFAT, or
-systems that are not normally running under SELinux, such as an ext3 or ext4 formatted
-
-disk from a non-SELinux workstation.  You can also use
+オプションは役立つ。
+そのようなファイルシステムには、フロッピーや VFAT でフォーマットされたハードディスク、
+通常は SELinux を動作させないシステム、
+SELinux でないワークステーションでフォーマットされた
+ext3 または ext4 のディスクなどがある。
+また、フロッピーのように、信頼できないファイルシステムにも
 .B context=
-on filesystems you do not trust, such as a floppy.  It also helps in compatibility with
-xattr-supporting filesystems on earlier 2.4.<x> kernel versions.  Even where
-xattrs are supported, you can save time not having to label every file by
-assigning the entire disk one security context.
+を使うことができる。
+これは、以前の 2.4.<x> カーネルバージョンで、
+xattr をサポートするファイルシステムを使う場合に、互換性の助けになる。
+xattr がサポートされているにも関わらず、
+ディスク全体が 1 つのセキュリティコンテキストであると仮定することで、
+全てのファイルをラベル付けせずに時間を節約することができる。
 
-A commonly used option for removable media is
-.BR \%context="system_u:object_r:removable_t" .
+.\"O A commonly used option for removable media is
+.\"O .BR \%context="system_u:object_r:removable_t" .
+リムーバブルメディアについて一般に使われるオプションは、
+.B \%context="system_u:object_r:removable_t"
+である。
 
-Two other options are
+.\"O Two other options are
+.\"O .B fscontext=
+.\"O and
+.\"O .BR defcontext= ,
+.\"O both of which are mutually exclusive of the context option.  This means you
+.\"O can use fscontext and defcontext with each other, but neither can be used with
+.\"O context.
+他の 2 つのオプションは
 .B fscontext=
-and
-.BR defcontext= ,
-both of which are mutually exclusive of the context option.  This means you
-can use fscontext and defcontext with each other, but neither can be used with
-context.
+と
+.B defcontext=
+である。
+この 2 つのオプションはコンテキストオプションとして、同時に 2 つを指定することができない。
+これは、fscontext と defcontext はいずれかを指定できるが、
+両方を指定することはできないことを意味する。
 
-The
+.\"O The
+.\"O .B fscontext=
+.\"O option works for all filesystems, regardless of their xattr
+.\"O support.  The fscontext option sets the overarching filesystem label to a
+.\"O specific security context.  This filesystem label is separate from the
+.\"O individual labels on the files.  It represents the entire filesystem for
+.\"O certain kinds of permission checks, such as during mount or file creation.
 .B fscontext=
-option works for all filesystems, regardless of their xattr
-support.  The fscontext option sets the overarching filesystem label to a
-specific security context.  This filesystem label is separate from the
-individual labels on the files.  It represents the entire filesystem for
-certain kinds of permission checks, such as during mount or file creation.
-Individual file labels are still obtained from the xattrs on the files
-themselves.  The context option actually sets the aggregate context that
-fscontext provides, in addition to supplying the same label for individual
-files.
+オプションは、xattr サポートに関わらず全てのファイルシステムに働く。
+fscontext オプションは、特定のセキュリティコンテキストに対して、
+非常に重要なファイルシステムラベルを設定する。
+このファイルシステムラベルは、ファイルの個別のラベルとは
+別にされている。
+これは、ファイルシステム全体に対して、マウントやファイル作成の際の、
+ある種の権限チェックを表す。
+.\"O Individual file labels are still obtained from the xattrs on the files
+.\"O themselves.  The context option actually sets the aggregate context that
+.\"O fscontext provides, in addition to supplying the same label for individual
+.\"O files.
+個々のファイルラベルは、まだファイル自体の xattr から取得される。
+コンテキストオプションは、各ファイルについて同じラベルが
+与えられるのに加え、
+fscontext が提供する総計のコンテキストが実際に設定される。
 
 You can set the default security context for unlabeled files using
 .B defcontext=
