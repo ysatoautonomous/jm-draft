@@ -2132,46 +2132,73 @@ silent フラグを無効にする。
 (特にリードオンリーのファイルシステムを書き込み可能にするとき) に用いられる。
 デバイスとマウントポイントを変更しない。
 
-The remount operation together with the
+.\"O The remount operation together with the
+.\"O .B bind
+.\"O flag has special semantic. See above, the subsection \fBBind mounts\fR.
 .B bind
-flag has special semantic. See above, the subsection \fBBind mounts\fR.
+フラグを付けた再マウント操作は特別な意味を持つ。
+上記のサブセクション \fBbind マウント\fR を参照すること。
 
-The remount functionality follows the standard way the mount command works
-with options from fstab.  This means that \fBmount\fR does not
-read fstab (or mtab) only when both
+.\"O The remount functionality follows the standard way the mount command works
+.\"O with options from fstab.  This means that \fBmount\fR does not
+.\"O read fstab (or mtab) only when both
+.\"O .I device
+.\"O and
+.\"O .I dir
+.\"O are specified.
+再マウント機能は、マウントコマンドが fstab でオプションが指定された場合に
+動作する標準的な方法に従う。
+これは、
 .I device
-and
+と
 .I dir
-are specified.
+の両方が指定された場合に、\fBmount\fR が fstab (または mtab) を
+読まないという意味である。
 .sp
 .in +4
 .B "mount \-o remount,rw /dev/foo /dir"
 .in
 .sp
-After this call all old mount options are replaced and arbitrary stuff from
-fstab (or mtab) is ignored, except the loop= option which is internally
-generated and maintained by the mount command.
+.\"O After this call all old mount options are replaced and arbitrary stuff from
+.\"O fstab (or mtab) is ignored, except the loop= option which is internally
+.\"O generated and maintained by the mount command.
+この呼び出しの後、全ての古いマウントオプションは置き換えられ、
+fstab (または mtab) から指定された任意のオプションは無視される。
+ただし、内部的に生成され、mount コマンドで管理される
+loop= オプションは例外である。
 .sp
 .in +4
 .B "mount \-o remount,rw  /dir"
 .in
 .sp
-After this call, mount reads fstab and merges these options with
-the options from the command line (\fB\-o\fR).
-If no mountpoint is found in fstab, then a remount with unspecified source is
-allowed.
+.\"O After this call, mount reads fstab and merges these options with
+.\"O the options from the command line (\fB\-o\fR).
+.\"O If no mountpoint is found in fstab, then a remount with unspecified source is
+.\"O allowed.
+この呼び出しの後、mount コマンドは fstab を読んで、
+コマンドラインからのオプション (\fB\-o\fR) とマージする。
+fstab にマウントポイントがない場合、マウント元を指定しない再マウントが
+許可される。
 .sp
-mount(8) allows to use \fB\-\-all\fR to remount all already mounted filesystems
-which match a specified filter (\fB\-O\fR and \fB\-t\fR).  For example:
+.\"O mount(8) allows to use \fB\-\-all\fR to remount all already mounted filesystems
+.\"O which match a specified filter (\fB\-O\fR and \fB\-t\fR).  For example:
+mount(8) は、指定されたフィルター (\fB\-O\fR と \fB\-t\fR) で選ばれた
+全てのマウントされたファイルシステムを、\fB\-\-all\fR を使って再マウントできる。
+例えば:
 .sp
 .in +4
 .B "mount \-\-all \-o remount,ro -t vfat"
 .in
 .sp
-remounts all already mounted vfat filesystems in read-only mode. The each of the
-filesystems is remounted by "mount \-o remount,ro /dir" semantic. It means the
-mount command reads fstab or mtab and merges these options with the options
-from the command line.
+.\"O remounts all already mounted vfat filesystems in read-only mode. The each of the
+.\"O filesystems is remounted by "mount \-o remount,ro /dir" semantic. It means the
+.\"O mount command reads fstab or mtab and merges these options with the options
+.\"O from the command line.
+は、既にマウントされた読み込みのみのモードの vfat ファイルシステムを再マウントする。
+各ファイルシステムは "mount \-o remount,ro /dir" で再マウントされる。
+これは mount コマンドが fstab または mtab ファイルを読んで、
+ファイルに指定されたオプションと、コマンドラインで指定された
+オプションをマージすることを意味する。
 .TP
 .B ro
 .\"O Mount the filesystem read-only.
@@ -2186,9 +2213,8 @@ from the command line.
 .\"O media with a limited number of write cycles
 .\"O (e.g.\& some flash drives), \fBsync\fR may cause life-cycle shortening.
 そのファイルシステムに対する I/O がすべて同期的 (synchronous) に行われる。
-In the case of
-media with a limited number of write cycles
-(e.g.\& some flash drives), \fBsync\fR may cause life-cycle shortening.
+書き込みサイクルが制限されたメディア (例えば、フラッシュドライブ) の場合、
+\fBsync\fR はライフサイクルを短くする。
 .TP
 .B user
 .\"O Allow an ordinary user to mount the filesystem.
@@ -2212,8 +2238,10 @@ libmount file in /run/mount on systems without a regular mtab) に書き込ま�
 のような行を指定すればよい。
 .TP
 .B nouser
-Forbid an ordinary user to mount the filesystem.
-This is the default; it does not imply any other options.
+.\"O Forbid an ordinary user to mount the filesystem.
+.\"O This is the default; it does not imply any other options.
+一般ユーザーがファイルシステムをマウントすることを禁止する。
+これがデフォルトであり、他のオプションを暗黙のうちに指定しない。
 .TP
 .B users
 .\"O Allow any user to mount and to unmount the filesystem, even
@@ -2222,44 +2250,76 @@ This is the default; it does not imply any other options.
 .\"O .BR noexec ", " nosuid ", and " nodev
 .\"O (unless overridden by subsequent options, as in the option line
 .\"O .BR users,exec,dev,suid ).
-even when some other ordinary user mounted it
-全てのユーザーがファイルシステムをマウント・アンマウント出来るようにする。
-このオプションを指定すると、同時に
+.\"O even when some other ordinary user mounted it
+全てのユーザーがファイルシステムをマウント・アンマウント
+出来るようにする。
+このオプションを指定すると、
+一般ユーザーがマウントを行っていたとしても、同時に
 .BR noexec ", " nosuid ", " nodev
-が指定されたことになる。
-ただし続けて指定すれば上書きは可能。
+が指定されたことになる
+(ただし続けて指定すれば上書きは可能。
 すなわち
 .B users,exec,dev,suid
-のような行を指定すればよい。
+のような行を指定すればよい)。
 .TP
 .B X-*
-All options prefixed with "X-" are interpreted as comments or as userspace
-application-specific options.  These options are not stored in the user space (e.g. mtab file),
-nor sent to the mount.\fItype\fR helpers nor to the
+.\"O All options prefixed with "X-" are interpreted as comments or as userspace
+.\"O application-specific options.  These options are not stored in the user space (e.g. mtab file),
+.\"O nor sent to the mount.\fItype\fR helpers nor to the
+.\"O .BR mount (2)
+.\"O system call.  The suggested format is \fBX-\fIappname\fR.\fIoption\fR.
+"X-" をプレフィックスに付けた全てのオプションは、
+コメント、またはユーザー空間のアプリケーション固有オプションとして
+解釈される。
+このオプションはユーザー空間 (例えば、mtab ファイル) には格納されず、
+mount.\fItype\fR ヘルパーにも、
 .BR mount (2)
-system call.  The suggested format is \fBX-\fIappname\fR.\fIoption\fR.
+システムコールにも渡されない。
+推奨される形式は \fBX-\fIappname\fR.\fIoption\fR である。
 .TP
 .B x-*
-The same as \fBX-*\fR options, but stored permanently in the user space. It
-means the options are also available for umount or another operations.  Note
-that maintain mount options in user space is tricky, because it's necessary use
-libmount based tools and there is no guarantee that the options will be always
-available (for example after a move mount operation or in unshared namespace).
+.\"O The same as \fBX-*\fR options, but stored permanently in the user space. It
+.\"O means the options are also available for umount or another operations.  Note
+.\"O that maintain mount options in user space is tricky, because it's necessary use
+.\"O libmount based tools and there is no guarantee that the options will be always
+.\"O available (for example after a move mount operation or in unshared namespace).
+\fBX-*\fR と似ているが、ユーザー空間に永続的に格納する。
+これは、そのオプションが umount または他の操作で利用できることを意味する。
+マウントオプションをユーザー空間で管理するのはトリッキーである点に
+注意すること。
+libmount ベースのツールを使う必要があるが、
+(例えば、move マウント操作の後や、または共有されない名前空間において)
+オプションが常に利用可能である保証はない。
 
-Note that before util-linux v2.30 the x-* options have not been maintained by
-libmount and stored in user space (functionality was the same as have X-* now),
-but due to growing number of use-cases (in initrd, systemd etc.) the
-functionality have been extended to keep existing fstab configurations usable
-without a change.
+.\"O Note that before util-linux v2.30 the x-* options have not been maintained by
+.\"O libmount and stored in user space (functionality was the same as have X-* now),
+.\"O but due to growing number of use-cases (in initrd, systemd etc.) the
+.\"O functionality have been extended to keep existing fstab configurations usable
+.\"O without a change.
+util-linux v2.30 より前では、x-* オプションは
+libmount で管理されず、ユーザー空間に格納されなかった
+(機能的には今の X-* と同じである)。
+しかし、(initrd, systemd などでの) 使い方が増えるに従い、
+機能が拡張され、既存の fstab 設定を変更せずに利用できるようになった。
 .TP
 .BR X-mount.mkdir [ = \fImode\fR ]
-Allow to make a target directory (mountpoint).  The optional argument
+.\"O Allow to make a target directory (mountpoint).  The optional argument
+.\"O .I mode
+.\"O specifies the filesystem access mode used for
+.\"O .BR mkdir (2)
+.\"O in octal notation.  The default mode is 0755.  This functionality is supported
+.\"O only for root users.  The option is also supported as x-mount.mkdir, this notation
+.\"O is deprecated for mount.mkdir since v2.30.
+マウント先ディレクトリ (マウントポイント) を作成することを許可する。
+オプションの引き数
 .I mode
-specifies the filesystem access mode used for
+は、8 進数記法で、
 .BR mkdir (2)
-in octal notation.  The default mode is 0755.  This functionality is supported
-only for root users.  The option is also supported as x-mount.mkdir, this notation
-is deprecated for mount.mkdir since v2.30.
+でファイルシステムのアクセスモードを指定するのに使われる。
+デフォルトのモードは 0755 である。
+このオプションは root ユーザーでのみサポートされる。
+このオプションは x-mount.mkdir としてもサポートされており、
+この記法は mount.mkdir の v2.30 以降では推奨されない。
 
 .\"O .SH "FILESYSTEM-SPECIFIC MOUNT OPTIONS"
 .SH ファイルシステム独自のマウントオプション
