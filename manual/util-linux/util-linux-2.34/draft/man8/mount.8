@@ -2472,7 +2472,7 @@ ext4 ファイルシステムがサポートするオプションを知りたい
 .\"O .\" present since 2.6.11
 .\"O As of kernel version 3.4, debugfs has the following options:
 debugfs ファイルシステムは擬似 (pseudo) ファイルシステムであり、
-伝統的には
+通例としては
 .I /sys/kernel/debug
 にマウントされる。
 .\" または /debug
@@ -2540,59 +2540,107 @@ devpts ファイルシステムは擬似ファイルシステムで、
 "mesg y" がデフォルトになる。
 .TP
 \fBnewinstance
-Create a private instance of devpts filesystem, such that
-indices of ptys allocated in this new instance are
-independent of indices created in other instances of devpts.
+.\"O Create a private instance of devpts filesystem, such that
+.\"O indices of ptys allocated in this new instance are
+.\"O independent of indices created in other instances of devpts.
+devpts ファイルシステムのプライベートインスタンスを作成する。
+この新しいインスタンスに確保された PTY のインデックスは、
+他の PTY のインスタンスのインデックスとは、独立である。
 
-All mounts of devpts without this
+.\"O All mounts of devpts without this
+.\"O .B newinstance
+.\"O option share the same set of pty indices (i.e. legacy mode).
+.\"O Each mount of devpts with the
+.\"O .B newinstance
+.\"O option has a private set of pty indices.
+この
 .B newinstance
-option share the same set of pty indices (i.e. legacy mode).
-Each mount of devpts with the
+オプションを指定しない devpts の全てのマウントは、
+同じ PTY のインデックスを共有する (つまり、レガシーモード)。
 .B newinstance
-option has a private set of pty indices.
+オプションを指定した devpts のマウントは、
+PTY のインデックスのプライベートなセットを持つ。
 
-This option is mainly used to support containers in the
-linux kernel.  It is implemented in linux kernel versions
-starting with 2.6.29.  Further, this mount option is valid
-only if CONFIG_DEVPTS_MULTIPLE_INSTANCES is enabled in the
-kernel configuration.
+.\"O This option is mainly used to support containers in the
+.\"O linux kernel.  It is implemented in linux kernel versions
+.\"O starting with 2.6.29.  Further, this mount option is valid
+.\"O only if CONFIG_DEVPTS_MULTIPLE_INSTANCES is enabled in the
+.\"O kernel configuration.
+このオプションは主に Linux カーネルでコンテナをサポートするために使われる。
+これは Linux カーネルバージョン 2.6.29 以降で実装されている。
+さらに、このオプションはカーネル設定で
+CONFIG_DEVPTS_MULTIPLE_INSTANCES が有効にされている場合にのみ、利用できる。
 
-To use this option effectively,
+.\"O To use this option effectively,
+.\"O .I /dev/ptmx
+.\"O must be a symbolic link to
+.\"O .I pts/ptmx.
+.\"O See
+.\"O .I Documentation/filesystems/devpts.txt
+.\"O in the linux kernel source tree for details.
+このオプションを効率的に使うには、
 .I /dev/ptmx
-must be a symbolic link to
-.I pts/ptmx.
-See
+は
+.I pts/ptmx
+のシンボリックリンクであるべきである。
+詳細はカーネルソースツリーの
 .I Documentation/filesystems/devpts.txt
-in the linux kernel source tree for details.
+を参照すること。
 .TP
 .BI ptmxmode= value
-
-Set the mode for the new
+.\"O 
+.\"O Set the mode for the new
+.\"O .I ptmx
+.\"O device node in the devpts filesystem.
+devpts ファイルシステムの新しい
 .I ptmx
-device node in the devpts filesystem.
+デバイスノードのモードを設定する。
 
-With the support for multiple instances of devpts (see
+.\"O With the support for multiple instances of devpts (see
+.\"O .B newinstance
+.\"O option above), each instance has a private
+.\"O .I ptmx
+.\"O node in the root of the devpts filesystem (typically
+.\"O .IR /dev/pts/ptmx ).
+devpts の複数インスタンスをサポート
+(上記の
 .B newinstance
-option above), each instance has a private
+オプションを参照) すると、
+各インスタンスはプライベートの
 .I ptmx
-node in the root of the devpts filesystem (typically
-.IR /dev/pts/ptmx ).
+ノードを devpts ファイルシステムのルート
+(典型的には
+.IR /dev/pts/ptmx )
+に持つ。
 
-For compatibility with older versions of the kernel, the
-default mode of the new
+.\"O For compatibility with older versions of the kernel, the
+.\"O default mode of the new
+.\"O .I ptmx
+.\"O node is 0000.
+古いバージョンのカーネルとの互換性のため、新規作成された
 .I ptmx
-node is 0000.
+ノードのデフォルトモードは 0000 である。
+
+.\"O .BI ptmxmode= value
+.\"O specifies a more useful mode for the
+.\"O .I ptmx
+.\"O node and is highly recommended when the
+.\"O .B newinstance
+.\"O option is specified.
 .BI ptmxmode= value
-specifies a more useful mode for the
+は
 .I ptmx
-node and is highly recommended when the
+ノードに対して、より役に立つモードを指定し、
 .B newinstance
-option is specified.
+オプションが指定された場合に、強く推奨される。
 
-This option is only implemented in linux kernel versions
-starting with 2.6.29.  Further, this option is valid only if
-CONFIG_DEVPTS_MULTIPLE_INSTANCES is enabled in the kernel
-configuration.
+.\"O This option is only implemented in linux kernel versions
+.\"O starting with 2.6.29.  Further, this option is valid only if
+.\"O CONFIG_DEVPTS_MULTIPLE_INSTANCES is enabled in the kernel
+.\"O configuration.
+これは Linux カーネルバージョン 2.6.29 以降で実装されている。
+さらに、このオプションはカーネル設定で
+CONFIG_DEVPTS_MULTIPLE_INSTANCES が有効にされている場合にのみ、利用できる。
 
 .\"O .SS "Mount options for fat"
 .SS "fat のマウントオプション"
@@ -2650,28 +2698,45 @@ umask を設定する (umask とは許可属性のビットマスクで、
 値は 8 進数で与える。
 .TP
 .BI allow_utime= value
-This option controls the permission check of mtime/atime.
+.\"O This option controls the permission check of mtime/atime.
+このオプションは mtime/atime の権限チェックを制御する。
 .RS
 .TP
 .B 20
-If current process is in group of file's group ID, you can change timestamp.
+.\"O If current process is in group of file's group ID, you can change timestamp.
+カレントプロセスがファイルのグループIDのグループである場合、
+タイムスタンプを変更できる。
 .TP
 .B 2
-Other users can change timestamp.
+.\"O Other users can change timestamp.
+他のユーザーがタイムスタンプを変更できる。
 .PP
-The default is set from `dmask' option. (If the directory is writable,
+.\"O The default is set from `dmask' option. (If the directory is writable,
+.\"O .BR utime (2)
+.\"O is also allowed.  I.e.\& \s+3~\s0dmask & 022)
+デフォルトは `dmask' オプションから設定する
+(ディレクトリが書き込み可能の場合、
 .BR utime (2)
-is also allowed.  I.e.\& \s+3~\s0dmask & 022)
+も許可されている。
+つまり\& \s+3~\s0dmask & 022 である。)
 
-Normally
+.\"O Normally
+.\"O .BR utime (2)
+.\"O checks current process is owner of the file, or it has
+.\"O CAP_FOWNER capability.  But FAT filesystem doesn't have UID/GID on disk, so
+.\"O normal check is too inflexible.  With this option you can relax it.
+通常
 .BR utime (2)
-checks current process is owner of the file, or it has
-CAP_FOWNER capability.  But FAT filesystem doesn't have UID/GID on disk, so
-normal check is too inflexible.  With this option you can relax it.
+はカレントプロセスがファイルの所有者であるかをチェックし、
+または CAP_FOWNER ケーパビリティがあるかをチェックする。
+しかし、FAT ファイルシステムはディスク上に UID/GID を持たないので、
+通常のチェックはとても柔軟性がない。
+このオプションを使うと、それを簡単にできる。
 .RE
 .TP
 .BI check= value
-Three different levels of pickiness can be chosen:
+.\"O Three different levels of pickiness can be chosen:
+3 つの異なるレベルの厳密さが選択できる。
 .RS
 .TP
 .BR r [ elaxed ]
@@ -2713,7 +2778,8 @@ FAT や VFAT ファイルシステムで、短いファイル名に変換する�
 デフォルトではコードページ 437 が用いられる。
 .TP
 .BI conv= mode
-This option is obsolete and may fail or being ignored.
+.\"O This option is obsolete and may fail or being ignored.
+このオプションは古く、失敗するか、無視される。
 .TP
 .BI cvf_format= module
 .\"O Forces the driver to use the CVF (Compressed Volume File) module
