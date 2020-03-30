@@ -2483,52 +2483,79 @@ silent フラグを無効にする。
 (特にリードオンリーのファイルシステムを書き込み可能にするとき) に用いられる。
 デバイスとマウントポイントを変更しない。
 <P>
-The remount operation together with the
+
+
+
 <B>bind</B>
 
-flag has special semantic. See above, the subsection <B>Bind mounts</B>.
+フラグを付けた再マウント操作は特別な意味を持つ。
+上記のサブセクション <B>bind マウント</B> を参照すること。
 <P>
-The remount functionality follows the standard way the mount command works
-with options from fstab.  This means that <B>mount</B> does not
-read fstab (or mtab) only when both
+
+
+
+
+
+
+
+再マウント機能は、マウントコマンドが fstab でオプションが指定された場合に
+動作する標準的な方法に従う。
+これは、
 <I>device</I>
 
-and
+と
 <I>dir</I>
 
-are specified.
+の両方が指定された場合に、<B>mount</B> が fstab (または mtab) を
+読まないという意味である。
 <P>
 
 <B>mount -o remount,rw /dev/foo /dir</B>
 
 
 <P>
-After this call all old mount options are replaced and arbitrary stuff from
-fstab (or mtab) is ignored, except the loop= option which is internally
-generated and maintained by the mount command.
+
+
+
+この呼び出しの後、全ての古いマウントオプションは置き換えられ、
+fstab (または mtab) から指定された任意のオプションは無視される。
+ただし、内部的に生成され、mount コマンドで管理される
+loop= オプションは例外である。
 <P>
 
 <B>mount -o remount,rw  /dir</B>
 
 
 <P>
-After this call, mount reads fstab and merges these options with
-the options from the command line (<B>-o</B>).
-If no mountpoint is found in fstab, then a remount with unspecified source is
-allowed.
+
+
+
+
+この呼び出しの後、mount コマンドは fstab を読んで、
+コマンドラインからのオプション (<B>-o</B>) とマージする。
+fstab にマウントポイントがない場合、マウント元を指定しない再マウントが
+許可される。
 <P>
-<A HREF="../man8/mount.8.html">mount</A>(8) allows to use <B>--all</B> to remount all already mounted filesystems
-which match a specified filter (<B>-O</B> and <B>-t</B>).  For example:
+
+
+<A HREF="../man8/mount.8.html">mount</A>(8) は、指定されたフィルター (<B>-O</B> と <B>-t</B>) で選ばれた
+全てのマウントされたファイルシステムを、<B>--all</B> を使って再マウントできる。
+例えば:
 <P>
 
 <B>mount --all -o remount,ro -t vfat</B>
 
 
 <P>
-remounts all already mounted vfat filesystems in read-only mode. The each of the
-filesystems is remounted by &quot;mount -o remount,ro /dir&quot; semantic. It means the
-mount command reads fstab or mtab and merges these options with the options
-from the command line.
+
+
+
+
+は、既にマウントされた読み込みのみのモードの vfat ファイルシステムを再マウントする。
+各ファイルシステムは &quot;mount -o remount,ro /dir&quot; で再マウントされる。
+これは mount コマンドが fstab または mtab ファイルを読んで、
+ファイルに指定されたオプションと、コマンドラインで指定された
+オプションをマージすることを意味する。
 <DT><B>ro</B>
 
 <DD>
@@ -2546,9 +2573,8 @@ from the command line.
 
 
 そのファイルシステムに対する I/O がすべて同期的 (synchronous) に行われる。
-In the case of
-media with a limited number of write cycles
-(e.g. some flash drives), <B>sync</B> may cause life-cycle shortening.
+書き込みサイクルが制限されたメディア (例えば、フラッシュドライブ) の場合、
+<B>sync</B> はライフサイクルを短くする。
 <DT><B>user</B>
 
 <DD>
@@ -2576,8 +2602,10 @@ libmount file in /run/mount on systems without a regular mtab) に書き込ま�
 <DT><B>nouser</B>
 
 <DD>
-Forbid an ordinary user to mount the filesystem.
-This is the default; it does not imply any other options.
+
+
+一般ユーザーがファイルシステムをマウントすることを禁止する。
+これがデフォルトであり、他のオプションを暗黙のうちに指定しない。
 <DT><B>users</B>
 
 <DD>
@@ -2587,52 +2615,84 @@ This is the default; it does not imply any other options.
 
 
 
-even when some other ordinary user mounted it
-全てのユーザーがファイルシステムをマウント・アンマウント出来るようにする。
-このオプションを指定すると、同時に
+
+全てのユーザーがファイルシステムをマウント・アンマウント
+出来るようにする。
+このオプションを指定すると、
+一般ユーザーがマウントを行っていたとしても、同時に
 <B>noexec</B>, <B>nosuid</B>, <B>nodev</B>
 
-が指定されたことになる。
-ただし続けて指定すれば上書きは可能。
+が指定されたことになる
+(ただし続けて指定すれば上書きは可能。
 すなわち
 <B>users,exec,dev,suid</B>
 
-のような行を指定すればよい。
+のような行を指定すればよい)。
 <DT><B>X-*</B>
 
 <DD>
-All options prefixed with &quot;X-&quot; are interpreted as comments or as userspace
-application-specific options.  These options are not stored in the user space (e.g. mtab file),
-nor sent to the mount.<I>type</I> helpers nor to the
+
+
+
+
+
+&quot;X-&quot; をプレフィックスに付けた全てのオプションは、
+コメント、またはユーザー空間のアプリケーション固有オプションとして
+解釈される。
+このオプションはユーザー空間 (例えば、mtab ファイル) には格納されず、
+mount.<I>type</I> ヘルパーにも、
 <B><A HREF="../man2/mount.2.html">mount</A></B>(2)
 
-system call.  The suggested format is <B>X-</B><I>appname</I>.<I>option</I>.
+システムコールにも渡されない。
+推奨される形式は <B>X-</B><I>appname</I>.<I>option</I> である。
 <DT><B>x-*</B>
 
 <DD>
-The same as <B>X-*</B> options, but stored permanently in the user space. It
-means the options are also available for umount or another operations.  Note
-that maintain mount options in user space is tricky, because it's necessary use
-libmount based tools and there is no guarantee that the options will be always
-available (for example after a move mount operation or in unshared namespace).
+
+
+
+
+
+<B>X-*</B> と似ているが、ユーザー空間に永続的に格納する。
+これは、そのオプションが umount または他の操作で利用できることを意味する。
+マウントオプションをユーザー空間で管理するのはトリッキーである点に
+注意すること。
+libmount ベースのツールを使う必要があるが、
+(例えば、move マウント操作の後や、または共有されない名前空間において)
+オプションが常に利用可能である保証はない。
 <P>
-Note that before util-linux v2.30 the x-* options have not been maintained by
-libmount and stored in user space (functionality was the same as have X-* now),
-but due to growing number of use-cases (in initrd, systemd etc.) the
-functionality have been extended to keep existing fstab configurations usable
-without a change.
+
+
+
+
+
+util-linux v2.30 より前では、x-* オプションは
+libmount で管理されず、ユーザー空間に格納されなかった
+(機能的には今の X-* と同じである)。
+しかし、(initrd, systemd などでの) 使い方が増えるに従い、
+機能が拡張され、既存の fstab 設定を変更せずに利用できるようになった。
 <DT><B>X-mount.mkdir</B>[<B>=</B><I>mode</I><B>]</B>
 
 <DD>
-Allow to make a target directory (mountpoint).  The optional argument
+
+
+
+
+
+
+
+マウント先ディレクトリ (マウントポイント) を作成することを許可する。
+オプションの引き数
 <I>mode</I>
 
-specifies the filesystem access mode used for
+は、8 進数記法で、
 <B><A HREF="../man2/mkdir.2.html">mkdir</A></B>(2)
 
-in octal notation.  The default mode is 0755.  This functionality is supported
-only for root users.  The option is also supported as x-mount.mkdir, this notation
-is deprecated for mount.mkdir since v2.30.
+でファイルシステムのアクセスモードを指定するのに使われる。
+デフォルトのモードは 0755 である。
+このオプションは root ユーザーでのみサポートされる。
+このオプションは x-mount.mkdir としてもサポートされており、
+この記法は mount.mkdir の v2.30 以降では推奨されない。
 <P>
 
 </DL>
@@ -5073,6 +5133,6 @@ mount コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 16:44:00 GMT, March 29, 2020
+Time: 15:00:44 GMT, March 30, 2020
 </BODY>
 </HTML>
