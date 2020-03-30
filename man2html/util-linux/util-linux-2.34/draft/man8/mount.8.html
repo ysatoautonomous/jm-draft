@@ -2877,7 +2877,7 @@ ext4 ファイルシステムがサポートするオプションを知りたい
 
 
 debugfs ファイルシステムは擬似 (pseudo) ファイルシステムであり、
-伝統的には
+通例としては
 <I>/sys/kernel/debug</I>
 
 にマウントされる。
@@ -2959,73 +2959,121 @@ devpts ファイルシステムは擬似ファイルシステムで、
 を設定すると、新たに生成される PTY は、
 &quot;mesg y&quot; がデフォルトになる。
 <DT><B>newinstance<DD>
-Create a private instance of devpts filesystem, such that
-indices of ptys allocated in this new instance are
-independent of indices created in other instances of devpts.
+
+
+
+devpts ファイルシステムのプライベートインスタンスを作成する。
+この新しいインスタンスに確保された PTY のインデックスは、
+他の PTY のインスタンスのインデックスとは、独立である。
 <P>
-All mounts of devpts without this
+
+
+
+
+
+
+この
 newinstance</B>
 
-option share the same set of pty indices (i.e. legacy mode).
-Each mount of devpts with the
+オプションを指定しない devpts の全てのマウントは、
+同じ PTY のインデックスを共有する (つまり、レガシーモード)。
 <B>newinstance</B>
 
-option has a private set of pty indices.
+オプションを指定した devpts のマウントは、
+PTY のインデックスのプライベートなセットを持つ。
 <P>
-This option is mainly used to support containers in the
-linux kernel.  It is implemented in linux kernel versions
-starting with 2.6.29.  Further, this mount option is valid
-only if CONFIG_DEVPTS_MULTIPLE_INSTANCES is enabled in the
-kernel configuration.
+
+
+
+
+
+このオプションは主に Linux カーネルでコンテナをサポートするために使われる。
+これは Linux カーネルバージョン 2.6.29 以降で実装されている。
+さらに、このオプションはカーネル設定で
+CONFIG_DEVPTS_MULTIPLE_INSTANCES が有効にされている場合にのみ、利用できる。
 <P>
-To use this option effectively,
+
+
+
+
+
+
+
+このオプションを効率的に使うには、
 <I>/dev/ptmx</I>
 
-must be a symbolic link to
-<I>pts/ptmx.</I>
+は
+<I>pts/ptmx</I>
 
-See
+のシンボリックリンクであるべきである。
+詳細はカーネルソースツリーの
 <I>Documentation/filesystems/devpts.txt</I>
 
-in the linux kernel source tree for details.
+を参照すること。
 <DT><B>ptmxmode=</B><I>value</I>
 
 <DD>
-<P>
-Set the mode for the new
+
+
+
+
+devpts ファイルシステムの新しい
 <I>ptmx</I>
 
-device node in the devpts filesystem.
+デバイスノードのモードを設定する。
 <P>
-With the support for multiple instances of devpts (see
+
+
+
+
+
+
+devpts の複数インスタンスをサポート
+(上記の
 <B>newinstance</B>
 
-option above), each instance has a private
+オプションを参照) すると、
+各インスタンスはプライベートの
 <I>ptmx</I>
 
-node in the root of the devpts filesystem (typically
-<I>/dev/pts/ptmx</I>).
+ノードを devpts ファイルシステムのルート
+(典型的には
+<I>/dev/pts/ptmx</I>)
 
+に持つ。
 <P>
-For compatibility with older versions of the kernel, the
-default mode of the new
+
+
+
+
+古いバージョンのカーネルとの互換性のため、新規作成された
 <I>ptmx</I>
 
-node is 0000.
+ノードのデフォルトモードは 0000 である。
+<P>
+
+
+
+
+
+
 <B>ptmxmode=</B><I>value</I>
 
-specifies a more useful mode for the
+は
 <I>ptmx</I>
 
-node and is highly recommended when the
+ノードに対して、より役に立つモードを指定し、
 <B>newinstance</B>
 
-option is specified.
+オプションが指定された場合に、強く推奨される。
 <P>
-This option is only implemented in linux kernel versions
-starting with 2.6.29.  Further, this option is valid only if
-CONFIG_DEVPTS_MULTIPLE_INSTANCES is enabled in the kernel
-configuration.
+
+
+
+
+これは Linux カーネルバージョン 2.6.29 以降で実装されている。
+さらに、このオプションはカーネル設定で
+CONFIG_DEVPTS_MULTIPLE_INSTANCES が有効にされている場合にのみ、利用できる。
 <P>
 
 </DL>
@@ -3096,37 +3144,54 @@ umask を設定する (umask とは許可属性のビットマスクで、
 <DT><B>allow_utime=</B><I>value</I>
 
 <DD>
-This option controls the permission check of mtime/atime.
+
+このオプションは mtime/atime の権限チェックを制御する。
 <DL COMPACT><DT><DD>
 <DL COMPACT>
 <DT><B>20</B>
 
 <DD>
-If current process is in group of file's group ID, you can change timestamp.
+
+カレントプロセスがファイルのグループIDのグループである場合、
+タイムスタンプを変更できる。
 <DT><B>2</B>
 
 <DD>
-Other users can change timestamp.
+
+他のユーザーがタイムスタンプを変更できる。
 </DL>
 <P>
 
-The default is set from `dmask' option. (If the directory is writable,
+
+
+
+デフォルトは `dmask' オプションから設定する
+(ディレクトリが書き込み可能の場合、
 <B><A HREF="../man2/utime.2.html">utime</A></B>(2)
 
-is also allowed.  I.e. <FONT SIZE="+3">~</FONT>dmask &amp; 022)
+も許可されている。
+つまり <FONT SIZE="+3">~</FONT>dmask &amp; 022 である。)
 <P>
-Normally
+
+
+
+
+
+通常
 <B><A HREF="../man2/utime.2.html">utime</A></B>(2)
 
-checks current process is owner of the file, or it has
-CAP_FOWNER capability.  But FAT filesystem doesn't have UID/GID on disk, so
-normal check is too inflexible.  With this option you can relax it.
+はカレントプロセスがファイルの所有者であるかをチェックし、
+または CAP_FOWNER ケーパビリティがあるかをチェックする。
+しかし、FAT ファイルシステムはディスク上に UID/GID を持たないので、
+通常のチェックはとても柔軟性がない。
+このオプションを使うと、それを簡単にできる。
 </DL>
 
 <DT><B>check=</B><I>value</I>
 
 <DD>
-Three different levels of pickiness can be chosen:
+
+3 つの異なるレベルの厳密さが選択できる。
 <DL COMPACT><DT><DD>
 <DL COMPACT>
 <DT><B>r</B>[<B>elaxed</B>]
@@ -3178,7 +3243,8 @@ FAT や VFAT ファイルシステムで、短いファイル名に変換する�
 <DT><B>conv=</B><I>mode</I>
 
 <DD>
-This option is obsolete and may fail or being ignored.
+
+このオプションは古く、失敗するか、無視される。
 <DT><B>cvf_format=</B><I>module</I>
 
 <DD>
@@ -5152,6 +5218,6 @@ mount コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 15:32:57 GMT, March 30, 2020
+Time: 16:47:43 GMT, March 30, 2020
 </BODY>
 </HTML>
