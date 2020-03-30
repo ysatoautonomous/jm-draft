@@ -2699,15 +2699,24 @@ libmount で管理されず、ユーザー空間に格納されなかった
 <A NAME="lbAN">&nbsp;</A>
 <H2>ファイルシステム独自のマウントオプション</H2>
 
-You should consult the respective man page for the filesystem first.
-If you want to know what options the ext4 filesystem supports, then check the
+
+
+
+
+
+
+
+最初にファイルシステムの man ページを見ること。
+ext4 ファイルシステムがサポートするオプションを知りたい場合、
 <B><A HREF="../man5/ext4.5.html">ext4</A></B>(5)
 
-man page.
-If that doesn't exist, you can also check the corresponding mount page like
-<B><A HREF="../man8/mount.cifs.8.html">mount.cifs</A></B>(8).
+の man ページをチェックすること。
+存在しない場合は、
+<B><A HREF="../man8/mount.cifs.8.html">mount.cifs</A></B>(8)
 
-Note that you might have to install the respective userland tools.
+のような対応する mount のページも参照すること。
+対応するユーザーランドのツールをインストールする
+必要があるかもしれない。
 <P>
 
 
@@ -2857,25 +2866,35 @@ Note that you might have to install the respective userland tools.
 
 にこのような文字列があると反応する)
 <P>
+
 </DL>
 <A NAME="lbAQ">&nbsp;</A>
-<H3>Mount options for debugfs</H3>
-
-The debugfs filesystem is a pseudo filesystem, traditionally mounted on
-<I>/sys/kernel/debug</I>.
+<H3>debugfs のマウントオプション</H3>
 
 
 
-As of kernel version 3.4, debugfs has the following options:
+
+
+
+debugfs ファイルシステムは擬似 (pseudo) ファイルシステムであり、
+伝統的には
+<I>/sys/kernel/debug</I>
+
+にマウントされる。
+
+
+カーネルバージョン 3.4 では、debugfs は以下のオプションがある:
 <DL COMPACT>
 <DT><B>uid=</B><I>n</I><B>, gid=</B><I>n</I>
 
 <DD>
-Set the owner and group of the mountpoint.
+
+マウントポイントの所有者とグループを設定する。
 <DT><B>mode=</B><I>value</I>
 
 <DD>
-Sets the mode of the mountpoint.
+
+マウントポイントのモードを設定する。
 <P>
 
 </DL>
@@ -5097,7 +5116,7 @@ mount コマンドは util-linux パッケージの一部であり、
 <DL>
 <DT><A HREF="#lbAO">adfs のマウントオプション</A><DD>
 <DT><A HREF="#lbAP">affs のマウントオプション</A><DD>
-<DT><A HREF="#lbAQ">Mount options for debugfs</A><DD>
+<DT><A HREF="#lbAQ">debugfs のマウントオプション</A><DD>
 <DT><A HREF="#lbAR">devpts のマウントオプション</A><DD>
 <DT><A HREF="#lbAS">fat のマウントオプション</A><DD>
 <DT><A HREF="#lbAT">hfs のマウントオプション</A><DD>
@@ -5133,6 +5152,6 @@ mount コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 15:00:44 GMT, March 30, 2020
+Time: 15:32:57 GMT, March 30, 2020
 </BODY>
 </HTML>
