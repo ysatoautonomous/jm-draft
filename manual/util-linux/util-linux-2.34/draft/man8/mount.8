@@ -2323,13 +2323,22 @@ libmount で管理されず、ユーザー空間に格納されなかった
 
 .\"O .SH "FILESYSTEM-SPECIFIC MOUNT OPTIONS"
 .SH ファイルシステム独自のマウントオプション
-You should consult the respective man page for the filesystem first.
-If you want to know what options the ext4 filesystem supports, then check the
+.\"O You should consult the respective man page for the filesystem first.
+.\"O If you want to know what options the ext4 filesystem supports, then check the
+.\"O .BR ext4 (5)
+.\"O man page.
+.\"O If that doesn't exist, you can also check the corresponding mount page like
+.\"O .BR mount.cifs (8).
+.\"O Note that you might have to install the respective userland tools.
+最初にファイルシステムの man ページを見ること。
+ext4 ファイルシステムがサポートするオプションを知りたい場合、
 .BR ext4 (5)
-man page.
-If that doesn't exist, you can also check the corresponding mount page like
-.BR mount.cifs (8).
-Note that you might have to install the respective userland tools.
+の man ページをチェックすること。
+存在しない場合は、
+.BR mount.cifs (8)
+のような対応する mount のページも参照すること。
+対応するユーザーランドのツールをインストールする
+必要があるかもしれない。
 .sp
 .\"O The following options apply only to certain filesystems.
 .\"O We sort them by filesystem.  They all follow the
@@ -2455,18 +2464,28 @@ Note that you might have to install the respective userland tools.
 .I /etc/fstab
 にこのような文字列があると反応する)
 
-.SS "Mount options for debugfs"
-The debugfs filesystem is a pseudo filesystem, traditionally mounted on
-.IR /sys/kernel/debug .
-.\" or just /debug
-.\" present since 2.6.11
-As of kernel version 3.4, debugfs has the following options:
+.\"O .SS "Mount options for debugfs"
+.SS "debugfs のマウントオプション"
+.\"O The debugfs filesystem is a pseudo filesystem, traditionally mounted on
+.\"O .IR /sys/kernel/debug .
+.\"O .\" or just /debug
+.\"O .\" present since 2.6.11
+.\"O As of kernel version 3.4, debugfs has the following options:
+debugfs ファイルシステムは擬似 (pseudo) ファイルシステムであり、
+伝統的には
+.I /sys/kernel/debug
+にマウントされる。
+.\" または /debug
+.\" が 2.6.11 以降には存在する。
+カーネルバージョン 3.4 では、debugfs は以下のオプションがある:
 .TP
 .BI uid= n ", gid=" n
-Set the owner and group of the mountpoint.
+.\"O Set the owner and group of the mountpoint.
+マウントポイントの所有者とグループを設定する。
 .TP
 .BI mode= value
-Sets the mode of the mountpoint.
+.\"O Sets the mode of the mountpoint.
+マウントポイントのモードを設定する。
 
 .\"O .SS "Mount options for devpts"
 .SS "devpts のマウントオプション"
