@@ -2812,18 +2812,29 @@ CVF モジュールに渡すオプション。
 (これらのデータはパラメータが一貫していないような場合にも表示される)。
 .TP
 .B discard
-If set, causes discard/TRIM commands to be issued to the block device
-when blocks are freed.  This is useful for SSD devices and
-sparse/thinly-provisioned LUNs.
+.\"O If set, causes discard/TRIM commands to be issued to the block device
+.\"O when blocks are freed.  This is useful for SSD devices and
+.\"O sparse/thinly-provisioned LUNs.
+このオプションが設定されると、ブロックが開放されると、
+ブロックデバイスに discard/TRIM コマンドが発行される。
+これは SSD デバイスと、スパース/thin プロビジョニングされた LUN で役立つ。
 .TP
 .B dos1xfloppy
-If set, use a fallback default BIOS Parameter Block configuration, determined
-by backing device size.  These static parameters match defaults assumed by DOS
-1.x for 160 kiB, 180 kiB, 320 kiB, and 360 kiB floppies and floppy images.
+.\"O If set, use a fallback default BIOS Parameter Block configuration, determined
+.\"O by backing device size.  These static parameters match defaults assumed by DOS
+.\"O 1.x for 160 kiB, 180 kiB, 320 kiB, and 360 kiB floppies and floppy images.
+このオプションが設定されると、バックのデバイスサイズで決定される、
+フォールバックのデフォルト BIOS パラメータブロック設定を使う。
+これらの固定値のパラメータは、DOS 1.x で
+160 kiB, 180 kiB, 320 kiB, 360 kiB フロッピーとフロッピーイメージに
+仮定されるデフォルト値にマッチする。
 .TP
 .BR errors= { panic | continue | remount-ro }
-Specify FAT behavior on critical errors: panic, continue without doing
-anything, or remount the partition in read-only mode (default behavior).
+.\"O Specify FAT behavior on critical errors: panic, continue without doing
+.\"O anything, or remount the partition in read-only mode (default behavior).
+致命的なエラーの場合の FAT の挙動を指定する。
+パニック、何もせずに継続する、パーティションを読み込みのみの
+モードで再マウントする (デフォルトの挙動) のいずれかである。
 .TP
 .BR fat= { 12 | 16 | 32 }
 .\"O Specify either a 12, 16 or 32 bit fat.  This overrides
@@ -2841,51 +2852,87 @@ anything, or remount the partition in read-only mode (default behavior).
 長いファイル名は、ディスクには Unicode フォーマットで保存されている。
 .TP
 .BR nfs= { stale_rw | nostale_ro }
-Enable this only if you want to export the FAT filesystem over NFS.
+.\"O Enable this only if you want to export the FAT filesystem over NFS.
+FAT ファイルシステムを NFS でエクスポートする場合にのみ、有効にする。
 
 .BR stale_rw :
-This option maintains an index (cache) of directory inodes which is used by the
-nfs-related code to improve look-ups.  Full file operations (read/write) over
-NFS are supported but with cache eviction at NFS server, this could result in
-spurious
+.\"O This option maintains an index (cache) of directory inodes which is used by the
+.\"O nfs-related code to improve look-ups.  Full file operations (read/write) over
+.\"O NFS are supported but with cache eviction at NFS server, this could result in
+.\"O spurious
+.\"O .B ESTALE
+.\"O errors.
+このオプションを指定すると、検索を改善する NFS に関連するコードで
+使われるディレクトリ i ノードのインデックス (キャッシュ) を管理する。
+NFS 上の完全なファイル操作 (読み書き) がサポートされるが、
+NFS サーバーでのキャッシュ追い出しが起こり、誤った
 .B ESTALE
-errors.
+エラーが起きる可能性がある。
 
 .BR nostale_ro :
-This option bases the inode number and file handle
-on the on-disk location of a file in the FAT directory entry.
-This ensures that
+.\"O This option bases the inode number and file handle
+.\"O on the on-disk location of a file in the FAT directory entry.
+このオプションは、i ノード番号と、
+FAT ディレクトリエントリにおけるディスク上のファイルの場所の
+ファイルハンドルに基づいている。
+.\"O This ensures that
+.\"O .B ESTALE
+.\"O will not be returned after a file is
+.\"O evicted from the inode cache.  However, it means that operations
+.\"O such as rename, create and unlink could cause file handles that
+.\"O previously pointed at one file to point at a different file,
+.\"O potentially causing data corruption.  For this reason, this
+.\"O option also mounts the filesystem readonly.
+これは、ファイルが i ノードキャッシュから追い出されても、
 .B ESTALE
-will not be returned after a file is
-evicted from the inode cache.  However, it means that operations
-such as rename, create and unlink could cause file handles that
-previously pointed at one file to point at a different file,
-potentially causing data corruption.  For this reason, this
-option also mounts the filesystem readonly.
+が返されないことを保証する。
+しかし、リネーム・作成・アンリンクといった操作では、
+ファイルハンドルが前に指していたファイルから別のファイルを指すので、
+データ破壊を起こす可能性がある。
+こういった理由により、このオプションもファイルシステムを
+読み込みのみでマウントする。
 
-To maintain backward compatibility, '-o nfs' is also accepted,
-defaulting to
-.BR stale_rw .
+.\"O To maintain backward compatibility, '-o nfs' is also accepted,
+.\"O defaulting to
+.\"O .BR stale_rw .
+後方互換を保つために '-o nfs' も受け付けられ、デフォルトは
+.B stale_rw
+である。
 .TP
 .B tz=UTC
-This option disables the conversion of timestamps
-between local time (as used by Windows on FAT) and UTC
-(which Linux uses internally).  This is particularly
-useful when mounting devices (like digital cameras)
-that are set to UTC in order to avoid the pitfalls of
-local time.
+.\"O This option disables the conversion of timestamps
+.\"O between local time (as used by Windows on FAT) and UTC
+.\"O (which Linux uses internally).  This is particularly
+.\"O useful when mounting devices (like digital cameras)
+.\"O that are set to UTC in order to avoid the pitfalls of
+.\"O local time.
+このオプションは (FAT 上の Windows で使われる) ローカル時間と
+(Linux が内部的に使う) UTC のタイムスタンプの変換を行わない。
+これはローカル時間の落とし穴を避けるため UTC に設定するので、
+(デジタルカメラのような) デバイスをマウントする際に特に役立つ。
 .TP
 .BI time_offset= minutes
-Set offset for conversion of timestamps from local time used by FAT to UTC.
-I.e.,
+.\"O Set offset for conversion of timestamps from local time used by FAT to UTC.
+.\"O I.e.,
+.\"O .I minutes
+.\"O will be subtracted from each timestamp to convert it to UTC used
+.\"O internally by Linux.  This is useful when the time zone set in the kernel via
+.\"O .BR settimeofday (2)
+.\"O is not the time zone used by the filesystem.  Note
+.\"O that this option still does not provide correct time stamps in all cases in
+.\"O presence of DST - time stamps in a different DST setting will be off by one
+.\"O hour.
+FAT で使われるローカル時間から UTC へのタイムスタンプ変換のオフセットを設定する。
+つまり、Linux が内部的に使う UTC に変換するために、
 .I minutes
-will be subtracted from each timestamp to convert it to UTC used
-internally by Linux.  This is useful when the time zone set in the kernel via
+を各タイムスタンプから差し引く。
+これは、
 .BR settimeofday (2)
-is not the time zone used by the filesystem.  Note
-that this option still does not provide correct time stamps in all cases in
-presence of DST - time stamps in a different DST setting will be off by one
-hour.
+でカーネルに設定されているタイムゾーンが、
+ファイルシステムで使われているタイムゾーンと異なる場合に役立つ。
+このオプションは、夏時間 (DST) が存在する場合、
+正しい時間を提供できない点に注意すること。
+異なる夏時間設定のタイムスタンプでは、1 時間ずれるだろう。
 .TP
 .B quiet
 .\"O Turn on the
@@ -2898,32 +2945,54 @@ hour.
 用いる際には注意すること！
 .TP
 .B rodir
-FAT has the ATTR_RO (read-only) attribute.  On Windows, the ATTR_RO of the
-directory will just be ignored, and is used only by applications as a flag
-(e.g.\& it's set for the customized folder).
+.\"O FAT has the ATTR_RO (read-only) attribute.  On Windows, the ATTR_RO of the
+.\"O directory will just be ignored, and is used only by applications as a flag
+.\"O (e.g.\& it's set for the customized folder).
+FAT には ATTR_RO (読み込みのみ) 属性がある。
+Windows ではディレクトリの ATTR_RO は単純に無視され、
+アプリケーションでのみフラグとして使われる
+(例えば、カスタマイズされたフォルダとして使われる)。
 
-If you want to use ATTR_RO as read-only flag even for the directory, set this
-option.
+.\"O If you want to use ATTR_RO as read-only flag even for the directory, set this
+.\"O option.
+ATTR_RO をディレクトリの読み込みのみのフラグとして使いたい場合、
+このオプションを設定すること。
 .TP
 .B showexec
-If set, the execute permission bits of the file will be allowed only if
-the extension part of the name is \&.EXE, \&.COM, or \&.BAT.  Not set by default.
+.\"O If set, the execute permission bits of the file will be allowed only if
+.\"O the extension part of the name is \&.EXE, \&.COM, or \&.BAT.  Not set by default.
+このオプションが設定されると、ファイル名の拡張子部分が
+\&.EXE, \&.COM, \&.BAT である場合にのみ、ファイルの実行権限ビットが許可される。
+これは、デフォルトでは設定されない。
 .TP
 .B sys_immutable
-If set, ATTR_SYS attribute on FAT is handled as IMMUTABLE flag on Linux.
-Not set by default.
+.\"O If set, ATTR_SYS attribute on FAT is handled as IMMUTABLE flag on Linux.
+.\"O Not set by default.
+このオプションが設定されると、FAT の ATTR_SYS 属性を
+Linux の IMMUTABLE フラグとして扱う。
+これは、デフォルトでは設定されない。
 .TP
 .B flush
-If set, the filesystem will try to flush to disk more early than normal.
-Not set by default.
+.\"O If set, the filesystem will try to flush to disk more early than normal.
+.\"O Not set by default.
+このオプションが設定されると、ファイルシステムは通常より早い
+タイミングでディスクに書き出す。
+これは、デフォルトでは設定されない。
 .TP
 .B usefree
-Use the "free clusters" value stored on FSINFO.  It'll
-be used to determine number of free clusters without
-scanning disk.  But it's not used by default, because
-recent Windows don't update it correctly in some
-case.  If you are sure the "free clusters" on FSINFO is
-correct, by this option you can avoid scanning disk.
+.\"O Use the "free clusters" value stored on FSINFO.  It'll
+.\"O be used to determine number of free clusters without
+.\"O scanning disk.  But it's not used by default, because
+.\"O recent Windows don't update it correctly in some
+.\"O case.  If you are sure the "free clusters" on FSINFO is
+.\"O correct, by this option you can avoid scanning disk.
+FSINFO に格納された「空きクラスタ (free clusters)」の値を使う。
+これは、ディスクをスキャンせずに空きクラスタの数を決定するのに
+使われる。
+現在の Windows では、この情報を正しく更新しない場合があるので、
+デフォルトでは使われない。
+FSINFO に格納された「空きクラスタ」が正しいという保証がある場合、
+このオプションでディスクのスキャンが回避できる。
 .TP
 .BR dots ", " nodots ", " dotsOK= [ yes | no ]
 .\"O Various misguided attempts to force Unix or DOS conventions
@@ -3006,7 +3075,8 @@ umask を設定する (umask とは許可属性のビットマスクで、立っ
 .BR case=lower )
 .TP
 .BI conv= mode
-This option is obsolete and may fail or being ignored.
+.\"O This option is obsolete and may fail or being ignored.
+このオプションは古く、失敗するか、無視される。
 .TP
 .B nocheck
 .\"O Do not abort mounting when certain consistency checks fail.
@@ -3145,7 +3215,8 @@ hidden 属性のファイルや、それに関連付けられたファイルも�
 .BR block=1024 。
 .TP
 .BI conv= mode
-This option is obsolete and may fail or being ignored.
+.\"O This option is obsolete and may fail or being ignored.
+このオプションは古く、失敗するか、無視される。
 .TP
 .B cruft
 .\"O If the high byte of the file length contains other garbage,
