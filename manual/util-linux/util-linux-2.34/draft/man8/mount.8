@@ -3663,66 +3663,112 @@ reiserfs がバリア書き込みでエラーになると、警告を出して�
 ディスクがバッテリーでバックアップされている場合、
 バリアの無効化で安全に性能を改善できる。
 
-.SS "Mount options for ubifs"
-UBIFS is a flash filesystem which works on top of UBI volumes.  Note that
-\fBatime\fR is not supported and is always turned off.
+.\"O .SS "Mount options for ubifs"
+.SS "ubifs のマウントオプション"
+.\"O UBIFS is a flash filesystem which works on top of UBI volumes.  Note that
+.\"O \fBatime\fR is not supported and is always turned off.
+UBIFS は UBI ボリューム上で動作するフラッシュファイルシステムである。
+\fBatime\fR はサポートされておらず、常に無効化されている。
 .TP
-The device name may be specified as
+.\"O The device name may be specified as
+デバイス名は以下のように指定できる。
 .RS
 .B ubiX_Y
-UBI device number
+.\"O UBI device number
+.\"O .BR X ,
+.\"O volume number
+.\"O .B Y
+UBI デバイス番号
 .BR X ,
-volume number
+ボリューム番号
 .B Y
 .TP
 .B ubiY
-UBI device number
+.\"O UBI device number
+.\"O .BR 0 ,
+.\"O volume number
+.\"O .B Y
+UBI デバイス番号
 .BR 0 ,
-volume number
+ボリューム番号
 .B Y
 .TP
 .B ubiX:NAME
-UBI device number
+.\"O UBI device number
+.\"O .BR X ,
+.\"O volume with name
+.\"O .B NAME
+UBI デバイス番号
 .BR X ,
-volume with name
+ボリューム名
 .B NAME
 .TP
 .B ubi:NAME
-UBI device number
+.\"O UBI device number
+.\"O .BR 0 ,
+.\"O volume with name
+.\"O .B NAME
+UBI デバイス番号
 .BR 0 ,
-volume with name
+ボリューム名
 .B NAME
 .RE
-Alternative
+.\"O Alternative
+.\"O .B !
+.\"O separator may be used instead of
+.\"O .BR : .
+.B :
+の代わりに
 .B !
-separator may be used instead of
-.BR : .
+を区切り文字に使うことができる。
 .TP
-The following mount options are available:
+.\"O The following mount options are available:
+以下のマウントオプションが指定可能である:
 .TP
 .B bulk_read
-Enable bulk-read.  VFS read-ahead is disabled because it slows down the file
-system.  Bulk-Read is an internal optimization.  Some flashes may read faster if
-the data are read at one go, rather than at several read requests.  For
-example, OneNAND can do "read-while-load" if it reads more than one NAND page.
+.\"O Enable bulk-read.  VFS read-ahead is disabled because it slows down the file
+.\"O system.  Bulk-Read is an internal optimization.  Some flashes may read faster if
+.\"O the data are read at one go, rather than at several read requests.  For
+.\"O example, OneNAND can do "read-while-load" if it reads more than one NAND page.
+まとめ読み込み (bulk-read) を有効化する。
+ファイルシステムをスローダウンさせるので、VFS の先読み (read-ahead) は無効化される。
+まとめての読み込みは、内部的な最適化である。
+フラッシュメモリでは、複数回の読み込みリクエストよりも、
+データを 1 度に読み込んだ方が速くなる可能性がある。
+例えば、NAND の 1 ページ以上を読み込む場合、
+「ロード中の読み込み (read-while-load)」ができる。
 .TP
 .B no_bulk_read
-Do not bulk-read.  This is the default.
+.\"O Do not bulk-read.  This is the default.
+まとめ読み込みをしない。これがデフォルトである。
 .TP
 .B chk_data_crc
-Check data CRC-32 checksums.  This is the default.
+.\"O Check data CRC-32 checksums.  This is the default.
+データの CRC-32 チェックサムを検証する。これがデフォルトである。
 .TP
-.BR no_chk_data_crc .
-Do not check data CRC-32 checksums.  With this option, the filesystem does not
-check CRC-32 checksum for data, but it does check it for the internal indexing
-information.  This option only affects reading, not writing.  CRC-32 is always
-calculated when writing the data.
+.\"O .BR no_chk_data_crc .
+.B no_chk_data_crc
+.\"O Do not check data CRC-32 checksums.  With this option, the filesystem does not
+.\"O check CRC-32 checksum for data, but it does check it for the internal indexing
+.\"O information.  This option only affects reading, not writing.  CRC-32 is always
+.\"O calculated when writing the data.
+データの CRC-32 チェックサムを検証しない。
+このオプションを指定すると、ファイルシステムはデータの CRC-32 チェックサムを検証しないが、
+内部のインデックス情報は検証する。
+このオプションは、読み込みにのみ影響し、書き込みには影響しない。
+データを書き込む際には、CRC-32 は常に計算される。
 .TP
 .BR compr= { none | lzo | zlib }
-Select the default compressor which is used when new files are written.  It is
-still possible to read compressed files if mounted with the
+.\"O Select the default compressor which is used when new files are written.  It is
+.\"O still possible to read compressed files if mounted with the
+.\"O .B none
+.\"O option.
+新しいファイルが書き込まれる際に使われるデフォルトの圧縮方法を
+選択する。
+ファイルシステムを
 .B none
-option.
+オプションでマウントしたとしても、圧縮したファイルを読み込むことが
+できる。
 
 .\"O .SS "Mount options for udf"
 .SS "udf のマウントオプション"
@@ -3734,51 +3780,79 @@ option.
 .\"O .IR iso9660 .
 UDF は OSTA, Optical Storage Technology Association で定義されている
 "Universal Disk Format" ファイルシステムであり、DVD-ROM で多く使用される。
-frequently
-in the form of a hybrid UDF/ISO-9660 filesystem. It is, however,
-perfectly usable by itself on disk drives, flash drives and other block devices.
+多くの場合、ハイブリッド UDF/ISO-9660 ファイルシステムの形式である。
+しかし、それ自身はディスクドライブ、フラッシュドライブ、
+他のブロックデバイスとして、完璧に利用できる。
 .I iso9660
 も参照すること。
 .TP
 .B uid=
-Make all files in the filesystem belong to the given user.
-uid=forget can be specified independently of (or usually in
-addition to) uid=<user> and results in UDF
-not storing uids to the media. In fact the recorded uid
-is the 32-bit overflow uid -1 as defined by the UDF standard.
-The value is given as either <user> which is a valid user name or the corresponding
-decimal user id, or the special string "forget".
+.\"O Make all files in the filesystem belong to the given user.
+.\"O uid=forget can be specified independently of (or usually in
+.\"O addition to) uid=<user> and results in UDF
+.\"O not storing uids to the media. In fact the recorded uid
+.\"O is the 32-bit overflow uid -1 as defined by the UDF standard.
+.\"O The value is given as either <user> which is a valid user name or the corresponding
+.\"O decimal user id, or the special string "forget".
+ファイルシステムの全てのファイルを、指定したユーザーに所属させる。
+uid=forget は、uid=<user> と独立して (または、通常は追加として) 指定可能で、
+結果として、UDF は uid をメディアに格納しない。
+実際、記録された uid は 32 ビットのオーバーフロー uid -1 で、
+UDF 標準で定義されている。
+<user> の値は、有効なユーザー名、対応する 10 進数のユーザー ID、
+特別な文字列 "forget" のいずれかである。
 .TP
 .B gid=
-Make all files in the filesystem belong to the given group.
-gid=forget can be specified independently of (or usually in
-addition to) gid=<group> and results in UDF
-not storing gids to the media. In fact the recorded gid
-is the 32-bit overflow gid -1 as defined by the UDF standard.
-The value is given as either <group> which is a valid group name or the corresponding
-decimal group id, or the special string "forget".
+.\"O Make all files in the filesystem belong to the given group.
+.\"O gid=forget can be specified independently of (or usually in
+.\"O addition to) gid=<group> and results in UDF
+.\"O not storing gids to the media. In fact the recorded gid
+.\"O is the 32-bit overflow gid -1 as defined by the UDF standard.
+.\"O The value is given as either <group> which is a valid group name or the corresponding
+.\"O decimal group id, or the special string "forget".
+ファイルシステムの全てのファイルを、指定したグループに所属させる。
+gid=forget は、gid=<group> と独立して (または、通常は追加として) 指定可能で、
+結果として、UDF は gid をメディアに格納しない。
+実際、記録された gid は 32 ビットのオーバーフロー gid -1 で、
+UDF 標準で定義されている。
+<group> の値は、有効なグループ名、対応する 10 進数のグループ ID、
+特別な文字列 "forget" のいずれかである。
 .TP
 .B umask=
-Mask out the given permissions from all inodes read from the filesystem.
+.\"O Mask out the given permissions from all inodes read from the filesystem.
+ファイルシステムから読み出した全ての i ノードの権限を指定した権限でマスクする。
 .\"O The value is given in octal.
 値は 8 進数で指定する。
 .TP
 .B mode=
-If mode= is set the permissions of all non-directory inodes read from the
-filesystem will be set to the given mode. The value is given in octal.
+.\"O If mode= is set the permissions of all non-directory inodes read from the
+.\"O filesystem will be set to the given mode. The value is given in octal.
+mode= が設定された場合、ファイルシステムから読み出したディレクトリ以外の
+全ての i ノードの権限を指定したモードに設定する。
+値は 8 進数で指定する。
 .TP
 .B dmode=
-If dmode= is set the permissions of all directory inodes read from the
-filesystem will be set to the given dmode. The value is given in octal.
+.\"O If dmode= is set the permissions of all directory inodes read from the
+.\"O filesystem will be set to the given dmode. The value is given in octal.
+dmode= が設定された場合、ファイルシステムから読み出したディレクトリの
+全ての i ノードの権限を指定したモードに設定する。
+値は 8 進数で指定する。
 .TP
 .B bs=
-Set the block size. Default value prior to kernel version 2.6.30 was
-2048. Since 2.6.30 and prior to 4.11 it was logical device block size with
-fallback to 2048. Since 4.11 it is logical block size with fallback to
-any valid block size between logical device block size and 4096.
+.\"O Set the block size. Default value prior to kernel version 2.6.30 was
+.\"O 2048. Since 2.6.30 and prior to 4.11 it was logical device block size with
+.\"O fallback to 2048. Since 4.11 it is logical block size with fallback to
+.\"O any valid block size between logical device block size and 4096.
+ブロックサイズを設定する。
+カーネルバージョン 2.6.30 より前のデフォルト値は 2048 である。
+2.6.30 以降で 4.11 より前では、論理デバイスブロックサイズで 2048 になった。
+4.11 以降では、論理デバイスブロックサイズから 4096 の間の
+有効な論理ブロックサイズである。
 
-For other details see the \fBmkudffs\fP(8) 2.0+ manpage, sections
-\fBCOMPATIBILITY\fP and \fBBLOCK SIZE\fP.
+.\"O For other details see the \fBmkudffs\fP(8) 2.0+ manpage, sections
+.\"O \fBCOMPATIBILITY\fP and \fBBLOCK SIZE\fP.
+他の詳細は \fBmkudffs\fP(8) 2.0+ の man ページのセクション
+\fB互換性\fP と \fBブロックサイズ\fP を参照すること。
 .TP
 .B unhide
 .\"O Show otherwise hidden files.
@@ -3789,16 +3863,20 @@ For other details see the \fBmkudffs\fP(8) 2.0+ manpage, sections
 削除されたファイルもリストに見せる。
 .TP
 .B adinicb
-Embed data in the inode. (default)
+.\"O Embed data in the inode. (default)
+i ノードにデータを埋め込む (デフォルト)。
 .TP
 .B noadinicb
-Don't embed data in the inode.
+.\"O Don't embed data in the inode.
+i ノードにデータを埋め込まない。
 .TP
 .B shortad
-Use short UDF address descriptors.
+.\"O Use short UDF address descriptors.
+ショート UDF アドレスディスクリプターを使う。
 .TP
 .B longad
-Use long UDF address descriptors. (default)
+.\"O Use long UDF address descriptors. (default)
+ロング UDF アドレスディスクリプターを使う (デフォルト)。
 .TP
 .B nostrict
 .\"O Unset strict conformance.
@@ -3807,33 +3885,41 @@ Use long UDF address descriptors. (default)
 .B iocharset=
 .\"O Set the NLS character set. This requires kernel compiled with CONFIG_UDF_NLS option.
 NLS 文字セットを設定する。
-This requires kernel compiled with CONFIG_UDF_NLS option.
+これには、CONFIG_UDF_NLS オプションでコンパイルしたカーネルが必要である。
 .TP
 .B utf8
-Set the UTF-8 character set.
-.SS Mount options for debugging and disaster recovery
+.\"O Set the UTF-8 character set.
+UTF-8 文字集合を設定する。
+.\"O .SS Mount options for debugging and disaster recovery
+.SS デバッグと障害復旧のマウントオプション
 .TP
 .B novrs
 .\"O Ignore the Volume Recognition Sequence and attempt to mount anyway.
-Ignore the Volume Recognition Sequence and attempt to mount anyway.
+ボリューム認識シーケンス (Volume Recognition Sequence) を無視して、
+マウントしようとする。
 .TP
 .B session=
 .\"O Select the session number for multi-session recorded optical media. (default= last session)
-Select the session number for multi-session recorded optical media. (default= last session)
+マルチセッションで記録された光学メディアのセッション番号を選択する
+(デフォルトは最後のセッションである)。
 .TP
 .B anchor=
 .\"O Override standard anchor location. (default= 256)
 標準のアンカーの位置を上書きする。(デフォルトは 256)
 .TP
 .B lastblock=
-Set the last block of the filesystem.
-.SS Unused historical mount options that may be encountered and should be removed
+.\"O Set the last block of the filesystem.
+ファイルシステムの最終ブロックを設定する。
+.\"O .SS Unused historical mount options that may be encountered and should be removed
+.SS 指定された場合にも削除される、使用されていない歴史的なマウントオプション
 .TP
 .B uid=ignore
-Ignored, use uid=<user> instead.
+.\"O Ignored, use uid=<user> instead.
+無視される。代わりに uid=<user> を使うこと。
 .TP
 .B gid=ignore
-Ignored, use gid=<group> instead.
+.\"O Ignored, use gid=<group> instead.
+無視される。代わりに gid=<group> を使うこと。
 .TP
 .B volume=
 .\"O Unimplemented and ignored.
@@ -3881,10 +3967,12 @@ BSD ライクなシステム (NetBSD, FreeBSD, OpenBSD)
 で作られたファイルシステムに用いる。
 .TP
 .B ufs2
-Used in FreeBSD 5.x supported as read-write.
+.\"O Used in FreeBSD 5.x supported as read-write.
+FreeBSD 5.x で使われており、読み書きがサポートされる。
 .TP
 .B 5xbsd
-Synonym for ufs2.
+.\"O Synonym for ufs2.
+ufs2 の別名。
 .TP
 .B sun
 .\"O For filesystems created by SunOS or Solaris on Sparc.
