@@ -3997,27 +3997,49 @@ umask の値は 8 進数で指定する。
 デフォルトではファイルは root が所有し、
 他のユーザーからは読み取り不可になっている。
 <P>
+
 </DL>
 <A NAME="lbBA">&nbsp;</A>
-<H3>Mount options for overlay</H3>
+<H3>オーバーレイ (overlay) のマウントオプション</H3>
 
-Since Linux 3.18 the overlay pseudo filesystem implements a union mount for
-other filesystems.
+
+
+Linux 3.18 以降で、オーバーレイ擬似ファイルシステムは、
+他のファイルシステムの統合 (union) マウントを実装している。
 <P>
-An overlay filesystem combines two filesystems - an <B>upper</B> filesystem and
-a <B>lower</B> filesystem.  When a name exists in both filesystems, the object
-in the upper filesystem is visible while the object in the lower filesystem is
-either hidden or, in the case of directories, merged with the upper object.
+
+
+
+
+オーバーレイファイルシステムは 2 つのファイルシステム -
+<B>上位 (upper)</B> ファイルシステムと
+<B>下位 (lower)</B> ファイルシステムを組み合わせる。
+名前が両方のファイルシステムに存在する場合、
+上位ファイルシステムのオブジェクトが可視化され、
+一方で、下位ファイルシステムのオブジェクトは隠されるか、
+ディレクトリの場合は、上位オブジェクトにマージされる。
 <P>
-The lower filesystem can be any filesystem supported by Linux and does not need
-to be writable.  The lower filesystem can even be another overlayfs.  The upper
-filesystem will normally be writable and if it is it must support the creation
-of trusted.* extended attributes, and must provide a valid d_type in readdir
-responses, so NFS is not suitable.
+
+
+
+
+
+下位ファイルシステムは Linux でサポートされる任意のファイルシステムであり、
+書き込み可能である必要はない。
+下位ファイルシステムは他のオーバーレイファイルシステムであってもよい。
+上位ファイルシステムは通常は書き込み可能である。
+その場合、trusted.* 拡張属性での作成をサポートしている必要があり、
+かつ readdir の応答として有効な d_type を返す必要がある。
+そのため、NFS は適切ではない。
 <P>
-A read-only overlay of two read-only filesystems may use any filesystem type.
-The options <B>lowerdir</B> and <B>upperdir</B> are combined into a merged
-directory by using:
+
+
+
+2 つの読み込みのみのファイルシステムで構成される、
+読み込みのみのオーバーレイでは、任意のファイルシステムタイプを使うことが
+できる。
+以下のようにして、オプション <B>lowerdir</B> と <B>upperdir</B> を組み合わせて、
+merged ディレクトリにすることができる。
 <P>
 <DL COMPACT><DT><DD>
 <BR>
@@ -4036,15 +4058,19 @@ directory by using:
 <DT><B>lowerdir=</B><I>directory</I>
 
 <DD>
-Any filesystem, does not need to be on a writable filesystem.
+
+任意のファイルシステムであり、書き込み可能なファイルシステムである
+必要はない。
 <DT><B>upperdir=</B><I>directory</I>
 
 <DD>
-The upperdir is normally on a writable filesystem.
+
+upperdir は通常は書き込み可能なファイルシステムである。
 <DT><B>workdir=</B><I>directory</I>
 
 <DD>
-The workdir needs to be an empty directory on the same filesystem as upperdir.
+
+workdir は upperdir と同じファイルシステム上の空ディレクトリである必要がある。
 <P>
 
 </DL>
@@ -4083,7 +4109,8 @@ Yury Yu. Rupasov が発明したハッシュ。
 このハッシュは高速であり、
 辞書順で近いファイル名を近いハッシュ値に対応づけることで
 近接関係 (locality) が保存される。
-高い確率でハッシュの衝突が起こるので、このオプションは使うべきではない。
+高い確率でハッシュの衝突が起こるので、このオプションは
+使うべきではない。
 <DT><B>tea</B>
 
 <DD>
@@ -4119,7 +4146,8 @@ rupasov ハッシュの修正版。
 
 コマンドに調べさせ、どのハッシュ関数が使われているかを検出 (detect) させる。
 さらに、この情報を reiserfs のスーパーブロックに書き込ませる。
-古い形式のファイルシステムを初めてマウントするときにのみ役立つ。
+古い形式のファイルシステムを初めてマウントするときにのみ
+役立つ。
 </DL>
 </DL>
 
@@ -4220,28 +4248,45 @@ reiserfs パーティションのオンラインでの領域拡張を許可す�
 <DT><B>user_xattr</B>
 
 <DD>
-Enable Extended User Attributes.  See the
+
+
+
+拡張ユーザ属性を有効にする。
 <B><A HREF="../man5/attr.5.html">attr</A></B>(5)
 
-manual page.
+のマニュアルページを参照すること。
 <DT><B>acl</B>
 
 <DD>
-Enable POSIX Access Control Lists.  See the
+
+
+
+POSIX アクセス制御リストを有効にする。
 <B><A HREF="../man5/acl.5.html">acl</A></B>(5)
 
-manual page.
+のマニュアルページを参照すること。
 <DT>
 <DD>
 <B>barrier=none</B> / <B>barrier=flush</B>
 
-This disables / enables the use of write barriers in the journaling code.
-barrier=none disables, barrier=flush enables (default).  This also requires an
-IO stack which can support barriers, and if reiserfs gets an error on a barrier
-write, it will disable barriers again with a warning.  Write barriers enforce
-proper on-disk ordering of journal commits, making volatile disk write caches
-safe to use, at some performance penalty.  If your disks are battery-backed in
-one way or another, disabling barriers may safely improve performance.
+
+
+
+
+
+
+
+このオプションは、ジャーナリングコードで書き込みバリアを
+無効/有効にする。
+barrier=none で無効にして、barrier=flush で有効にする (デフォルト)。
+このオプションはバリアをサポートする IO スタックが必要であり、
+reiserfs がバリア書き込みでエラーになると、警告を出してバリアを無効化する。
+書き込みバリアは、ディスク上での正しいジャーナルコミットの順番を
+強制し、一時的なディスク書き込みキャッシュを安全に使わせる
+必要がある。
+そのため、性能上のペナルティがある。
+ディスクがバッテリーでバックアップされている場合、
+バリアの無効化で安全に性能を改善できる。
 <P>
 </DL>
 <A NAME="lbBC">&nbsp;</A>
@@ -5263,7 +5308,7 @@ mount コマンドは util-linux パッケージの一部であり、
 <DT><A HREF="#lbAX">msdos のマウントオプション</A><DD>
 <DT><A HREF="#lbAY">ncpfs のマウントオプション</A><DD>
 <DT><A HREF="#lbAZ">ntfs のマウントオプション</A><DD>
-<DT><A HREF="#lbBA">Mount options for overlay</A><DD>
+<DT><A HREF="#lbBA">オーバーレイ (overlay) のマウントオプション</A><DD>
 <DT><A HREF="#lbBB">reiserfs のマウントオプション</A><DD>
 <DT><A HREF="#lbBC">Mount options for ubifs</A><DD>
 <DT><A HREF="#lbBD">udf のマウントオプション</A><DD>
@@ -5289,6 +5334,6 @@ mount コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 14:06:38 GMT, March 31, 2020
+Time: 15:03:43 GMT, March 31, 2020
 </BODY>
 </HTML>
