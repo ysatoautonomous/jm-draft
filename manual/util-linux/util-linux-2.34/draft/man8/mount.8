@@ -3415,24 +3415,46 @@ umask の値は 8 進数で指定する。
 デフォルトではファイルは root が所有し、
 他のユーザーからは読み取り不可になっている。
 
-.SS "Mount options for overlay"
-Since Linux 3.18 the overlay pseudo filesystem implements a union mount for
-other filesystems.
+.\"O .SS "Mount options for overlay"
+.SS "オーバーレイ (overlay) のマウントオプション"
+.\"O Since Linux 3.18 the overlay pseudo filesystem implements a union mount for
+.\"O other filesystems.
+Linux 3.18 以降で、オーバーレイ擬似ファイルシステムは、
+他のファイルシステムの統合 (union) マウントを実装している。
 
-An overlay filesystem combines two filesystems - an \fBupper\fR filesystem and
-a \fBlower\fR filesystem.  When a name exists in both filesystems, the object
-in the upper filesystem is visible while the object in the lower filesystem is
-either hidden or, in the case of directories, merged with the upper object.
+.\"O An overlay filesystem combines two filesystems - an \fBupper\fR filesystem and
+.\"O a \fBlower\fR filesystem.  When a name exists in both filesystems, the object
+.\"O in the upper filesystem is visible while the object in the lower filesystem is
+.\"O either hidden or, in the case of directories, merged with the upper object.
+オーバーレイファイルシステムは 2 つのファイルシステム -
+\fB上位 (upper)\fR ファイルシステムと
+\fB下位 (lower)\fR ファイルシステムを組み合わせる。
+名前が両方のファイルシステムに存在する場合、
+上位ファイルシステムのオブジェクトが可視化され、
+一方で、下位ファイルシステムのオブジェクトは隠されるか、
+ディレクトリの場合は、上位オブジェクトにマージされる。
 
-The lower filesystem can be any filesystem supported by Linux and does not need
-to be writable.  The lower filesystem can even be another overlayfs.  The upper
-filesystem will normally be writable and if it is it must support the creation
-of trusted.* extended attributes, and must provide a valid d_type in readdir
-responses, so NFS is not suitable.
+.\"O The lower filesystem can be any filesystem supported by Linux and does not need
+.\"O to be writable.  The lower filesystem can even be another overlayfs.  The upper
+.\"O filesystem will normally be writable and if it is it must support the creation
+.\"O of trusted.* extended attributes, and must provide a valid d_type in readdir
+.\"O responses, so NFS is not suitable.
+下位ファイルシステムは Linux でサポートされる任意のファイルシステムであり、
+書き込み可能である必要はない。
+下位ファイルシステムは他のオーバーレイファイルシステムであってもよい。
+上位ファイルシステムは通常は書き込み可能である。
+その場合、trusted.* 拡張属性での作成をサポートしている必要があり、
+かつ readdir の応答として有効な d_type を返す必要がある。
+そのため、NFS は適切ではない。
 
-A read-only overlay of two read-only filesystems may use any filesystem type.
-The options \fBlowerdir\fR and \fBupperdir\fR are combined into a merged
-directory by using:
+.\"O A read-only overlay of two read-only filesystems may use any filesystem type.
+.\"O The options \fBlowerdir\fR and \fBupperdir\fR are combined into a merged
+.\"O directory by using:
+2 つの読み込みのみのファイルシステムで構成される、
+読み込みのみのオーバーレイでは、任意のファイルシステムタイプを使うことが
+できる。
+以下のようにして、オプション \fBlowerdir\fR と \fBupperdir\fR を組み合わせて、
+merged ディレクトリにすることができる。
 
 .RS
 .br
@@ -3445,13 +3467,17 @@ directory by using:
 
 .TP
 .BI lowerdir= directory
-Any filesystem, does not need to be on a writable filesystem.
+.\"O Any filesystem, does not need to be on a writable filesystem.
+任意のファイルシステムであり、書き込み可能なファイルシステムである
+必要はない。
 .TP
 .BI upperdir= directory
-The upperdir is normally on a writable filesystem.
+.\"O The upperdir is normally on a writable filesystem.
+upperdir は通常は書き込み可能なファイルシステムである。
 .TP
 .BI workdir= directory
-The workdir needs to be an empty directory on the same filesystem as upperdir.
+.\"O The workdir needs to be an empty directory on the same filesystem as upperdir.
+workdir は upperdir と同じファイルシステム上の空ディレクトリである必要がある。
 
 .\"O .SS "Mount options for reiserfs"
 .SS "reiserfs のマウントオプション"
@@ -3482,7 +3508,8 @@ Yury Yu.\& Rupasov が発明したハッシュ。
 このハッシュは高速であり、
 辞書順で近いファイル名を近いハッシュ値に対応づけることで
 近接関係 (locality) が保存される。
-高い確率でハッシュの衝突が起こるので、このオプションは使うべきではない。
+高い確率でハッシュの衝突が起こるので、このオプションは
+使うべきではない。
 .TP
 .B tea
 .\"O A Davis-Meyer function implemented by Jeremy Fitzhardinge.
@@ -3514,7 +3541,8 @@ rupasov ハッシュの修正版。
 .I mount
 コマンドに調べさせ、どのハッシュ関数が使われているかを検出 (detect) させる。
 さらに、この情報を reiserfs のスーパーブロックに書き込ませる。
-古い形式のファイルシステムを初めてマウントするときにのみ役立つ。
+古い形式のファイルシステムを初めてマウントするときにのみ
+役立つ。
 .RE
 .TP
 .B hashed_relocation
@@ -3599,24 +3627,41 @@ reiserfs パーティションのオンラインでの領域拡張を許可す�
 
 .TP
 .B user_xattr
-Enable Extended User Attributes.  See the
+.\"O Enable Extended User Attributes.  See the
+.\"O .BR attr (5)
+.\"O manual page.
+拡張ユーザ属性を有効にする。
 .BR attr (5)
-manual page.
+のマニュアルページを参照すること。
 .TP
 .B acl
-Enable POSIX Access Control Lists.  See the
+.\"O Enable POSIX Access Control Lists.  See the
+.\"O .BR acl (5)
+.\"O manual page.
+POSIX アクセス制御リストを有効にする。
 .BR acl (5)
-manual page.
+のマニュアルページを参照すること。
 .TP
 .\"O .BR barrier=none " / " barrier=flush "
 .BR barrier=none " / " barrier=flush
-This disables / enables the use of write barriers in the journaling code.
-barrier=none disables, barrier=flush enables (default).  This also requires an
-IO stack which can support barriers, and if reiserfs gets an error on a barrier
-write, it will disable barriers again with a warning.  Write barriers enforce
-proper on-disk ordering of journal commits, making volatile disk write caches
-safe to use, at some performance penalty.  If your disks are battery-backed in
-one way or another, disabling barriers may safely improve performance.
+.\"O This disables / enables the use of write barriers in the journaling code.
+.\"O barrier=none disables, barrier=flush enables (default).  This also requires an
+.\"O IO stack which can support barriers, and if reiserfs gets an error on a barrier
+.\"O write, it will disable barriers again with a warning.  Write barriers enforce
+.\"O proper on-disk ordering of journal commits, making volatile disk write caches
+.\"O safe to use, at some performance penalty.  If your disks are battery-backed in
+.\"O one way or another, disabling barriers may safely improve performance.
+このオプションは、ジャーナリングコードで書き込みバリアを
+無効/有効にする。
+barrier=none で無効にして、barrier=flush で有効にする (デフォルト)。
+このオプションはバリアをサポートする IO スタックが必要であり、
+reiserfs がバリア書き込みでエラーになると、警告を出してバリアを無効化する。
+書き込みバリアは、ディスク上での正しいジャーナルコミットの順番を
+強制し、一時的なディスク書き込みキャッシュを安全に使わせる
+必要がある。
+そのため、性能上のペナルティがある。
+ディスクがバッテリーでバックアップされている場合、
+バリアの無効化で安全に性能を改善できる。
 
 .SS "Mount options for ubifs"
 UBIFS is a flash filesystem which works on top of UBI volumes.  Note that
