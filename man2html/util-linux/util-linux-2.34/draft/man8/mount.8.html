@@ -4288,91 +4288,139 @@ reiserfs がバリア書き込みでエラーになると、警告を出して�
 ディスクがバッテリーでバックアップされている場合、
 バリアの無効化で安全に性能を改善できる。
 <P>
+
 </DL>
 <A NAME="lbBC">&nbsp;</A>
-<H3>Mount options for ubifs</H3>
+<H3>ubifs のマウントオプション</H3>
 
-UBIFS is a flash filesystem which works on top of UBI volumes.  Note that
-<B>atime</B> is not supported and is always turned off.
+
+
+UBIFS は UBI ボリューム上で動作するフラッシュファイルシステムである。
+<B>atime</B> はサポートされておらず、常に無効化されている。
 <DL COMPACT>
-<DT>The device name may be specified as<DD>
+<DT>
+<DD>
+デバイス名は以下のように指定できる。
 <DL COMPACT><DT><DD>
 <B>ubiX_Y</B>
 
-UBI device number
+
+
+
+
+UBI デバイス番号
 <B>X</B>,
 
-volume number
+ボリューム番号
 <B>Y</B>
 
 <DL COMPACT>
 <DT><B>ubiY</B>
 
 <DD>
-UBI device number
+
+
+
+
+UBI デバイス番号
 <B>0</B>,
 
-volume number
+ボリューム番号
 <B>Y</B>
 
 <DT><B>ubiX:NAME</B>
 
 <DD>
-UBI device number
+
+
+
+
+UBI デバイス番号
 <B>X</B>,
 
-volume with name
+ボリューム名
 <B>NAME</B>
 
 <DT><B>ubi:NAME</B>
 
 <DD>
-UBI device number
+
+
+
+
+UBI デバイス番号
 <B>0</B>,
 
-volume with name
+ボリューム名
 <B>NAME</B>
 
 </DL>
 </DL>
 
-Alternative
+
+
+
+
+<B>:</B>
+
+の代わりに
 <B>!</B>
 
-separator may be used instead of
-<B>:</B>.
-
-<DT>The following mount options are available:<DD>
+を区切り文字に使うことができる。
+<DT>
+<DD>
+以下のマウントオプションが指定可能である:
 <DT><B>bulk_read</B>
 
 <DD>
-Enable bulk-read.  VFS read-ahead is disabled because it slows down the file
-system.  Bulk-Read is an internal optimization.  Some flashes may read faster if
-the data are read at one go, rather than at several read requests.  For
-example, OneNAND can do &quot;read-while-load&quot; if it reads more than one NAND page.
+
+
+
+
+まとめ読み込み (bulk-read) を有効化する。
+ファイルシステムをスローダウンさせるので、VFS の先読み (read-ahead) は無効化される。
+まとめての読み込みは、内部的な最適化である。
+フラッシュメモリでは、複数回の読み込みリクエストよりも、
+データを 1 度に読み込んだ方が速くなる可能性がある。
+例えば、NAND の 1 ページ以上を読み込む場合、
+「ロード中の読み込み (read-while-load)」ができる。
 <DT><B>no_bulk_read</B>
 
 <DD>
-Do not bulk-read.  This is the default.
+
+まとめ読み込みをしない。これがデフォルトである。
 <DT><B>chk_data_crc</B>
 
 <DD>
-Check data CRC-32 checksums.  This is the default.
-<DT><B>no_chk_data_crc</B>.
 
+データの CRC-32 チェックサムを検証する。これがデフォルトである。
+<DT>
 <DD>
-Do not check data CRC-32 checksums.  With this option, the filesystem does not
-check CRC-32 checksum for data, but it does check it for the internal indexing
-information.  This option only affects reading, not writing.  CRC-32 is always
-calculated when writing the data.
+<B>no_chk_data_crc</B>
+
+
+
+
+
+データの CRC-32 チェックサムを検証しない。
+このオプションを指定すると、ファイルシステムはデータの CRC-32 チェックサムを検証しないが、
+内部のインデックス情報は検証する。
+このオプションは、読み込みにのみ影響し、書き込みには影響しない。
+データを書き込む際には、CRC-32 は常に計算される。
 <DT><B>compr=</B>{<B>none</B>|<B>lzo</B>|<B>zlib</B>}
 
 <DD>
-Select the default compressor which is used when new files are written.  It is
-still possible to read compressed files if mounted with the
+
+
+
+
+新しいファイルが書き込まれる際に使われるデフォルトの圧縮方法を
+選択する。
+ファイルシステムを
 <B>none</B>
 
-option.
+オプションでマウントしたとしても、圧縮したファイルを読み込むことが
+できる。
 <P>
 
 </DL>
@@ -4387,9 +4435,9 @@ option.
 
 UDF は OSTA, Optical Storage Technology Association で定義されている
 &quot;Universal Disk Format&quot; ファイルシステムであり、DVD-ROM で多く使用される。
-frequently
-in the form of a hybrid UDF/ISO-9660 filesystem. It is, however,
-perfectly usable by itself on disk drives, flash drives and other block devices.
+多くの場合、ハイブリッド UDF/ISO-9660 ファイルシステムの形式である。
+しかし、それ自身はディスクドライブ、フラッシュドライブ、
+他のブロックデバイスとして、完璧に利用できる。
 <I>iso9660</I>
 
 も参照すること。
@@ -4397,49 +4445,77 @@ perfectly usable by itself on disk drives, flash drives and other block devices.
 <DT><B>uid=</B>
 
 <DD>
-Make all files in the filesystem belong to the given user.
-uid=forget can be specified independently of (or usually in
-addition to) uid=&lt;user&gt; and results in UDF
-not storing uids to the media. In fact the recorded uid
-is the 32-bit overflow uid -1 as defined by the UDF standard.
-The value is given as either &lt;user&gt; which is a valid user name or the corresponding
-decimal user id, or the special string &quot;forget&quot;.
+
+
+
+
+
+
+
+ファイルシステムの全てのファイルを、指定したユーザーに所属させる。
+uid=forget は、uid=&lt;user&gt; と独立して (または、通常は追加として) 指定可能で、
+結果として、UDF は uid をメディアに格納しない。
+実際、記録された uid は 32 ビットのオーバーフロー uid -1 で、
+UDF 標準で定義されている。
+&lt;user&gt; の値は、有効なユーザー名、対応する 10 進数のユーザー ID、
+特別な文字列 &quot;forget&quot; のいずれかである。
 <DT><B>gid=</B>
 
 <DD>
-Make all files in the filesystem belong to the given group.
-gid=forget can be specified independently of (or usually in
-addition to) gid=&lt;group&gt; and results in UDF
-not storing gids to the media. In fact the recorded gid
-is the 32-bit overflow gid -1 as defined by the UDF standard.
-The value is given as either &lt;group&gt; which is a valid group name or the corresponding
-decimal group id, or the special string &quot;forget&quot;.
+
+
+
+
+
+
+
+ファイルシステムの全てのファイルを、指定したグループに所属させる。
+gid=forget は、gid=&lt;group&gt; と独立して (または、通常は追加として) 指定可能で、
+結果として、UDF は gid をメディアに格納しない。
+実際、記録された gid は 32 ビットのオーバーフロー gid -1 で、
+UDF 標準で定義されている。
+&lt;group&gt; の値は、有効なグループ名、対応する 10 進数のグループ ID、
+特別な文字列 &quot;forget&quot; のいずれかである。
 <DT><B>umask=</B>
 
 <DD>
-Mask out the given permissions from all inodes read from the filesystem.
+
+ファイルシステムから読み出した全ての i ノードの権限を指定した権限でマスクする。
 
 値は 8 進数で指定する。
 <DT><B>mode=</B>
 
 <DD>
-If mode= is set the permissions of all non-directory inodes read from the
-filesystem will be set to the given mode. The value is given in octal.
+
+
+mode= が設定された場合、ファイルシステムから読み出したディレクトリ以外の
+全ての i ノードの権限を指定したモードに設定する。
+値は 8 進数で指定する。
 <DT><B>dmode=</B>
 
 <DD>
-If dmode= is set the permissions of all directory inodes read from the
-filesystem will be set to the given dmode. The value is given in octal.
+
+
+dmode= が設定された場合、ファイルシステムから読み出したディレクトリの
+全ての i ノードの権限を指定したモードに設定する。
+値は 8 進数で指定する。
 <DT><B>bs=</B>
 
 <DD>
-Set the block size. Default value prior to kernel version 2.6.30 was
-2048. Since 2.6.30 and prior to 4.11 it was logical device block size with
-fallback to 2048. Since 4.11 it is logical block size with fallback to
-any valid block size between logical device block size and 4096.
+
+
+
+
+ブロックサイズを設定する。
+カーネルバージョン 2.6.30 より前のデフォルト値は 2048 である。
+2.6.30 以降で 4.11 より前では、論理デバイスブロックサイズで 2048 になった。
+4.11 以降では、論理デバイスブロックサイズから 4096 の間の
+有効な論理ブロックサイズである。
 <P>
-For other details see the <B><A HREF="../man8/mkudffs.8.html">mkudffs</A></B>(8) 2.0+ manpage, sections
-<B>COMPATIBILITY</B> and <B>BLOCK SIZE</B>.
+
+
+他の詳細は <B><A HREF="../man8/mkudffs.8.html">mkudffs</A></B>(8) 2.0+ の man ページのセクション
+<B>互換性</B> と <B>ブロックサイズ</B> を参照すること。
 <DT><B>unhide</B>
 
 <DD>
@@ -4453,19 +4529,23 @@ For other details see the <B><A HREF="../man8/mkudffs.8.html">mkudffs</A></B>(8)
 <DT><B>adinicb</B>
 
 <DD>
-Embed data in the inode. (default)
+
+i ノードにデータを埋め込む (デフォルト)。
 <DT><B>noadinicb</B>
 
 <DD>
-Don't embed data in the inode.
+
+i ノードにデータを埋め込まない。
 <DT><B>shortad</B>
 
 <DD>
-Use short UDF address descriptors.
+
+ショート UDF アドレスディスクリプターを使う。
 <DT><B>longad</B>
 
 <DD>
-Use long UDF address descriptors. (default)
+
+ロング UDF アドレスディスクリプターを使う (デフォルト)。
 <DT><B>nostrict</B>
 
 <DD>
@@ -4476,26 +4556,30 @@ Use long UDF address descriptors. (default)
 <DD>
 
 NLS 文字セットを設定する。
-This requires kernel compiled with CONFIG_UDF_NLS option.
+これには、CONFIG_UDF_NLS オプションでコンパイルしたカーネルが必要である。
 <DT><B>utf8</B>
 
 <DD>
-Set the UTF-8 character set.
+
+UTF-8 文字集合を設定する。
+
 </DL>
 <A NAME="lbBE">&nbsp;</A>
-<H3>Mount options for debugging and disaster recovery</H3>
+<H3>デバッグと障害復旧のマウントオプション</H3>
 
 <DL COMPACT>
 <DT><B>novrs</B>
 
 <DD>
 
-Ignore the Volume Recognition Sequence and attempt to mount anyway.
+ボリューム認識シーケンス (Volume Recognition Sequence) を無視して、
+マウントしようとする。
 <DT><B>session=</B>
 
 <DD>
 
-Select the session number for multi-session recorded optical media. (default= last session)
+マルチセッションで記録された光学メディアのセッション番号を選択する
+(デフォルトは最後のセッションである)。
 <DT><B>anchor=</B>
 
 <DD>
@@ -4504,20 +4588,24 @@ Select the session number for multi-session recorded optical media. (default= la
 <DT><B>lastblock=</B>
 
 <DD>
-Set the last block of the filesystem.
+
+ファイルシステムの最終ブロックを設定する。
+
 </DL>
 <A NAME="lbBF">&nbsp;</A>
-<H3>Unused historical mount options that may be encountered and should be removed</H3>
+<H3>指定された場合にも削除される、使用されていない歴史的なマウントオプション</H3>
 
 <DL COMPACT>
 <DT><B>uid=ignore</B>
 
 <DD>
-Ignored, use uid=&lt;user&gt; instead.
+
+無視される。代わりに uid=&lt;user&gt; を使うこと。
 <DT><B>gid=ignore</B>
 
 <DD>
-Ignored, use gid=&lt;group&gt; instead.
+
+無視される。代わりに gid=&lt;group&gt; を使うこと。
 <DT><B>volume=</B>
 
 <DD>
@@ -4578,11 +4666,13 @@ BSD ライクなシステム (NetBSD, FreeBSD, OpenBSD)
 <DT><B>ufs2</B>
 
 <DD>
-Used in FreeBSD 5.x supported as read-write.
+
+FreeBSD 5.x で使われており、読み書きがサポートされる。
 <DT><B>5xbsd</B>
 
 <DD>
-Synonym for ufs2.
+
+ufs2 の別名。
 <DT><B>sun</B>
 
 <DD>
@@ -5310,10 +5400,10 @@ mount コマンドは util-linux パッケージの一部であり、
 <DT><A HREF="#lbAZ">ntfs のマウントオプション</A><DD>
 <DT><A HREF="#lbBA">オーバーレイ (overlay) のマウントオプション</A><DD>
 <DT><A HREF="#lbBB">reiserfs のマウントオプション</A><DD>
-<DT><A HREF="#lbBC">Mount options for ubifs</A><DD>
+<DT><A HREF="#lbBC">ubifs のマウントオプション</A><DD>
 <DT><A HREF="#lbBD">udf のマウントオプション</A><DD>
-<DT><A HREF="#lbBE">Mount options for debugging and disaster recovery</A><DD>
-<DT><A HREF="#lbBF">Unused historical mount options that may be encountered and should be removed</A><DD>
+<DT><A HREF="#lbBE">デバッグと障害復旧のマウントオプション</A><DD>
+<DT><A HREF="#lbBF">指定された場合にも削除される、使用されていない歴史的なマウントオプション</A><DD>
 <DT><A HREF="#lbBG">ufs のマウントオプション</A><DD>
 <DT><A HREF="#lbBH">umsdos のマウントオプション</A><DD>
 <DT><A HREF="#lbBI">vfat のマウントオプション</A><DD>
@@ -5334,6 +5424,6 @@ mount コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 15:03:43 GMT, March 31, 2020
+Time: 16:50:10 GMT, March 31, 2020
 </BODY>
 </HTML>
