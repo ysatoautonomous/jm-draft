@@ -48,7 +48,7 @@
 .\" Updated & Modified Fri Mar 21 04:13:41 JST 2003 by Yuichi SATO
 .\" Updated & Modified Sun May  2 12:22:24 JST 2004 by Yuichi SATO
 .\" Updated & Modified Mon May  9 02:52:10 JST 2005 by Yuichi SATO
-.\" Updated & Modified Mon Mar 23 04:40:47 JST 2020
+.\" Updated & Modified Wed Apr  1 02:56:08 JST 2020
 .\"      by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .\"WORD:	character set		文字セット
@@ -2815,7 +2815,7 @@ CVF モジュールに渡すオプション。
 .\"O If set, causes discard/TRIM commands to be issued to the block device
 .\"O when blocks are freed.  This is useful for SSD devices and
 .\"O sparse/thinly-provisioned LUNs.
-このオプションが設定されると、ブロックが開放されると、
+このオプションが設定されると、ブロックが解放されると、
 ブロックデバイスに discard/TRIM コマンドが発行される。
 これは SSD デバイスと、スパース/thin プロビジョニングされた LUN で役立つ。
 .TP
@@ -4188,19 +4188,30 @@ usbfs ファイルシステムにあるバスディレクトリの
 .I /mnt
 にマウントする。
 
-If no explicit loop device is mentioned
-(but just an option `\fB\-o loop\fP' is given), then
+.\"O If no explicit loop device is mentioned
+.\"O (but just an option `\fB\-o loop\fP' is given), then
+.\"O .B mount
+.\"O will try to find some unused loop device and use that, for example
+loop デバイスが明示的に指定されない場合
+(単にオプション `\fB\-o loop\fP' が指定された場合)、
 .B mount
-will try to find some unused loop device and use that, for example
+は使用されていない loop デバイスを見つけて利用する。
+例えば、
 .RS
 .sp
 .B "mount /tmp/disk.img /mnt \-o loop"
 .sp
 .RE
-The mount command
-.B automatically
-creates a loop device from a regular file if a filesystem type is
-not specified or the filesystem is known for libblkid, for example:
+.\"O The mount command
+.\"O .B automatically
+.\"O creates a loop device from a regular file if a filesystem type is
+.\"O not specified or the filesystem is known for libblkid, for example:
+mount コマンドは、ファイルシステムタイプが指定されていない場合、
+またはファイルシステムが libblkid で判明している場合、
+通常ファイルから
+.B 自動的に
+loop デバイスを作成する。
+例えば、
 .RS
 .sp
 .B "mount /tmp/disk.img /mnt"
@@ -4230,27 +4241,28 @@ not specified or the filesystem is known for libblkid, for example:
 .\"O .B umount
 .\"O independently of
 .\"O .IR /etc/mtab .
-Since Linux 2.6.25 auto-destruction of loop devices is supported,
-meaning that any loop device allocated by
+Linux 2.6.25 以降で、loop デバイスの自動消去がサポートされた。
+つまり、
 .B mount
-will be freed by
+によって確保された loop デバイスは、
+.I /etc/mtab
+とは独立して
 .B umount
-independently of
-.IR /etc/mtab .
+で解放される。
 
 .\"O You can also free a loop device by hand, using
 .\"O .BR "losetup \-d " or " umount \-d" .
-You can also free a loop device by hand, using
-.BR "losetup \-d " or " umount \-d" .
+.BR "losetup \-d " または " umount \-d"
+を使って、手動で loop デバイスを解放することもできる。
 
 .\"O Since util-linux v2.29 mount command re-uses the loop device rather than
 .\"O initialize a new device if the same backing file is already used for some loop
 .\"O device with the same offset and sizelimit. This is necessary to avoid
 .\"O a filesystem corruption.
-Since util-linux v2.29 mount command re-uses the loop device rather than
-initialize a new device if the same backing file is already used for some loop
-device with the same offset and sizelimit. This is necessary to avoid
-a filesystem corruption.
+util-linux v2.29 以降の mount コマンドは、
+同じバッキングファイルが同じ loop デバイスで同じオフセットとサイズ制限で使われている場合、
+新しいデバイスを初期化するのではなく、loop デバイスを再利用するようになった。
+これはファイルシステムの破損を防ぐために必要である。
 
 .\"O .SH RETURN CODES
 .SH 返り値
@@ -4276,7 +4288,7 @@ a filesystem corruption.
 .\"O .B mount
 .\"O bug
 .B mount
-の内部のバグ
+の内部のバグ。
 .TP
 .B 8
 .\"O user interrupt
@@ -4292,14 +4304,18 @@ a filesystem corruption.
 .TP
 .B 64
 .\"O some mount succeeded
-(訳註: "mount -a" などで) 一部が成功した。
+マウントが一部が成功した。
 .RE
 
-The command \fBmount \-a\fR returns 0 (all succeeded), 32 (all failed), or 64 (some
-failed, some succeeded).
+.\"O The command \fBmount \-a\fR returns 0 (all succeeded), 32 (all failed), or 64 (some
+.\"O failed, some succeeded).
+コマンド \fBmount \-a\fR は、0 (全て成功), 32 (全て失敗),
+64 (一部成功、一部失敗) を返す。
 
-.SH "EXTERNAL HELPERS"
-The syntax of external mount helpers is:
+.\"O .SH "EXTERNAL HELPERS"
+.SH "外部ヘルパー"
+.\"O The syntax of external mount helpers is:
+外部 mount ヘルパーの書式は以下の通り:
 .sp
 .in +4
 .BI /sbin/mount. suffix
@@ -4313,12 +4329,18 @@ The syntax of external mount helpers is:
 .IR type \fB. subtype ]
 .in
 .sp
-where the \fIsuffix\fR is the filesystem type and the \fB\-sfnvoN\fR options have
-the same meaning as the normal mount options.  The \fB\-t\fR option is used for
-filesystems with subtypes support (for example
-.BR "/sbin/mount.fuse \-t fuse.sshfs" ).
+.\"O where the \fIsuffix\fR is the filesystem type and the \fB\-sfnvoN\fR options have
+.\"O the same meaning as the normal mount options.  The \fB\-t\fR option is used for
+.\"O filesystems with subtypes support (for example
+.\"O .BR "/sbin/mount.fuse \-t fuse.sshfs" ).
+ここで、\fIsuffix\fR はファイルシステムタイプであり、
+\fB\-sfnvoN\fR オプションは通常のマウントオプションと同じ意味を持つ。
+\fB\-t\fR オプションはサブタイプを持つファイルシステムで使われる
+(例えば
+.BR "/sbin/mount.fuse \-t fuse.sshfs" )。
 
-The command \fBmount\fR does not pass the mount options
+.\"O The command \fBmount\fR does not pass the mount options
+コマンド \fBmount\fR はマウントオプション
 .BR unbindable ,
 .BR runbindable ,
 .BR private ,
@@ -4332,11 +4354,15 @@ The command \fBmount\fR does not pass the mount options
 .BR comment ,
 .BR x-* ,
 .BR loop ,
-.B offset
-and
+.\"O .B offset
+.\"O and
+.B offset ,
 .B sizelimit
-to the mount.<suffix> helpers.  All other options are used in a
-comma-separated list as argument to the \fB\-o\fR option.
+.\"O to the mount.<suffix> helpers.  All other options are used in a
+.\"O comma-separated list as argument to the \fB\-o\fR option.
+を mount.<suffix> ヘルパーに渡さない。
+他の全てのオプションは、\fB\-o\fR オプションの引き数で
+カンマ区切りのリストで使用される。
 
 .\"O .SH FILES
 .SH ファイル
@@ -4348,7 +4374,8 @@ comma-separated list as argument to the \fB\-o\fR option.
 ファイルシステムの一覧表
 .TP
 .I /run/mount
-libmount private runtime directory
+.\"O libmount private runtime directory
+libmount のプライベートランタイムディレクトリ
 .TP
 .I /etc/mtab
 .\"O table of mounted filesystems or symlink to /proc/mounts
@@ -4368,15 +4395,20 @@ libmount private runtime directory
 .\"O .SH ENVIRONMENT
 .SH 環境変数
 .IP LIBMOUNT_FSTAB=<path>
-overrides the default location of the fstab file (ignored for suid)
+.\"O overrides the default location of the fstab file (ignored for suid)
+fstab のデフォルトの場所を上書きする (suid は無視される)。
 .IP LIBMOUNT_MTAB=<path>
-overrides the default location of the mtab file (ignored for suid)
+.\"O overrides the default location of the mtab file (ignored for suid)
+mtab のデフォルトの場所を上書きする (suid は無視される)。
 .IP LIBMOUNT_DEBUG=all
-enables libmount debug output
+.\"O enables libmount debug output
+libmount のデバッグ出力を有効化する。
 .IP LIBBLKID_DEBUG=all
-enables libblkid debug output
+.\"O enables libblkid debug output
+libblkid のデバッグ出力を有効化する。
 .IP LOOPDEV_DEBUG=all
-enables loop device setup debug output
+.\"O enables loop device setup debug output
+loop デバイスのセットアップデバッグ出力を有効化する。
 .\"O .SH "SEE ALSO"
 .SH 関連項目
 .na
@@ -4441,41 +4473,76 @@ BSD 流の同期更新をサポートして\fIいる\fP。
 .B umask
 を変更できない)。
 .PP
-It is possible that the files
+.\"O It is possible that the files
+.\"O .I /etc/mtab
+.\"O and
+.\"O .I /proc/mounts
+.\"O don't match on systems with a regular mtab file.  The first file is based only on
+.\"O the mount command options, but the content of the second file also depends on
+.\"O the kernel and others settings (e.g.\& on a remote NFS server -- in certain cases
+.\"O the mount command may report unreliable information about an NFS mount point
+.\"O and the /proc/mounts file usually contains more reliable information.)  This is
+.\"O another reason to replace the mtab file with a symlink to the
+.\"O .I /proc/mounts
+.\"O file.
+通常の mtab ファイルを持つシステムでは、ファイル
 .I /etc/mtab
-and
+と
 .I /proc/mounts
-don't match on systems with a regular mtab file.  The first file is based only on
-the mount command options, but the content of the second file also depends on
-the kernel and others settings (e.g.\& on a remote NFS server -- in certain cases
-the mount command may report unreliable information about an NFS mount point
-and the /proc/mounts file usually contains more reliable information.)  This is
-another reason to replace the mtab file with a symlink to the
+がマッチしない可能性もある。
+1 つ目のファイルは mount コマンドオプションにのみ基づいており、
+2 つ目のファイルはカーネルと他の設定に依存しているためである
+(例えば、リモート NFS サーバでは、NFS マウントポイントについて、
+mount コマンドは信頼できない情報を返す可能性があるが、
+/proc/mounts ファイルはより信頼性のある情報を保持している)。
+これが、mtab ファイルを
 .I /proc/mounts
-file.
+ファイルへのシンボリックリンクに置き換える、もう 1 つの理由である。
 .PP
-Checking files on NFS filesystems referenced by file descriptors (i.e.\& the
+.\"O Checking files on NFS filesystems referenced by file descriptors (i.e.\& the
+.\"O .B fcntl
+.\"O and
+.\"O .B ioctl
+.\"O families of functions) may lead to inconsistent results due to the lack of
+.\"O a consistency check in the kernel even if noac is used.
+ファイルディスクリプター (つまり
 .B fcntl
-and
+と
 .B ioctl
-families of functions) may lead to inconsistent results due to the lack of
-a consistency check in the kernel even if noac is used.
+関連の関数) で参照される NFS ファイルシステム上のファイルをチェックすると、
+noac オプションを使っていても、カーネルの整合性チェックが欠如しているために、
+不整合を起こす場合がある。
 .PP
-The
-.B loop
-option with the
+.\"O The
+.\"O .B loop
+.\"O option with the
+.\"O .B offset
+.\"O or
+.\"O .B sizelimit
+.\"O options used may fail when using older kernels if the
+.\"O .B mount
+.\"O command can't confirm that the size of the block device has been configured
+.\"O as requested.  This situation can be worked around by using
+.\"O the
+.\"O .B losetup
+.\"O command manually before calling
+.\"O .B mount
+.\"O with the configured loop device.
+古いカーネルを使っている場合、
 .B offset
-or
+または
 .B sizelimit
-options used may fail when using older kernels if the
+オプションを付けた
+.B loop
+オプションが使われると失敗する可能性がある。
+これは、ブロックデバイスのサイズが要求された通りに設定されていることを、
 .B mount
-command can't confirm that the size of the block device has been configured
-as requested.  This situation can be worked around by using
-the
+コマンドが確認できないためである。
+この場合のワークアラウンドは、設定された loop デバイスで
+.B mount
+を呼び出す前に、
 .B losetup
-command manually before calling
-.B mount
-with the configured loop device.
+を呼び出すことである。
 .\"O .SH HISTORY
 .SH 履歴
 .\"O A
