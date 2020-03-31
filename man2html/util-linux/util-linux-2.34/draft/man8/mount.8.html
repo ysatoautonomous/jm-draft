@@ -3286,7 +3286,7 @@ CVF モジュールに渡すオプション。
 
 
 
-このオプションが設定されると、ブロックが開放されると、
+このオプションが設定されると、ブロックが解放されると、
 ブロックデバイスに discard/TRIM コマンドが発行される。
 これは SSD デバイスと、スパース/thin プロビジョニングされた LUN で役立つ。
 <DT><B>dos1xfloppy</B>
@@ -4939,11 +4939,16 @@ usbfs ファイルシステムにあるバスディレクトリの
 
 にマウントする。
 <P>
-If no explicit loop device is mentioned
-(but just an option `<B>-o loop</B>' is given), then
+
+
+
+
+loop デバイスが明示的に指定されない場合
+(単にオプション `<B>-o loop</B>' が指定された場合)、
 <B>mount</B>
 
-will try to find some unused loop device and use that, for example
+は使用されていない loop デバイスを見つけて利用する。
+例えば、
 <DL COMPACT><DT><DD>
 <P>
 <B>mount /tmp/disk.img /mnt -o loop</B>
@@ -4951,11 +4956,17 @@ will try to find some unused loop device and use that, for example
 <P>
 </DL>
 
-The mount command
-<B>automatically</B>
 
-creates a loop device from a regular file if a filesystem type is
-not specified or the filesystem is known for libblkid, for example:
+
+
+
+mount コマンドは、ファイルシステムタイプが指定されていない場合、
+またはファイルシステムが libblkid で判明している場合、
+通常ファイルから
+<B>自動的に</B>
+
+loop デバイスを作成する。
+例えば、
 <DL COMPACT><DT><DD>
 <P>
 <B>mount /tmp/disk.img /mnt</B>
@@ -4990,31 +5001,32 @@ not specified or the filesystem is known for libblkid, for example:
 
 
 
-Since Linux 2.6.25 auto-destruction of loop devices is supported,
-meaning that any loop device allocated by
+Linux 2.6.25 以降で、loop デバイスの自動消去がサポートされた。
+つまり、
 <B>mount</B>
 
-will be freed by
+によって確保された loop デバイスは、
+<I>/etc/mtab</I>
+
+とは独立して
 <B>umount</B>
 
-independently of
-<I>/etc/mtab</I>.
-
+で解放される。
 <P>
 
 
-You can also free a loop device by hand, using
-<B>losetup -d </B>or<B> umount -d</B>.
+<B>losetup -d </B>または<B> umount -d</B>
 
+を使って、手動で loop デバイスを解放することもできる。
 <P>
 
 
 
 
-Since util-linux v2.29 mount command re-uses the loop device rather than
-initialize a new device if the same backing file is already used for some loop
-device with the same offset and sizelimit. This is necessary to avoid
-a filesystem corruption.
+util-linux v2.29 以降の mount コマンドは、
+同じバッキングファイルが同じ loop デバイスで同じオフセットとサイズ制限で使われている場合、
+新しいデバイスを初期化するのではなく、loop デバイスを再利用するようになった。
+これはファイルシステムの破損を防ぐために必要である。
 <P>
 
 <A NAME="lbBL">&nbsp;</A>
@@ -5049,7 +5061,7 @@ a filesystem corruption.
 
 <B>mount</B>
 
-の内部のバグ
+の内部のバグ。
 <DT><B>8</B>
 
 <DD>
@@ -5069,17 +5081,21 @@ a filesystem corruption.
 
 <DD>
 
-(訳註: &quot;mount -a&quot; などで) 一部が成功した。
+マウントが一部が成功した。
 
 <P>
-The command <B>mount -a</B> returns 0 (all succeeded), 32 (all failed), or 64 (some
-failed, some succeeded).
+
+
+コマンド <B>mount -a</B> は、0 (全て成功), 32 (全て失敗),
+64 (一部成功、一部失敗) を返す。
 <P>
+
 </DL>
 <A NAME="lbBM">&nbsp;</A>
-<H2>EXTERNAL HELPERS</H2>
+<H2>外部ヘルパー</H2>
 
-The syntax of external mount helpers is:
+
+外部 mount ヘルパーの書式は以下の通り:
 <P>
 
 <B>/sbin/mount.</B><I>suffix</I>
@@ -5102,13 +5118,19 @@ The syntax of external mount helpers is:
 
 
 <P>
-where the <I>suffix</I> is the filesystem type and the <B>-sfnvoN</B> options have
-the same meaning as the normal mount options.  The <B>-t</B> option is used for
-filesystems with subtypes support (for example
-<B>/sbin/mount.fuse -t fuse.sshfs</B>).
+
+
+
+
+ここで、<I>suffix</I> はファイルシステムタイプであり、
+<B>-sfnvoN</B> オプションは通常のマウントオプションと同じ意味を持つ。
+<B>-t</B> オプションはサブタイプを持つファイルシステムで使われる
+(例えば
+<B>/sbin/mount.fuse -t fuse.sshfs</B>)。
 
 <P>
-The command <B>mount</B> does not pass the mount options
+
+コマンド <B>mount</B> はマウントオプション
 <B>unbindable</B>,
 
 <B>runbindable</B>,
@@ -5135,13 +5157,17 @@ The command <B>mount</B> does not pass the mount options
 
 <B>loop</B>,
 
-<B>offset</B>
 
-and
+
+<B>offset ,</B>
+
 <B>sizelimit</B>
 
-to the mount.&lt;suffix&gt; helpers.  All other options are used in a
-comma-separated list as argument to the <B>-o</B> option.
+
+
+を mount.&lt;suffix&gt; ヘルパーに渡さない。
+他の全てのオプションは、<B>-o</B> オプションの引き数で
+カンマ区切りのリストで使用される。
 <P>
 
 <A NAME="lbBN">&nbsp;</A>
@@ -5158,7 +5184,8 @@ comma-separated list as argument to the <B>-o</B> option.
 <DT><I>/run/mount</I>
 
 <DD>
-libmount private runtime directory
+
+libmount のプライベートランタイムディレクトリ
 <DT><I>/etc/mtab</I>
 
 <DD>
@@ -5186,15 +5213,20 @@ libmount private runtime directory
 
 <DL COMPACT>
 <DT>LIBMOUNT_FSTAB=&lt;path&gt;<DD>
-overrides the default location of the fstab file (ignored for suid)
+
+fstab のデフォルトの場所を上書きする (suid は無視される)。
 <DT>LIBMOUNT_MTAB=&lt;path&gt;<DD>
-overrides the default location of the mtab file (ignored for suid)
+
+mtab のデフォルトの場所を上書きする (suid は無視される)。
 <DT>LIBMOUNT_DEBUG=all<DD>
-enables libmount debug output
+
+libmount のデバッグ出力を有効化する。
 <DT>LIBBLKID_DEBUG=all<DD>
-enables libblkid debug output
+
+libblkid のデバッグ出力を有効化する。
 <DT>LOOPDEV_DEBUG=all<DD>
-enables loop device setup debug output
+
+loop デバイスのセットアップデバッグ出力を有効化する。
 
 </DL>
 <A NAME="lbBP">&nbsp;</A>
@@ -5290,54 +5322,89 @@ BSD 流の同期更新をサポートして<I>いる</I>。
 を変更できない)。
 <P>
 
-It is possible that the files
+
+
+
+
+
+
+
+
+
+
+
+
+通常の mtab ファイルを持つシステムでは、ファイル
 <I>/etc/mtab</I>
 
-and
+と
 <I>/proc/mounts</I>
 
-don't match on systems with a regular mtab file.  The first file is based only on
-the mount command options, but the content of the second file also depends on
-the kernel and others settings (e.g. on a remote NFS server -- in certain cases
-the mount command may report unreliable information about an NFS mount point
-and the /proc/mounts file usually contains more reliable information.)  This is
-another reason to replace the mtab file with a symlink to the
+がマッチしない可能性もある。
+1 つ目のファイルは mount コマンドオプションにのみ基づいており、
+2 つ目のファイルはカーネルと他の設定に依存しているためである
+(例えば、リモート NFS サーバでは、NFS マウントポイントについて、
+mount コマンドは信頼できない情報を返す可能性があるが、
+/proc/mounts ファイルはより信頼性のある情報を保持している)。
+これが、mtab ファイルを
 <I>/proc/mounts</I>
 
-file.
+ファイルへのシンボリックリンクに置き換える、もう 1 つの理由である。
 <P>
 
-Checking files on NFS filesystems referenced by file descriptors (i.e. the
+
+
+
+
+
+
+ファイルディスクリプター (つまり
 <B>fcntl</B>
 
-and
+と
 <B>ioctl</B>
 
-families of functions) may lead to inconsistent results due to the lack of
-a consistency check in the kernel even if noac is used.
+関連の関数) で参照される NFS ファイルシステム上のファイルをチェックすると、
+noac オプションを使っていても、カーネルの整合性チェックが欠如しているために、
+不整合を起こす場合がある。
 <P>
 
-The
-<B>loop</B>
 
-option with the
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+古いカーネルを使っている場合、
 <B>offset</B>
 
-or
+または
 <B>sizelimit</B>
 
-options used may fail when using older kernels if the
+オプションを付けた
+<B>loop</B>
+
+オプションが使われると失敗する可能性がある。
+これは、ブロックデバイスのサイズが要求された通りに設定されていることを、
 <B>mount</B>
 
-command can't confirm that the size of the block device has been configured
-as requested.  This situation can be worked around by using
-the
+コマンドが確認できないためである。
+この場合のワークアラウンドは、設定された loop デバイスで
+<B>mount</B>
+
+を呼び出す前に、
 <B>losetup</B>
 
-command manually before calling
-<B>mount</B>
-
-with the configured loop device.
+を呼び出すことである。
 
 <A NAME="lbBR">&nbsp;</A>
 <H2>履歴</H2>
@@ -5411,7 +5478,7 @@ mount コマンドは util-linux パッケージの一部であり、
 </DL>
 <DT><A HREF="#lbBK">loop デバイス</A><DD>
 <DT><A HREF="#lbBL">返り値</A><DD>
-<DT><A HREF="#lbBM">EXTERNAL HELPERS</A><DD>
+<DT><A HREF="#lbBM">外部ヘルパー</A><DD>
 <DT><A HREF="#lbBN">ファイル</A><DD>
 <DT><A HREF="#lbBO">環境変数</A><DD>
 <DT><A HREF="#lbBP">関連項目</A><DD>
@@ -5424,6 +5491,6 @@ mount コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 16:50:10 GMT, March 31, 2020
+Time: 17:59:32 GMT, March 31, 2020
 </BODY>
 </HTML>
