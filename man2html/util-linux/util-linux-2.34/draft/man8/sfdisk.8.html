@@ -1,0 +1,829 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SFDISK</TITLE>
+</HEAD><BODY>
+<H1>SFDISK</H1>
+Section: System Administration (8)<BR>Updated: June 2015<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+sfdisk - ディスクパーティションテーブルの表示と操作を行う。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>sfdisk</B>
+
+[options]
+<I>device</I>
+
+[<B>-N</B>
+
+<I>partition-number</I>]
+
+<P>
+<B>sfdisk</B>
+
+[options]
+<I>command</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B>sfdisk</B>
+
+はスクリプトベースのツールで、ブロックデバイスのパーティション操作ができる。
+<P>
+
+
+
+
+
+
+バージョン 2.26 から
+<B>sfdisk</B>
+
+は MBR (DOS), GPT, SUN, SGI ディスクラベルをサポートしているが、
+CHS (Cylinder-Head-Sector) アドレス指定をサポートしなくなった。
+CHS は Linux では重要でなくなっており、このアドレス指定の考え方は
+新しいデバイスでは意味をなさなくなった。
+<P>
+
+
+
+
+
+<B>sfdisk</B>
+
+(バージョン 2.26 以降) は、相対サイズが指定された場合、
+またはデフォルト値が使われた場合、またはサイズに乗数のサフィックス
+(例えば、MiB) が使われた場合、ブロックデバイスの I/O 制限に
+<B>パーティションの開始と終了を揃える。</B>
+
+
+
+
+開始オフセットが厳密にセクタに指定され、かつパーティションサイズが相対値、
+または乗数のサフィックスが指定された場合、調整のために、
+パーティションサイズが最適化 (縮小または拡大) される。
+<P>
+
+
+
+
+
+
+
+推奨される方法は、開始オフセットを全く指定せず、
+パーティションサイズを MiB, GiB (など) で指定することである。
+この場合、sfdisk は全てのパーティションを
+ブロックデバイス I/O 制限に揃える
+(もしくは、I/O 制限がとても小さい場合、ディスクレイアウトを他でも
+利用できるようにするため、メガバイト境界にされる)。
+このデフォルトの挙動が望ましくない場合 (通常はとても小さいパーティションの場合)、
+オフセットとサイズをセクタ数で指定する。
+この場合、sfdisk は最適化をせずに指定された数値に完全に従う。
+<P>
+<B>sfdisk</B>
+
+does not create the standard system partitions for SGI and SUN disk labels like
+<B><A HREF="../man8/fdisk.8.html">fdisk</A></B>(8)
+
+does.
+It is necessary to explicitly create all partitions including whole-disk system
+partitions.
+<P>
+<B>sfdisk</B>
+
+uses BLKRRPART (reread partition table) ioctl to make sure that the device is
+not used by system or another tools (see also --no-reread).  It's possible that
+this feature or another sfdisk activity races with <B>udevd</B>.  The recommended way
+how to avoid possible collisions is to use exclusive flock for the whole-disk
+device to serialize device access.  The exclusive lock will cause udevd to skip
+the event handling on the device.  For example:
+<DL COMPACT><DT><DD>
+<P>
+<PRE>
+<B>flock /dev/sdc sfdisk /dev/sdc</B>
+</PRE>
+
+<P>
+</DL>
+
+Note, this semantic is not currently supported by udevd for MD and DM devices.
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>コマンド</H2>
+
+The commands are mutually exclusive.
+<DL COMPACT>
+<DT>[<B>-N</B> <I>partition-number</I>] <B></B><I>device</I>
+
+<DD>
+The default <B>sfdisk</B> command is to read the specification for the desired
+partitioning of <I>device</I> from standard input, and then create a partition
+table according to the specification.  See below for the description of the
+input format.  If standard input is a terminal, then <B>sfdisk</B> starts an
+interactive session.
+<P>
+If the option <B>-N</B> is specified, then the changes are applied to
+the partition addressed by <I>partition-number</I>.  The unspecified fields
+of the partition are not modified.
+<P>
+Note that it's possible to address an unused partition with <B>-N</B>.
+For example, an MBR always contains 4 partitions, but the number of used
+partitions may be smaller.  In this case <B>sfdisk</B> follows the default
+values from the partition table and does not use built-in defaults for the
+unused partition given with <B>-N</B>.  See also <B>--append</B>.
+<DT><B>-A</B>,<B> --activate </B><I>device </I>[<B></B><I>partition-number...]</I>
+
+<DD>
+Switch on the bootable flag for the specified partitions and switch off the
+bootable flag on all unspecified partitions. The special placeholder '-'
+may be used instead of the partition numbers to switch off the bootable flag
+on all partitions.
+<P>
+The activation command is supported for MBR and PMBR only.  If GPT label is detected
+than sfdisk prints warning and automatically enter PMBR.
+<P>
+If no <I>partition-number</I> is specified, then list the partitions with an
+enabled flag.
+<DT><B>--delete </B><I>device </I>[<B></B><I>partition-number</I>...]
+
+<DD>
+Delete all or the specified partitions.
+<DT><B>-d</B>,<B> --dump </B><I>device</I>
+
+<DD>
+Dump the partitions of a device in a format that is usable as input to <B>sfdisk</B>.
+See the section <B>BACKING UP THE PARTITION TABLE</B>.
+<DT><B>-g</B>,<B> --show-geometry </B>[<B></B><I>device</I>...]
+
+<DD>
+List the geometry of all or the specified devices. For backward
+compatibility the deprecated option <B>--show-pt-geometry</B> have the same
+meaning as this one.
+<DT><B>-J</B>,<B> --json </B><I>device</I>
+
+<DD>
+Dump the partitions of a device in JSON format.  Note that <B>sfdisk</B> is
+not able to use JSON as input format.
+<DT><B>-l</B>,<B> --list </B>[<B></B><I>device</I>...]
+
+<DD>
+List the partitions of all or the specified devices.  This command can be used
+together with <B>--verify</B>.
+<DT><B>-F</B>,<B> --list-free </B>[<B></B><I>device</I>...]
+
+<DD>
+List the free unpartitioned areas on all or the specified devices.
+<DT><B>--part-attrs </B><I>device partition-number </I>[<B></B><I>attributes</I>]
+
+<DD>
+Change the GPT partition attribute bits.  If <I>attributes</I> is not specified,
+then print the current partition settings.  The <I>attributes</I> argument is a
+comma- or space-delimited list of bits.  The currently supported attribute
+bits are: RequiredPartition, NoBlockIOProtocol, LegacyBIOSBootable
+and GUID-specific bits in the range from 48 to 63.  For example, the string
+&quot;RequiredPartition,50,51&quot; sets three bits.
+<DT><B>--part-label </B><I>device partition-number </I>[<B></B><I>label</I>]
+
+<DD>
+Change the GPT partition name (label).  If <I>label</I> is not specified,
+then print the current partition label.
+<DT><B>--part-type </B><I>device partition-number </I>[<B></B><I>type</I>]
+
+<DD>
+Change the partition type.  If <I>type</I> is not specified, then print the
+current partition type.  The <I>type</I> argument is hexadecimal for MBR,
+or a GUID for GPT.  For backward compatibility the options <B>-c</B> and
+<B>--id</B> have the same meaning as this one.
+<DT><B>--part-uuid </B><I>device partition-number </I>[<B></B><I>uuid</I>]
+
+<DD>
+Change the GPT partition UUID.  If <I>uuid</I> is not specified,
+then print the current partition UUID.
+<DT><B>-r</B>,<B> --reorder </B><I>device</I>
+
+<DD>
+Renumber the partitions, ordering them by their start offset.
+<DT><B>-s</B>,<B> --show-size </B>[<B></B><I>device</I>...]
+
+<DD>
+List the sizes of all or the specified devices in units of 1024 byte size.
+This command is DEPRECATED in favour of
+<B><A HREF="../man1/blockdev.1.html">blockdev</A></B>(1).
+
+<DT><B>-T</B>,<B> --list-types</B>
+
+<DD>
+Print all supported types for the current disk label or the label specified by
+<B>--label</B>.
+<DT><B>-V</B>,<B> --verify </B>[<B></B><I>device</I>...]
+
+<DD>
+Test whether the partition table and partitions seem correct.
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-a</B>,<B> --append</B>
+
+<DD>
+Don't create a new partition table, but only append the specified partitions.
+<DT><B>-b</B>,<B> --backup</B>
+
+<DD>
+Back up the current partition table sectors before starting the partitioning.
+The default backup file name is ~/sfdisk-&lt;device&gt;-&lt;offset&gt;.bak; to use another
+name see option <B>-O</B>, <B>--backup-file</B>.
+<DT><B>--color</B>[<B>=</B><I>when</I>]
+
+<DD>
+Colorize the output.  The optional argument <I>when</I>
+can be <B>auto</B>, <B>never</B> or <B>always</B>.  If the <I>when</I> argument is omitted,
+it defaults to <B>auto</B>.  The colors can be disabled; for the current built-in default
+see the <B>--help</B> output.  See also the <B>COLORS</B> section.
+<DT><B>-f</B>,<B> --force</B>
+
+<DD>
+Disable all consistency checking.
+<DT><B>--Linux</B>
+
+<DD>
+Deprecated and ignored option.  Partitioning that is compatible with
+Linux (and other modern operating systems) is the default.
+<DT><B>-n</B>,<B> --no-act</B>
+
+<DD>
+Do everything except writing to the device.
+<DT><B>--no-reread</B>
+
+<DD>
+Do not check through the re-read-partition-table ioctl whether the device is in use.
+<DT><B>--no-tell-kernel</B>
+
+<DD>
+Don't tell the kernel about partition changes. This option is recommended together
+with <B>--no-reread</B> to modify a partition on used disk. The modified partition
+should not be used (e.g. mounted).
+<DT><B>-O</B>,<B> --backup-file </B><I>path</I>
+
+<DD>
+Override the default backup file name.  Note that the device name and offset
+are always appended to the file name.
+<DT><B>--move-data</B>[<B>=</B><I>path</I>]
+
+<DD>
+Move data after partition relocation, for example when moving the beginning
+of a partition to another place on the disk.  The size of the partition has
+to remain the same, the new and old location may overlap.  This option requires
+option <B>-N</B> in order to be processed on one specific partition only.
+<P>
+The <I>path</I> overrides the default log file name
+(the default is ~/sfdisk-&lt;devname&gt;.move).  The log file contains information
+about all read/write operations on the partition data.
+<P>
+Note that this operation is risky and not atomic. <B>Don't forget to backup your data!</B>
+<P>
+In the example below, the first command creates a 100MiB free area before
+the first partition and moves the data it contains (e.g. a filesystem),
+the next command creates a new partition from the free space (at offset 2048),
+and the last command reorders partitions to match disk order
+(the original sdc1 will become sdc2).
+<DL COMPACT><DT><DD>
+<P>
+<B>echo '+100M,' | sfdisk --move-data /dev/sdc -N 1</B>
+
+<BR>
+
+<B>echo '2048,' | sfdisk /dev/sdc --append</B>
+
+<BR>
+
+<B>sfdisk /dev/sdc --reorder</B>
+
+<P>
+</DL>
+
+<P>
+<DT><B>-o</B>,<B> --output </B><I>list</I>
+
+<DD>
+Specify which output columns to print.  Use
+<B>--help</B>
+
+to get a list of all supported columns.
+<P>
+The default list of columns may be extended if <I>list</I> is
+specified in the format <I>+list</I> (e.g. <B>-o +UUID</B>).
+<DT><B>-q</B>,<B> --quiet</B>
+
+<DD>
+Suppress extra info messages.
+<DT><B>-u</B>,<B> --unit S</B>
+
+<DD>
+Deprecated option.  Only the sector unit is supported. This option is not
+supported when using the --show-size command.
+<DT><B>-X</B>,<B> --label </B><I>type</I>
+
+<DD>
+Specify the disk label type (e.g. <B>dos</B>, <B>gpt</B>, ...).  If this option
+is not given, then <B>sfdisk</B> defaults to the existing label, but if there
+is no label on the device yet, then the type defaults to <B>dos</B>. The default
+or the current label may be overwritten by the &quot;label: &lt;name&gt;&quot; script header
+line. The option <B>--label</B> does not force <B>sfdisk</B> to create empty
+disk label (see the <B>EMPTY DISK LABEL</B> section below).
+<DT><B>-Y</B>,<B> --label-nested </B><I>type</I>
+
+<DD>
+Force editing of a nested disk label.  The primary disk label has to exist already.
+This option allows to edit for example a hybrid/protective MBR on devices with GPT.
+<P>
+<DT><B>-w</B>,<B> --wipe </B><I>when</I>
+
+<DD>
+Wipe filesystem, RAID and partition-table signatures from the device, in order
+to avoid possible collisions.  The argument <I>when</I> can be <B>auto</B>,
+<B>never</B> or <B>always</B>.  When this option is not given, the default is
+<B>auto</B>, in which case signatures are wiped only when in interactive mode;
+except the old partition-table signatures which are always wiped before create
+a new partition-table if the argument <I>when</I> is not <B>never</B>. In all
+cases detected signatures are reported by warning messages before a new
+partition table is created.  See also
+<B><A HREF="../man8/wipefs.8.html">wipefs</A></B>(8)
+
+command.
+<P>
+<DT><B>-W</B>,<B> --wipe-partitions </B><I>when</I>
+
+<DD>
+Wipe filesystem, RAID and partition-table signatures from a newly created
+partitions, in order to avoid possible collisions.  The argument <I>when</I> can
+be <B>auto</B>, <B>never</B> or <B>always</B>.  When this option is not given, the
+default is <B>auto</B>, in which case signatures are wiped only when in
+interactive mode and after confirmation by user.  In all cases detected
+signatures are reported by warning messages after a new partition is created.
+See also
+<B><A HREF="../man8/wipefs.8.html">wipefs</A></B>(8)
+
+command.
+<P>
+<DT><B>-v</B>,<B> --version</B>
+
+<DD>
+Display version information and exit.
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+Display help text and exit.
+<P>
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>入力フォーマット</H2>
+
+<B>sfdisk</B>
+
+supports two input formats and generic header lines.
+<P>
+<B>Header lines</B>
+
+<DL COMPACT><DT><DD>
+The optional header lines specify generic information that apply to the partition
+table.  The header-line format is:
+<DL COMPACT><DT><DD>
+<P>
+<B>&lt;name&gt;: &lt;value&gt;</B>
+
+<P>
+</DL>
+
+The currently recognized headers are:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>unit</B>
+
+<DD>
+Specify the partitioning unit.  The only supported unit is <B>sectors</B>.
+<DT><B>label</B>
+
+<DD>
+Specify the partition table type.  For example <B>dos</B> or <B>gpt</B>.
+<DT><B>label-id</B>
+
+<DD>
+Specify the partition table identifier.  It should be a  hexadecimal number
+(with a 0x prefix) for MBR and a UUID for GPT.
+<DT><B>first-lba</B>
+
+<DD>
+Specify the first usable sector for GPT partitions.
+<DT><B>last-lba</B>
+
+<DD>
+Specify the last usable sector for GPT partitions.
+<DT><B>table-length</B>
+
+<DD>
+Specify the maximal number of GPT partitions.
+<DT><B>grain</B>
+
+<DD>
+Specify minimal size in bytes used to calculate partitions alignment.  The
+default is 1MiB and it's strongly recommended to use the default.  Do not
+modify this variable if you're not sure.
+</DL>
+</DL>
+
+<P>
+Note that it is only possible to use header lines before the first partition
+is specified in the input.
+</DL>
+
+<P>
+<B>Unnamed-fields format</B>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+<P>
+<I>start size type bootable</I>
+
+<P>
+</DL>
+
+where each line fills one partition descriptor.
+<P>
+Fields are separated by whitespace, comma or semicolon possibly
+followed by whitespace; initial and trailing whitespace is ignored.
+Numbers can be octal, decimal or hexadecimal; decimal is the default.
+When a field is absent, empty or specified as '-' a default value is
+used.  But when the <B>-N</B> option (change a single partition) is
+given, the default for each field is its previous value.
+<P>
+The default value of
+<I>start</I>
+
+is the first non-assigned sector aligned according to device I/O limits.
+The default start offset for the first partition is 1 MiB.  The offset may
+be followed by the multiplicative suffixes (KiB, MiB, GiB, TiB, PiB,
+EiB, ZiB and YiB) then the number is interpreted as offset in bytes.
+<P>
+The default value of
+<I>size</I>
+
+indicates &quot;as much as possible&quot;; i.e. until the next partition or
+end-of-device.  A numerical argument is by default interpreted as a
+number of sectors, however if the size is followed by one of the
+multiplicative suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB)
+then the number is interpreted as the size of the partition in bytes
+and it is then aligned according to the device I/O limits.  A '+' can
+be used instead of a number to enlarge the partition as much as
+possible.  Note '+' is equivalent to the default behaviour for a new
+partition; existing partitions will be resized as required.
+<P>
+The partition
+<I>type</I>
+
+is given in hex for MBR (DOS), without the 0x prefix, a GUID string for GPT, or
+a shortcut:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>L</B>
+
+<DD>
+Linux; means 83 for MBR and 0FC63DAF-8483-4772-8E79-3D69D8477DE4 for GPT.
+<DT><B>S</B>
+
+<DD>
+swap area; means 82 for MBR and 0657FD6D-A4AB-43C4-84E5-0933C84B4F4F for GPT
+<DT><B>E</B>
+
+<DD>
+extended partition; means 5 for MBR
+<DT><B>H</B>
+
+<DD>
+home partition; means 933AC7E1-2EB4-4F13-B844-0E14E2AEF915 for GPT
+<DT><B>X</B>
+
+<DD>
+linux extended partition; means 85 for MBR.
+<DT><B>U</B>
+
+<DD>
+EFI System partition, means EF for MBR and C12A7328-F81F-11D2-BA4B-00A0C93EC93B for GPT
+<DT><B>R</B>
+
+<DD>
+Linux RAID; means FD for MBR and A19D880F-05FC-4D3B-A006-743F0F84911E for GPT
+<DT><B>V</B>
+
+<DD>
+LVM; means 8E for MBR and E6D6D379-F507-44C2-A23C-238F2A3DF928 for GPT
+</DL>
+</DL>
+
+<P>
+
+The default
+<I>type</I>
+
+value is
+<I>L</I>
+
+<P>
+<I>bootable</I>
+
+is specified as [<B>*</B>|<B>-</B>], with as default not-bootable.  The
+value of this field is irrelevant for Linux - when Linux runs it has
+been booted already - but ir might play a role for certain boot
+loaders and for other operating systems.
+</DL>
+
+<P>
+<B>Named-fields format</B>
+
+<DL COMPACT><DT><DD>
+This format is more readable, robust, extensible and allows to specify additional
+information (e.g. a UUID).  It is recommended to use this format to keep your scripts
+more readable.
+<DL COMPACT><DT><DD>
+<P>
+[<I>device </I><B>:</B>]<I> name</I>[<B>=</B><I>value</I>], ...
+
+<P>
+</DL>
+
+The
+<I>device</I>
+
+field is optional.  <B>sfdisk</B> extracts the partition number from the
+device name.  It allows to specify the partitions in random order.
+This functionality is mostly used by <B>--dump</B>.
+Don't use it if you are not sure.
+<P>
+The
+<I>value</I>
+
+can be between quotation marks (e.g. name=&quot;This is partition name&quot;).
+The currently supported fields are:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>start=</B><I>number</I>
+
+<DD>
+The first non-assigned sector aligned according to device I/O limits.  The default
+start offset for the first partition is 1 MiB. The offset may be followed by
+the multiplicative suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB) then
+the number is interpreted as offset in bytes.
+<DT><B>size=</B><I>number</I>
+
+<DD>
+Specify the partition size in sectors.  The number may be followed by the multiplicative
+suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB), then it's interpreted as size
+in bytes and the size is aligned according to device I/O limits.
+<DT><B>bootable</B>
+
+<DD>
+Mark the partition as bootable.
+<DT><B>attrs=</B><I>string</I>
+
+<DD>
+Partition attributes, usually GPT partition attribute bits.  See
+<B>--part-attrs</B> for more details about the GPT-bits string format.
+<DT><B>uuid=</B><I>string</I>
+
+<DD>
+GPT partition UUID.
+<DT><B>name=</B><I>string</I>
+
+<DD>
+GPT partition name.
+<DT><B>type=</B><I>code</I>
+
+<DD>
+A hexadecimal number (without 0x) for an MBR partition, or a GUID for a GPT partition.
+For backward compatibility the <B>Id=</B> field has the same meaning.
+</DL>
+</DL>
+
+</DL>
+
+<P>
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>空のディスクラベル</H2>
+
+<B>sfdisk</B>
+
+does not create partition table without partitions by default. The lines with
+partitions are expected in the script by default. The empty partition table has
+to be explicitly requested by &quot;label: &lt;name&gt;&quot; script header line without any
+partitions lines. For example:
+<DL COMPACT><DT><DD>
+<P>
+<B>echo 'label: gpt' | sfdisk /dev/sdb</B>
+
+<P>
+</DL>
+
+creates empty GPT partition table. Note that the <B>--append</B> disables this feature.
+<P>
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>パーティションテーブルのバックアップ</H2>
+
+It is recommended to save the layout of your devices.
+<B>sfdisk</B>
+
+supports two ways.
+<P>
+Use the <B>--dump</B> option to save a description of the device layout
+to a text file.  The dump format is suitable for later <B>sfdisk</B> input.
+For example:
+<DL COMPACT><DT><DD>
+<P>
+<B>sfdisk --dump /dev/sda &gt; sda.dump</B>
+
+<P>
+</DL>
+
+This can later be restored by:
+<DL COMPACT><DT><DD>
+<P>
+<B>sfdisk /dev/sda &lt; sda.dump</B>
+
+</DL>
+
+<P>
+If you want to do a full (binary) backup of all sectors where the
+partition table is stored,
+then use the <B>--backup</B> option.  It writes the sectors to
+~/sfdisk-&lt;device&gt;-&lt;offset&gt;.bak files.  The default name of the backup file can
+be changed with the <B>--backup-file</B> option.  The backup files
+contain only raw data from the <I>device</I>.
+Note that the same concept of backup files is used by
+<B><A HREF="../man8/wipefs.8.html">wipefs</A></B>(8).
+
+For example:
+<DL COMPACT><DT><DD>
+<P>
+<B>sfdisk --backup /dev/sda</B>
+
+<P>
+</DL>
+
+The GPT header can later be restored by:
+<DL COMPACT><DT><DD>
+<P>
+<PRE>
+<B>dd  if=~/sfdisk-sda-0x00000200.bak  of=/dev/sda  \</B>
+<B>  seek=$((0x00000200))  bs=1  conv=notrunc</B>
+</PRE>
+
+<P>
+</DL>
+
+Note that <B>sfdisk</B> since version 2.26 no longer provides the <B>-I</B> option to
+restore sectors.
+<B><A HREF="../man1/dd.1.html">dd</A></B>(1)
+
+provides all necessary functionality.
+<P>
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>カラー表示</H2>
+
+Implicit coloring can be disabled by an empty file <I>/etc/terminal-colors.d/sfdisk.disable</I>.
+<P>
+See
+<B><A HREF="../man5/terminal-colors.d.5.html">terminal-colors.d</A></B>(5)
+
+for more details about colorization configuration. The logical color names
+supported by
+<B>sfdisk</B>
+
+are:
+<DL COMPACT>
+<DT><B>header</B>
+
+<DD>
+The header of the output tables.
+<DT><B>warn</B>
+
+<DD>
+The warning messages.
+<DT><B>welcome</B>
+
+<DD>
+The welcome message.
+<P>
+
+</DL>
+<A NAME="lbAK">&nbsp;</A>
+<H2>注意</H2>
+
+Since version 2.26 <B>sfdisk</B> no longer provides the <B>-R</B> or
+<B>--re-read</B> option to force the kernel to reread the partition table.
+Use <B>blockdev --rereadpt</B> instead.
+<P>
+
+Since version 2.26 <B>sfdisk</B> does not provide the <B>--DOS</B>, <B>--IBM</B>, <B>--DOS-extended</B>,
+<B>--unhide</B>, <B>--show-extended</B>, <B>--cylinders</B>, <B>--heads</B>, <B>--sectors</B>,
+<B>--inside-outer</B>, <B>--not-inside-outer</B> options.
+<P>
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT>SFDISK_DEBUG=all<DD>
+enables sfdisk debug output.
+<DT>LIBFDISK_DEBUG=all<DD>
+enables libfdisk debug output.
+<DT>LIBBLKID_DEBUG=all<DD>
+enables libblkid debug output.
+<DT>LIBSMARTCOLS_DEBUG=all<DD>
+enables libsmartcols debug output.
+<P>
+
+</DL>
+<A NAME="lbAM">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/fdisk.8.html">fdisk</A></B>(8),
+
+<B><A HREF="../man8/cfdisk.8.html">cfdisk</A></B>(8),
+
+<B><A HREF="../man8/parted.8.html">parted</A></B>(8),
+
+<B><A HREF="../man8/partprobe.8.html">partprobe</A></B>(8),
+
+<B><A HREF="../man8/partx.8.html">partx</A></B>(8)
+
+<P>
+
+<A NAME="lbAN">&nbsp;</A>
+<H2>著者</H2>
+
+Karel Zak &lt;<A HREF="mailto:kzak@redhat.com">kzak@redhat.com</A>&gt;
+<P>
+
+
+
+現在の sfdisk の実装は、オリジナルの Andries E. Brouwer の
+sfdisk に基づいている。
+<P>
+
+<A NAME="lbAO">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+sfdisk コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">コマンド</A><DD>
+<DT><A HREF="#lbAF">オプション</A><DD>
+<DT><A HREF="#lbAG">入力フォーマット</A><DD>
+<DT><A HREF="#lbAH">空のディスクラベル</A><DD>
+<DT><A HREF="#lbAI">パーティションテーブルのバックアップ</A><DD>
+<DT><A HREF="#lbAJ">カラー表示</A><DD>
+<DT><A HREF="#lbAK">注意</A><DD>
+<DT><A HREF="#lbAL">環境変数</A><DD>
+<DT><A HREF="#lbAM">関連項目</A><DD>
+<DT><A HREF="#lbAN">著者</A><DD>
+<DT><A HREF="#lbAO">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:48:29 GMT, April 01, 2020
+</BODY>
+</HTML>
