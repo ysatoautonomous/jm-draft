@@ -95,23 +95,39 @@ CHS は Linux では重要でなくなっており、このアドレス指定の
 オフセットとサイズをセクタ数で指定する。
 この場合、sfdisk は最適化をせずに指定された数値に完全に従う。
 <P>
+
+
+
+
+
+
 <B>sfdisk</B>
 
-does not create the standard system partitions for SGI and SUN disk labels like
+は、
 <B><A HREF="../man8/fdisk.8.html">fdisk</A></B>(8)
 
-does.
-It is necessary to explicitly create all partitions including whole-disk system
-partitions.
+のようには、SGI と SUN ディスクラベルに対して、
+標準的なシステムパーティションを作成しない。
+ディスクシステムパーティション全体を含むように、
+明示的に全部のパーティションを作成する必要がある。
 <P>
+
+
+
+
+
+
+
 <B>sfdisk</B>
 
-uses BLKRRPART (reread partition table) ioctl to make sure that the device is
-not used by system or another tools (see also --no-reread).  It's possible that
-this feature or another sfdisk activity races with <B>udevd</B>.  The recommended way
-how to avoid possible collisions is to use exclusive flock for the whole-disk
-device to serialize device access.  The exclusive lock will cause udevd to skip
-the event handling on the device.  For example:
+は BLKRRPART (パーティションテーブルの再読み込み) ioctl を使い、
+デバイスがシステムまたは他のツールで使われていないかを確かめる
+(--no-reread を参照)。
+この機能または他の sfdisk の操作が、<B>udevd</B> と競合する可能性がある。
+衝突の可能性を回避するのに推奨される方法は、デバイスアクセスを
+直列化するために、ディスクデバイス全体に対して排他 flock を使うことである。
+排他ロックを使うと、udevd がデバイスのイベントハンドリングをスキップする可能性がある。
+例えば:
 <DL COMPACT><DT><DD>
 <P>
 <PRE>
@@ -121,65 +137,101 @@ the event handling on the device.  For example:
 <P>
 </DL>
 
-Note, this semantic is not currently supported by udevd for MD and DM devices.
+
+この使い方は MD と DM デバイスについての udevd ではサポートされていない。
 <P>
 
 <A NAME="lbAE">&nbsp;</A>
 <H2>コマンド</H2>
 
-The commands are mutually exclusive.
+
+コマンドはどれか 1 つしか使用できない。
 <DL COMPACT>
 <DT>[<B>-N</B> <I>partition-number</I>] <B></B><I>device</I>
 
 <DD>
-The default <B>sfdisk</B> command is to read the specification for the desired
-partitioning of <I>device</I> from standard input, and then create a partition
-table according to the specification.  See below for the description of the
-input format.  If standard input is a terminal, then <B>sfdisk</B> starts an
-interactive session.
+
+
+
+
+
+デフォルトの <B>sfdisk</B> コマンドは、
+<I>device</I> について希望するパーティション分割の仕様を、標準入力から読み取り、
+その仕様に従ってパーティションテーブルを作成する。
+入力フォーマットの説明は下記を参照すること。
+標準入力が端末の場合、<B>sfdisk</B> は対話型のセッションを開始する。
 <P>
-If the option <B>-N</B> is specified, then the changes are applied to
-the partition addressed by <I>partition-number</I>.  The unspecified fields
-of the partition are not modified.
+
+
+
+オプション <B>-N</B> が指定されると、
+<I>partition-number</I> で指定されたパーティションに変更が適用される。
+指定されないパーティションのフィールドは、変更されない。
 <P>
-Note that it's possible to address an unused partition with <B>-N</B>.
-For example, an MBR always contains 4 partitions, but the number of used
-partitions may be smaller.  In this case <B>sfdisk</B> follows the default
-values from the partition table and does not use built-in defaults for the
-unused partition given with <B>-N</B>.  See also <B>--append</B>.
+
+
+
+
+
+使用されていないパーティションを <B>-N</B> で指定できる点に注意すること。
+例えば、MBR は常に 4 つのパーティションを持ち、
+使用されているパーティションの番号は、小さい方から使われる。
+この場合、<B>sfdisk</B> は、<B>-N</B> で指定された使用されていないパーティションについて、
+パーティションテーブルからのデフォルト値に従い、
+組み込みのデフォルト値を使わない。
+<B>--append</B> を参照すること。
 <DT><B>-A</B>,<B> --activate </B><I>device </I>[<B></B><I>partition-number...]</I>
 
 <DD>
-Switch on the bootable flag for the specified partitions and switch off the
-bootable flag on all unspecified partitions. The special placeholder '-'
-may be used instead of the partition numbers to switch off the bootable flag
-on all partitions.
+
+
+
+
+指定されたパーティションのブート可能フラグをオンにし、
+指定されていない全てのパーティションのブート可能フラグをオフにする。
+特別なプレースホルダー '-' はパーティション番号の代わりに使われ、
+全てのパーティションのブート可能フラグをオフにする。
 <P>
-The activation command is supported for MBR and PMBR only.  If GPT label is detected
-than sfdisk prints warning and automatically enter PMBR.
+
+
+アクティブ化コマンドは、MBR と PMBR のみでサポートされている。
+GPT ラベルが検出されると、sfdisk は警告を表示して、
+自動的に PMBR に入る。
 <P>
-If no <I>partition-number</I> is specified, then list the partitions with an
-enabled flag.
+
+
+<I>partition-number</I> が指定されない場合、
+有効化フラグの付いたパーティションのリストを表示する。
 <DT><B>--delete </B><I>device </I>[<B></B><I>partition-number</I>...]
 
 <DD>
-Delete all or the specified partitions.
+
+全てのパーティション、または指定されたパーティションを削除する。
 <DT><B>-d</B>,<B> --dump </B><I>device</I>
 
 <DD>
-Dump the partitions of a device in a format that is usable as input to <B>sfdisk</B>.
-See the section <B>BACKING UP THE PARTITION TABLE</B>.
+
+
+<B>sfdisk</B> の入力として利用可能なフォーマットで、
+デバイスのパーティションをダンプする。
+<B>パーティションテーブルのバックアップ</B> のセクションを参照すること。
 <DT><B>-g</B>,<B> --show-geometry </B>[<B></B><I>device</I>...]
 
 <DD>
-List the geometry of all or the specified devices. For backward
-compatibility the deprecated option <B>--show-pt-geometry</B> have the same
-meaning as this one.
+
+
+
+全てのパーティション、または指定されたパーティションのジオメトリを
+表示する。
+後方互換のため、推奨されないオプション <B>--show-pt-geometry</B> は、
+このオプションと同じ意味を持つ。
 <DT><B>-J</B>,<B> --json </B><I>device</I>
 
 <DD>
-Dump the partitions of a device in JSON format.  Note that <B>sfdisk</B> is
-not able to use JSON as input format.
+
+
+デバイスのパーティションを JSON フォーマットでダンプする。
+<B>sfdisk</B> は JSON を入力フォーマットとして使えない点に注意すること。
 <DT><B>-l</B>,<B> --list </B>[<B></B><I>device</I>...]
 
 <DD>
@@ -824,6 +876,6 @@ sfdisk コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 13:48:29 GMT, April 01, 2020
+Time: 15:44:26 GMT, April 01, 2020
 </BODY>
 </HTML>
