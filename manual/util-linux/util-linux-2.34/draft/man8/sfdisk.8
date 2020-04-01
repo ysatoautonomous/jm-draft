@@ -218,83 +218,135 @@ GPT ラベルが検出されると、sfdisk は警告を表示して、
 \fBsfdisk\fR は JSON を入力フォーマットとして使えない点に注意すること。
 .TP
 .BR \-l , " \-\-list " [ \fIdevice ...]
-List the partitions of all or the specified devices.  This command can be used
-together with \fB\-\-verify\fR.
+.\"O List the partitions of all or the specified devices.  This command can be used
+.\"O together with \fB\-\-verify\fR.
+全てのデバイス、または指定されたデバイスのパーティションを表示する。
+このコマンドは、\fB\-\-verify\fR とともに利用できる。
 .TP
 .BR \-F , " \-\-list-free " [ \fIdevice ...]
-List the free unpartitioned areas on all or the specified devices.
+.\"O List the free unpartitioned areas on all or the specified devices.
+全てのデバイス、または指定されたデバイスのパーティション化
+されていない領域を表示する。
 .TP
 .BR "\-\-part\-attrs \fIdevice partition-number " [ \fIattributes ]
-Change the GPT partition attribute bits.  If \fIattributes\fR is not specified,
-then print the current partition settings.  The \fIattributes\fR argument is a
-comma- or space-delimited list of bits.  The currently supported attribute
-bits are: RequiredPartition, NoBlockIOProtocol, LegacyBIOSBootable
-and GUID-specific bits in the range from 48 to 63.  For example, the string
-"RequiredPartition,50,51" sets three bits.
+.\"O Change the GPT partition attribute bits.  If \fIattributes\fR is not specified,
+.\"O then print the current partition settings.  The \fIattributes\fR argument is a
+.\"O comma- or space-delimited list of bits.  The currently supported attribute
+.\"O bits are: RequiredPartition, NoBlockIOProtocol, LegacyBIOSBootable
+.\"O and GUID-specific bits in the range from 48 to 63.  For example, the string
+.\"O "RequiredPartition,50,51" sets three bits.
+GPT パーティション属性ビットを変更する。
+\fIattributes\fR が指定されない場合、現状のパーティション設定が表示される。
+\fIattributes\fR 引き数は、カンマ、またはスペース区切りのビットのリストである。
+現状サポートされている属性ビットは以下の通り:
+RequiredPartition, NoBlockIOProtocol, LegacyBIOSBootable
+そして、GUID 固有ビットは 48 から 63 の範囲である。
+例えば、"RequiredPartition,50,51" は 3 ビットを設定する。
 .TP
 .BR "\-\-part\-label \fIdevice partition-number " [ \fIlabel ]
-Change the GPT partition name (label).  If \fIlabel\fR is not specified,
-then print the current partition label.
+.\"O Change the GPT partition name (label).  If \fIlabel\fR is not specified,
+.\"O then print the current partition label.
+GPT パーティション名 (ラベル) を変更する。
+\fIlabel\fR が指定されない場合、現在のパーティションラベルを表示する。
 .TP
 .BR "\-\-part\-type \fIdevice partition-number " [ \fItype ]
-Change the partition type.  If \fItype\fR is not specified, then print the
-current partition type.  The \fItype\fR argument is hexadecimal for MBR,
-or a GUID for GPT.  For backward compatibility the options \fB\-c\fR and
-\fB\-\-id\fR have the same meaning as this one.
+.\"O Change the partition type.  If \fItype\fR is not specified, then print the
+.\"O current partition type.  The \fItype\fR argument is hexadecimal for MBR,
+.\"O or a GUID for GPT.  For backward compatibility the options \fB\-c\fR and
+.\"O \fB\-\-id\fR have the same meaning as this one.
+パーティションタイプを変更する。
+\fItype\fR が指定されない場合、現在のパーティションタイプを表示する。
+\fItype\fR 引き数は、MBR については 16 進数であり、GPT については GUID である。
+後方互換のため、オプション \fB\-c\fR と \fB\-\-id\fR は、
+このオプションと同じ意味を持つ。
 .TP
 .BR "\-\-part\-uuid \fIdevice partition-number " [ \fIuuid ]
-Change the GPT partition UUID.  If \fIuuid\fR is not specified,
-then print the current partition UUID.
+.\"O Change the GPT partition UUID.  If \fIuuid\fR is not specified,
+.\"O then print the current partition UUID.
+GPT パーティションの UUID を変更する。
+\fIuuid\fR が指定されない場合、現在のパーティション UUID を表示する。
 .TP
 .BR \-r , " \-\-reorder " \fIdevice
-Renumber the partitions, ordering them by their start offset.
+.\"O Renumber the partitions, ordering them by their start offset.
+パーティション番号を開始オフセットの順番に振りなおす。
 .TP
 .BR \-s , " \-\-show\-size " [ \fIdevice ...]
-List the sizes of all or the specified devices in units of 1024 byte size.
-This command is DEPRECATED in favour of
-.BR blockdev (1).
+.\"O List the sizes of all or the specified devices in units of 1024 byte size.
+.\"O This command is DEPRECATED in favour of
+.\"O .BR blockdev (1).
+全てのデバイス、または指定されたデバイスのサイズを、1024 バイトサイズを単位として表示する。
+このコマンドは「推奨されず」、
+.BR blockdev (1)
+を使うべきである。
 .TP
 .BR \-T , " \-\-list\-types"
-Print all supported types for the current disk label or the label specified by
-\fB\-\-label\fR.
+.\"O Print all supported types for the current disk label or the label specified by
+.\"O \fB\-\-label\fR.
+現在のディスクラベル、または \fB\-\-label\fR で指定されたラベルについて、
+全てのサポートされたタイプを表示する。
 .TP
 .BR \-V , " \-\-verify " [ \fIdevice ...]
-Test whether the partition table and partitions seem correct.
+.\"O Test whether the partition table and partitions seem correct.
+パーティションテーブルとパーティションが正しく見えるかを
+テストする。
 
 .\"O .SH OPTIONS
 .SH オプション
 .TP
 .BR \-a , " \-\-append"
-Don't create a new partition table, but only append the specified partitions.
+.\"O Don't create a new partition table, but only append the specified partitions.
+新しいパーティションテーブルを作成せず、指定したパーティションの
+追加のみを行う。
 .TP
 .BR \-b , " \-\-backup"
-Back up the current partition table sectors before starting the partitioning.
-The default backup file name is ~/sfdisk-<device>-<offset>.bak; to use another
-name see option \fB\-O\fR, \fB\-\-backup\-file\fR.
+.\"O Back up the current partition table sectors before starting the partitioning.
+.\"O The default backup file name is ~/sfdisk-<device>-<offset>.bak; to use another
+.\"O name see option \fB\-O\fR, \fB\-\-backup\-file\fR.
+パーティション作成を開始する前に、現在のパーティションテーブル
+セクターをバックアップする。
+デフォルトのバックアップファイル名は ~/sfdisk-<device>-<offset>.bak である。
+他の名前を使う場合は、オプション \fB\-O\fR, \fB\-\-backup\-file\fR を参照すること。
 .TP
 .BR \-\-color [ =\fIwhen ]
-Colorize the output.  The optional argument \fIwhen\fP
-can be \fBauto\fR, \fBnever\fR or \fBalways\fR.  If the \fIwhen\fR argument is omitted,
-it defaults to \fBauto\fR.  The colors can be disabled; for the current built-in default
-see the \fB\-\-help\fR output.  See also the \fBCOLORS\fR section.
+.\"O Colorize the output.  The optional argument \fIwhen\fP
+.\"O can be \fBauto\fR, \fBnever\fR or \fBalways\fR.  If the \fIwhen\fR argument is omitted,
+.\"O it defaults to \fBauto\fR.  The colors can be disabled; for the current built-in default
+.\"O see the \fB\-\-help\fR output.  See also the \fBCOLORS\fR section.
+出力をカラー表示する。
+オプションの引き数 \fIwhen\fP は、
+\fBauto\fR, \fBnever\fR, \fBalways\fR のいずれかである。
+\fIwhen\fR 引き数が省略された場合、デフォルトは \fBauto\fR である。
+カラー表示は無効化できる。
+現在の組み込みのデフォルトは、\fB\-\-help\fR の出力を参照すること。
+\fBカラー表示\fR セクションも参照すること。
 .TP
 .BR \-f , " \-\-force"
-Disable all consistency checking.
+.\"O Disable all consistency checking.
+全ての整合性チェックを無効化する。
 .TP
 .B \-\-Linux
-Deprecated and ignored option.  Partitioning that is compatible with
-Linux (and other modern operating systems) is the default.
+.\"O Deprecated and ignored option.  Partitioning that is compatible with
+.\"O Linux (and other modern operating systems) is the default.
+推奨されず、無視されるオプション。
+Linux (と他の現代的な OS) と互換のパーティション作成は、デフォルトである。
 .TP
 .BR \-n , " \-\-no\-act"
-Do everything except writing to the device.
+.\"O Do everything except writing to the device.
+デバイスに書き込む以外の全てを行う。
 .TP
 .B \-\-no\-reread
-Do not check through the re-read-partition-table ioctl whether the device is in use.
+.\"O Do not check through the re-read-partition-table ioctl whether the device is in use.
+パーティションテーブルの再読み込み ioctl を使った、
+デバイスが使用中か否かのチェックを行わない。
 .TP
 .B \-\-no\-tell\-kernel
-Don't tell the kernel about partition changes. This option is recommended together
-with \fB\-\-no\-reread\fR to modify a partition on used disk. The modified partition
-should not be used (e.g. mounted).
+.\"O Don't tell the kernel about partition changes. This option is recommended together
+.\"O with \fB\-\-no\-reread\fR to modify a partition on used disk. The modified partition
+.\"O should not be used (e.g. mounted).
+パーティションの変更をカーネルに知らせない。
+このオプションは、使用されているディスクのパーティションを
+変更する際に、\fB\-\-no\-reread\fR とともに使うことが推奨される。
+変更されたパーティションは使用 (例えば、マウント) すべきではない。
 .TP
 .BR \-O , " \-\-backup\-file " \fIpath
 Override the default backup file name.  Note that the device name and offset
@@ -321,7 +373,8 @@ and the last command reorders partitions to match disk order
 .sp
 .B "echo '+100M,' | sfdisk --move-data /dev/sdc -N 1"
 .br
-.B "echo '2048,' | sfdisk /dev/sdc --append
+.\"O .B "echo '2048,' | sfdisk /dev/sdc --append
+.B "echo '2048,' | sfdisk /dev/sdc --append"
 .br
 .B sfdisk /dev/sdc --reorder
 .sp
@@ -628,44 +681,67 @@ provides all necessary functionality.
 
 .\"O .SH COLORS
 .SH カラー表示
-Implicit coloring can be disabled by an empty file \fI/etc/terminal-colors.d/sfdisk.disable\fR.
+.\"O Implicit coloring can be disabled by an empty file \fI/etc/terminal-colors.d/sfdisk.disable\fR.
+暗黙のカラー表示は空ファイル \fI/etc/terminal-colors.d/sfdisk.disable\fR で
+無効化できる。
 
-See
+.\"O See
+.\"O .BR terminal-colors.d (5)
+.\"O for more details about colorization configuration. The logical color names
+.\"O supported by
+.\"O .B sfdisk
+.\"O are:
+カラー表示設定の詳細は
 .BR terminal-colors.d (5)
-for more details about colorization configuration. The logical color names
-supported by
+を参照すること。
 .B sfdisk
-are:
+でサポートされている論理的なカラー名は以下の通り:
 .TP
 .B header
-The header of the output tables.
+.\"O The header of the output tables.
+出力テーブルのヘッダー。
 .TP
 .B warn
-The warning messages.
+.\"O The warning messages.
+警告メッセージ。
 .TP
 .B welcome
-The welcome message.
+.\"O The welcome message.
+ようこそのメッセージ。
 
 .\"O .SH NOTES
 .SH 注意
-Since version 2.26 \fBsfdisk\fR no longer provides the \fB\-R\fR or
-\fB\-\-re\-read\fR option to force the kernel to reread the partition table.
-Use \fBblockdev \-\-rereadpt\fR instead.
+.\"O Since version 2.26 \fBsfdisk\fR no longer provides the \fB\-R\fR or
+.\"O \fB\-\-re\-read\fR option to force the kernel to reread the partition table.
+.\"O Use \fBblockdev \-\-rereadpt\fR instead.
+バージョン 2.26 以降で \fBsfdisk\fR は、
+カーネルにパーティションテーブルを再読み込みさせるための、
+\fB\-R\fR と \fB\-\-re\-read\fR オプションを提供しない。
+代わりに \fBblockdev \-\-rereadpt\fR を使うこと。
 .PP
-Since version 2.26 \fBsfdisk\fR does not provide the \fB\-\-DOS\fR, \fB\-\-IBM\fR, \fB\-\-DOS\-extended\fR,
+.\"O Since version 2.26 \fBsfdisk\fR does not provide the \fB\-\-DOS\fR, \fB\-\-IBM\fR, \fB\-\-DOS\-extended\fR,
+.\"O \fB\-\-unhide\fR, \fB\-\-show\-extended\fR, \fB\-\-cylinders\fR, \fB\-\-heads\fR, \fB\-\-sectors\fR,
+.\"O \fB\-\-inside\-outer\fR, \fB\-\-not\-inside\-outer\fR options.
+バージョン 2.26 以降で \fBsfdisk\fR は、
+\fB\-\-DOS\fR, \fB\-\-IBM\fR, \fB\-\-DOS\-extended\fR,
 \fB\-\-unhide\fR, \fB\-\-show\-extended\fR, \fB\-\-cylinders\fR, \fB\-\-heads\fR, \fB\-\-sectors\fR,
-\fB\-\-inside\-outer\fR, \fB\-\-not\-inside\-outer\fR options.
+\fB\-\-inside\-outer\fR, \fB\-\-not\-inside\-outer\fR
+オプションを提供しない。
 
 .\"O .SH ENVIRONMENT
 .SH 環境変数
 .IP SFDISK_DEBUG=all
-enables sfdisk debug output.
+.\"O enables sfdisk debug output.
+sfdisk デバッグ出力を有効化する。
 .IP LIBFDISK_DEBUG=all
-enables libfdisk debug output.
+.\"O enables libfdisk debug output.
+libfdisk デバッグ出力を有効化する。
 .IP LIBBLKID_DEBUG=all
-enables libblkid debug output.
+.\"O enables libblkid debug output.
+libblkid デバッグ出力を有効化する。
 .IP LIBSMARTCOLS_DEBUG=all
-enables libsmartcols debug output.
+.\"O enables libsmartcols debug output.
+libsmartcols デバッグ出力を有効化する。
 
 .\"O .SH "SEE ALSO"
 .SH 関連項目
