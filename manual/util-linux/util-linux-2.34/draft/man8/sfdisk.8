@@ -93,20 +93,36 @@ CHS は Linux では重要でなくなっており、このアドレス指定の
 オフセットとサイズをセクタ数で指定する。
 この場合、sfdisk は最適化をせずに指定された数値に完全に従う。
 .sp
+.\"O .B sfdisk
+.\"O does not create the standard system partitions for SGI and SUN disk labels like
+.\"O .BR fdisk (8)
+.\"O does.
+.\"O It is necessary to explicitly create all partitions including whole-disk system
+.\"O partitions.
 .B sfdisk
-does not create the standard system partitions for SGI and SUN disk labels like
+は、
 .BR fdisk (8)
-does.
-It is necessary to explicitly create all partitions including whole-disk system
-partitions.
+のようには、SGI と SUN ディスクラベルに対して、
+標準的なシステムパーティションを作成しない。
+ディスクシステムパーティション全体を含むように、
+明示的に全部のパーティションを作成する必要がある。
 
+.\"O .B sfdisk
+.\"O uses BLKRRPART (reread partition table) ioctl to make sure that the device is
+.\"O not used by system or another tools (see also --no-reread).  It's possible that
+.\"O this feature or another sfdisk activity races with \fBudevd\fR.  The recommended way
+.\"O how to avoid possible collisions is to use exclusive flock for the whole-disk
+.\"O device to serialize device access.  The exclusive lock will cause udevd to skip
+.\"O the event handling on the device.  For example:
 .B sfdisk
-uses BLKRRPART (reread partition table) ioctl to make sure that the device is
-not used by system or another tools (see also --no-reread).  It's possible that
-this feature or another sfdisk activity races with \fBudevd\fR.  The recommended way
-how to avoid possible collisions is to use exclusive flock for the whole-disk
-device to serialize device access.  The exclusive lock will cause udevd to skip
-the event handling on the device.  For example:
+は BLKRRPART (パーティションテーブルの再読み込み) ioctl を使い、
+デバイスがシステムまたは他のツールで使われていないかを確かめる
+(--no-reread を参照)。
+この機能または他の sfdisk の操作が、\fBudevd\fR と競合する可能性がある。
+衝突の可能性を回避するのに推奨される方法は、デバイスアクセスを
+直列化するために、ディスクデバイス全体に対して排他 flock を使うことである。
+排他ロックを使うと、udevd がデバイスのイベントハンドリングをスキップする可能性がある。
+例えば:
 .RS
 .sp
 .nf
@@ -114,56 +130,92 @@ the event handling on the device.  For example:
 .fi
 .sp
 .RE
-Note, this semantic is not currently supported by udevd for MD and DM devices.
+.\"O Note, this semantic is not currently supported by udevd for MD and DM devices.
+この使い方は MD と DM デバイスについての udevd ではサポートされていない。
 
 .\"O .SH COMMANDS
 .SH コマンド
-The commands are mutually exclusive.
+.\"O The commands are mutually exclusive.
+コマンドはどれか 1 つしか使用できない。
 .TP
 .RB [ \-N " \fIpartition-number\fR] " \fIdevice\fR
-The default \fBsfdisk\fR command is to read the specification for the desired
-partitioning of \fIdevice\fR from standard input, and then create a partition
-table according to the specification.  See below for the description of the
-input format.  If standard input is a terminal, then \fBsfdisk\fR starts an
-interactive session.
+.\"O The default \fBsfdisk\fR command is to read the specification for the desired
+.\"O partitioning of \fIdevice\fR from standard input, and then create a partition
+.\"O table according to the specification.  See below for the description of the
+.\"O input format.  If standard input is a terminal, then \fBsfdisk\fR starts an
+.\"O interactive session.
+デフォルトの \fBsfdisk\fR コマンドは、
+\fIdevice\fR について希望するパーティション分割の仕様を、標準入力から読み取り、
+その仕様に従ってパーティションテーブルを作成する。
+入力フォーマットの説明は下記を参照すること。
+標準入力が端末の場合、\fBsfdisk\fR は対話型のセッションを開始する。
 .sp
-If the option \fB\-N\fR is specified, then the changes are applied to
-the partition addressed by \fIpartition-number\fR.  The unspecified fields
-of the partition are not modified.
+.\"O If the option \fB\-N\fR is specified, then the changes are applied to
+.\"O the partition addressed by \fIpartition-number\fR.  The unspecified fields
+.\"O of the partition are not modified.
+オプション \fB\-N\fR が指定されると、
+\fIpartition-number\fR で指定されたパーティションに変更が適用される。
+指定されないパーティションのフィールドは、変更されない。
 .sp
-Note that it's possible to address an unused partition with \fB\-N\fR.
-For example, an MBR always contains 4 partitions, but the number of used
-partitions may be smaller.  In this case \fBsfdisk\fR follows the default
-values from the partition table and does not use built-in defaults for the
-unused partition given with \fB\-N\fR.  See also \fB\-\-append\fR.
+.\"O Note that it's possible to address an unused partition with \fB\-N\fR.
+.\"O For example, an MBR always contains 4 partitions, but the number of used
+.\"O partitions may be smaller.  In this case \fBsfdisk\fR follows the default
+.\"O values from the partition table and does not use built-in defaults for the
+.\"O unused partition given with \fB\-N\fR.  See also \fB\-\-append\fR.
+使用されていないパーティションを \fB\-N\fR で指定できる点に注意すること。
+例えば、MBR は常に 4 つのパーティションを持ち、
+使用されているパーティションの番号は、小さい方から使われる。
+この場合、\fBsfdisk\fR は、\fB\-N\fR で指定された使用されていないパーティションについて、
+パーティションテーブルからのデフォルト値に従い、
+組み込みのデフォルト値を使わない。
+\fB\-\-append\fR を参照すること。
 .TP
 .BR \-A , " \-\-activate \fIdevice " [ \fIpartition-number...]
-Switch on the bootable flag for the specified partitions and switch off the
-bootable flag on all unspecified partitions. The special placeholder '-'
-may be used instead of the partition numbers to switch off the bootable flag
-on all partitions.
+.\"O Switch on the bootable flag for the specified partitions and switch off the
+.\"O bootable flag on all unspecified partitions. The special placeholder '-'
+.\"O may be used instead of the partition numbers to switch off the bootable flag
+.\"O on all partitions.
+指定されたパーティションのブート可能フラグをオンにし、
+指定されていない全てのパーティションのブート可能フラグをオフにする。
+特別なプレースホルダー '-' はパーティション番号の代わりに使われ、
+全てのパーティションのブート可能フラグをオフにする。
 
-The activation command is supported for MBR and PMBR only.  If GPT label is detected
-than sfdisk prints warning and automatically enter PMBR.
+.\"O The activation command is supported for MBR and PMBR only.  If GPT label is detected
+.\"O than sfdisk prints warning and automatically enter PMBR.
+アクティブ化コマンドは、MBR と PMBR のみでサポートされている。
+GPT ラベルが検出されると、sfdisk は警告を表示して、
+自動的に PMBR に入る。
 
-If no \fIpartition-number\fR is specified, then list the partitions with an
-enabled flag.
+.\"O If no \fIpartition-number\fR is specified, then list the partitions with an
+.\"O enabled flag.
+\fIpartition-number\fR が指定されない場合、
+有効化フラグの付いたパーティションのリストを表示する。
 .TP
 .BR "\-\-delete \fIdevice " [ \fIpartition-number ...]
-Delete all or the specified partitions.
+.\"O Delete all or the specified partitions.
+全てのパーティション、または指定されたパーティションを削除する。
 .TP
 .BR \-d , " \-\-dump " \fIdevice\fR
-Dump the partitions of a device in a format that is usable as input to \fBsfdisk\fR.
-See the section \fBBACKING UP THE PARTITION TABLE\fR.
+.\"O Dump the partitions of a device in a format that is usable as input to \fBsfdisk\fR.
+.\"O See the section \fBBACKING UP THE PARTITION TABLE\fR.
+\fBsfdisk\fR の入力として利用可能なフォーマットで、
+デバイスのパーティションをダンプする。
+\fBパーティションテーブルのバックアップ\fR のセクションを参照すること。
 .TP
 .BR \-g , " \-\-show\-geometry " [ \fIdevice ...]
-List the geometry of all or the specified devices. For backward
-compatibility the deprecated option \fB\-\-show\-pt\-geometry\fR have the same
-meaning as this one.
+.\"O List the geometry of all or the specified devices. For backward
+.\"O compatibility the deprecated option \fB\-\-show\-pt\-geometry\fR have the same
+.\"O meaning as this one.
+全てのパーティション、または指定されたパーティションのジオメトリを
+表示する。
+後方互換のため、推奨されないオプション \fB\-\-show\-pt\-geometry\fR は、
+このオプションと同じ意味を持つ。
 .TP
 .BR \-J , " \-\-json " \fIdevice\fR
-Dump the partitions of a device in JSON format.  Note that \fBsfdisk\fR is
-not able to use JSON as input format.
+.\"O Dump the partitions of a device in JSON format.  Note that \fBsfdisk\fR is
+.\"O not able to use JSON as input format.
+デバイスのパーティションを JSON フォーマットでダンプする。
+\fBsfdisk\fR は JSON を入力フォーマットとして使えない点に注意すること。
 .TP
 .BR \-l , " \-\-list " [ \fIdevice ...]
 List the partitions of all or the specified devices.  This command can be used
