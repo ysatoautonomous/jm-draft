@@ -235,58 +235,87 @@ GPT ラベルが検出されると、sfdisk は警告を表示して、
 <DT><B>-l</B>,<B> --list </B>[<B></B><I>device</I>...]
 
 <DD>
-List the partitions of all or the specified devices.  This command can be used
-together with <B>--verify</B>.
+
+
+全てのデバイス、または指定されたデバイスのパーティションを表示する。
+このコマンドは、<B>--verify</B> とともに利用できる。
 <DT><B>-F</B>,<B> --list-free </B>[<B></B><I>device</I>...]
 
 <DD>
-List the free unpartitioned areas on all or the specified devices.
+
+全てのデバイス、または指定されたデバイスのパーティション化
+されていない領域を表示する。
 <DT><B>--part-attrs </B><I>device partition-number </I>[<B></B><I>attributes</I>]
 
 <DD>
-Change the GPT partition attribute bits.  If <I>attributes</I> is not specified,
-then print the current partition settings.  The <I>attributes</I> argument is a
-comma- or space-delimited list of bits.  The currently supported attribute
-bits are: RequiredPartition, NoBlockIOProtocol, LegacyBIOSBootable
-and GUID-specific bits in the range from 48 to 63.  For example, the string
-&quot;RequiredPartition,50,51&quot; sets three bits.
+
+
+
+
+
+
+GPT パーティション属性ビットを変更する。
+<I>attributes</I> が指定されない場合、現状のパーティション設定が表示される。
+<I>attributes</I> 引き数は、カンマ、またはスペース区切りのビットのリストである。
+現状サポートされている属性ビットは以下の通り:
+RequiredPartition, NoBlockIOProtocol, LegacyBIOSBootable
+そして、GUID 固有ビットは 48 から 63 の範囲である。
+例えば、&quot;RequiredPartition,50,51&quot; は 3 ビットを設定する。
 <DT><B>--part-label </B><I>device partition-number </I>[<B></B><I>label</I>]
 
 <DD>
-Change the GPT partition name (label).  If <I>label</I> is not specified,
-then print the current partition label.
+
+
+GPT パーティション名 (ラベル) を変更する。
+<I>label</I> が指定されない場合、現在のパーティションラベルを表示する。
 <DT><B>--part-type </B><I>device partition-number </I>[<B></B><I>type</I>]
 
 <DD>
-Change the partition type.  If <I>type</I> is not specified, then print the
-current partition type.  The <I>type</I> argument is hexadecimal for MBR,
-or a GUID for GPT.  For backward compatibility the options <B>-c</B> and
-<B>--id</B> have the same meaning as this one.
+
+
+
+
+パーティションタイプを変更する。
+<I>type</I> が指定されない場合、現在のパーティションタイプを表示する。
+<I>type</I> 引き数は、MBR については 16 進数であり、GPT については GUID である。
+後方互換のため、オプション <B>-c</B> と <B>--id</B> は、
+このオプションと同じ意味を持つ。
 <DT><B>--part-uuid </B><I>device partition-number </I>[<B></B><I>uuid</I>]
 
 <DD>
-Change the GPT partition UUID.  If <I>uuid</I> is not specified,
-then print the current partition UUID.
+
+
+GPT パーティションの UUID を変更する。
+<I>uuid</I> が指定されない場合、現在のパーティション UUID を表示する。
 <DT><B>-r</B>,<B> --reorder </B><I>device</I>
 
 <DD>
-Renumber the partitions, ordering them by their start offset.
+
+パーティション番号を開始オフセットの順番に振りなおす。
 <DT><B>-s</B>,<B> --show-size </B>[<B></B><I>device</I>...]
 
 <DD>
-List the sizes of all or the specified devices in units of 1024 byte size.
-This command is DEPRECATED in favour of
-<B><A HREF="../man1/blockdev.1.html">blockdev</A></B>(1).
 
+
+
+全てのデバイス、または指定されたデバイスのサイズを、1024 バイトサイズを単位として表示する。
+このコマンドは「推奨されず」、
+<B><A HREF="../man1/blockdev.1.html">blockdev</A></B>(1)
+
+を使うべきである。
 <DT><B>-T</B>,<B> --list-types</B>
 
 <DD>
-Print all supported types for the current disk label or the label specified by
-<B>--label</B>.
+
+
+現在のディスクラベル、または <B>--label</B> で指定されたラベルについて、
+全てのサポートされたタイプを表示する。
 <DT><B>-V</B>,<B> --verify </B>[<B></B><I>device</I>...]
 
 <DD>
-Test whether the partition table and partitions seem correct.
+
+パーティションテーブルとパーティションが正しく見えるかを
+テストする。
 <P>
 
 </DL>
@@ -297,43 +326,66 @@ Test whether the partition table and partitions seem correct.
 <DT><B>-a</B>,<B> --append</B>
 
 <DD>
-Don't create a new partition table, but only append the specified partitions.
+
+新しいパーティションテーブルを作成せず、指定したパーティションの
+追加のみを行う。
 <DT><B>-b</B>,<B> --backup</B>
 
 <DD>
-Back up the current partition table sectors before starting the partitioning.
-The default backup file name is ~/sfdisk-&lt;device&gt;-&lt;offset&gt;.bak; to use another
-name see option <B>-O</B>, <B>--backup-file</B>.
+
+
+
+パーティション作成を開始する前に、現在のパーティションテーブル
+セクターをバックアップする。
+デフォルトのバックアップファイル名は ~/sfdisk-&lt;device&gt;-&lt;offset&gt;.bak である。
+他の名前を使う場合は、オプション <B>-O</B>, <B>--backup-file</B> を参照すること。
 <DT><B>--color</B>[<B>=</B><I>when</I>]
 
 <DD>
-Colorize the output.  The optional argument <I>when</I>
-can be <B>auto</B>, <B>never</B> or <B>always</B>.  If the <I>when</I> argument is omitted,
-it defaults to <B>auto</B>.  The colors can be disabled; for the current built-in default
-see the <B>--help</B> output.  See also the <B>COLORS</B> section.
+
+
+
+
+出力をカラー表示する。
+オプションの引き数 <I>when</I> は、
+<B>auto</B>, <B>never</B>, <B>always</B> のいずれかである。
+<I>when</I> 引き数が省略された場合、デフォルトは <B>auto</B> である。
+カラー表示は無効化できる。
+現在の組み込みのデフォルトは、<B>--help</B> の出力を参照すること。
+<B>カラー表示</B> セクションも参照すること。
 <DT><B>-f</B>,<B> --force</B>
 
 <DD>
-Disable all consistency checking.
+
+全ての整合性チェックを無効化する。
 <DT><B>--Linux</B>
 
 <DD>
-Deprecated and ignored option.  Partitioning that is compatible with
-Linux (and other modern operating systems) is the default.
+
+
+推奨されず、無視されるオプション。
+Linux (と他の現代的な OS) と互換のパーティション作成は、デフォルトである。
 <DT><B>-n</B>,<B> --no-act</B>
 
 <DD>
-Do everything except writing to the device.
+
+デバイスに書き込む以外の全てを行う。
 <DT><B>--no-reread</B>
 
 <DD>
-Do not check through the re-read-partition-table ioctl whether the device is in use.
+
+パーティションテーブルの再読み込み ioctl を使った、
+デバイスが使用中か否かのチェックを行わない。
 <DT><B>--no-tell-kernel</B>
 
 <DD>
-Don't tell the kernel about partition changes. This option is recommended together
-with <B>--no-reread</B> to modify a partition on used disk. The modified partition
-should not be used (e.g. mounted).
+
+
+
+パーティションの変更をカーネルに知らせない。
+このオプションは、使用されているディスクのパーティションを
+変更する際に、<B>--no-reread</B> とともに使うことが推奨される。
+変更されたパーティションは使用 (例えば、マウント) すべきではない。
 <DT><B>-O</B>,<B> --backup-file </B><I>path</I>
 
 <DD>
@@ -363,6 +415,7 @@ and the last command reorders partitions to match disk order
 <B>echo '+100M,' | sfdisk --move-data /dev/sdc -N 1</B>
 
 <BR>
+
 
 <B>echo '2048,' | sfdisk /dev/sdc --append</B>
 
@@ -763,43 +816,62 @@ provides all necessary functionality.
 <A NAME="lbAJ">&nbsp;</A>
 <H2>カラー表示</H2>
 
-Implicit coloring can be disabled by an empty file <I>/etc/terminal-colors.d/sfdisk.disable</I>.
+
+暗黙のカラー表示は空ファイル <I>/etc/terminal-colors.d/sfdisk.disable</I> で
+無効化できる。
 <P>
-See
+
+
+
+
+
+
+カラー表示設定の詳細は
 <B><A HREF="../man5/terminal-colors.d.5.html">terminal-colors.d</A></B>(5)
 
-for more details about colorization configuration. The logical color names
-supported by
+を参照すること。
 <B>sfdisk</B>
 
-are:
+でサポートされている論理的なカラー名は以下の通り:
 <DL COMPACT>
 <DT><B>header</B>
 
 <DD>
-The header of the output tables.
+
+出力テーブルのヘッダー。
 <DT><B>warn</B>
 
 <DD>
-The warning messages.
+
+警告メッセージ。
 <DT><B>welcome</B>
 
 <DD>
-The welcome message.
+
+ようこそのメッセージ。
 <P>
 
 </DL>
 <A NAME="lbAK">&nbsp;</A>
 <H2>注意</H2>
 
-Since version 2.26 <B>sfdisk</B> no longer provides the <B>-R</B> or
-<B>--re-read</B> option to force the kernel to reread the partition table.
-Use <B>blockdev --rereadpt</B> instead.
+
+
+
+バージョン 2.26 以降で <B>sfdisk</B> は、
+カーネルにパーティションテーブルを再読み込みさせるための、
+<B>-R</B> と <B>--re-read</B> オプションを提供しない。
+代わりに <B>blockdev --rereadpt</B> を使うこと。
 <P>
 
-Since version 2.26 <B>sfdisk</B> does not provide the <B>--DOS</B>, <B>--IBM</B>, <B>--DOS-extended</B>,
+
+
+
+バージョン 2.26 以降で <B>sfdisk</B> は、
+<B>--DOS</B>, <B>--IBM</B>, <B>--DOS-extended</B>,
 <B>--unhide</B>, <B>--show-extended</B>, <B>--cylinders</B>, <B>--heads</B>, <B>--sectors</B>,
-<B>--inside-outer</B>, <B>--not-inside-outer</B> options.
+<B>--inside-outer</B>, <B>--not-inside-outer</B>
+オプションを提供しない。
 <P>
 
 <A NAME="lbAL">&nbsp;</A>
@@ -807,13 +879,17 @@ Since version 2.26 <B>sfdisk</B> does not provide the <B>--DOS</B>, <B>--IBM</B>
 
 <DL COMPACT>
 <DT>SFDISK_DEBUG=all<DD>
-enables sfdisk debug output.
+
+sfdisk デバッグ出力を有効化する。
 <DT>LIBFDISK_DEBUG=all<DD>
-enables libfdisk debug output.
+
+libfdisk デバッグ出力を有効化する。
 <DT>LIBBLKID_DEBUG=all<DD>
-enables libblkid debug output.
+
+libblkid デバッグ出力を有効化する。
 <DT>LIBSMARTCOLS_DEBUG=all<DD>
-enables libsmartcols debug output.
+
+libsmartcols デバッグ出力を有効化する。
 <P>
 
 </DL>
@@ -876,6 +952,6 @@ sfdisk コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 15:44:26 GMT, April 01, 2020
+Time: 17:08:48 GMT, April 01, 2020
 </BODY>
 </HTML>
