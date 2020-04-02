@@ -694,85 +694,128 @@ GPT パーティションの最大数を指定する。
 EiB, ZiB, YiB) を付けることができる。
 数値はバイト単位のオフセットとして解釈される。
 <P>
-The default value of
+
+
+
+
+
+
+
+
+
+
+
 <I>size</I>
 
-indicates &quot;as much as possible&quot;; i.e. until the next partition or
-end-of-device.  A numerical argument is by default interpreted as a
-number of sectors, however if the size is followed by one of the
-multiplicative suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB)
-then the number is interpreted as the size of the partition in bytes
-and it is then aligned according to the device I/O limits.  A '+' can
-be used instead of a number to enlarge the partition as much as
-possible.  Note '+' is equivalent to the default behaviour for a new
-partition; existing partitions will be resized as required.
+のデフォルト値は「可能か限り大きく」を表す。
+つまり、次のパーティションまで、またはデバイスの終わりまでである。
+数値の引き数はデフォルトではセクター数として解釈されるが、
+サイズに乗数のサフィックス (KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB) を付けると、
+数値はバイト単位のパーティションサイズとして解釈され、
+デバイスの I/O 制限に基づいて配置される。
+数値の代わりに '+' を使うと、パーティションをできる限り拡張する。
+
+既存のパーティションは、必要に応じてリサイズされる。
 <P>
-The partition
+
+
+
+
+パーティションタイプ
 <I>type</I>
 
-is given in hex for MBR (DOS), without the 0x prefix, a GUID string for GPT, or
-a shortcut:
+は、MBR (DOS) については、プレフィックス 0x を付けない 16 進数で指定する。
+また、GPT については、GUID 文字列で指定する。
+もしくは、ショートカットで指定する:
 <DL COMPACT><DT><DD>
 <DL COMPACT>
 <DT><B>L</B>
 
 <DD>
-Linux; means 83 for MBR and 0FC63DAF-8483-4772-8E79-3D69D8477DE4 for GPT.
+
+Linux; MBR では 83 であり、
+GPT では 0FC63DAF-8483-4772-8E79-3D69D8477DE4 である。
 <DT><B>S</B>
 
 <DD>
-swap area; means 82 for MBR and 0657FD6D-A4AB-43C4-84E5-0933C84B4F4F for GPT
+
+スワップ領域; MBR では 82 であり、
+GPT では 0657FD6D-A4AB-43C4-84E5-0933C84B4F4F である。
 <DT><B>E</B>
 
 <DD>
-extended partition; means 5 for MBR
+
+拡張パーティション; MBR では 5 である。
 <DT><B>H</B>
 
 <DD>
-home partition; means 933AC7E1-2EB4-4F13-B844-0E14E2AEF915 for GPT
+
+ホームパーティション; GPT では 933AC7E1-2EB4-4F13-B844-0E14E2AEF915 である。
 <DT><B>X</B>
 
 <DD>
-linux extended partition; means 85 for MBR.
+
+Linux 拡張パーティション; MBR では 85 である。
 <DT><B>U</B>
 
 <DD>
-EFI System partition, means EF for MBR and C12A7328-F81F-11D2-BA4B-00A0C93EC93B for GPT
+
+EFI システムパーティション; MBR では EF であり、
+GPT では C12A7328-F81F-11D2-BA4B-00A0C93EC93B である。
 <DT><B>R</B>
 
 <DD>
-Linux RAID; means FD for MBR and A19D880F-05FC-4D3B-A006-743F0F84911E for GPT
+
+Linux RAID; MBR では FD であり、
+GPT では A19D880F-05FC-4D3B-A006-743F0F84911E である。
 <DT><B>V</B>
 
 <DD>
-LVM; means 8E for MBR and E6D6D379-F507-44C2-A23C-238F2A3DF928 for GPT
+
+LVM; MBR では 8E であり、
+GPT では E6D6D379-F507-44C2-A23C-238F2A3DF928 である。
 </DL>
 </DL>
 
 <P>
 
-The default
+
+
+
+
+デフォルトの
 <I>type</I>
 
-value is
+の値は
 <I>L</I>
 
+である。
 <P>
+
+
+
+
+
 <I>bootable</I>
 
-is specified as [<B>*</B>|<B>-</B>], with as default not-bootable.  The
-value of this field is irrelevant for Linux - when Linux runs it has
-been booted already - but ir might play a role for certain boot
-loaders and for other operating systems.
+は [<B>*</B>|<B>-</B>] で指定する。
+デフォルトではブート可能でない。
+このフィールドの値は Linux とは関係ない。
+- Linux が稼働しているなら、既にブート済みである -
+しかし、このフィールドはある種のブートローダや他の OS で用いられる。
 </DL>
 
 <P>
-<B>Named-fields format</B>
+
+<B>名前付きフィールド形式</B>
 
 <DL COMPACT><DT><DD>
-This format is more readable, robust, extensible and allows to specify additional
-information (e.g. a UUID).  It is recommended to use this format to keep your scripts
-more readable.
+
+
+
+この形式は、より読みやすく、堅牢で、拡張可能で、追加の情報 (例えば、UUID) を指定できる。
+スクリプトをより読みやすくするために、この形式を使うことが
+推奨される。
 <DL COMPACT><DT><DD>
 <P>
 [<I>device </I><B>:</B>]<I> name</I>[<B>=</B><I>value</I>], ...
@@ -780,56 +823,83 @@ more readable.
 <P>
 </DL>
 
-The
+
+
+
+
+
+
 <I>device</I>
 
-field is optional.  <B>sfdisk</B> extracts the partition number from the
-device name.  It allows to specify the partitions in random order.
-This functionality is mostly used by <B>--dump</B>.
-Don't use it if you are not sure.
+フィールドはオプションである。
+<B>sfdisk</B> はデバイス名からパーティション番号を抽出する。
+パーティションをランダムな順番で指定できる。
+この機能は主に <B>--dump</B> で使われる。
+良く分からない場合は、使わないこと。
 <P>
-The
+
+
+
+
 <I>value</I>
 
-can be between quotation marks (e.g. name=&quot;This is partition name&quot;).
-The currently supported fields are:
+はクォーテーションマークの間に指定できる
+(例えば name=&quot;This is partition name&quot;)。
+現在サポートされているフィールドは以下の通り:
 <DL COMPACT><DT><DD>
 <DL COMPACT>
 <DT><B>start=</B><I>number</I>
 
 <DD>
-The first non-assigned sector aligned according to device I/O limits.  The default
-start offset for the first partition is 1 MiB. The offset may be followed by
-the multiplicative suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB) then
-the number is interpreted as offset in bytes.
+
+
+
+
+デバイスの I/O 制限に基づいて配置された、
+最初のアサインされていないセクターである。
+最初のパーティションのデフォルトの開始オフセットは、1 MiB である。
+オフセットには乗数のサフィックス (KiB, MiB, GiB, TiB, PiB,
+EiB, ZiB, YiB) を付けることができる。
+数値はバイト単位のオフセットとして解釈される。
 <DT><B>size=</B><I>number</I>
 
 <DD>
-Specify the partition size in sectors.  The number may be followed by the multiplicative
-suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB), then it's interpreted as size
-in bytes and the size is aligned according to device I/O limits.
+
+
+
+パーティションサイズをセクター数で指定する。
+数値に乗数のサフィックス (KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB) を付けると、
+数値はバイト単位のサイズとして解釈され、デバイスの I/O 制限に基づいて配置される。
 <DT><B>bootable</B>
 
 <DD>
-Mark the partition as bootable.
+
+パーティションをブート可能に設定する。
 <DT><B>attrs=</B><I>string</I>
 
 <DD>
-Partition attributes, usually GPT partition attribute bits.  See
-<B>--part-attrs</B> for more details about the GPT-bits string format.
+
+
+パーティション属性。通常は GPT パーティション属性ビット。
+GPT ビット文字列の形式の詳細は、<B>--part-attrs</B> を参照すること。
 <DT><B>uuid=</B><I>string</I>
 
 <DD>
-GPT partition UUID.
+
+GPT パーティション UUID。
 <DT><B>name=</B><I>string</I>
 
 <DD>
-GPT partition name.
+
+GPT パーティション 名。
 <DT><B>type=</B><I>code</I>
 
 <DD>
-A hexadecimal number (without 0x) for an MBR partition, or a GUID for a GPT partition.
-For backward compatibility the <B>Id=</B> field has the same meaning.
+
+
+MBR パーティションについては、(0x なしの) 16 進数である。
+GPT パーティションについては、GUID である。
+後方互換のため、<B>Id=</B> フィールドは同じ意味を持つ。
 </DL>
 </DL>
 
@@ -1056,6 +1126,6 @@ sfdisk コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 13:27:43 GMT, April 02, 2020
+Time: 14:43:36 GMT, April 02, 2020
 </BODY>
 </HTML>
