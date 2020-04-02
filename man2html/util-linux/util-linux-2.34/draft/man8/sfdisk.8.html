@@ -43,7 +43,8 @@ sfdisk - ディスクパーティションテーブルの表示と操作を行�
 
 <B>sfdisk</B>
 
-はスクリプトベースのツールで、ブロックデバイスのパーティション操作ができる。
+はスクリプトベースのツールで、ブロックデバイスのパーティション操作が
+できる。
 <P>
 
 
@@ -243,7 +244,7 @@ GPT ラベルが検出されると、sfdisk は警告を表示して、
 
 <DD>
 
-全てのデバイス、または指定されたデバイスのパーティション化
+全てのデバイス、または指定されたデバイスのパーティション作成
 されていない領域を表示する。
 <DT><B>--part-attrs </B><I>device partition-number </I>[<B></B><I>attributes</I>]
 
@@ -336,7 +337,7 @@ GPT パーティションの UUID を変更する。
 
 
 パーティション作成を開始する前に、現在のパーティションテーブル
-セクターをバックアップする。
+セクタをバックアップする。
 デフォルトのバックアップファイル名は ~/sfdisk-&lt;device&gt;-&lt;offset&gt;.bak である。
 他の名前を使う場合は、オプション <B>-O</B>, <B>--backup-file</B> を参照すること。
 <DT><B>--color</B>[<B>=</B><I>when</I>]
@@ -473,7 +474,7 @@ Linux (と他の現代的な OS) と互換のパーティション作成は、�
 
 
 推奨されないオプション。
-セクター単位のみがサポートされる。
+セクタ単位のみがサポートされる。
 --show-size コマンドが使われた場合、このオプションはサポートされない。
 <DT><B>-X</B>,<B> --label </B><I>type</I>
 
@@ -599,7 +600,7 @@ Linux (と他の現代的な OS) と互換のパーティション作成は、�
 <DD>
 
 パーティション作成の単位を指定する。
-サポートされている単位は、<B>セクター</B> のみである。
+サポートされている単位は、<B>セクタ</B> のみである。
 <DT><B>label</B>
 
 <DD>
@@ -688,7 +689,7 @@ GPT パーティションの最大数を指定する。
 <I>start</I>
 
 のデフォルト値は、デバイスの I/O 制限に基づいて配置された、
-最初のアサインされていないセクターである。
+最初のアサインされていないセクタである。
 最初のパーティションのデフォルトの開始オフセットは、1 MiB である。
 オフセットには乗数のサフィックス (KiB, MiB, GiB, TiB, PiB,
 EiB, ZiB, YiB) を付けることができる。
@@ -709,7 +710,7 @@ EiB, ZiB, YiB) を付けることができる。
 
 のデフォルト値は「可能か限り大きく」を表す。
 つまり、次のパーティションまで、またはデバイスの終わりまでである。
-数値の引き数はデフォルトではセクター数として解釈されるが、
+数値の引き数はデフォルトではセクタ数として解釈されるが、
 サイズに乗数のサフィックス (KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB) を付けると、
 数値はバイト単位のパーティションサイズとして解釈され、
 デバイスの I/O 制限に基づいて配置される。
@@ -856,7 +857,7 @@ GPT では E6D6D379-F507-44C2-A23C-238F2A3DF928 である。
 
 
 デバイスの I/O 制限に基づいて配置された、
-最初のアサインされていないセクターである。
+最初のアサインされていないセクタである。
 最初のパーティションのデフォルトの開始オフセットは、1 MiB である。
 オフセットには乗数のサフィックス (KiB, MiB, GiB, TiB, PiB,
 EiB, ZiB, YiB) を付けることができる。
@@ -867,7 +868,7 @@ EiB, ZiB, YiB) を付けることができる。
 
 
 
-パーティションサイズをセクター数で指定する。
+パーティションサイズをセクタ数で指定する。
 数値に乗数のサフィックス (KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB) を付けると、
 数値はバイト単位のサイズとして解釈され、デバイスの I/O 制限に基づいて配置される。
 <DT><B>bootable</B>
@@ -910,12 +911,19 @@ GPT パーティションについては、GUID である。
 <A NAME="lbAH">&nbsp;</A>
 <H2>空のディスクラベル</H2>
 
+
+
+
+
+
 <B>sfdisk</B>
 
-does not create partition table without partitions by default. The lines with
-partitions are expected in the script by default. The empty partition table has
-to be explicitly requested by &quot;label: &lt;name&gt;&quot; script header line without any
-partitions lines. For example:
+は、デフォルトでは、パーティションなしではパーティションテーブルを
+作成しない。
+スクリプトは、デフォルトでは、パーティションを指定した行を想定している。
+空のパーティションテーブルを明示的に要求するには、
+パーティションの行がない &quot;label: &lt;name&gt;&quot; スクリプトヘッダを指定すればよい。
+例えば:
 <DL COMPACT><DT><DD>
 <P>
 <B>echo 'label: gpt' | sfdisk /dev/sdb</B>
@@ -923,20 +931,30 @@ partitions lines. For example:
 <P>
 </DL>
 
-creates empty GPT partition table. Note that the <B>--append</B> disables this feature.
+
+で空の GPT パーティションテーブルを作成できる。
+<B>--append</B> は、この機能を無効化する点に注意すること。
 <P>
 
 <A NAME="lbAI">&nbsp;</A>
 <H2>パーティションテーブルのバックアップ</H2>
 
-It is recommended to save the layout of your devices.
+
+
+
+デバイスのレイアウトを保存することが推奨される。
 <B>sfdisk</B>
 
-supports two ways.
+は 2 つの方法をサポートしている。
 <P>
-Use the <B>--dump</B> option to save a description of the device layout
-to a text file.  The dump format is suitable for later <B>sfdisk</B> input.
-For example:
+
+
+
+<B>--dump</B> オプションでデバイスレイアウトの記述を
+テキストファイルに保存できる。
+ダンプ形式は、その後の <B>sfdisk</B> の入力に適している。
+
+例えば:
 <DL COMPACT><DT><DD>
 <P>
 <B>sfdisk --dump /dev/sda &gt; sda.dump</B>
@@ -944,7 +962,8 @@ For example:
 <P>
 </DL>
 
-This can later be restored by:
+
+これは、後から以下のようにして復旧できる:
 <DL COMPACT><DT><DD>
 <P>
 <B>sfdisk /dev/sda &lt; sda.dump</B>
@@ -952,16 +971,27 @@ This can later be restored by:
 </DL>
 
 <P>
-If you want to do a full (binary) backup of all sectors where the
-partition table is stored,
-then use the <B>--backup</B> option.  It writes the sectors to
-~/sfdisk-&lt;device&gt;-&lt;offset&gt;.bak files.  The default name of the backup file can
-be changed with the <B>--backup-file</B> option.  The backup files
-contain only raw data from the <I>device</I>.
-Note that the same concept of backup files is used by
-<B><A HREF="../man8/wipefs.8.html">wipefs</A></B>(8).
 
-For example:
+
+
+
+
+
+
+
+
+パーティションテーブルが格納されている、
+全てのセクタの完全な (バイナリ) バックアップをしたい場合、
+<B>--backup</B> オプションを使うこと。
+このオプションは、セクタに ~/sfdisk-&lt;device&gt;-&lt;offset&gt;.bak ファイルを書き出す。
+バックアップファイルのデフォルトの名前は、
+<B>--backup-file</B> オプションで変更できる。
+バックアップファイルは、<I>device</I> からの生データを保持する。
+バックアップファイルの同じ考え方が、
+<B><A HREF="../man8/wipefs.8.html">wipefs</A></B>(8)
+
+で使われている点に注意すること。
+例えば:
 <DL COMPACT><DT><DD>
 <P>
 <B>sfdisk --backup /dev/sda</B>
@@ -969,7 +999,8 @@ For example:
 <P>
 </DL>
 
-The GPT header can later be restored by:
+
+GPT ヘッダは、後から以下のようにして復旧できる:
 <DL COMPACT><DT><DD>
 <P>
 <PRE>
@@ -980,11 +1011,15 @@ The GPT header can later be restored by:
 <P>
 </DL>
 
-Note that <B>sfdisk</B> since version 2.26 no longer provides the <B>-I</B> option to
-restore sectors.
+
+
+
+
+<B>sfdisk</B> は、バージョン 2.26 以降で、
+セクタの復旧に <B>-I</B> オプションを提供しない点に注意すること。
 <B><A HREF="../man1/dd.1.html">dd</A></B>(1)
 
-provides all necessary functionality.
+が必要な全ての機能を提供している。
 <P>
 
 <A NAME="lbAJ">&nbsp;</A>
@@ -1126,6 +1161,6 @@ sfdisk コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 14:43:36 GMT, April 02, 2020
+Time: 15:39:32 GMT, April 02, 2020
 </BODY>
 </HTML>
