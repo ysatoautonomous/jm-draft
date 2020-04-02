@@ -389,27 +389,46 @@ Linux (と他の現代的な OS) と互換のパーティション作成は、�
 <DT><B>-O</B>,<B> --backup-file </B><I>path</I>
 
 <DD>
-Override the default backup file name.  Note that the device name and offset
-are always appended to the file name.
+
+
+デフォルトのバックアップファイル名を上書きする。
+デバイス名とオフセットは常にファイル名に追加される点に注意すること。
 <DT><B>--move-data</B>[<B>=</B><I>path</I>]
 
 <DD>
-Move data after partition relocation, for example when moving the beginning
-of a partition to another place on the disk.  The size of the partition has
-to remain the same, the new and old location may overlap.  This option requires
-option <B>-N</B> in order to be processed on one specific partition only.
+
+
+
+
+例えば、パーティションの始まりをディスク上で他の場所に移動する
+場合などで、パーティションの再配置の後で、データを移動する。
+パーティションのサイズは同じでなければならず、
+新しい場所と古い場所は重なっても良い。
+このオプションは特定の 1 つのパーティションのみを扱うために、
+オプション <B>-N</B> が必要である。
 <P>
-The <I>path</I> overrides the default log file name
-(the default is ~/sfdisk-&lt;devname&gt;.move).  The log file contains information
-about all read/write operations on the partition data.
+
+
+
+<I>path</I> はデフォルトのログファイル名 (~/sfdisk-&lt;devname&gt;.move) を上書きする。
+このログファイルは、パーティションデータの読み書き操作の情報を
+保持する。
 <P>
-Note that this operation is risky and not atomic. <B>Don't forget to backup your data!</B>
+
+この操作は危険を伴い、アトミックでない点に注意すること。
+<B>データのバックアップを忘れないこと!</B>
 <P>
-In the example below, the first command creates a 100MiB free area before
-the first partition and moves the data it contains (e.g. a filesystem),
-the next command creates a new partition from the free space (at offset 2048),
-and the last command reorders partitions to match disk order
-(the original sdc1 will become sdc2).
+
+
+
+
+
+以下の例では、最初のコマンドは、最初のパーティションの前に 100MiB の
+空き領域を作成し、最初のパーティションが保持するデータ
+(例えば、ファイルシステム) を移動する。
+2 つ目のコマンドは空き領域に (オフセット 2048 で) 新しいパーティションを作成する。
+最後のコマンドは、ディスクの順番に合うようにパーティションを
+並べ直す (元の sdc1 は sdc2 になる)。
 <DL COMPACT><DT><DD>
 <P>
 <B>echo '+100M,' | sfdisk --move-data /dev/sdc -N 1</B>
@@ -430,89 +449,140 @@ and the last command reorders partitions to match disk order
 <DT><B>-o</B>,<B> --output </B><I>list</I>
 
 <DD>
-Specify which output columns to print.  Use
+
+
+
+どの列を表示するかを指定する。
+サポートされている全ての列のリストを見るには、
 <B>--help</B>
 
-to get a list of all supported columns.
+を使うこと。
 <P>
-The default list of columns may be extended if <I>list</I> is
-specified in the format <I>+list</I> (e.g. <B>-o +UUID</B>).
+
+
+<I>list</I> を (例えば. <B>-o +UUID</B> のように)
+<I>+list</I> の形式で指定すると、デフォルトの列のリストを拡張できる。
 <DT><B>-q</B>,<B> --quiet</B>
 
 <DD>
-Suppress extra info messages.
+
+余分な情報のメッセージを抑制する。
 <DT><B>-u</B>,<B> --unit S</B>
 
 <DD>
-Deprecated option.  Only the sector unit is supported. This option is not
-supported when using the --show-size command.
+
+
+推奨されないオプション。
+セクター単位のみがサポートされる。
+--show-size コマンドが使われた場合、このオプションはサポートされない。
 <DT><B>-X</B>,<B> --label </B><I>type</I>
 
 <DD>
-Specify the disk label type (e.g. <B>dos</B>, <B>gpt</B>, ...).  If this option
-is not given, then <B>sfdisk</B> defaults to the existing label, but if there
-is no label on the device yet, then the type defaults to <B>dos</B>. The default
-or the current label may be overwritten by the &quot;label: &lt;name&gt;&quot; script header
-line. The option <B>--label</B> does not force <B>sfdisk</B> to create empty
-disk label (see the <B>EMPTY DISK LABEL</B> section below).
+
+
+
+
+
+
+ディスクラベルタイプ (例えば、<B>dos</B>, <B>gpt</B>, ...) を指定する。
+このオプションが指定されない場合、<B>sfdisk</B> は既存のラベルをデフォルトとするが、
+デバイスにまだラベルがない場合、デフォルトは <B>dos</B> になる。
+デフォルト、または現在のラベルはスクリプトヘッダ行 &quot;label: &lt;name&gt;&quot; で上書きできる。
+オプション <B>--label</B> を指定した場合、
+<B>sfdisk</B> は空のディスクラベルを作成しない
+(下記の <B>空のディスクラベル</B> のセクションを参照すること)。
 <DT><B>-Y</B>,<B> --label-nested </B><I>type</I>
 
 <DD>
-Force editing of a nested disk label.  The primary disk label has to exist already.
-This option allows to edit for example a hybrid/protective MBR on devices with GPT.
+
+
+入れ子の (nested) ディスクラベルを強制的に編集する。
+プライマリディスクラベルが存在していなければならない。
+このオプションは、例えば GPT を持つデバイス上の
+ハイブリッド/保護 MBR の編集を可能にする。
 <P>
 <DT><B>-w</B>,<B> --wipe </B><I>when</I>
 
 <DD>
-Wipe filesystem, RAID and partition-table signatures from the device, in order
-to avoid possible collisions.  The argument <I>when</I> can be <B>auto</B>,
-<B>never</B> or <B>always</B>.  When this option is not given, the default is
-<B>auto</B>, in which case signatures are wiped only when in interactive mode;
-except the old partition-table signatures which are always wiped before create
-a new partition-table if the argument <I>when</I> is not <B>never</B>. In all
-cases detected signatures are reported by warning messages before a new
-partition table is created.  See also
+
+
+
+
+
+
+
+
+
+
+衝突の可能性を避けるため、デバイスからファイルシステム、RAID、
+パーティションテーブルシグネチャを消す。
+引き数 <I>when</I> は <B>auto</B>, <B>never</B>, <B>always</B> のいずれかである。
+このオプションが指定されない場合、デフォルトは <B>auto</B> であり、
+シグネチャは対話モードでのみ消すことができる。
+引き数 <I>when</I> が <B>never</B> でない場合、
+新しいパーティションテーブルを作成する前に、
+古いパーティションテーブルのシグネチャが常に消去される点が
+例外である。
+全ての場合で、新しいパーティションテーブルが作成される前に、
+検出されたシグネチャは警告メッセージを出して報告される。
 <B><A HREF="../man8/wipefs.8.html">wipefs</A></B>(8)
 
-command.
+コマンドも参照すること。
 <P>
 <DT><B>-W</B>,<B> --wipe-partitions </B><I>when</I>
 
 <DD>
-Wipe filesystem, RAID and partition-table signatures from a newly created
-partitions, in order to avoid possible collisions.  The argument <I>when</I> can
-be <B>auto</B>, <B>never</B> or <B>always</B>.  When this option is not given, the
-default is <B>auto</B>, in which case signatures are wiped only when in
-interactive mode and after confirmation by user.  In all cases detected
-signatures are reported by warning messages after a new partition is created.
-See also
+
+
+
+
+
+
+
+
+
+衝突の可能性を避けるため、デバイスからファイルシステム、RAID、
+パーティションテーブルシグネチャを消す。
+引き数 <I>when</I> は <B>auto</B>, <B>never</B>, <B>always</B> のいずれかである。
+このオプションが指定されない場合、デフォルトは <B>auto</B> であり、
+シグネチャは対話モードでユーザーが確認した後にのみ
+消すことができる。
+全ての場合で、新しいパーティションテーブルが作成される前に、
+検出されたシグネチャは警告メッセージを出して報告される。
 <B><A HREF="../man8/wipefs.8.html">wipefs</A></B>(8)
 
-command.
+コマンドも参照すること。
 <P>
 <DT><B>-v</B>,<B> --version</B>
 
 <DD>
-Display version information and exit.
+
+バージョン情報を表示して、終了する。
 <DT><B>-h</B>,<B> --help</B>
 
 <DD>
-Display help text and exit.
+
+ヘルプを表示して、終了する。
 <P>
 
 </DL>
 <A NAME="lbAG">&nbsp;</A>
 <H2>入力フォーマット</H2>
 
+
+
 <B>sfdisk</B>
 
-supports two input formats and generic header lines.
+は 2 つの入力フォーマットとジオメトリヘッダ行をサポートする。
 <P>
-<B>Header lines</B>
+
+<B>ヘッダ行</B>
 
 <DL COMPACT><DT><DD>
-The optional header lines specify generic information that apply to the partition
-table.  The header-line format is:
+
+
+オプションのヘッダ行は、パーティションテーブルに適用されるジオメトリ情報を指定する。
+ヘッダ行の形式は以下の通り:
 <DL COMPACT><DT><DD>
 <P>
 <B>&lt;name&gt;: &lt;value&gt;</B>
@@ -520,50 +590,68 @@ table.  The header-line format is:
 <P>
 </DL>
 
-The currently recognized headers are:
+
+現在、認識できるヘッダは以下の通り:
 <DL COMPACT><DT><DD>
 <DL COMPACT>
 <DT><B>unit</B>
 
 <DD>
-Specify the partitioning unit.  The only supported unit is <B>sectors</B>.
+
+パーティション作成の単位を指定する。
+サポートされている単位は、<B>セクター</B> のみである。
 <DT><B>label</B>
 
 <DD>
-Specify the partition table type.  For example <B>dos</B> or <B>gpt</B>.
+
+パーティションテーブルタイプを指定する。
+例えば、<B>dos</B> または <B>gpt</B> である。
 <DT><B>label-id</B>
 
 <DD>
-Specify the partition table identifier.  It should be a  hexadecimal number
-(with a 0x prefix) for MBR and a UUID for GPT.
+
+
+パーティションテーブル識別子を指定する。
+識別子は、MBR については (0x を前に付けた) 16 進数で、
+GPT については MBR である。
 <DT><B>first-lba</B>
 
 <DD>
-Specify the first usable sector for GPT partitions.
+
+GPT パーティションの最初の利用可能なセクタを指定する。
 <DT><B>last-lba</B>
 
 <DD>
-Specify the last usable sector for GPT partitions.
+
+GPT パーティションの最後の利用可能なセクタを指定する。
 <DT><B>table-length</B>
 
 <DD>
-Specify the maximal number of GPT partitions.
+
+GPT パーティションの最大数を指定する。
 <DT><B>grain</B>
 
 <DD>
-Specify minimal size in bytes used to calculate partitions alignment.  The
-default is 1MiB and it's strongly recommended to use the default.  Do not
-modify this variable if you're not sure.
+
+
+
+パーティション配置を計算するために使われる
+最小サイズをバイト単位で指定する。
+デフォルトは 1MiB であり、デフォルトとして使うことが強く推奨される。
+良く分からない場合は、この値を変更しないこと。
 </DL>
 </DL>
 
 <P>
-Note that it is only possible to use header lines before the first partition
-is specified in the input.
+
+
+入力で指定される最初のパーティションの前に、
+ヘッダ行を使うことが可能である点に注意すること。
 </DL>
 
 <P>
-<B>Unnamed-fields format</B>
+
+<B>無名フィールド形式</B>
 
 <DL COMPACT><DT><DD>
 <DL COMPACT><DT><DD>
@@ -573,22 +661,38 @@ is specified in the input.
 <P>
 </DL>
 
-where each line fills one partition descriptor.
+
+ここで各行が 1 つのパーティションディスクリプターに対応する。
 <P>
-Fields are separated by whitespace, comma or semicolon possibly
-followed by whitespace; initial and trailing whitespace is ignored.
-Numbers can be octal, decimal or hexadecimal; decimal is the default.
-When a field is absent, empty or specified as '-' a default value is
-used.  But when the <B>-N</B> option (change a single partition) is
-given, the default for each field is its previous value.
+
+
+
+
+
+
+フィールドは、空白、カンマ、セミコロンで区切られ、
+空白を続けることができる。
+最初と最後の空白は無視される。
+数値は 8 進数、10 進数、16 進数のいずれかであり、10 進数がデフォルトである。
+フィールドがない場合、空白の場合、'-' が指定された場合、
+デフォルト値が使われる。
+(1 つのパーティションを変更する) <B>-N</B> オプションが指定された場合、
+各フィールドのデフォルト値は、前の値である。
 <P>
-The default value of
+
+
+
+
+
+
 <I>start</I>
 
-is the first non-assigned sector aligned according to device I/O limits.
-The default start offset for the first partition is 1 MiB.  The offset may
-be followed by the multiplicative suffixes (KiB, MiB, GiB, TiB, PiB,
-EiB, ZiB and YiB) then the number is interpreted as offset in bytes.
+のデフォルト値は、デバイスの I/O 制限に基づいて配置された、
+最初のアサインされていないセクターである。
+最初のパーティションのデフォルトの開始オフセットは、1 MiB である。
+オフセットには乗数のサフィックス (KiB, MiB, GiB, TiB, PiB,
+EiB, ZiB, YiB) を付けることができる。
+数値はバイト単位のオフセットとして解釈される。
 <P>
 The default value of
 <I>size</I>
@@ -952,6 +1056,6 @@ sfdisk コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 17:08:48 GMT, April 01, 2020
+Time: 13:27:43 GMT, April 02, 2020
 </BODY>
 </HTML>
