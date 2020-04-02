@@ -20,7 +20,7 @@
 .\"         by Yuichi SATO <ysato444@yahoo.co.jp>
 .\" Updated & Modified Sun May  2 12:41:19 JST 2004 by Yuichi SATO
 .\" Updated & Modified Mon May  9 03:21:52 JST 2005 by Yuichi SATO
-.\" Updated & Modified Wed Apr  1 22:42:29 JST 2020
+.\" Updated & Modified Fri Apr  3 00:37:30 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH SFDISK 8 "June 2015" "util-linux" "System Administration"
@@ -44,7 +44,8 @@ sfdisk \- ディスクパーティションテーブルの表示と操作を行�
 .\"O .B sfdisk
 .\"O is a script-oriented tool for partitioning any block device.
 .B sfdisk
-はスクリプトベースのツールで、ブロックデバイスのパーティション操作ができる。
+はスクリプトベースのツールで、ブロックデバイスのパーティション操作が
+できる。
 
 .\"O Since version 2.26
 .\"O .B sfdisk
@@ -225,7 +226,7 @@ GPT ラベルが検出されると、sfdisk は警告を表示して、
 .TP
 .BR \-F , " \-\-list-free " [ \fIdevice ...]
 .\"O List the free unpartitioned areas on all or the specified devices.
-全てのデバイス、または指定されたデバイスのパーティション化
+全てのデバイス、または指定されたデバイスのパーティション作成
 されていない領域を表示する。
 .TP
 .BR "\-\-part\-attrs \fIdevice partition-number " [ \fIattributes ]
@@ -303,7 +304,7 @@ GPT パーティションの UUID を変更する。
 .\"O The default backup file name is ~/sfdisk-<device>-<offset>.bak; to use another
 .\"O name see option \fB\-O\fR, \fB\-\-backup\-file\fR.
 パーティション作成を開始する前に、現在のパーティションテーブル
-セクターをバックアップする。
+セクタをバックアップする。
 デフォルトのバックアップファイル名は ~/sfdisk-<device>-<offset>.bak である。
 他の名前を使う場合は、オプション \fB\-O\fR, \fB\-\-backup\-file\fR を参照すること。
 .TP
@@ -422,7 +423,7 @@ Linux (と他の現代的な OS) と互換のパーティション作成は、�
 .\"O Deprecated option.  Only the sector unit is supported. This option is not
 .\"O supported when using the --show-size command.
 推奨されないオプション。
-セクター単位のみがサポートされる。
+セクタ単位のみがサポートされる。
 --show-size コマンドが使われた場合、このオプションはサポートされない。
 .TP
 .BR \-X , " \-\-label " \fItype
@@ -531,7 +532,7 @@ Linux (と他の現代的な OS) と互換のパーティション作成は、�
 .B unit
 .\"O Specify the partitioning unit.  The only supported unit is \fBsectors\fR.
 パーティション作成の単位を指定する。
-サポートされている単位は、\fBセクター\fR のみである。
+サポートされている単位は、\fBセクタ\fR のみである。
 .TP
 .B label
 .\"O Specify the partition table type.  For example \fBdos\fR or \fBgpt\fR.
@@ -607,7 +608,7 @@ GPT パーティションの最大数を指定する。
 .\"O EiB, ZiB and YiB) then the number is interpreted as offset in bytes.
 .I start
 のデフォルト値は、デバイスの I/O 制限に基づいて配置された、
-最初のアサインされていないセクターである。
+最初のアサインされていないセクタである。
 最初のパーティションのデフォルトの開始オフセットは、1 MiB である。
 オフセットには乗数のサフィックス (KiB, MiB, GiB, TiB, PiB,
 EiB, ZiB, YiB) を付けることができる。
@@ -627,7 +628,7 @@ EiB, ZiB, YiB) を付けることができる。
 .I size
 のデフォルト値は「可能か限り大きく」を表す。
 つまり、次のパーティションまで、またはデバイスの終わりまでである。
-数値の引き数はデフォルトではセクター数として解釈されるが、
+数値の引き数はデフォルトではセクタ数として解釈されるが、
 サイズに乗数のサフィックス (KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB) を付けると、
 数値はバイト単位のパーティションサイズとして解釈され、
 デバイスの I/O 制限に基づいて配置される。
@@ -750,7 +751,7 @@ GPT では E6D6D379-F507-44C2-A23C-238F2A3DF928 である。
 .\"O the multiplicative suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB) then
 .\"O the number is interpreted as offset in bytes.
 デバイスの I/O 制限に基づいて配置された、
-最初のアサインされていないセクターである。
+最初のアサインされていないセクタである。
 最初のパーティションのデフォルトの開始オフセットは、1 MiB である。
 オフセットには乗数のサフィックス (KiB, MiB, GiB, TiB, PiB,
 EiB, ZiB, YiB) を付けることができる。
@@ -760,7 +761,7 @@ EiB, ZiB, YiB) を付けることができる。
 .\"O Specify the partition size in sectors.  The number may be followed by the multiplicative
 .\"O suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB), then it's interpreted as size
 .\"O in bytes and the size is aligned according to device I/O limits.
-パーティションサイズをセクター数で指定する。
+パーティションサイズをセクタ数で指定する。
 数値に乗数のサフィックス (KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB) を付けると、
 数値はバイト単位のサイズとして解釈され、デバイスの I/O 制限に基づいて配置される。
 .TP
@@ -793,53 +794,83 @@ GPT パーティションについては、GUID である。
 
 .\"O .SH "EMPTY DISK LABEL"
 .SH 空のディスクラベル
+.\"O .B sfdisk
+.\"O does not create partition table without partitions by default. The lines with
+.\"O partitions are expected in the script by default. The empty partition table has
+.\"O to be explicitly requested by "label: <name>" script header line without any
+.\"O partitions lines. For example:
 .B sfdisk
-does not create partition table without partitions by default. The lines with
-partitions are expected in the script by default. The empty partition table has
-to be explicitly requested by "label: <name>" script header line without any
-partitions lines. For example:
+は、デフォルトでは、パーティションなしではパーティションテーブルを
+作成しない。
+スクリプトは、デフォルトでは、パーティションを指定した行を想定している。
+空のパーティションテーブルを明示的に要求するには、
+パーティションの行がない "label: <name>" スクリプトヘッダを指定すればよい。
+例えば:
 .RS
 .sp
 .B "echo 'label: gpt' | sfdisk /dev/sdb"
 .sp
 .RE
-creates empty GPT partition table. Note that the \fB\-\-append\fR disables this feature.
+.\"O creates empty GPT partition table. Note that the \fB\-\-append\fR disables this feature.
+で空の GPT パーティションテーブルを作成できる。
+\fB\-\-append\fR は、この機能を無効化する点に注意すること。
 
 .\"O .SH "BACKING UP THE PARTITION TABLE"
 .SH パーティションテーブルのバックアップ
-It is recommended to save the layout of your devices.
+.\"O It is recommended to save the layout of your devices.
+.\"O .B sfdisk
+.\"O supports two ways.
+デバイスのレイアウトを保存することが推奨される。
 .B sfdisk
-supports two ways.
+は 2 つの方法をサポートしている。
 .sp
-Use the \fB\-\-dump\fR option to save a description of the device layout
-to a text file.  The dump format is suitable for later \fBsfdisk\fR input.
-For example:
+.\"O Use the \fB\-\-dump\fR option to save a description of the device layout
+.\"O to a text file.  The dump format is suitable for later \fBsfdisk\fR input.
+.\"O For example:
+\fB\-\-dump\fR オプションでデバイスレイアウトの記述を
+テキストファイルに保存できる。
+ダンプ形式は、その後の \fBsfdisk\fR の入力に適している。
+.\"O For example:
+例えば:
 .RS
 .sp
 .B "sfdisk --dump /dev/sda > sda.dump"
 .sp
 .RE
-This can later be restored by:
+.\"O This can later be restored by:
+これは、後から以下のようにして復旧できる:
 .RS
 .sp
 .B "sfdisk /dev/sda < sda.dump"
 .RE
 
-If you want to do a full (binary) backup of all sectors where the
-partition table is stored,
-then use the \fB\-\-backup\fR option.  It writes the sectors to
-~/sfdisk-<device>-<offset>.bak files.  The default name of the backup file can
-be changed with the \fB\-\-backup\-file\fR option.  The backup files
-contain only raw data from the \fIdevice\fR.
-Note that the same concept of backup files is used by
-.BR wipefs (8).
-For example:
+.\"O If you want to do a full (binary) backup of all sectors where the
+.\"O partition table is stored,
+.\"O then use the \fB\-\-backup\fR option.  It writes the sectors to
+.\"O ~/sfdisk-<device>-<offset>.bak files.  The default name of the backup file can
+.\"O be changed with the \fB\-\-backup\-file\fR option.  The backup files
+.\"O contain only raw data from the \fIdevice\fR.
+.\"O Note that the same concept of backup files is used by
+.\"O .BR wipefs (8).
+.\"O For example:
+パーティションテーブルが格納されている、
+全てのセクタの完全な (バイナリ) バックアップをしたい場合、
+\fB\-\-backup\fR オプションを使うこと。
+このオプションは、セクタに ~/sfdisk-<device>-<offset>.bak ファイルを書き出す。
+バックアップファイルのデフォルトの名前は、
+\fB\-\-backup\-file\fR オプションで変更できる。
+バックアップファイルは、\fIdevice\fR からの生データを保持する。
+バックアップファイルの同じ考え方が、
+.BR wipefs (8)
+で使われている点に注意すること。
+例えば:
 .RS
 .sp
 .B "sfdisk --backup /dev/sda"
 .sp
 .RE
-The GPT header can later be restored by:
+.\"O The GPT header can later be restored by:
+GPT ヘッダは、後から以下のようにして復旧できる:
 .RS
 .sp
 .nf
@@ -848,10 +879,14 @@ The GPT header can later be restored by:
 .fi
 .sp
 .RE
-Note that \fBsfdisk\fR since version 2.26 no longer provides the \fB\-I\fR option to
-restore sectors.
+.\"O Note that \fBsfdisk\fR since version 2.26 no longer provides the \fB\-I\fR option to
+.\"O restore sectors.
+.\"O .BR dd (1)
+.\"O provides all necessary functionality.
+\fBsfdisk\fR は、バージョン 2.26 以降で、
+セクタの復旧に \fB\-I\fR オプションを提供しない点に注意すること。
 .BR dd (1)
-provides all necessary functionality.
+が必要な全ての機能を提供している。
 
 .\"O .SH COLORS
 .SH カラー表示
