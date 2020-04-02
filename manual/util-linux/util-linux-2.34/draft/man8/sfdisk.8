@@ -349,26 +349,45 @@ Linux (と他の現代的な OS) と互換のパーティション作成は、�
 変更されたパーティションは使用 (例えば、マウント) すべきではない。
 .TP
 .BR \-O , " \-\-backup\-file " \fIpath
-Override the default backup file name.  Note that the device name and offset
-are always appended to the file name.
+.\"O Override the default backup file name.  Note that the device name and offset
+.\"O are always appended to the file name.
+デフォルトのバックアップファイル名を上書きする。
+デバイス名とオフセットは常にファイル名に追加される点に注意すること。
 .TP
 .BR \-\-move-data [ =\fIpath ]
-Move data after partition relocation, for example when moving the beginning
-of a partition to another place on the disk.  The size of the partition has
-to remain the same, the new and old location may overlap.  This option requires
-option \fB\-N\fR in order to be processed on one specific partition only.
+.\"O Move data after partition relocation, for example when moving the beginning
+.\"O of a partition to another place on the disk.  The size of the partition has
+.\"O to remain the same, the new and old location may overlap.  This option requires
+.\"O option \fB\-N\fR in order to be processed on one specific partition only.
+例えば、パーティションの始まりをディスク上で他の場所に移動する
+場合などで、パーティションの再配置の後で、データを移動する。
+パーティションのサイズは同じでなければならず、
+新しい場所と古い場所は重なっても良い。
+このオプションは特定の 1 つのパーティションのみを扱うために、
+オプション \fB\-N\fR が必要である。
 
-The \fIpath\fR overrides the default log file name
-(the default is ~/sfdisk-<devname>.move).  The log file contains information
-about all read/write operations on the partition data.
+.\"O The \fIpath\fR overrides the default log file name
+.\"O (the default is ~/sfdisk-<devname>.move).  The log file contains information
+.\"O about all read/write operations on the partition data.
+\fIpath\fR はデフォルトのログファイル名 (~/sfdisk-<devname>.move) を上書きする。
+このログファイルは、パーティションデータの読み書き操作の情報を
+保持する。
 
-Note that this operation is risky and not atomic. \fBDon't forget to backup your data!\fR
+.\"O Note that this operation is risky and not atomic. \fBDon't forget to backup your data!\fR
+この操作は危険を伴い、アトミックでない点に注意すること。
+\fBデータのバックアップを忘れないこと!\fR
 
-In the example below, the first command creates a 100MiB free area before
-the first partition and moves the data it contains (e.g. a filesystem),
-the next command creates a new partition from the free space (at offset 2048),
-and the last command reorders partitions to match disk order
-(the original sdc1 will become sdc2).
+.\"O In the example below, the first command creates a 100MiB free area before
+.\"O the first partition and moves the data it contains (e.g. a filesystem),
+.\"O the next command creates a new partition from the free space (at offset 2048),
+.\"O and the last command reorders partitions to match disk order
+.\"O (the original sdc1 will become sdc2).
+以下の例では、最初のコマンドは、最初のパーティションの前に 100MiB の
+空き領域を作成し、最初のパーティションが保持するデータ
+(例えば、ファイルシステム) を移動する。
+2 つ目のコマンドは空き領域に (オフセット 2048 で) 新しいパーティションを作成する。
+最後のコマンドは、ディスクの順番に合うようにパーティションを
+並べ直す (元の sdc1 は sdc2 になる)。
 .RS
 .sp
 .B "echo '+100M,' | sfdisk --move-data /dev/sdc -N 1"
@@ -382,132 +401,217 @@ and the last command reorders partitions to match disk order
 
 .TP
 .BR \-o , " \-\-output " \fIlist
-Specify which output columns to print.  Use
+.\"O Specify which output columns to print.  Use
+.\"O .B \-\-help
+.\"O to get a list of all supported columns.
+どの列を表示するかを指定する。
+サポートされている全ての列のリストを見るには、
 .B \-\-help
-to get a list of all supported columns.
+を使うこと。
 .sp
-The default list of columns may be extended if \fIlist\fP is
-specified in the format \fI+list\fP (e.g. \fB-o +UUID\fP).
+.\"O The default list of columns may be extended if \fIlist\fP is
+.\"O specified in the format \fI+list\fP (e.g. \fB-o +UUID\fP).
+\fIlist\fP を (例えば. \fB-o +UUID\fP のように)
+\fI+list\fP の形式で指定すると、デフォルトの列のリストを拡張できる。
 .TP
 .BR \-q , " \-\-quiet"
-Suppress extra info messages.
+.\"O Suppress extra info messages.
+余分な情報のメッセージを抑制する。
 .TP
 .BR \-u , " \-\-unit S"
-Deprecated option.  Only the sector unit is supported. This option is not
-supported when using the --show-size command.
+.\"O Deprecated option.  Only the sector unit is supported. This option is not
+.\"O supported when using the --show-size command.
+推奨されないオプション。
+セクター単位のみがサポートされる。
+--show-size コマンドが使われた場合、このオプションはサポートされない。
 .TP
 .BR \-X , " \-\-label " \fItype
-Specify the disk label type (e.g. \fBdos\fR, \fBgpt\fR, ...).  If this option
-is not given, then \fBsfdisk\fR defaults to the existing label, but if there
-is no label on the device yet, then the type defaults to \fBdos\fR. The default
-or the current label may be overwritten by the "label: <name>" script header
-line. The option \fB\-\-label\fR does not force \fBsfdisk\fR to create empty
-disk label (see the \fBEMPTY DISK LABEL\fR section below).
+.\"O Specify the disk label type (e.g. \fBdos\fR, \fBgpt\fR, ...).  If this option
+.\"O is not given, then \fBsfdisk\fR defaults to the existing label, but if there
+.\"O is no label on the device yet, then the type defaults to \fBdos\fR. The default
+.\"O or the current label may be overwritten by the "label: <name>" script header
+.\"O line. The option \fB\-\-label\fR does not force \fBsfdisk\fR to create empty
+.\"O disk label (see the \fBEMPTY DISK LABEL\fR section below).
+ディスクラベルタイプ (例えば、\fBdos\fR, \fBgpt\fR, ...) を指定する。
+このオプションが指定されない場合、\fBsfdisk\fR は既存のラベルをデフォルトとするが、
+デバイスにまだラベルがない場合、デフォルトは \fBdos\fR になる。
+デフォルト、または現在のラベルはスクリプトヘッダ行 "label: <name>" で上書きできる。
+オプション \fB\-\-label\fR を指定した場合、
+\fBsfdisk\fR は空のディスクラベルを作成しない
+(下記の \fB空のディスクラベル\fR のセクションを参照すること)。
 .TP
 .BR \-Y , " \-\-label\-nested " \fItype
-Force editing of a nested disk label.  The primary disk label has to exist already.
-This option allows to edit for example a hybrid/protective MBR on devices with GPT.
+.\"O Force editing of a nested disk label.  The primary disk label has to exist already.
+.\"O This option allows to edit for example a hybrid/protective MBR on devices with GPT.
+入れ子の (nested) ディスクラベルを強制的に編集する。
+プライマリディスクラベルが存在していなければならない。
+このオプションは、例えば GPT を持つデバイス上の
+ハイブリッド/保護 MBR の編集を可能にする。
 
 .TP
 .BR -w , " \-\-wipe "\fIwhen
-Wipe filesystem, RAID and partition-table signatures from the device, in order
-to avoid possible collisions.  The argument \fIwhen\fR can be \fBauto\fR,
-\fBnever\fR or \fBalways\fR.  When this option is not given, the default is
-\fBauto\fR, in which case signatures are wiped only when in interactive mode;
-except the old partition-table signatures which are always wiped before create
-a new partition-table if the argument \fIwhen\fR is not \fBnever\fR. In all
-cases detected signatures are reported by warning messages before a new
-partition table is created.  See also
+.\"O Wipe filesystem, RAID and partition-table signatures from the device, in order
+.\"O to avoid possible collisions.  The argument \fIwhen\fR can be \fBauto\fR,
+.\"O \fBnever\fR or \fBalways\fR.  When this option is not given, the default is
+.\"O \fBauto\fR, in which case signatures are wiped only when in interactive mode;
+.\"O except the old partition-table signatures which are always wiped before create
+.\"O a new partition-table if the argument \fIwhen\fR is not \fBnever\fR. In all
+.\"O cases detected signatures are reported by warning messages before a new
+.\"O partition table is created.  See also
+.\"O .BR wipefs (8)
+.\"O command.
+衝突の可能性を避けるため、デバイスからファイルシステム、RAID、
+パーティションテーブルシグネチャを消す。
+引き数 \fIwhen\fR は \fBauto\fR, \fBnever\fR, \fBalways\fR のいずれかである。
+このオプションが指定されない場合、デフォルトは \fBauto\fR であり、
+シグネチャは対話モードでのみ消すことができる。
+引き数 \fIwhen\fR が \fBnever\fR でない場合、
+新しいパーティションテーブルを作成する前に、
+古いパーティションテーブルのシグネチャが常に消去される点が
+例外である。
+全ての場合で、新しいパーティションテーブルが作成される前に、
+検出されたシグネチャは警告メッセージを出して報告される。
 .BR wipefs (8)
-command.
+コマンドも参照すること。
 
 .TP
 .BR -W , " \-\-wipe-partitions "\fIwhen
-Wipe filesystem, RAID and partition-table signatures from a newly created
-partitions, in order to avoid possible collisions.  The argument \fIwhen\fR can
-be \fBauto\fR, \fBnever\fR or \fBalways\fR.  When this option is not given, the
-default is \fBauto\fR, in which case signatures are wiped only when in
-interactive mode and after confirmation by user.  In all cases detected
-signatures are reported by warning messages after a new partition is created.
-See also
+.\"O Wipe filesystem, RAID and partition-table signatures from a newly created
+.\"O partitions, in order to avoid possible collisions.  The argument \fIwhen\fR can
+.\"O be \fBauto\fR, \fBnever\fR or \fBalways\fR.  When this option is not given, the
+.\"O default is \fBauto\fR, in which case signatures are wiped only when in
+.\"O interactive mode and after confirmation by user.  In all cases detected
+.\"O signatures are reported by warning messages after a new partition is created.
+.\"O See also
+.\"O .BR wipefs (8)
+.\"O command.
+衝突の可能性を避けるため、デバイスからファイルシステム、RAID、
+パーティションテーブルシグネチャを消す。
+引き数 \fIwhen\fR は \fBauto\fR, \fBnever\fR, \fBalways\fR のいずれかである。
+このオプションが指定されない場合、デフォルトは \fBauto\fR であり、
+シグネチャは対話モードでユーザーが確認した後にのみ
+消すことができる。
+全ての場合で、新しいパーティションテーブルが作成される前に、
+検出されたシグネチャは警告メッセージを出して報告される。
 .BR wipefs (8)
-command.
+コマンドも参照すること。
 
 .TP
 .BR \-v , " \-\-version"
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .TP
 .BR \-h , " \-\-help"
-Display help text and exit.
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
 
 .\"O .SH "INPUT FORMATS"
 .SH 入力フォーマット
+.\"O .B sfdisk
+.\"O supports two input formats and generic header lines.
 .B sfdisk
-supports two input formats and generic header lines.
+は 2 つの入力フォーマットとジオメトリヘッダ行をサポートする。
 
-.B Header lines
+.\"O .B Header lines
+.B ヘッダ行
 .RS
-The optional header lines specify generic information that apply to the partition
-table.  The header-line format is:
+.\"O The optional header lines specify generic information that apply to the partition
+.\"O table.  The header-line format is:
+オプションのヘッダ行は、パーティションテーブルに適用されるジオメトリ情報を指定する。
+ヘッダ行の形式は以下の通り:
 .RS
 .sp
 .B "<name>: <value>"
 .sp
 .RE
-The currently recognized headers are:
+.\"O The currently recognized headers are:
+現在、認識できるヘッダは以下の通り:
 .RS
 .TP
 .B unit
-Specify the partitioning unit.  The only supported unit is \fBsectors\fR.
+.\"O Specify the partitioning unit.  The only supported unit is \fBsectors\fR.
+パーティション作成の単位を指定する。
+サポートされている単位は、\fBセクター\fR のみである。
 .TP
 .B label
-Specify the partition table type.  For example \fBdos\fR or \fBgpt\fR.
+.\"O Specify the partition table type.  For example \fBdos\fR or \fBgpt\fR.
+パーティションテーブルタイプを指定する。
+例えば、\fBdos\fR または \fBgpt\fR である。
 .TP
 .B label-id
-Specify the partition table identifier.  It should be a  hexadecimal number
-(with a 0x prefix) for MBR and a UUID for GPT.
+.\"O Specify the partition table identifier.  It should be a  hexadecimal number
+.\"O (with a 0x prefix) for MBR and a UUID for GPT.
+パーティションテーブル識別子を指定する。
+識別子は、MBR については (0x を前に付けた) 16 進数で、
+GPT については MBR である。
 .TP
 .B first-lba
-Specify the first usable sector for GPT partitions.
+.\"O Specify the first usable sector for GPT partitions.
+GPT パーティションの最初の利用可能なセクタを指定する。
 .TP
 .B last-lba
-Specify the last usable sector for GPT partitions.
+.\"O Specify the last usable sector for GPT partitions.
+GPT パーティションの最後の利用可能なセクタを指定する。
 .TP
 .B table-length
-Specify the maximal number of GPT partitions.
+.\"O Specify the maximal number of GPT partitions.
+GPT パーティションの最大数を指定する。
 .TP
 .B grain
-Specify minimal size in bytes used to calculate partitions alignment.  The
-default is 1MiB and it's strongly recommended to use the default.  Do not
-modify this variable if you're not sure.
+.\"O Specify minimal size in bytes used to calculate partitions alignment.  The
+.\"O default is 1MiB and it's strongly recommended to use the default.  Do not
+.\"O modify this variable if you're not sure.
+パーティション配置を計算するために使われる
+最小サイズをバイト単位で指定する。
+デフォルトは 1MiB であり、デフォルトとして使うことが強く推奨される。
+良く分からない場合は、この値を変更しないこと。
 .RE
 .sp
-Note that it is only possible to use header lines before the first partition
-is specified in the input.
+.\"O Note that it is only possible to use header lines before the first partition
+.\"O is specified in the input.
+入力で指定される最初のパーティションの前に、
+ヘッダ行を使うことが可能である点に注意すること。
 .RE
 
-.B Unnamed-fields format
+.\"O .B Unnamed-fields format
+.B 無名フィールド形式
 .RS
 .RS
 .sp
 .I start size type bootable
 .sp
 .RE
-where each line fills one partition descriptor.
+.\"O where each line fills one partition descriptor.
+ここで各行が 1 つのパーティションディスクリプターに対応する。
 .sp
-Fields are separated by whitespace, comma or semicolon possibly
-followed by whitespace; initial and trailing whitespace is ignored.
-Numbers can be octal, decimal or hexadecimal; decimal is the default.
-When a field is absent, empty or specified as '-' a default value is
-used.  But when the \fB-N\fR option (change a single partition) is
-given, the default for each field is its previous value.
+.\"O Fields are separated by whitespace, comma or semicolon possibly
+.\"O followed by whitespace; initial and trailing whitespace is ignored.
+.\"O Numbers can be octal, decimal or hexadecimal; decimal is the default.
+.\"O When a field is absent, empty or specified as '-' a default value is
+.\"O used.  But when the \fB-N\fR option (change a single partition) is
+.\"O given, the default for each field is its previous value.
+フィールドは、空白、カンマ、セミコロンで区切られ、
+空白を続けることができる。
+最初と最後の空白は無視される。
+数値は 8 進数、10 進数、16 進数のいずれかであり、10 進数がデフォルトである。
+フィールドがない場合、空白の場合、'-' が指定された場合、
+デフォルト値が使われる。
+(1 つのパーティションを変更する) \fB-N\fR オプションが指定された場合、
+各フィールドのデフォルト値は、前の値である。
 .sp
-The default value of
+.\"O The default value of
+.\"O .I start
+.\"O is the first non-assigned sector aligned according to device I/O limits.
+.\"O The default start offset for the first partition is 1 MiB.  The offset may
+.\"O be followed by the multiplicative suffixes (KiB, MiB, GiB, TiB, PiB,
+.\"O EiB, ZiB and YiB) then the number is interpreted as offset in bytes.
 .I start
-is the first non-assigned sector aligned according to device I/O limits.
-The default start offset for the first partition is 1 MiB.  The offset may
-be followed by the multiplicative suffixes (KiB, MiB, GiB, TiB, PiB,
-EiB, ZiB and YiB) then the number is interpreted as offset in bytes.
+のデフォルト値は、デバイスの I/O 制限に基づいて配置された、
+最初のアサインされていないセクターである。
+最初のパーティションのデフォルトの開始オフセットは、1 MiB である。
+オフセットには乗数のサフィックス (KiB, MiB, GiB, TiB, PiB,
+EiB, ZiB, YiB) を付けることができる。
+数値はバイト単位のオフセットとして解釈される。
 .sp
 The default value of
 .I size
