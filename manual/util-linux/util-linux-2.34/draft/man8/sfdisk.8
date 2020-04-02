@@ -613,111 +613,181 @@ GPT パーティションの最大数を指定する。
 EiB, ZiB, YiB) を付けることができる。
 数値はバイト単位のオフセットとして解釈される。
 .sp
-The default value of
+.\"O The default value of
+.\"O .I size
+.\"O indicates "as much as possible"; i.e. until the next partition or
+.\"O end-of-device.  A numerical argument is by default interpreted as a
+.\"O number of sectors, however if the size is followed by one of the
+.\"O multiplicative suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB)
+.\"O then the number is interpreted as the size of the partition in bytes
+.\"O and it is then aligned according to the device I/O limits.  A '+' can
+.\"O be used instead of a number to enlarge the partition as much as
+.\"O possible.  Note '+' is equivalent to the default behaviour for a new
+.\"O partition; existing partitions will be resized as required.
 .I size
-indicates "as much as possible"; i.e. until the next partition or
-end-of-device.  A numerical argument is by default interpreted as a
-number of sectors, however if the size is followed by one of the
-multiplicative suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB)
-then the number is interpreted as the size of the partition in bytes
-and it is then aligned according to the device I/O limits.  A '+' can
-be used instead of a number to enlarge the partition as much as
-possible.  Note '+' is equivalent to the default behaviour for a new
-partition; existing partitions will be resized as required.
+のデフォルト値は「可能か限り大きく」を表す。
+つまり、次のパーティションまで、またはデバイスの終わりまでである。
+数値の引き数はデフォルトではセクター数として解釈されるが、
+サイズに乗数のサフィックス (KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB) を付けると、
+数値はバイト単位のパーティションサイズとして解釈され、
+デバイスの I/O 制限に基づいて配置される。
+数値の代わりに '+' を使うと、パーティションをできる限り拡張する。
+'+' は新しいパーティションについてのデフォルトの挙動と同じである。
+既存のパーティションは、必要に応じてリサイズされる。
 .sp
-The partition
+.\"O The partition
+.\"O .I type
+.\"O is given in hex for MBR (DOS), without the 0x prefix, a GUID string for GPT, or
+.\"O a shortcut:
+パーティションタイプ
 .I type
-is given in hex for MBR (DOS), without the 0x prefix, a GUID string for GPT, or
-a shortcut:
+は、MBR (DOS) については、プレフィックス 0x を付けない 16 進数で指定する。
+また、GPT については、GUID 文字列で指定する。
+もしくは、ショートカットで指定する:
 .RS
 .TP
 .B L
-Linux; means 83 for MBR and 0FC63DAF-8483-4772-8E79-3D69D8477DE4 for GPT.
+.\"O Linux; means 83 for MBR and 0FC63DAF-8483-4772-8E79-3D69D8477DE4 for GPT.
+Linux; MBR では 83 であり、
+GPT では 0FC63DAF-8483-4772-8E79-3D69D8477DE4 である。
 .TP
 .B S
-swap area; means 82 for MBR and 0657FD6D-A4AB-43C4-84E5-0933C84B4F4F for GPT
+.\"O swap area; means 82 for MBR and 0657FD6D-A4AB-43C4-84E5-0933C84B4F4F for GPT
+スワップ領域; MBR では 82 であり、
+GPT では 0657FD6D-A4AB-43C4-84E5-0933C84B4F4F である。
 .TP
 .B E
-extended partition; means 5 for MBR
+.\"O extended partition; means 5 for MBR
+拡張パーティション; MBR では 5 である。
 .TP
 .B H
-home partition; means 933AC7E1-2EB4-4F13-B844-0E14E2AEF915 for GPT
+.\"O home partition; means 933AC7E1-2EB4-4F13-B844-0E14E2AEF915 for GPT
+ホームパーティション; GPT では 933AC7E1-2EB4-4F13-B844-0E14E2AEF915 である。
 .TP
 .B X
-linux extended partition; means 85 for MBR.
+.\"O linux extended partition; means 85 for MBR.
+Linux 拡張パーティション; MBR では 85 である。
 .TP
 .B U
-EFI System partition, means EF for MBR and C12A7328-F81F-11D2-BA4B-00A0C93EC93B for GPT
+.\"O EFI System partition, means EF for MBR and C12A7328-F81F-11D2-BA4B-00A0C93EC93B for GPT
+EFI システムパーティション; MBR では EF であり、
+GPT では C12A7328-F81F-11D2-BA4B-00A0C93EC93B である。
 .TP
 .B R
-Linux RAID; means FD for MBR and A19D880F-05FC-4D3B-A006-743F0F84911E for GPT
+.\"O Linux RAID; means FD for MBR and A19D880F-05FC-4D3B-A006-743F0F84911E for GPT
+Linux RAID; MBR では FD であり、
+GPT では A19D880F-05FC-4D3B-A006-743F0F84911E である。
 .TP
 .B V
-LVM; means 8E for MBR and E6D6D379-F507-44C2-A23C-238F2A3DF928 for GPT
+.\"O LVM; means 8E for MBR and E6D6D379-F507-44C2-A23C-238F2A3DF928 for GPT
+LVM; MBR では 8E であり、
+GPT では E6D6D379-F507-44C2-A23C-238F2A3DF928 である。
 .RE
 .PP
-The default
+.\"O The default
+.\"O .I type
+.\"O value is
+.\"O .I L
+デフォルトの
 .I type
-value is
+の値は
 .I L
+である。
 
+.\"O .I bootable
+.\"O is specified as [\fB*\fR|\fB-\fR], with as default not-bootable.  The
+.\"O value of this field is irrelevant for Linux - when Linux runs it has
+.\"O been booted already - but ir might play a role for certain boot
+.\"O loaders and for other operating systems.
 .I bootable
-is specified as [\fB*\fR|\fB-\fR], with as default not-bootable.  The
-value of this field is irrelevant for Linux - when Linux runs it has
-been booted already - but ir might play a role for certain boot
-loaders and for other operating systems.
+は [\fB*\fR|\fB-\fR] で指定する。
+デフォルトではブート可能でない。
+このフィールドの値は Linux とは関係ない。
+- Linux が稼働しているなら、既にブート済みである -
+しかし、このフィールドはある種のブートローダや他の OS で用いられる。
 .RE
 
-.B Named-fields format
+.\"O .B Named-fields format
+.B 名前付きフィールド形式
 .RS
-This format is more readable, robust, extensible and allows to specify additional
-information (e.g. a UUID).  It is recommended to use this format to keep your scripts
-more readable.
+.\"O This format is more readable, robust, extensible and allows to specify additional
+.\"O information (e.g. a UUID).  It is recommended to use this format to keep your scripts
+.\"O more readable.
+この形式は、より読みやすく、堅牢で、拡張可能で、追加の情報 (例えば、UUID) を指定できる。
+スクリプトをより読みやすくするために、この形式を使うことが
+推奨される。
 .RS
 .sp
 .RI [ "device \fB:" ] " name" [\fB= value "], ..."
 .sp
 .RE
-The
+.\"O The
+.\"O .I device
+.\"O field is optional.  \fBsfdisk\fR extracts the partition number from the
+.\"O device name.  It allows to specify the partitions in random order.
+.\"O This functionality is mostly used by \fB\-\-dump\fR.
+.\"O Don't use it if you are not sure.
 .I device
-field is optional.  \fBsfdisk\fR extracts the partition number from the
-device name.  It allows to specify the partitions in random order.
-This functionality is mostly used by \fB\-\-dump\fR.
-Don't use it if you are not sure.
+フィールドはオプションである。
+\fBsfdisk\fR はデバイス名からパーティション番号を抽出する。
+パーティションをランダムな順番で指定できる。
+この機能は主に \fB\-\-dump\fR で使われる。
+良く分からない場合は、使わないこと。
 
-The
+.\"O The
+.\"O .I value
+.\"O can be between quotation marks (e.g. name="This is partition name").
+.\"O The currently supported fields are:
 .I value
-can be between quotation marks (e.g. name="This is partition name").
-The currently supported fields are:
+はクォーテーションマークの間に指定できる
+(例えば name="This is partition name")。
+現在サポートされているフィールドは以下の通り:
 .RS
 .TP
 .BI start= number
-The first non-assigned sector aligned according to device I/O limits.  The default
-start offset for the first partition is 1 MiB. The offset may be followed by
-the multiplicative suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB) then
-the number is interpreted as offset in bytes.
+.\"O The first non-assigned sector aligned according to device I/O limits.  The default
+.\"O start offset for the first partition is 1 MiB. The offset may be followed by
+.\"O the multiplicative suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB) then
+.\"O the number is interpreted as offset in bytes.
+デバイスの I/O 制限に基づいて配置された、
+最初のアサインされていないセクターである。
+最初のパーティションのデフォルトの開始オフセットは、1 MiB である。
+オフセットには乗数のサフィックス (KiB, MiB, GiB, TiB, PiB,
+EiB, ZiB, YiB) を付けることができる。
+数値はバイト単位のオフセットとして解釈される。
 .TP
 .BI size= number
-Specify the partition size in sectors.  The number may be followed by the multiplicative
-suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB), then it's interpreted as size
-in bytes and the size is aligned according to device I/O limits.
+.\"O Specify the partition size in sectors.  The number may be followed by the multiplicative
+.\"O suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB), then it's interpreted as size
+.\"O in bytes and the size is aligned according to device I/O limits.
+パーティションサイズをセクター数で指定する。
+数値に乗数のサフィックス (KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB) を付けると、
+数値はバイト単位のサイズとして解釈され、デバイスの I/O 制限に基づいて配置される。
 .TP
 .B bootable
-Mark the partition as bootable.
+.\"O Mark the partition as bootable.
+パーティションをブート可能に設定する。
 .TP
 .BI attrs= string
-Partition attributes, usually GPT partition attribute bits.  See
-\fB\-\-part\-attrs\fR for more details about the GPT-bits string format.
+.\"O Partition attributes, usually GPT partition attribute bits.  See
+.\"O \fB\-\-part\-attrs\fR for more details about the GPT-bits string format.
+パーティション属性。通常は GPT パーティション属性ビット。
+GPT ビット文字列の形式の詳細は、\fB\-\-part\-attrs\fR を参照すること。
 .TP
 .BI uuid= string
-GPT partition UUID.
+.\"O GPT partition UUID.
+GPT パーティション UUID。
 .TP
 .BI name= string
-GPT partition name.
+.\"O GPT partition name.
+GPT パーティション 名。
 .TP
 .BI type= code
-A hexadecimal number (without 0x) for an MBR partition, or a GUID for a GPT partition.
-For backward compatibility the \fBId=\fR field has the same meaning.
+.\"O A hexadecimal number (without 0x) for an MBR partition, or a GUID for a GPT partition.
+.\"O For backward compatibility the \fBId=\fR field has the same meaning.
+MBR パーティションについては、(0x なしの) 16 進数である。
+GPT パーティションについては、GUID である。
+後方互換のため、\fBId=\fR フィールドは同じ意味を持つ。
 .RE
 .RE
 
