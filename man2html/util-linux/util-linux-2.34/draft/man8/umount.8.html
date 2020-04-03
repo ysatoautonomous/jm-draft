@@ -1,0 +1,547 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of UMOUNT</TITLE>
+</HEAD><BODY>
+<H1>UMOUNT</H1>
+Section: System Administration (8)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+umount - ファイルシステムをアンマウントする
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>umount -a</B>
+
+[<B>-dflnrv</B>]
+
+[<B>-t</B>
+
+<I>fstype</I>]
+
+[<B>-O</B>
+
+<I>option</I>...]
+
+<P>
+<B>umount</B>
+
+[<B>-dflnrv</B>]
+
+{<I>directory</I>|<I>device</I>}...
+
+<P>
+<B>umount</B>
+
+<B>-h</B>|<B>-V</B>
+
+<P>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+<B>umount</B>
+
+コマンドは、ファイルの階層構造から指定したファイルシステムを切り離す。
+ファイルシステムの指定には、システムをマウントしたディレクトリを与える。
+またファイルシステムの実体が存在するスペシャルデバイスを与えることも
+できるが、
+このやり方は古く、デバイスが 2 つ以上のディレクトリに
+マウントされている場合に失敗するだろう。
+<P>
+
+
+
+
+
+
+
+
+
+ファイルシステムが `busy' である時にはアンマウントは実行できない。
+例えばそのファイルシステム上で、
+ファイルがオープンされている
+(あるいはスワップファイルが使用中である) 場合や、
+あるプロセスのワーキングディレクトリがそこにある場合などが該当する。
+この原因となるプロセスが
+<B>umount</B>
+
+自身の場合もありうる。
+<B>umount</B>
+
+は libc をオープンするし、
+libc はまた多くのファイル (locale ファイルなど)
+をオープンする可能性がある。
+lazy アンマウントにより、この問題は回避できるが、別の問題を引き起こす。
+下記の <B>--lazy</B> の説明を参照すること。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-a</B>,<B> --all</B>
+
+<DD>
+
+
+
+
+
+
+All of the filesystems described in
+<I>/proc/self/mountinfo</I>
+
+(or in deprecated /etc/mtab)
+are unmounted, except the proc, devfs, devpts, sysfs, rpc_pipefs and nfsd
+filesystems. This list of the filesystems may be replaced by <B>--types</B>
+umount option.
+<DT><B>-A</B>,<B> --all-targets</B>
+
+<DD>
+
+
+
+
+
+
+Unmount all mountpoints in the current namespace for the specified filesystem.
+The filesystem can be specified by one of the mountpoints or the device name (or
+UUID, etc.).  When this option is used together with <B>--recursive</B>, then
+all nested mounts within the filesystem are recursively unmounted.
+This option is only supported on systems where /etc/mtab is a symlink
+to /proc/mounts.
+<DT><B>-c</B>,<B> --no-canonicalize</B>
+
+<DD>
+
+
+
+
+
+
+
+Do not canonicalize paths.  The paths canonicalization is based on
+<B><A HREF="../man2/stat.2.html">stat</A></B>(2)
+
+and
+<B><A HREF="../man2/readlink.2.html">readlink</A></B>(2)
+
+system calls. These system calls may hang in some cases (for example on NFS if
+server is not available). The option has to be used with canonical path to the
+mount point.
+<P>
+
+
+
+
+
+For more details about this option see the
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+man page. Note that <B>umount</B> does not pass this option to the
+<B>/sbin/umount.</B><I>type</I>
+
+helpers.
+<DT><B>-d</B>,<B> --detach-loop</B>
+
+<DD>
+
+
+
+
+When the unmounted device was a loop device, also free this loop
+device. This option is unnecessary for devices initialized by
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8),
+
+in this case &quot;autoclear&quot; functionality is enabled by default.
+<DT><B>--fake</B>
+
+<DD>
+
+
+
+
+
+
+
+Causes everything to be done except for the actual system call or umount helper
+execution; this 'fakes' unmounting the filesystem.  It can be used to remove
+entries from the deprecated
+<I>/etc/mtab</I>
+
+that were unmounted earlier with the
+<B>-n</B>
+
+option.
+<DT><B>-f</B>,<B> --force</B>
+
+<DD>
+
+強制的にアンマウントする (到達不可能な NFS システムの場合)。
+<P>
+
+
+
+Note that this option does not guarantee that umount command does not hang.
+It's strongly recommended to use absolute paths without symlinks to avoid
+unwanted readlink and stat system calls on unreachable NFS in umount.
+<DT><B>-i</B>,<B> --internal-only</B>
+
+<DD>
+
+
+<B>/sbin/umount.</B><I>filesystem</I> ヘルパーがあっても、呼び出さない。
+デフォルトでは、ヘルパープログラムがある場合は、それが呼び出される。
+<DT><B>-l</B>,<B> --lazy</B>
+
+<DD>
+
+
+
+lazy アンマウント。
+現在のファイルシステムの階層構造から指定されたファイルシステムを
+切り離し、
+ファイルシステムへの全ての参照が busy でなくなった時点ですぐに整理する。
+<P>
+
+
+
+
+
+A system reboot would be expected in near future if you're going to use this
+option for network filesystem or local filesystem with submounts.  The
+recommended use-case for <B>umount -l</B> is to prevent hangs on shutdown due to
+an unreachable network share where a normal umount will hang due to a downed
+server or a network partition. Remounts of the share will not be possible.
+<P>
+<DT><B>-N</B>,<B> --namespace </B><I>ns</I>
+
+<DD>
+
+
+
+Perform umount in namespace specified by <I>ns</I>.
+<I>ns</I> is either PID of process running in that namespace
+or special file representing that namespace.
+<P>
+
+
+
+
+
+
+
+<B><A HREF="../man8/umount.8.html">umount</A></B>(8)
+
+switches to the namespace when it reads /etc/fstab, writes /etc/mtab (or writes to /run/mount) and calls
+<B><A HREF="../man2/umount.2.html">umount</A></B>(2)
+
+system call, otherwise it runs in the original namespace. It means that the target namespace does not have
+to contain any libraries or another requirements necessary to execute
+<B><A HREF="../man2/umount.2.html">umount</A></B>(2)
+
+command.
+<P>
+
+See <B><A HREF="../man7/namespaces.7.html">namespaces</A></B>(7) for more information.
+<DT><B>-n</B>,<B> --no-mtab</B>
+
+<DD>
+
+
+アンマウントの際、
+<I>/etc/mtab</I>
+
+への書き込みを行わない。
+<DT><B>-O</B>,<B> --test-opts </B><I>option</I>...
+
+<DD>
+
+
+このオプションが
+<I>/etc/fstab</I>
+
+で指定されているファイルシステムについてのみアンマウントを行う。
+
+
+
+
+コンマで区切ることで 2 つ以上のオプションを指定できる。
+オプションに
+<B>no</B>
+
+を前置することもでき、
+この場合は動作を行わないオプションを指定したことになる。
+<DT><B>-q</B>,<B> --quiet</B>
+
+<DD>
+
+Suppress &quot;not mounted&quot; error messages.
+<DT><B>-R</B>,<B> --recursive</B>
+
+<DD>
+
+
+
+
+
+Recursively unmount each specified directory.  Recursion for each directory will
+stop if any unmount operation in the chain fails for any reason.  The relationship
+between mountpoints is determined by /proc/self/mountinfo entries.  The filesystem
+must be specified by mountpoint path; a recursive unmount by device name (or UUID)
+is unsupported.
+<DT><B>-r</B>,<B> --read-only</B>
+
+<DD>
+
+アンマウントが失敗した場合、リードオンリーでファイルシステムの
+再マウントを試みる。
+<DT><B>-t</B>,<B> --types </B><I>type</I>...
+
+<DD>
+
+
+
+
+
+
+
+指定した
+<I>type</I>
+
+のファイルシステムにのみに対して動作を行う。
+複数のファイルシステムをコンマで区切ったリストで指定することも
+できる。
+ファイルシステムのリストに
+<B>no</B>
+
+を前置することもでき、
+この場合は動作を行わないファイルシステムのタイプを指定したことに
+なる。
+
+
+
+
+
+Note that
+<B>umount</B>
+
+reads information about mounted filesystems from kernel (/proc/mounts) and
+filesystem names may be different than filesystem names used in the /etc/fstab
+(e.g. &quot;nfs4&quot; vs. &quot;nfs&quot;).
+<DT><B>-v</B>,<B> --verbose</B>
+
+<DD>
+
+詳細表示モード。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>LOOP デバイス</H2>
+
+
+
+
+
+
+The
+<B>umount</B>
+
+command will automatically detach loop device previously initialized by
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+command independently of /etc/mtab.
+<P>
+
+
+
+
+In this case the device is initialized with &quot;autoclear&quot; flag (see
+<B><A HREF="../man8/losetup.8.html">losetup</A></B>(8)
+
+output for more details), otherwise it's necessary to use the option <B> --detach-loop</B>
+or call <B>losetup -d &lt;device&gt;</B>. The autoclear feature is supported since Linux 2.6.25.
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>外部ヘルパー</H2>
+
+
+The syntax of external unmount helpers is:
+<P>
+
+<DL COMPACT><DT><DD>
+<B>umount.</B><I>suffix</I>
+
+{<I>directory</I>|<I>device</I>}
+
+[<B>-flnrv</B>]
+
+[<B>-N</B>
+
+<I>namespace</I>]
+
+[<B>-t</B>
+
+<I>type</I>.<I>subtype</I>]
+
+</DL>
+
+<P>
+
+
+
+
+
+where <I>suffix</I> is the filesystem type (or the value from a
+<B>uhelper=</B> or <B>helper=</B> marker in the mtab file).
+The <B>-t</B> option can be used for filesystems that
+have subtype support.  For example:
+<P>
+
+<DL COMPACT><DT><DD>
+<B>umount.fuse -t fuse.sshfs</B>
+
+</DL>
+
+<P>
+
+
+
+
+
+A <B>uhelper=</B><I>something</I> marker (unprivileged helper) can appear in
+the <I>/etc/mtab</I> file when ordinary users need to be able to unmount
+a mountpoint that is not defined in <I>/etc/fstab</I>
+(for example for a device that was mounted by <B><A HREF="../man1/udisks.1.html">udisks</A></B>(1)).
+<P>
+
+
+
+
+A <B>helper=</B><I>type</I> marker in the mtab file will redirect
+all unmount requests
+to the <B>/sbin/umount.</B><I>type</I> helper independently of UID.
+<P>
+
+
+
+Note that <I>/etc/mtab</I> is currently deprecated and helper= and another
+userspace mount options are maintained by libmount.
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>ファイル</H2>
+
+<DL COMPACT>
+<DT><I>/etc/mtab</I>
+
+<DD>
+
+
+table of mounted filesystems (deprecated and usually replaced by
+symlink to /proc/mounts)
+<DT><I>/etc/fstab</I>
+
+<DD>
+
+table of known filesystems
+<DT><I>/proc/self/mountinfo</I>
+
+<DD>
+
+table of mounted filesystems generated by kernel.
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT>LIBMOUNT_FSTAB=&lt;path&gt;<DD>
+overrides the default location of the fstab file (ignored for suid)
+<DT>LIBMOUNT_MTAB=&lt;path&gt;<DD>
+overrides the default location of the mtab file (ignored for suid)
+<DT>LIBMOUNT_DEBUG=all<DD>
+enables libmount debug output
+
+</DL>
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/umount.2.html">umount</A></B>(2),
+
+<B><A HREF="../man8/losetup.8.html">losetup</A></B>(8),
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+<B>umount</B>
+
+コマンドは Version 6 の AT&amp;T UNIX から導入された。
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+umount コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">LOOP デバイス</A><DD>
+<DT><A HREF="#lbAG">外部ヘルパー</A><DD>
+<DT><A HREF="#lbAH">ファイル</A><DD>
+<DT><A HREF="#lbAI">環境変数</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">履歴</A><DD>
+<DT><A HREF="#lbAL">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 17:55:21 GMT, April 03, 2020
+</BODY>
+</HTML>
