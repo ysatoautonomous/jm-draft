@@ -75,28 +75,28 @@ swapon, swapoff - デバイスやファイルへのページング、スワッ�
 (interleave) 動作できるようにする。
 <P>
 
-通常は
-<B>swapon -a</B>
 
-の書式で実行されることが多い。
-<DL COMPACT>
-<DT><DD>
+
+
+
+
+
+
+
 <B>swapoff</B>
 
-disables swapping on the specified devices and files.
-When the
+は指定されたデバイスとファイルのスワッピングを無効にする。
 <B>-a</B>
 
-flag is given, swapping is disabled on all known swap devices and files
-(as found in
-<I>/proc/swaps</I>
+フラグが指定された場合、
+(<I>/proc/swaps</I>
 
-or
-<I>/etc/fstab</I>).
+または
+<I>/etc/fstab</I>
 
+に見つかった) 既知の全てのスワップデバイスとファイルのスワッピングが無効化される。
 <P>
 
-</DL>
 <A NAME="lbAE">&nbsp;</A>
 <H2>オプション</H2>
 
@@ -116,30 +116,49 @@ or
 <DT><B>-d</B>,<B> --discard</B>[<B>=</B><I>policy</I>]
 
 <DD>
-Enable swap discards, if the swap backing device supports the discard or
-trim operation.  This may improve performance on some Solid State Devices,
-but often it does not.  The option allows one to select between two
-available swap discard policies:
+
+
+
+
+スワップのバッキングデバイスが破棄と切り詰め操作をサポートしている
+場合、スワップの破棄を有効化する。
+これは SSD (Solid State Devices) で性能を改善できる場合もあるが、
+多くの場合そうでもない。
+このオプションは 2 つのスワップ破棄ポリシーのうち、1 つを選択できる:
+
+
+
+
+
+
 <B>--discard=once</B>
 
-to perform a single-time discard operation for the whole swap area at swapon;
-or
+は swapon でスワップ領域全体に対して 1 回の破棄操作を行う。
+また
 <B>--discard=pages</B>
 
-to asynchronously discard freed swap pages before they are available for reuse.
-If no policy is selected, the default behavior is to enable both discard types.
-The
+は解放されたスワップページを、再利用できるようにする前に、
+非同期に破棄する。
+ポリシーが選択されない場合、デフォルトの挙動は、両方の破棄タイプを
+有効にすることである。
+
+
+
+
+
+
+
+
 <I>/etc/fstab</I>
 
-mount options
+のマウントオプション
 <B>discard</B>,
 
 <B>discard=once</B>,
 
-or
 <B>discard=pages</B>
 
-may also be used to enable discard flags.
+はどれも破棄フラグを有効にするために使用できる。
 <DT><B>-e</B>,<B> --ifexists</B>
 
 <DD>
@@ -150,22 +169,31 @@ may also be used to enable discard flags.
 
 
 存在しないデバイスを黙ってスキップする。
-The
+
+
+
+
+
 <I>/etc/fstab</I>
 
-mount option
+のマウントオプション
 <B>nofail</B>
 
-may also be used to skip non-existing device.
+も、存在しないデバイスをスキップするために使われる。
 <P>
 <DT><B>-f</B>,<B> --fixpgsz</B>
 
 <DD>
-Reinitialize (exec mkswap) the swap space if its page size does not
-match that of the current running kernel.
+
+
+
+
+スワップ領域のページサイズが現在実行されているカーネルと
+マッチしない場合、
+スワップ領域を再初期化 (mkswap を実行) する。
 <B><A HREF="../man2/mkswap.2.html">mkswap</A></B>(2)
 
-initializes the whole device and does not check for bad blocks.
+はデバイス全体を初期化し、不良ブロックをチェックしない。
 <DT><B>-h</B>,<B> --help</B>
 
 <DD>
@@ -190,8 +218,10 @@ initializes the whole device and does not check for bad blocks.
 <DT><B>-o</B>,<B> --options </B><I>opts</I>
 
 <DD>
-Specify swap options by an fstab-compatible comma-separated string.
-For example:
+
+
+スワップオプションを fstab 互換のカンマ区切り文字列で指定する。
+例えば:
 <DL COMPACT><DT><DD>
 <DL COMPACT><DT><DD>
 <P>
@@ -200,8 +230,10 @@ For example:
 <P>
 </DL>
 
-The <I>opts</I> string is evaluated last and overrides all other
-command line options.
+
+
+<I>opts</I> 文字列は最後に評価され、他の全てのコマンドラインオプションを
+上書きする。
 </DL>
 
 <DT><B>-p</B>,<B> --priority </B><I>priority</I>
@@ -246,40 +278,52 @@ command line options.
 
 スワップの使用状況をデバイス毎に表示する。
 &quot;cat /proc/swaps&quot; と等しい。
-This output format is DEPRECATED in favour
-of <B>--show</B> that provides better control on output data.
+この出力形式は「推奨されず」、
+出力データをより良く制御できる <B>--show</B> を使うべきである。
 <DT><B>--show</B>[<B>=</B><I>column</I>...]
 
 <DD>
-Display a definable table of swap areas.  See the
+
+
+
+スワップ領域について定義可能なテーブルを表示する。
+利用可能な列のリストについては、
 <B>--help</B>
 
-output for a list of available columns.
+の出力を参照すること。
 <DT><B>--output-all</B>
 
 <DD>
-Output all available columns.
+
+利用可能な全ての列を出力する。
 <DT><B>--noheadings</B>
 
 <DD>
-Do not print headings when displaying
+
+
+
 <B>--show</B>
 
-output.
+の出力を表示する際に、ヘッダを表示しない。
 <DT><B>--raw</B>
 
 <DD>
-Display
+
+
+
 <B>--show</B>
 
-output without aligning table columns.
+の出力を表示する際に、テーブルの列を (きれいに) 配置しない。
 <DT><B>--bytes</B>
 
 <DD>
-Display swap size in bytes in
+
+
+
 <B>--show</B>
 
-output instead of in user-friendly units.
+の出力で、スワップサイズを、ユーザーがわかりやすい単位ではなく、
+バイト単位で表示する。
 <DT><B>-U</B><I> uuid</I>
 
 <DD>
@@ -308,36 +352,57 @@ output instead of in user-friendly units.
 <A NAME="lbAG">&nbsp;</A>
 <H3>ホールのあるファイル</H3>
 
-The swap file implementation in the kernel expects to be able to write to the
-file directly, without the assistance of the filesystem.  This is a problem on
-files with holes or on copy-on-write files on filesystems like Btrfs.
+
+
+
+カーネルのスワップファイル実装は、ファイルシステムの助けなしに、
+ファイルに直接書き込むことができることが想定されている。
+これは Btrfs のようなファイルシステムで、
+ホールのあるファイルやファイルへの copy-on-write で問題がある。
 <P>
-Commands like
+
+
+
+
+
 <B><A HREF="../man1/cp.1.html">cp</A></B>(1)
 
-or
+や
 <B><A HREF="../man1/truncate.1.html">truncate</A></B>(1)
 
-create files with holes.  These files will be rejected by swapon.
+のようはコマンドは、ホールのあるファイルを作成する。
+これらのファイルは swapon で拒否される。
 <P>
-Preallocated files created by
+
+
+
+
 <B><A HREF="../man1/fallocate.1.html">fallocate</A></B>(1)
 
-may be interpreted as files with holes too depending of the filesystem.
-Preallocated swap files are supported on XFS since Linux 4.18.
+で作成された事前確保されたファイルは、ファイルシステムに非常に依存した
+ホールのあるファイルとして解釈される。
+Linux 4.18 以降で、事前確保されたスワップファイルは XFS 上でサポートされる。
 <P>
-The most portable solution to create a swap file is to use
+
+
+
+スワップファイルを作成する、もっとも汎用性の高い方法は、
 <B><A HREF="../man1/dd.1.html">dd</A></B>(1)
 
-and /dev/zero.
+と /dev/zero を使うことである。
 <A NAME="lbAH">&nbsp;</A>
 <H3>Btrfs</H3>
 
-Swap files on Btrfs are supported since Linux 5.0 on files with nocow attribute.
-See the
+
+
+
+
+Btrfs 上のスワップファイルは Linux 5.0 以降で nocow 属性のついたファイルとして
+サポートされている。
+より詳細は
 <B><A HREF="../man5/btrfs.5.html">btrfs</A></B>(5)
 
-manual page for more details.
+のマニュアルページを参照すること。
 <A NAME="lbAI">&nbsp;</A>
 <H3>NFS</H3>
 
@@ -346,12 +411,17 @@ manual page for more details.
 <A NAME="lbAJ">&nbsp;</A>
 <H3>Suspend</H3>
 
+
+
+
+
+
 <B>swapon</B>
 
-automatically detects and rewrites a swap space signature with old software
-suspend data (e.g. S1SUSPEND, S2SUSPEND, ...). The problem is that if we don't
-do it, then we get data corruption the next time an attempt at unsuspending is
-made.
+は、古いソフトウェアサスペンドデータ (例えば. S1SUSPEND, S2SUSPEND, ...) のついた
+スワップ領域のシグネチャを、自動的に検出して書き直す。
+このようにしないと、次回にサスペンドの停止をしようとした場合、
+データ破壊が起きる。
 
 <A NAME="lbAK">&nbsp;</A>
 <H2>環境変数</H2>
@@ -446,6 +516,6 @@ swapon コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 17:04:29 GMT, April 02, 2020
+Time: 14:36:51 GMT, April 03, 2020
 </BODY>
 </HTML>
