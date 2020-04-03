@@ -38,7 +38,7 @@
 .\" Updated & Modified Wed May  5 13:08:03 JST 2004
 .\"         by Yuichi SATO <ysato444@yahoo.co.jp>
 .\" Updated & Modified Mon May  9 03:47:14 JST 2005 by Yuichi SATO
-.\" Updated & Modified Fri Apr  3 02:01:12 JST 2020
+.\" Updated & Modified Fri Apr  3 23:30:13 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH SWAPON 8 "October 2014" "util-linux" "System Administration"
@@ -89,21 +89,23 @@ swapon, swapoff \- デバイスやファイルへのページング、スワッ�
 やスワッピングが複数のデバイスやファイルにまたがってインターリーブ 
 (interleave) 動作できるようにする。
 
-.\"O Normally, the first form is used:
-通常は
-.B swapon \-a
-の書式で実行されることが多い。
-.TP
-
+.\"O .B swapoff
+.\"O disables swapping on the specified devices and files.
+.\"O When the
+.\"O .B \-a
+.\"O flag is given, swapping is disabled on all known swap devices and files
+.\"O (as found in
+.\"O .I /proc/swaps
+.\"O or
+.\"O .IR /etc/fstab ).
 .B swapoff
-disables swapping on the specified devices and files.
-When the
+は指定されたデバイスとファイルのスワッピングを無効にする。
 .B \-a
-flag is given, swapping is disabled on all known swap devices and files
-(as found in
-.I /proc/swaps
-or
-.IR /etc/fstab ).
+フラグが指定された場合、
+.RI ( /proc/swaps
+または
+.I /etc/fstab
+に見つかった) 既知の全てのスワップデバイスとファイルのスワッピングが無効化される。
 
 .\"O .SH OPTIONS
 .SH オプション
@@ -119,24 +121,43 @@ or
 スワップとして既に使われているデバイスは、黙ってスキップされる。
 .TP
 .BR \-d , " \-\-discard" [ =\fIpolicy\fR]
-Enable swap discards, if the swap backing device supports the discard or
-trim operation.  This may improve performance on some Solid State Devices,
-but often it does not.  The option allows one to select between two
-available swap discard policies:
+.\"O Enable swap discards, if the swap backing device supports the discard or
+.\"O trim operation.  This may improve performance on some Solid State Devices,
+.\"O but often it does not.  The option allows one to select between two
+.\"O available swap discard policies:
+スワップのバッキングデバイスが破棄と切り詰め操作をサポートしている
+場合、スワップの破棄を有効化する。
+これは SSD (Solid State Devices) で性能を改善できる場合もあるが、
+多くの場合そうでもない。
+このオプションは 2 つのスワップ破棄ポリシーのうち、1 つを選択できる:
+.\"O .B \-\-discard=once
+.\"O to perform a single-time discard operation for the whole swap area at swapon;
+.\"O or
+.\"O .B \-\-discard=pages
+.\"O to asynchronously discard freed swap pages before they are available for reuse.
+.\"O If no policy is selected, the default behavior is to enable both discard types.
 .B \-\-discard=once
-to perform a single-time discard operation for the whole swap area at swapon;
-or
+は swapon でスワップ領域全体に対して 1 回の破棄操作を行う。
+また
 .B \-\-discard=pages
-to asynchronously discard freed swap pages before they are available for reuse.
-If no policy is selected, the default behavior is to enable both discard types.
-The
+は解放されたスワップページを、再利用できるようにする前に、
+非同期に破棄する。
+ポリシーが選択されない場合、デフォルトの挙動は、両方の破棄タイプを
+有効にすることである。
+.\"O The
+.\"O .I /etc/fstab
+.\"O mount options
+.\"O .BR discard ,
+.\"O .BR discard=once ,
+.\"O or
+.\"O .B discard=pages
+.\"O may also be used to enable discard flags.
 .I /etc/fstab
-mount options
+のマウントオプション
 .BR discard ,
 .BR discard=once ,
-or
 .B discard=pages
-may also be used to enable discard flags.
+はどれも破棄フラグを有効にするために使用できる。
 .TP
 .BR \-e , " \-\-ifexists"
 .\"O Silently skip devices that do not exist.
@@ -146,18 +167,27 @@ may also be used to enable discard flags.
 .\"O .B nofail
 .\"O may also be used to skip non-existing device.
 存在しないデバイスを黙ってスキップする。
-The
+.\"O The
+.\"O .I /etc/fstab
+.\"O mount option
+.\"O .B nofail
+.\"O may also be used to skip non-existing device.
 .I /etc/fstab
-mount option
+のマウントオプション
 .B nofail
-may also be used to skip non-existing device.
+も、存在しないデバイスをスキップするために使われる。
 
 .TP
 .BR \-f , " \-\-fixpgsz"
-Reinitialize (exec mkswap) the swap space if its page size does not
-match that of the current running kernel.
+.\"O Reinitialize (exec mkswap) the swap space if its page size does not
+.\"O match that of the current running kernel.
+.\"O .BR mkswap (2)
+.\"O initializes the whole device and does not check for bad blocks.
+スワップ領域のページサイズが現在実行されているカーネルと
+マッチしない場合、
+スワップ領域を再初期化 (mkswap を実行) する。
 .BR mkswap (2)
-initializes the whole device and does not check for bad blocks.
+はデバイス全体を初期化し、不良ブロックをチェックしない。
 .TP
 .BR \-h , " \-\-help"
 .\"O Display help text and exit.
@@ -177,16 +207,20 @@ initializes the whole device and does not check for bad blocks.
 にアクセスする必要がある。)
 .TP
 .BR \-o , " \-\-options " \fIopts\fP
-Specify swap options by an fstab-compatible comma-separated string.
-For example:
+.\"O Specify swap options by an fstab-compatible comma-separated string.
+.\"O For example:
+スワップオプションを fstab 互換のカンマ区切り文字列で指定する。
+例えば:
 .RS
 .RS
 .sp
 .B "swapon -o pri=1,discard=pages,nofail /dev/sda2"
 .sp
 .RE
-The \fIopts\fP string is evaluated last and overrides all other
-command line options.
+.\"O The \fIopts\fP string is evaluated last and overrides all other
+.\"O command line options.
+\fIopts\fP 文字列は最後に評価され、他の全てのコマンドラインオプションを
+上書きする。
 .RE
 .TP
 .BR \-p , " \-\-priority " \fIpriority\fP
@@ -223,31 +257,43 @@ command line options.
 .\"O of \fB\-\-show\fR that provides better control on output data.
 スワップの使用状況をデバイス毎に表示する。
 "cat /proc/swaps" と等しい。
-This output format is DEPRECATED in favour
-of \fB\-\-show\fR that provides better control on output data.
+この出力形式は「推奨されず」、
+出力データをより良く制御できる \fB\-\-show\fR を使うべきである。
 .TP
 .BR \-\-show [ =\fIcolumn\fR ...]
-Display a definable table of swap areas.  See the
+.\"O Display a definable table of swap areas.  See the
+.\"O .B \-\-help
+.\"O output for a list of available columns.
+スワップ領域について定義可能なテーブルを表示する。
+利用可能な列のリストについては、
 .B \-\-help
-output for a list of available columns.
+の出力を参照すること。
 .TP
 .B \-\-output\-all
-Output all available columns.
+.\"O Output all available columns.
+利用可能な全ての列を出力する。
 .TP
 .B \-\-noheadings
-Do not print headings when displaying
+.\"O Do not print headings when displaying
+.\"O .B \-\-show
+.\"O output.
 .B \-\-show
-output.
+の出力を表示する際に、ヘッダを表示しない。
 .TP
 .B \-\-raw
-Display
+.\"O Display
+.\"O .B \-\-show
+.\"O output without aligning table columns.
 .B \-\-show
-output without aligning table columns.
+の出力を表示する際に、テーブルの列を (きれいに) 配置しない。
 .TP
 .B \-\-bytes
-Display swap size in bytes in
+.\"O Display swap size in bytes in
+.\"O .B \-\-show
+.\"O output instead of in user-friendly units.
 .B \-\-show
-output instead of in user-friendly units.
+の出力で、スワップサイズを、ユーザーがわかりやすい単位ではなく、
+バイト単位で表示する。
 .TP
 .BI \-U  " uuid"
 .\"O Use the partition that has the specified
@@ -267,38 +313,64 @@ output instead of in user-friendly units.
 .SH 注意
 .\"O .SS Files with holes
 .SS ホールのあるファイル
-The swap file implementation in the kernel expects to be able to write to the
-file directly, without the assistance of the filesystem.  This is a problem on
-files with holes or on copy-on-write files on filesystems like Btrfs.
+.\"O The swap file implementation in the kernel expects to be able to write to the
+.\"O file directly, without the assistance of the filesystem.  This is a problem on
+.\"O files with holes or on copy-on-write files on filesystems like Btrfs.
+カーネルのスワップファイル実装は、ファイルシステムの助けなしに、
+ファイルに直接書き込むことができることが想定されている。
+これは Btrfs のようなファイルシステムで、
+ホールのあるファイルやファイルへの copy-on-write で問題がある。
 .sp
-Commands like
+.\"O Commands like
+.\"O .BR cp (1)
+.\"O or
+.\"O .BR truncate (1)
+.\"O create files with holes.  These files will be rejected by swapon.
 .BR cp (1)
-or
+や
 .BR truncate (1)
-create files with holes.  These files will be rejected by swapon.
+のようはコマンドは、ホールのあるファイルを作成する。
+これらのファイルは swapon で拒否される。
 .sp
-Preallocated files created by
+.\"O Preallocated files created by
+.\"O .BR fallocate (1)
+.\"O may be interpreted as files with holes too depending of the filesystem.
+.\"O Preallocated swap files are supported on XFS since Linux 4.18.
 .BR fallocate (1)
-may be interpreted as files with holes too depending of the filesystem.
-Preallocated swap files are supported on XFS since Linux 4.18.
+で作成された事前確保されたファイルは、ファイルシステムに非常に依存した
+ホールのあるファイルとして解釈される。
+Linux 4.18 以降で、事前確保されたスワップファイルは XFS 上でサポートされる。
 .sp
-The most portable solution to create a swap file is to use
+.\"O The most portable solution to create a swap file is to use
+.\"O .BR dd (1)
+.\"O and /dev/zero.
+スワップファイルを作成する、もっとも汎用性の高い方法は、
 .BR dd (1)
-and /dev/zero.
+と /dev/zero を使うことである。
 .SS Btrfs
-Swap files on Btrfs are supported since Linux 5.0 on files with nocow attribute.
-See the
+.\"O Swap files on Btrfs are supported since Linux 5.0 on files with nocow attribute.
+.\"O See the
+.\"O .BR btrfs (5)
+.\"O manual page for more details.
+Btrfs 上のスワップファイルは Linux 5.0 以降で nocow 属性のついたファイルとして
+サポートされている。
+より詳細は
 .BR btrfs (5)
-manual page for more details.
+のマニュアルページを参照すること。
 .SS NFS
 .\"O Swap over \fBNFS\fR may not work.
 \fBNFS\fR 上の swap は動作しないかもしれない。
 .SS Suspend
+.\"O .B swapon
+.\"O automatically detects and rewrites a swap space signature with old software
+.\"O suspend data (e.g. S1SUSPEND, S2SUSPEND, ...). The problem is that if we don't
+.\"O do it, then we get data corruption the next time an attempt at unsuspending is
+.\"O made.
 .B swapon
-automatically detects and rewrites a swap space signature with old software
-suspend data (e.g. S1SUSPEND, S2SUSPEND, ...). The problem is that if we don't
-do it, then we get data corruption the next time an attempt at unsuspending is
-made.
+は、古いソフトウェアサスペンドデータ (例えば. S1SUSPEND, S2SUSPEND, ...) のついた
+スワップ領域のシグネチャを、自動的に検出して書き直す。
+このようにしないと、次回にサスペンドの停止をしようとした場合、
+データ破壊が起きる。
 .\"O .SH ENVIRONMENT
 .SH 環境変数
 .IP LIBMOUNT_DEBUG=all
