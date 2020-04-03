@@ -1,0 +1,237 @@
+.\" Copyright (C) 1992-1997 Michael K. Johnson <johnsonm@redhat.com>
+.\" Copyright (C) 1998      Andrea Arcangeli   <andrea@e-mind.com>
+.\" It may be distributed under the terms of the GNU General Public License,
+.\" version 2, or any higher version.  See section COPYING of the GNU General
+.\" Public license for conditions under which this file may be redistributed.
+.\"
+.\" Japanese Version Copyright (c) 1997 Koso Fukuba
+.\"         all rights reserved.
+.\" Translated Mon Jan 27 12:00:00 JST 1997
+.\"         by Koso Fukuba <koso@ga2.so-net.or.jp>
+.\" Updated Thu Mar 16 JST 2000 by Kentaro Shirakata <argrath@yo.rim.or.jp>
+.\" Updated Thu May 10 JST 2005 by Kentaro Shirakata <argrath@yo.rim.or.jp>
+.\" Updated & Modified Sat Apr  4 00:59:53 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH TUNELP 8 "October 2011" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O tunelp \- set various parameters for the lp device
+tunelp \- lp デバイスへのパラメータの設定
+.\"O .SH SYNOPSIS
+.SH 書式
+.B tunelp
+[options]
+.I device
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O \fBtunelp\fP sets several parameters for the /dev/lp\fI?\fP devices, for
+.\"O better performance (or for any performance at all, if your printer won't work
+.\"O without it...) Without parameters, it tells whether the device is using
+.\"O interrupts, and if so, which one.  With parameters, it sets the device
+.\"O characteristics accordingly.
+\fBtunelp\fP は、よりよいパフォーマンスを得るために
+(あるいはそのままでは動作しないプリンターを動作させるために)、
+/dev/lp\fI?\fP デバイスに各種パラメータを設定する。
+引数無しで起動すると、デバイスが使用している割り込み番号などを出力する。
+引数を指定すると、その引数に従ってデバイスの特性を設定する。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+\fB\-i\fR, \fB\-\-irq\fR \fIargument\fR
+.\"O specifies the IRQ to use for the parallel port in question.  If this is set
+.\"O to something non-zero, \-t and \-c have no effect.  If your port does not use
+.\"O interrupts, this option will make printing stop.  
+このオプションは、パラレルポートが使用する IRQ を指定する。
+IRQ に 0 以外の値を指定すると、\-t および \-c オプションは無効になる。
+ポートが IRQ を使用しない場合にこのオプションを指定すると、
+プリントされなくなる。
+.\"O The command
+.\"O .B tunelp -i 0
+.\"O restores non-interrupt driven (polling) action, and your printer should work
+.\"O again.  If your parallel port does support interrupts, interrupt-driven
+.\"O printing should be somewhat faster and efficient, and will probably be
+.\"O desirable.
+この場合に
+.\"nakano: 原文にはないですが
+.B tunelp -i 0
+とすると、再び割り込み無しの制御 (ポーリング) を行うように設定され、
+プリンタが再度動作するようになる。
+一般に、パラレルポートが割り込みをサポートしている場合、
+割り込みを使った方が印刷動作は早く、効率良く、好ましい結果となる。
+.IP
+.\"O NOTE: This option will have no effect with kernel 2.1.131 or later since the
+.\"O irq is handled by the parport driver.  You can change the parport irq for
+.\"O example via
+.\"O .IR /proc/parport/*/irq .
+カーネル 2.1.131 以降では IRQ は parport ドライバで扱われることになったため、
+このオプションは無効となった。
+.\"O Read
+.\"O .I /usr/src/linux/Documentation/parport.txt
+.\"O for more details on parport.
+parport に関する詳細は
+.I /usr/src/linux/Documentation/parport.txt
+を参照すること。
+.TP
+\fB\-t\fR, \fB\-\-time\fR \fImilliseconds\fR
+.\"O is the amount of time in jiffies that the driver waits if the printer doesn't
+.\"O take a character for the number of tries dictated by the \-c parameter.  10
+.\"O is the default value.  If you want fastest possible printing, and don't care
+.\"O about system load, you may set this to 0.  If you don't care how fast your
+.\"O printer goes, or are printing text on a slow printer with a buffer, then 500
+.\"O (5 seconds) should be fine, and will give you very low system load.  This
+.\"O value generally should be lower for printing graphics than text, by a factor
+.\"O of approximately 10, for best performance.
+プリンタが文字を受け取れなかったとき、
+プリンタドライバーは \-c オプションで指定した回数までデータを再送するが、
+それでも送信が成功しないと、ドライバはこのオプションで指定した
+時間だけ待つ。
+時間は jiffy 単位で指定する。デフォルトでは、この値は 
+10 である。できる限り早く印刷したい場合、システムの負荷を
+気にしないなら、この値を 0 にしても構わない。
+プリンタへの印字速度を気にしないなら、500 (5 秒)というのは妥当な値で、
+システムの負荷をとても低く押えることができる。
+グラフィクスの印刷をするときには、
+テキスト印字のときに比べ、より小さな値 (およそ 10 分の 1 ぐらい)
+にすると最大の性能が得られるだろう。
+.TP
+\fB\-c\fR, \fB\-\-chars\fR \fIcharacters\fR
+.\"O is the number of times to try to output a character to the printer before
+.\"O sleeping for \-t \fITIME\fP.  It is the number of times around a loop that
+.\"O tries to send a character to the printer.  120 appears to be a good value for
+.\"O most printers in polling mode.  1000 is the default, because there are some
+.\"O printers that become jerky otherwise, but you \fImust\fP set this to `1' to
+.\"O handle the maximal CPU efficiency if you are using interrupts.  If you have a
+.\"O very fast printer, a value of 10 might make more sense even if in polling
+.\"O mode.  If you have a \fIreally\fP old printer, you can increase this further.
+このオプションは、\-t \fI<TIME>\fP で指定した時間待つ前に、
+何回プリンターに出力を試みるかを指定する。
+数字は、プリンターにデータを送る試行回数を示す。
+ポーリングモードのプリンタには、120 程度が適当だろう。
+デフォルトでは 1000 である
+(こうしないと動きがぎくしゃくするプリンターがあるため)。
+割り込みを使う場合は、 CPU の能力を最大限に生かすためには
+この値を `1' に \fIしなければならない\fP。
+とても高速なプリンターを持っているなら、
+ポーリングモードで使う場合でも 10 で大丈夫だろう。
+\fI本当に\fP古いプリンターの場合、この値をずっと増やす必要がある。
+.IP
+.\"O Setting \-t \fITIME\fP to 0 is equivalent to setting \-c \fICHARS\fP to
+.\"O infinity.
+\-t \fI<TIME>\fP を 0 にすることは、 \-c \fI<CHARS>\fP を無限大にするのと
+同じ意味となる。
+.TP
+\fB\-w\fR, \fB\-\-wait\fR \fImilliseconds\fR
+.\"O is the number of usec we wait while playing with the strobe signal.  While
+.\"O most printers appear to be able to deal with an extremely short strobe, some
+.\"O printers demand a longer one.  Increasing this from the default 1 may make it
+.\"O possible to print with those printers.  This may also make it possible to use
+.\"O longer cables.  It's also possible to decrease this value to 0 if your
+.\"O printer is fast enough or your machine is slow enough.
+このオプションは、storobe シグナルを扱う時のウェイトを
+マイクロ秒単位で指定する。
+ほとんどのプリンタは非常に短いタイミングでも良いようだが、
+プリンターによっては長いタイミングを必要とすることもある。
+このため、デフォルトの 1 から徐々に増加させながら、そのプリンター
+で印刷できるタイミングを求めることになる。このようなタイミングの
+調整をすると、長いケーブルでも使えるようになる。
+また、もしプリンターが十分早く、コンピューターが十分遅い場合は、
+値を 0 にすることも可能である。
+.TP
+\fB\-a\fR, \fB\-\-abort\fR \fI<on|off>\fR
+.\"O This is whether to abort on printer error - the default is not to.  If you
+.\"O are sitting at your computer, you probably want to be able to see an error
+.\"O and fix it, and have the printer go on printing.  On the other hand, if you
+.\"O aren't, you might rather that your printer spooler find out that the printer
+.\"O isn't ready, quit trying, and send you mail about it.  The choice is yours.
+このオプションは、プリンターのエラー時にアボートするかどうかを
+指定する。
+デフォルトではアボートしない。コンピュータの前に座っているなら、
+エラーをみてそれを直し、プリンターに引続き出力させることを
+望むだろう。
+一方、コンピュータから離れているときには、
+プリンターがレディ状態でないことをプリンタースプーラが検出すると、
+すぐに終了してそのことをメールで知らせてくれるほうが良いこともある。
+好きな方を選択すること。
+.TP
+\fB\-o\fR, \fB\-\-check\-status\fR \fI<on|off>\fR
+.\"O This option is much like \-a.  It makes any
+.\"O .BR open (2)
+.\"O of this device check to see that the device is on-line and not reporting any
+.\"O out of paper or other errors.  This is the correct setting for most versions
+.\"O of lpd.
+このオプションは、\-a に良く似ている。デバイスを
+.BR open (2)
+する時に、デバイスがオンライン状態で、
+紙切れなどのエラーが通知されないかをチェックする。
+これは、ほとんどのバージョンの lpd に対して正しい設定である。
+.TP
+\fB\-C\fR, \fB\-\-careful\fR \fI<on|off>\fR
+.\"O This option adds extra ("careful") error checking.  When this option is on,
+.\"O the printer driver will ensure that the printer is on-line and not reporting
+.\"O any out of paper or other errors before sending data.  This is particularly
+.\"O useful for printers that normally appear to accept data when turned off.
+このオプションは、特別な ("注意深い") エラーチェックを追加する。
+このオプションを on にすると、プリンタードライバーはプリンターが
+オンライン状態かどうか確認し、紙切れなどのエラーを通知してこない
+ことを確認してからデータを送信する。
+この機能は、オフライン状態でもデータを受け付けるように
+見えるプリンタを使っている場合には、特に有効である。
+.IP
+.\"O NOTE: This option is obsolete because it's the default in 2.1.131 kernel or
+.\"O later.
+注意: 2.1.131 以降のカーネルではこれがデフォルトとなったため、
+このオプションは古いものである。
+.TP
+\fB\-s\fR, \fB\-\-status\fR
+.\"O This option returns the current printer status, both as a decimal number from
+.\"O 0..255, and as a list of active flags.  When this option is specified, \-q
+.\"O off, turning off the display of the current IRQ, is implied.
+このオプションは、現在のプリンターのステータスを返す。
+ステータスは、0 から 255 までの 10 進数と、有効なフラグのリストである。
+このオプションが指定されると、\-q off (現在の IRQ を表示しない) も
+指定されたものとして処理される。
+.TP
+\fB\-r\fR, \fB\-\-reset\fR
+.\"O This option resets the port.  It requires a Linux kernel version of 1.1.80 or
+.\"O later.
+このオプションは、ポートをリセットする。
+このオプションを使用するには、
+Linux の カーネルのバージョンが、1.1.80 以降である必要がある。
+.TP
+\fB\-q\fR, \fB\-\-print\-irq\fR \fI<on|off>\fR
+.\"O This option sets printing the display of the current IRQ setting.
+現在の IRQ の設定を表示するかどうかを設定する。
+.\"O .SH NOTES
+.SH 注意
+.\"O .BR \-o ,
+.\"O .BR \-C ,
+.\"O and
+.\"O .B \-s
+.\"O all require a Linux kernel version of 1.1.76 or later.
+.BR \-o ,
+.BR \-C ,
+.B \-s
+オプションを使用するには、Linux のカーネルのバージョンが、
+1.1.76 以降である必要がある。
+.PP
+.\"O .B \-C
+.\"O requires a Linux version prior to 2.1.131.
+.B \-C
+オプションを使用するためには Linux バージョンが 2.1.131 より前である必要がある。
+.\"O .SH FILES
+.SH ファイル
+.I /dev/lp?
+.br
+.I /proc/parport/*/*
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The tunelp  command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+tunelp  コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
