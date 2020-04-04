@@ -218,20 +218,22 @@ lazy アンマウント。
 .\"O recommended use-case for \fBumount -l\fR is to prevent hangs on shutdown due to
 .\"O an unreachable network share where a normal umount will hang due to a downed
 .\"O server or a network partition. Remounts of the share will not be possible.
-A system reboot would be expected in near future if you're going to use this
-option for network filesystem or local filesystem with submounts.  The
-recommended use-case for \fBumount -l\fR is to prevent hangs on shutdown due to
-an unreachable network share where a normal umount will hang due to a downed
-server or a network partition. Remounts of the share will not be possible.
-
+このオプションをネットワークファイルシステム、
+またはサブマウントのあるローカルファイルシステムで使う場合、
+近い将来にシステムリブートが求められるようになるかもしれない。
+\fBumount -l\fR の推奨される使い方は、到達不能なネットワーク共有による
+シャットダウン時のハングを防止することである。
+到達不能なネットワーク共有は、ダウンしたサーバやネットワーク
+パーティションにより、通常の umount がハングを起こす。
+これらの共有の再マウントは不可能だろう。
 .TP
 .BR \-N , " \-\-namespace " \fIns
 .\"O Perform umount in namespace specified by \fIns\fR.
 .\"O \fIns\fR is either PID of process running in that namespace
 .\"O or special file representing that namespace.
-Perform umount in namespace specified by \fIns\fR.
-\fIns\fR is either PID of process running in that namespace
-or special file representing that namespace.
+\fIns\fR で指定された名前空間で umount を実行する。
+\fIns\fR は、その名前空間で実行されている プロセスの PID、
+またはその名前空間を表す特殊ファイルのいずれかである。
 .sp
 .\"O .BR umount (8)
 .\"O switches to the namespace when it reads /etc/fstab, writes /etc/mtab (or writes to /run/mount) and calls
@@ -241,15 +243,17 @@ or special file representing that namespace.
 .\"O .BR umount (2)
 .\"O command.
 .BR umount (8)
-switches to the namespace when it reads /etc/fstab, writes /etc/mtab (or writes to /run/mount) and calls
+は /etc/fstab の読み込み、/etc/mtab の書き込み (または /run/mount の書き込み)、
 .BR umount (2)
-system call, otherwise it runs in the original namespace. It means that the target namespace does not have
-to contain any libraries or another requirements necessary to execute
+システムコールの呼び出し時に、名前空間を切り替える。
+それ以外の場合は、元々の名前空間で実行される。
+これは、
 .BR umount (2)
-command.
+コマンドを実行するのに必要なライブラリまたは他に要求されるものを、
+対象の名前空間に持っている必要がないことを意味する。
 .sp
 .\"O See \fBnamespaces\fR(7) for more information.
-See \fBnamespaces\fR(7) for more information.
+より詳細な情報は \fBnamespaces\fR(7) を参照すること。
 .TP
 .BR \-n , " \-\-no\-mtab"
 .\"O Unmount without writing in
@@ -276,7 +280,7 @@ See \fBnamespaces\fR(7) for more information.
 .TP
 .BR \-q , " \-\-quiet"
 .\"O Suppress "not mounted" error messages.
-Suppress "not mounted" error messages.
+"not mounted" というエラーメッセージを抑止する。
 .TP
 .BR \-R , " \-\-recursive"
 .\"O Recursively unmount each specified directory.  Recursion for each directory will
@@ -284,11 +288,12 @@ Suppress "not mounted" error messages.
 .\"O between mountpoints is determined by /proc/self/mountinfo entries.  The filesystem
 .\"O must be specified by mountpoint path; a recursive unmount by device name (or UUID)
 .\"O is unsupported.
-Recursively unmount each specified directory.  Recursion for each directory will
-stop if any unmount operation in the chain fails for any reason.  The relationship
-between mountpoints is determined by /proc/self/mountinfo entries.  The filesystem
-must be specified by mountpoint path; a recursive unmount by device name (or UUID)
-is unsupported.
+指定された各ディレクトリを再帰的にアンマウントする。
+各ディレクトリの再帰は、チェーンのアンマウント操作が何らかの理由で
+失敗した場合にストップする。
+マウントポイント間の関係は /proc/self/mountinfo エントリで決定される。
+ファイルシステムはマウントポイントのパスで指定しなればならない。
+デバイス名 (または UUID) での再帰的アンマウントはサポートされない。
 .TP
 .BR \-r , " \-\-read\-only"
 .\"O When an unmount fails, try to remount the filesystem read-only.
@@ -318,11 +323,11 @@ is unsupported.
 .\"O reads information about mounted filesystems from kernel (/proc/mounts) and
 .\"O filesystem names may be different than filesystem names used in the /etc/fstab
 .\"O (e.g. "nfs4" vs. "nfs").
-Note that
 .B umount
-reads information about mounted filesystems from kernel (/proc/mounts) and
-filesystem names may be different than filesystem names used in the /etc/fstab
-(e.g. "nfs4" vs. "nfs").
+はマウントされているファイルシステムの情報をカーネル (/proc/mounts) から読み取り、
+そのファイルシステム名が、
+/etc/fstab で使われているファイルシステム名とは異なるかもしれない点に
+注意すること (例えば、"nfs4" と "nfs")。
 .TP
 .BR \-v , " \-\-verbose"
 .\"O Verbose mode.
