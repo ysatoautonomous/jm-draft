@@ -121,10 +121,14 @@ syslog メッセージを指定された
 <B>-F</B> は kmsg 形式のメッセージをサポートしていない点に注意すること。
 昔ながらの syslog 形式のみをサポートしている。
 <DT><B>-f</B>, <B>--facility </B><I>list</I><DD>
-Restrict output to the given (comma-separated)
+
+
+
+出力を指定した (カンマ区切りの) ファシリティの
 <I>list</I>
 
-of facilities.  For example:
+に制限する。
+例えば:
 </DL>
 <P>
 
@@ -135,26 +139,44 @@ of facilities.  For example:
 
 <DL COMPACT>
 <DT><DD>
-will print messages from system daemons only.  For all supported facilities
-see the
+
+
+
+
+は、システムデーモンからのメッセージのみを表示する。
+全てのサポートされているファシリティは
 <B>--help</B>
 
-output.
+の出力を参照すること。
 <DT><B>-H</B>, <B>--human</B><DD>
-Enable human-readable output.  See also <B>--color</B>, <B>--reltime</B>
-and <B>--nopager</B>.
+
+
+人が読みやすい出力を有効にする。
+<B>--color</B>, <B>--reltime</B>, <B>--nopager</B> も参照すること。
 <DT><B>-k</B>, <B>--kernel</B><DD>
-Print kernel messages.
+
+カーネルメッセージを表示する。
 <DT><B>-L</B>, <B>--color</B>[=<I>when</I>]<DD>
-Colorize the output.  The optional argument <I>when</I>
-can be <B>auto</B>, <B>never</B> or <B>always</B>.  If the <I>when</I> argument is omitted,
-it defaults to <B>auto</B>.  The colors can be disabled; for the current built-in default
-see the <B>--help</B> output.  See also the <B>COLORS</B> section below.
+
+
+
+
+出力をカラー表示する。
+オプションの引き数 <I>when</I> は
+<B>auto</B>, <B>never</B>, <B>always</B> のいずれかである。
+<I>when</I> 引き数が省略された場合、デフォルトは <B>auto</B> である。
+カラー表示は無効化できる。
+現在の組み込みのデフォルトは、<B>--help</B> の出力を参照すること。
+下記の <B>カラー表示</B> のセクションも参照すること。
 <DT><B>-l</B>, <B>--level </B><I>list</I><DD>
-Restrict output to the given (comma-separated)
+
+
+
+出力を指定した (カンマ区切りの) レベルの 
 <I>list</I>
 
-of levels.  For example:
+に制限する。
+例えば:
 </DL>
 <P>
 
@@ -165,100 +187,175 @@ of levels.  For example:
 
 <DL COMPACT>
 <DT><DD>
-will print error and warning messages only.  For all supported levels see the
+
+
+
+はエラーと警告のメッセージのみを表示する。
+サポートされる全てのレベルについては、
 <B>--help</B>
 
-output.
+の出力を参照すること。
+
 <DT><B>-n</B>, <B>--console-level </B><I>level</I><DD>
-Set the
+
+
+
+
+
+
+
+
+コンソールに表示されるメッセージを
 <I>level</I>
 
-at which printing of messages is done to the console.  The
+に設定する。
 <I>level</I>
 
-is a level number or abbreviation of the level name.  For all supported
-levels see the
+はレベル番号、またはレベル名の省略形である。
+サポートされる全てのレベルについては、
 <B>--help</B>
 
-output.
+の出力を参照すること。
 <P>
-For example,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+例えば、
 <B>-n 1</B>
 
-or
+または
 <B>-n emerg</B>
 
-prevents all messages, except emergency (panic) messages, from appearing on
-the console.  All levels of messages are still written to
-<I>/proc/kmsg</I>,
+は、コンソールに表示されるメッセージから、緊急 (パニック) メッセージ以外の
+全てのメッセージを抑止する。
+これを指定しても、全てのレベルのメッセージは
+<I>/proc/kmsg</I>
 
-so
+には書き出されるので、
 <B><A HREF="../man8/syslogd.8.html">syslogd</A></B>(8)
 
-can still be used to control exactly where kernel messages appear.  When the
+はカーネルメッセージが現れた場所を正確にコントロールできる。
 <B>-n</B>
 
-option is used,
+オプションが使われると、
 <B>dmesg</B>
 
-will
-<I>not</I>
+はカーネルリングバッファーの表示を
+<I>行わず</I>、
 
-print or clear the kernel ring buffer.
+クリアも
+<I>行わない</I>。
+
 <DT><B>-P</B>, <B>--nopager</B><DD>
-Do not pipe output into a pager.  A pager is enabled by default for <B>--human</B> output.
+
+出力をページャーにパイプしない。
+ページャーは <B>--human</B> の出力ではデフォルトで有効になっている。
 <DT><B>-p</B>, <B>--force-prefix</B><DD>
-Add facility, level or timestamp information to each line of a multi-line message.
+
+複数行のメッセージの各行に、ファシリティ、レベル、タイムスタンプの
+情報を追加する。
 <DT><B>-r</B>, <B>--raw</B><DD>
-Print the raw message buffer, i.e. do not strip the log-level prefixes.
+
+生 (raw) のメッセージバッファーを表示する。
+つまり、ログレベルのプレフィックスを取り去らない。
 <P>
-Note that the real raw format depends on the method how
+
+
+
+
+本当の raw 形式は、
 <B><A HREF="../man1/dmesg.1.html">dmesg</A></B>(1)
 
-reads kernel messages.  The /dev/kmsg device uses a different format than
-<B><A HREF="../man2/syslog.2.html">syslog</A></B>(2).
-
-For backward compatibility,
-<B><A HREF="../man1/dmesg.1.html">dmesg</A></B>(1)
-
-returns data always in the
+がカーネルメッセージを読む方法に依存する点に注意すること。
+/dev/kmsg デバイスは
 <B><A HREF="../man2/syslog.2.html">syslog</A></B>(2)
 
-format.  It is possible to read the real raw data from /dev/kmsg by, for example,
-the command 'dd if=/dev/kmsg iflag=nonblock'.
+と異なる形式を使う。
+
+
+
+
+
+
+後方互換のため、
+<B><A HREF="../man1/dmesg.1.html">dmesg</A></B>(1)
+
+は常に
+<B><A HREF="../man2/syslog.2.html">syslog</A></B>(2)
+
+形式でデータを返す。
+例えば、コマンド 'dd if=/dev/kmsg iflag=nonblock' で、
+本当の生データを /dev/kmsg から読むことができる。
 <DT><B>-S</B>, <B>--syslog</B><DD>
-Force <B>dmesg</B> to use the
+
+
+
+
+
+
+<B>dmesg</B> がカーネルメッセージを読むのに、
 <B><A HREF="../man2/syslog.2.html">syslog</A></B>(2)
 
-kernel interface to read kernel messages.  The default is to use /dev/kmsg rather
-than
+カーネルインタフェースを使うことを強制する。
+カーネル 3.5.0 以降では、デフォルトで
 <B><A HREF="../man2/syslog.2.html">syslog</A></B>(2)
 
-since kernel 3.5.0.
+ではなく、/dev/kmsg を使う。
+
 <DT><B>-s</B>, <B>--buffer-size </B><I>size</I><DD>
-Use a buffer of
+
+
+
+
+
+
+カーネルリングバッファーを取得するためのバッファーサイズとして
 <I>size</I>
 
-to query the kernel ring buffer.  This is 16392 by default.  (The default
-kernel syslog buffer size was 4096 at first, 8192 since 1.3.54, 16384 since
-2.1.113.)  If you have set the kernel buffer to be larger than the default,
-then this option can be used to view the entire buffer.
+を使う。
+これはデフォルトで 16392 である。
+(デフォルトのカーネル syslog バッファーサイズは、最初 4096 であった。
+1.3.54 以降では 8192 であり、2.1.113 以降では 16384 である。)
+カーネルバッファーをデフォルトより大きくすることで、
+このオプションでバッファ全体を見るのに使うことができる。
 <DT><B>-T</B>, <B>--ctime</B><DD>
-Print human-readable timestamps.
+
+人間が読みやすい形式のタイプスタンプで表示する。
 <DT><DD>
-<B>Be aware that the timestamp could be inaccurate!</B>
 
-The
-<B>time</B>
+<B>このタイムスタンプは正確でない可能性があるので注意すること!</B>
 
-source used for the logs is
-<B>not updated after</B>
 
-system
-<B>SUSPEND</B>/<B>RESUME</B>.
+
+
+
+
+
+ログで使われる
+<B>時刻</B>
+
+の情報源は、システムの
+<B>SUSPEND</B>/<B>RESUME</B>
+
+の以降では
+<B>更新されない。</B>
 
 <DT><B>-t</B>, <B>--notime</B><DD>
-Do not print kernel's timestamps.
+
+カーネルのタイムスタンプを表示しない。
 <DT><B>--time-format</B> <I>format</I><DD>
 Print timestamps using the given <I>format</I>, which can be
 <B>ctime</B>,
@@ -430,6 +527,6 @@ Linux Kernel Archive
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 17:08:51 GMT, April 04, 2020
+Time: 23:06:35 GMT, April 04, 2020
 </BODY>
 </HTML>
