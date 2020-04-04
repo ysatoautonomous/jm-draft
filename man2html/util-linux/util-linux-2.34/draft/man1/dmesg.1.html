@@ -1,0 +1,435 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of DMESG</TITLE>
+</HEAD><BODY>
+<H1>DMESG</H1>
+Section: User Commands (1)<BR>Updated: July 2012<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+dmesg - カーネルリングバッファーの表示または制御を行う。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>dmesg</B>
+
+[options]
+<P>
+<B>dmesg --clear</B>
+
+<BR>
+
+<B>dmesg --read-clear </B>[options]
+
+<BR>
+
+<B>dmesg --console-level </B><I>level</I>
+
+<BR>
+
+<B>dmesg --console-on</B>
+
+<BR>
+
+<B>dmesg --console-off</B>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B>dmesg</B>
+
+はカーネルリングバッファーを調査または制御するために使われる。
+<P>
+
+
+デフォルトのアクションは、カーネルリングバッファーから全てのメッセージを
+表示する。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+
+
+
+
+
+
+
+<B>--clear</B>,
+
+<B>--read-clear</B>,
+
+<B>--console-on</B>,
+
+<B>--console-off</B>,
+
+<B>--console-level</B>
+
+オプションは、どれか 1 つしか選択できない。
+<P>
+
+<DL COMPACT>
+<DT><B>-C</B>, <B>--clear</B><DD>
+
+リングバッファーをクリアする。
+<DT><B>-c</B>, <B>--read-clear</B><DD>
+
+最初に内容を表示した後、リングバッファーをクリアする。
+<DT><B>-D</B>, <B>--console-off</B><DD>
+
+コンソールへのメッセージの表示を無効化する。
+<DT><B>-d</B>, <B>--show-delta</B><DD>
+
+
+
+
+タイムスタンプとメッセージ間で経過した時間差分を表示する。
+<B>--notime</B>
+
+と一緒に使うと、タイムスタンプを表示せず、時間差分のみを表示する。
+<DT><B>-E</B>, <B>--console-on</B><DD>
+
+コンソールへのメッセージの表示を有効化する。
+<DT><B>-e</B>, <B>--reltime</B><DD>
+
+
+
+ローカル時間と時間差分を人が読みやすい形式で表示する。
+ローカル時間への変換は正確でない点に注意すること
+(より詳細は <B>-T</B> for を参照すること)。
+<DT><B>-F</B>, <B>--file </B><I>file</I><DD>
+
+
+
+syslog メッセージを指定された
+<I>file</I>
+
+から読み込む。
+<B>-F</B> は kmsg 形式のメッセージをサポートしていない点に注意すること。
+昔ながらの syslog 形式のみをサポートしている。
+<DT><B>-f</B>, <B>--facility </B><I>list</I><DD>
+Restrict output to the given (comma-separated)
+<I>list</I>
+
+of facilities.  For example:
+</DL>
+<P>
+
+<DL COMPACT><DT><DD>
+<B>dmesg --facility=daemon</B>
+
+</DL>
+
+<DL COMPACT>
+<DT><DD>
+will print messages from system daemons only.  For all supported facilities
+see the
+<B>--help</B>
+
+output.
+<DT><B>-H</B>, <B>--human</B><DD>
+Enable human-readable output.  See also <B>--color</B>, <B>--reltime</B>
+and <B>--nopager</B>.
+<DT><B>-k</B>, <B>--kernel</B><DD>
+Print kernel messages.
+<DT><B>-L</B>, <B>--color</B>[=<I>when</I>]<DD>
+Colorize the output.  The optional argument <I>when</I>
+can be <B>auto</B>, <B>never</B> or <B>always</B>.  If the <I>when</I> argument is omitted,
+it defaults to <B>auto</B>.  The colors can be disabled; for the current built-in default
+see the <B>--help</B> output.  See also the <B>COLORS</B> section below.
+<DT><B>-l</B>, <B>--level </B><I>list</I><DD>
+Restrict output to the given (comma-separated)
+<I>list</I>
+
+of levels.  For example:
+</DL>
+<P>
+
+<DL COMPACT><DT><DD>
+<B>dmesg --level=err,warn</B>
+
+</DL>
+
+<DL COMPACT>
+<DT><DD>
+will print error and warning messages only.  For all supported levels see the
+<B>--help</B>
+
+output.
+<DT><B>-n</B>, <B>--console-level </B><I>level</I><DD>
+Set the
+<I>level</I>
+
+at which printing of messages is done to the console.  The
+<I>level</I>
+
+is a level number or abbreviation of the level name.  For all supported
+levels see the
+<B>--help</B>
+
+output.
+<P>
+For example,
+<B>-n 1</B>
+
+or
+<B>-n emerg</B>
+
+prevents all messages, except emergency (panic) messages, from appearing on
+the console.  All levels of messages are still written to
+<I>/proc/kmsg</I>,
+
+so
+<B><A HREF="../man8/syslogd.8.html">syslogd</A></B>(8)
+
+can still be used to control exactly where kernel messages appear.  When the
+<B>-n</B>
+
+option is used,
+<B>dmesg</B>
+
+will
+<I>not</I>
+
+print or clear the kernel ring buffer.
+<DT><B>-P</B>, <B>--nopager</B><DD>
+Do not pipe output into a pager.  A pager is enabled by default for <B>--human</B> output.
+<DT><B>-p</B>, <B>--force-prefix</B><DD>
+Add facility, level or timestamp information to each line of a multi-line message.
+<DT><B>-r</B>, <B>--raw</B><DD>
+Print the raw message buffer, i.e. do not strip the log-level prefixes.
+<P>
+Note that the real raw format depends on the method how
+<B><A HREF="../man1/dmesg.1.html">dmesg</A></B>(1)
+
+reads kernel messages.  The /dev/kmsg device uses a different format than
+<B><A HREF="../man2/syslog.2.html">syslog</A></B>(2).
+
+For backward compatibility,
+<B><A HREF="../man1/dmesg.1.html">dmesg</A></B>(1)
+
+returns data always in the
+<B><A HREF="../man2/syslog.2.html">syslog</A></B>(2)
+
+format.  It is possible to read the real raw data from /dev/kmsg by, for example,
+the command 'dd if=/dev/kmsg iflag=nonblock'.
+<DT><B>-S</B>, <B>--syslog</B><DD>
+Force <B>dmesg</B> to use the
+<B><A HREF="../man2/syslog.2.html">syslog</A></B>(2)
+
+kernel interface to read kernel messages.  The default is to use /dev/kmsg rather
+than
+<B><A HREF="../man2/syslog.2.html">syslog</A></B>(2)
+
+since kernel 3.5.0.
+<DT><B>-s</B>, <B>--buffer-size </B><I>size</I><DD>
+Use a buffer of
+<I>size</I>
+
+to query the kernel ring buffer.  This is 16392 by default.  (The default
+kernel syslog buffer size was 4096 at first, 8192 since 1.3.54, 16384 since
+2.1.113.)  If you have set the kernel buffer to be larger than the default,
+then this option can be used to view the entire buffer.
+<DT><B>-T</B>, <B>--ctime</B><DD>
+Print human-readable timestamps.
+<DT><DD>
+<B>Be aware that the timestamp could be inaccurate!</B>
+
+The
+<B>time</B>
+
+source used for the logs is
+<B>not updated after</B>
+
+system
+<B>SUSPEND</B>/<B>RESUME</B>.
+
+<DT><B>-t</B>, <B>--notime</B><DD>
+Do not print kernel's timestamps.
+<DT><B>--time-format</B> <I>format</I><DD>
+Print timestamps using the given <I>format</I>, which can be
+<B>ctime</B>,
+
+<B>reltime</B>,
+
+<B>delta</B>
+
+or
+<B>iso</B>.
+
+The first three formats are aliases of the time-format-specific options.
+The
+<B>iso</B>
+
+format is a
+<B>dmesg</B>
+
+implementation of the ISO-8601 timestamp format.  The purpose of this format is
+to make the comparing of timestamps between two systems, and any other parsing,
+easy.  The definition of the <B>iso</B> timestamp is:
+YYYY-MM-DD&lt;T&gt;HH:MM:SS,&lt;microseconds&gt;&lt;-+&gt;&lt;timezone offset from UTC&gt;.
+<DT><DD>
+The
+<B>iso</B>
+
+format has the same issue as
+<B>ctime</B>:
+
+the time may be inaccurate when a system is suspended and resumed.
+<DT><B>-u</B>,<B> --userspace</B>
+
+<DD>
+Print userspace messages.
+<DT><B>-w</B>,<B> --follow</B>
+
+<DD>
+Wait for new messages.  This feature is supported only on systems with
+a readable /dev/kmsg (since kernel 3.5.0).
+<DT><B>-x</B>,<B> --decode</B>
+
+<DD>
+Decode facility and level (priority) numbers to human-readable prefixes.
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+Display version information and exit.
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+Display help text and exit.
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>カラー表示</H2>
+
+Implicit coloring can be disabled by an empty file <I>/etc/terminal-colors.d/dmesg.disable</I>.
+See
+<B><A HREF="../man5/terminal-colors.d.5.html">terminal-colors.d</A></B>(5)
+
+for more details about colorization configuration.
+<P>
+
+The logical color names supported by
+<B>dmesg</B>
+
+are:
+<DL COMPACT>
+<DT><B>subsys</B>
+
+<DD>
+The message sub-system prefix (e.g. &quot;ACPI:&quot;).
+<DT><B>time</B>
+
+<DD>
+The message timestamp.
+<DT><B>timebreak</B>
+
+<DD>
+The message timestamp in short ctime format in <B>--reltime</B> 
+or <B>--human</B> output.
+<DT><B>alert</B>
+
+<DD>
+The text of the message with the alert log priority.
+<DT><B>crit</B>
+
+<DD>
+The text of the message with the critical log priority.
+<DT><B>err</B>
+
+<DD>
+The text of the message with the error log priority.
+<DT><B>warn</B>
+
+<DD>
+The text of the message with the warning log priority.
+<DT><B>segfault</B>
+
+<DD>
+The text of the message that inform about segmentation fault.
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>返り値</H2>
+
+<B>dmesg</B>
+
+can fail reporting permission denied error.  This is usually caused by
+<B>dmesg_restrict</B>
+
+kernel setting, please see
+<B><A HREF="../man2/syslog.2.html">syslog</A></B>(2)
+
+for more details.
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man5/terminal-colors.d.5.html">terminal-colors.d</A></B>(5),
+
+<B><A HREF="../man8/syslogd.8.html">syslogd</A></B>(8)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+
+Karel Zak
+
+<P>
+<BR>
+
+<B>dmesg</B>
+
+was originally written by
+
+Theodore Ts'o
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+dmesg コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">カラー表示</A><DD>
+<DT><A HREF="#lbAG">返り値</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 17:08:51 GMT, April 04, 2020
+</BODY>
+</HTML>
