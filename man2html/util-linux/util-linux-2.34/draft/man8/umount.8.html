@@ -234,21 +234,23 @@ lazy アンマウント。
 
 
 
-A system reboot would be expected in near future if you're going to use this
-option for network filesystem or local filesystem with submounts.  The
-recommended use-case for <B>umount -l</B> is to prevent hangs on shutdown due to
-an unreachable network share where a normal umount will hang due to a downed
-server or a network partition. Remounts of the share will not be possible.
-<P>
+このオプションをネットワークファイルシステム、
+またはサブマウントのあるローカルファイルシステムで使う場合、
+近い将来にシステムリブートが求められるようになるかもしれない。
+<B>umount -l</B> の推奨される使い方は、到達不能なネットワーク共有による
+シャットダウン時のハングを防止することである。
+到達不能なネットワーク共有は、ダウンしたサーバやネットワーク
+パーティションにより、通常の umount がハングを起こす。
+これらの共有の再マウントは不可能だろう。
 <DT><B>-N</B>,<B> --namespace </B><I>ns</I>
 
 <DD>
 
 
 
-Perform umount in namespace specified by <I>ns</I>.
-<I>ns</I> is either PID of process running in that namespace
-or special file representing that namespace.
+<I>ns</I> で指定された名前空間で umount を実行する。
+<I>ns</I> は、その名前空間で実行されている プロセスの PID、
+またはその名前空間を表す特殊ファイルのいずれかである。
 <P>
 
 
@@ -259,17 +261,19 @@ or special file representing that namespace.
 
 <B><A HREF="../man8/umount.8.html">umount</A></B>(8)
 
-switches to the namespace when it reads /etc/fstab, writes /etc/mtab (or writes to /run/mount) and calls
+は /etc/fstab の読み込み、/etc/mtab の書き込み (または /run/mount の書き込み)、
 <B><A HREF="../man2/umount.2.html">umount</A></B>(2)
 
-system call, otherwise it runs in the original namespace. It means that the target namespace does not have
-to contain any libraries or another requirements necessary to execute
+システムコールの呼び出し時に、名前空間を切り替える。
+それ以外の場合は、元々の名前空間で実行される。
+これは、
 <B><A HREF="../man2/umount.2.html">umount</A></B>(2)
 
-command.
+コマンドを実行するのに必要なライブラリまたは他に要求されるものを、
+対象の名前空間に持っている必要がないことを意味する。
 <P>
 
-See <B><A HREF="../man7/namespaces.7.html">namespaces</A></B>(7) for more information.
+より詳細な情報は <B><A HREF="../man7/namespaces.7.html">namespaces</A></B>(7) を参照すること。
 <DT><B>-n</B>,<B> --no-mtab</B>
 
 <DD>
@@ -302,7 +306,7 @@ See <B><A HREF="../man7/namespaces.7.html">namespaces</A></B>(7) for more inform
 
 <DD>
 
-Suppress &quot;not mounted&quot; error messages.
+&quot;not mounted&quot; というエラーメッセージを抑止する。
 <DT><B>-R</B>,<B> --recursive</B>
 
 <DD>
@@ -311,11 +315,12 @@ Suppress &quot;not mounted&quot; error messages.
 
 
 
-Recursively unmount each specified directory.  Recursion for each directory will
-stop if any unmount operation in the chain fails for any reason.  The relationship
-between mountpoints is determined by /proc/self/mountinfo entries.  The filesystem
-must be specified by mountpoint path; a recursive unmount by device name (or UUID)
-is unsupported.
+指定された各ディレクトリを再帰的にアンマウントする。
+各ディレクトリの再帰は、チェーンのアンマウント操作が何らかの理由で
+失敗した場合にストップする。
+マウントポイント間の関係は /proc/self/mountinfo エントリで決定される。
+ファイルシステムはマウントポイントのパスで指定しなればならない。
+デバイス名 (または UUID) での再帰的アンマウントはサポートされない。
 <DT><B>-r</B>,<B> --read-only</B>
 
 <DD>
@@ -349,12 +354,12 @@ is unsupported.
 
 
 
-Note that
 <B>umount</B>
 
-reads information about mounted filesystems from kernel (/proc/mounts) and
-filesystem names may be different than filesystem names used in the /etc/fstab
-(e.g. &quot;nfs4&quot; vs. &quot;nfs&quot;).
+はマウントされているファイルシステムの情報をカーネル (/proc/mounts) から読み取り、
+そのファイルシステム名が、
+/etc/fstab で使われているファイルシステム名とは異なるかもしれない点に
+注意すること (例えば、&quot;nfs4&quot; と &quot;nfs&quot;)。
 <DT><B>-v</B>,<B> --verbose</B>
 
 <DD>
@@ -552,6 +557,6 @@ Linux Kernel Archive
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 07:10:27 GMT, April 04, 2020
+Time: 07:51:07 GMT, April 04, 2020
 </BODY>
 </HTML>
