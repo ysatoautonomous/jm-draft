@@ -1,0 +1,138 @@
+.\" Copyright (c) 1983, 1991 The Regents of the University of California.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by the University of
+.\"	California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"     @(#)vipw.8	6.7 (Berkeley) 3/16/91
+.\"
+.\" Japanese Version Copyright (c) 1997 NAKANO Takeo all rights reserved.
+.\" Translated Thu Aug 22 1997 by NAKANO Takeo <nakano@@apm.seikei.ac.jp>
+.\" Updated & Modified
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH VIPW "8" "September 2011" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O vipw, vigr \- edit the password or group file
+vipw, vigr \- passwd ファイル、 group ファイルを編集する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B vipw
+[options]
+.br
+.B vigr
+[options]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B vipw
+.\"O edits the password file after setting the appropriate locks,
+.\"O and does any necessary processing after the password file is unlocked.
+.\"O If the password file is already locked for editing by another user,
+.\"O .B vipw
+.\"O will ask you
+.\"O to try again later.  The default editor for
+.\"O .B vipw
+.\"O and
+.\"O .B vigr
+.\"O is
+.\"O .BR vi (1).
+.B vipw
+はパスワードファイルに適当なロックをかけてからこれを編集する。
+そしてアンロックしてから必要な後処理を行う。
+もしパスワードファイルがすでに他のユーザによって、編集用にロック
+されていたら、
+.B vipw
+は時間をおいてから再度実行するようにプロンプトを出す。
+.B vipw
+と
+.B vigr
+のデフォルトのエディタは
+.BR vi (1)
+である。
+.\"O .B vigr
+.\"O edits the group file in the same manner as
+.\"O .B vipw
+.\"O does the passwd file.
+.B vipw
+が passwd ファイルを編集するのと同じように、
+.B vigr
+は group ファイルを編集する。
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.\"O If the following environment variable exists, it will be utilized by
+.\"O .B vipw
+.\"O and
+.\"O .BR vigr :
+以下の環境変数が存在する場合、
+.B vipw
+と
+.B vigr
+で利用される:
+.I
+.TP
+.B EDITOR
+.\"O The editor specified by the string
+.\"O .B EDITOR
+.\"O will be invoked instead of the default editor
+.\"O .BR vi (1).
+文字列
+.B EDITOR
+で設定されているエディタが、デフォルトのエディタ
+.BR vi (1)
+の代わりに実行される。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR vi (1),
+.BR passwd (1),
+.BR flock (2),
+.BR passwd (5)
+.\"O .SH HISTORY
+.SH 履歴
+.\"O The
+.\"O .B vipw
+.\"O command appeared in 4.0BSD.
+.B vipw
+コマンドは 4.0BSD から導入された。
+.br
+.\"O The
+.\"O .B vigr
+.\"O command appeared in Util-Linux 2.6.
+.B vigr
+コマンドは Util-Linux 2.6 から導入された。
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The vigr and vipw commands are part of the util-linux package and are available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+vigr と vipw コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
