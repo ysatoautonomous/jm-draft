@@ -103,12 +103,11 @@ lazy アンマウントにより、この問題は回避できるが、別の問
 .\"O are unmounted, except the proc, devfs, devpts, sysfs, rpc_pipefs and nfsd
 .\"O filesystems. This list of the filesystems may be replaced by \fB\-\-types\fR
 .\"O umount option.
-All of the filesystems described in
 .I /proc/self/mountinfo
-(or in deprecated /etc/mtab)
-are unmounted, except the proc, devfs, devpts, sysfs, rpc_pipefs and nfsd
-filesystems. This list of the filesystems may be replaced by \fB\-\-types\fR
-umount option.
+(または、推奨されない /etc/mtab) に記述されている
+全てのファイルシステムがアンマウントされる。
+proc, devfs, devpts, sysfs, rpc_pipefs, nfsd ファイルシステムは例外である。
+このファイルシステムのリストは、\fB\-\-types\fR umount オプションで置き換えられる。
 .TP
 .BR \-A , " \-\-all\-targets"
 .\"O Unmount all mountpoints in the current namespace for the specified filesystem.
@@ -117,12 +116,15 @@ umount option.
 .\"O all nested mounts within the filesystem are recursively unmounted.
 .\"O This option is only supported on systems where /etc/mtab is a symlink
 .\"O to /proc/mounts.
-Unmount all mountpoints in the current namespace for the specified filesystem.
-The filesystem can be specified by one of the mountpoints or the device name (or
-UUID, etc.).  When this option is used together with \fB\-\-recursive\fR, then
-all nested mounts within the filesystem are recursively unmounted.
-This option is only supported on systems where /etc/mtab is a symlink
-to /proc/mounts.
+指定されたファイルシステムについて、現在の名前空間で全ての
+マウントポイントをアンマウントする。
+ファイルシステムは、マウントポイント、またはデバイス名 (または UUID など) の
+いずれかで指定できる。
+このオプションを \fB\-\-recursive\fR とともに使うと、
+ファイルシステム中の全ての入れ子 (nested) のマウントが、
+再帰的にアンマウントされる。
+このオプションは /etc/mtab が /proc/mounts へのシンボリックリンクである
+システムでのみサポートされる。
 .TP
 .BR \-c , " \-\-no\-canonicalize"
 .\"O Do not canonicalize paths.  The paths canonicalization is based on
@@ -132,34 +134,40 @@ to /proc/mounts.
 .\"O system calls. These system calls may hang in some cases (for example on NFS if
 .\"O server is not available). The option has to be used with canonical path to the
 .\"O mount point.
-Do not canonicalize paths.  The paths canonicalization is based on
+パスを正規化 (canonicalize) しない。
+パスの正規化は
 .BR stat (2)
-and
+と
 .BR readlink (2)
-system calls. These system calls may hang in some cases (for example on NFS if
-server is not available). The option has to be used with canonical path to the
-mount point.
+システムコールに基づいている。
+これらのシステムコールは、あるケース (例えば NFS でサーバが利用できない場合など) では
+ハングする可能性がある。
+このオプションはマウントポイントへの正規化されたパスで使う
+必要がある。
 
 .\"O For more details about this option see the
 .\"O .BR mount (8)
 .\"O man page. Note that \fBumount\fR does not pass this option to the
 .\"O .BI /sbin/umount. type
 .\"O helpers.
-For more details about this option see the
+このオプションのより詳細は、
 .BR mount (8)
-man page. Note that \fBumount\fR does not pass this option to the
+の man ページを参照すること。
+\fBumount\fR は、このオプションを
 .BI /sbin/umount. type
-helpers.
+ヘルパーに渡さない点に注意すること。
 .TP
 .BR \-d , " \-\-detach\-loop"
 .\"O When the unmounted device was a loop device, also free this loop
 .\"O device. This option is unnecessary for devices initialized by
 .\"O .BR mount (8),
 .\"O in this case "autoclear" functionality is enabled by default.
-When the unmounted device was a loop device, also free this loop
-device. This option is unnecessary for devices initialized by
-.BR mount (8),
-in this case "autoclear" functionality is enabled by default.
+アンマウントされたデバイスが loop デバイスである場合、
+この loop デバイスの解放も行う。
+"autoclear" 機能がデフォルトで有効になっている場合、
+.BR mount (8)
+で初期化されたデバイスについて、
+このオプションは必要ではない。
 .TP
 .B \-\-fake
 .\"O Causes everything to be done except for the actual system call or umount helper
@@ -169,13 +177,15 @@ in this case "autoclear" functionality is enabled by default.
 .\"O that were unmounted earlier with the
 .\"O .B \-n
 .\"O option.
-Causes everything to be done except for the actual system call or umount helper
-execution; this 'fakes' unmounting the filesystem.  It can be used to remove
-entries from the deprecated
-.I /etc/mtab
-that were unmounted earlier with the
+実際のシステムコール、または umount ヘルパーの実行以外の、
+全てのを実行する。
+これはファイルシステムのアンマウントを「騙す (fake)」。
+これは、
 .B \-n
-option.
+オプションでアンマウントするのに先立ち、
+推奨されない
+.I /etc/mtab
+のエントリを削除するのに使われる。
 .TP
 .BR \-f , " \-\-force"
 .\"O Force an unmount (in case of an unreachable NFS system).
@@ -184,9 +194,9 @@ option.
 .\"O Note that this option does not guarantee that umount command does not hang.
 .\"O It's strongly recommended to use absolute paths without symlinks to avoid
 .\"O unwanted readlink and stat system calls on unreachable NFS in umount.
-Note that this option does not guarantee that umount command does not hang.
-It's strongly recommended to use absolute paths without symlinks to avoid
-unwanted readlink and stat system calls on unreachable NFS in umount.
+このオプションは umount コマンドがハングしないことを保証するものではない。
+umount で到達不能な NFS 上での、望まない readlink と stat システムコールを避けるためには、
+シンボリックリンクを使わない絶対パスを使うことが強く推奨される。
 .TP
 .BR \-i , " \-\-internal\-only"
 .\"O Do not call the \fB/sbin/umount.\fIfilesystem\fR helper even if it exists.
