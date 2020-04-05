@@ -1,0 +1,322 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun Apr  5 22:05:57 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH FALLOCATE 1 "April 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O fallocate \- preallocate or deallocate space to a file
+fallocate \- ファイルのスペースを事前割り当てまたは解放する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B fallocate
+.RB [ \-c | \-p | \-z ]
+.RB [ \-o
+.IR offset ]
+.B \-l
+.I length
+.RB [ \-n ]
+.I filename
+.PP
+.B fallocate \-d
+.RB [ \-o
+.IR offset ]
+.RB [ \-l
+.IR length ]
+.I filename
+.PP
+.B fallocate \-x
+.RB [ \-o
+.IR offset ]
+.B \-l
+.I length
+.I filename
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B fallocate
+.\"O is used to manipulate the allocated disk space for a file,
+.\"O either to deallocate or preallocate it.
+.\"O For filesystems which support the fallocate system call,
+.\"O preallocation is done quickly by allocating blocks and marking them as
+.\"O uninitialized, requiring no IO to the data blocks.
+.\"O This is much faster than creating a file by filling it with zeroes.
+.B fallocate
+は割り当てられたファイルのディスクスペースを操作 (解放または事前割り当て) するために使われる。
+fallocate システムコールをサポートするファイルシステムにおいて、
+ブロックを割り当て、そのブロックが初期化されていないとマークすることで、
+データブロックに I/O を必要としないので、事前割り当てが高速に行える。
+これは、ファイルを作成して 0 で埋めるより、ずっと高速である。
+.PP
+.\"O The exit code returned by
+.\"O .B fallocate
+.\"O is 0 on success and 1 on failure.
+.B fallocate
+の返り値は、成功の場合は 0、失敗の場合は 1 である。
+.\"O .SH OPTIONS
+.SH オプション
+.\"O The
+.\"O .I length
+.\"O and
+.\"O .I offset
+.\"O arguments may be followed by the multiplicative suffixes KiB (=1024),
+.\"O MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB, and YiB (the "iB" is
+.\"O optional, e.g., "K" has the same meaning as "KiB") or the suffixes
+.\"O KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB, and YB.
+.I length
+と
+.I offset
+引き数の後には倍数のサフィックス KiB (=1024),
+MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB などを付けることができる
+("iB" is はオプションであり、例えば "K" は "KiB" と同じ意味である)。
+または、サフィックス KB (=1000), MB (=1000*1000),
+GB, TB, PB, EB, ZB, YB などを付けることができる。
+.PP
+.\"O The options
+.\"O .BR \-\-collapse\-range ", " \-\-dig\-holes ", " \-\-punch\-hole ,
+.\"O and
+.\"O .B \-\-zero\-range
+.\"O are mutually exclusive.
+オプション
+.BR \-\-collapse\-range ", " \-\-dig\-holes ", " \-\-punch\-hole ,
+.B \-\-zero\-range
+は、どれか 1 つしか指摘できない。
+.TP
+.BR \-c ", " \-\-collapse\-range
+.\"O Removes a byte range from a file, without leaving a hole.
+.\"O The byte range to be collapsed starts at
+.\"O .I offset
+.\"O and continues for
+.\"O .I length
+.\"O bytes.
+指定したバイト範囲をファイルから削除する。
+その際、ホールを残さない。
+削除されるバイト範囲は
+.I offset
+から始まる
+.I length
+バイトの範囲である。
+.\"O At the completion of the operation,
+.\"O the contents of the file starting at the location
+.\"O .IR offset + length
+.\"O will be appended at the location
+.\"O .IR offset ,
+.\"O and the file will be
+.\"O .I length
+.\"O bytes smaller.
+操作が完了すると、ファイルの
+.IR offset + length
+の位置からから始まる内容が
+.I offset
+の位置に見えるようになり、
+ファイルのサイズは
+.I length
+バイトだけ小さくなる。
+.\"O The option
+.\"O .B \-\-keep\-size
+.\"O may not be specified for the collapse-range operation.
+オプション
+.B \-\-keep\-size
+は範囲削除操作に指定できない。
+.sp
+.\"O Available since Linux 3.15 for ext4 (only for extent-based files) and XFS.
+Linux 3.15 以降の ext4 (エクステントベースのファイルのみ) と XFS で利用可能である。
+.sp
+.\"O A filesystem may place limitations on the granularity of the operation, in
+.\"O order to ensure efficient implementation.  Typically, offset and len must be a
+.\"O multiple of the filesystem logical block size, which varies according to the
+.\"O filesystem type and configuration.  If a filesystem has such a requirement,
+.\"O the operation will fail with the error EINVAL if this requirement is violated.
+効率的に動作する実装にするため、ファイルシステムはこの操作の粒度に
+制限を設けることがある。
+通常は offset と length はファイルシステムの論理ブロックサイズの倍数でなければならない。
+論理ブロックサイズはファイルシステムの種類や設定により様々である。
+ファイルシステムにこのような要求条件がある場合、
+その要求条件が満たされていなければ、fallocate はエラー EINVAL で失敗する。
+.TP
+.BR \-d ", " \-\-dig\-holes
+.\"O Detect and dig holes.
+.\"O This makes the file sparse in-place, without using extra disk space.
+.\"O The minimum size of the hole depends on filesystem I/O block size
+.\"O (usually 4096 bytes).
+.\"O Also, when using this option,
+.\"O .B \-\-keep\-size
+.\"O is implied.  If no range is specified by
+.\"O .B \-\-offset
+.\"O and
+.\"O .BR \-\-length ,
+.\"O then the entire file is analyzed for holes.
+ホールを検知と作成を行う。
+このオプションは、追加のディスクスペースを使わずに、
+ファイルをスパース (sparse: まばら) にする。
+ホールの最小サイズはファイルシステムの I/O ブロックサイズに依存する
+(通常は 4096 バイトである)。
+さらに、このオプションを使うと、
+.B \-\-keep\-size
+が暗黙のうちに指定される。
+範囲が
+.B \-\-offset
+と
+.B \-\-length
+で指定されない場合、ホールをファイル全体で分析する。
+.sp
+.\"O You can think of this option as doing a
+.\"O .RB """" "cp \-\-sparse" """"
+.\"O and then renaming the destination file to the original,
+.\"O without the need for extra disk space.
+このオプションは、
+.RB """" "cp \-\-sparse" """"
+を行って、追加のディスクスペースを必要とせずに、
+コピー先ファイルを元のファイルにリネームするのと同じと考えられる。
+.sp
+.\"O See \fB\-\-punch\-hole\fP for a list of supported filesystems.
+サポートされるファイルシステムのリストは、\fB\-\-punch\-hole\fP を参照すること。
+.TP
+.BR \-i ", " \-\-insert\-range
+.\"O Insert a hole of
+.\"O .I length
+.\"O bytes from
+.\"O .IR offset ,
+.\"O shifting existing data.
+既存のデータをシフトさせ、
+.I offset
+から
+.I length
+バイトのホールを挿入する。
+.TP
+.BR \-l ", " "\-\-length " \fIlength
+.\"O Specifies the length of the range, in bytes.
+範囲の長さをバイト単位で指定する。
+.TP
+.BR \-n ", " \-\-keep\-size
+.\"O Do not modify the apparent length of the file.  This may effectively allocate
+.\"O blocks past EOF, which can be removed with a truncate.
+ファイルの外見の長さを変更しない。
+このオプションは EOF の後に、効率的にブロックを割り当てられる。
+このブロックは切り詰めて削除できる。
+.TP
+.BR \-o ", " "\-\-offset " \fIoffset
+.\"O Specifies the beginning offset of the range, in bytes.
+範囲の開始オフセットを、バイト単位で指定する。
+.TP
+.BR \-p ", " \-\-punch\-hole
+.\"O Deallocates space (i.e., creates a hole) in the byte range starting at
+.\"O .I offset
+.\"O and continuing for
+.\"O .I length
+.\"O bytes.
+.I offset
+で始まる
+.I length
+バイトの領域の空間を解放する (ホールを作成する)。
+.\"O Within the specified range, partial filesystem blocks are zeroed,
+.\"O and whole filesystem blocks are removed from the file.
+.\"O After a successful call,
+.\"O subsequent reads from this range will return zeroes.
+指定された範囲のうち、
+部分的に使用しているファイルシステムブロックは 0 で埋められ、
+全体を使用しているファイルシステムブロックはそのファイルから
+削除される。
+呼び出しが成功すると、これ以降のこの範囲からの読み出しでは 0 を返す。
+.\"O This option may not be specified at the same time as the
+.\"O .B \-\-zero\-range
+.\"O option.
+このオプションは
+.B \-\-zero\-range
+と同時に指定できない。
+.\"O Also, when using this option,
+.\"O .B \-\-keep\-size
+.\"O is implied.
+このオプションを使うと、
+.B \-\-keep\-size
+が暗黙のうちに指定される。
+.sp
+.\"O Supported for XFS (since Linux 2.6.38), ext4 (since Linux 3.0),
+.\"O Btrfs (since Linux 3.7) and tmpfs (since Linux 3.5).
+XFS (Linux 2.6.38 以降), ext4 (Linux 3.0 以降),
+Btrfs (Linux 3.7 以降), tmpfs (Linux 3.5 以降) でサポートされる。
+.TP
+.BR \-v ", " \-\-verbose
+.\"O Enable verbose mode.
+詳細表示モードを有効にする。
+.TP
+.BR \-x ", " \-\-posix
+.\"O Enable POSIX operation mode.
+.\"O In that mode allocation operation always completes,
+.\"O but it may take longer time when fast allocation is not supported by
+.\"O the underlying filesystem.
+POSIX 操作モードを有効にする。
+このモードでは割り当て操作は常に完了するが、ファイルが作られる
+ファイルシステムが高速な割り当てをサポートしていない場合、
+長い時間がかかる。
+.TP
+.BR \-z ", " \-\-zero\-range
+.\"O Zeroes space in the byte range starting at
+.\"O .I offset
+.\"O and continuing for
+.\"O .I length
+.\"O bytes.
+.I offset
+で始まる
+.I length
+バイト範囲の空間をゼロ埋めする。
+.\"O Within the specified range, blocks are preallocated for the regions
+.\"O that span the holes in the file.
+.\"O After a successful call,
+.\"O subsequent reads from this range will return zeroes.
+指定された範囲の中では、ブロックは、そのファイル内のホールが広がる
+領域にあらかじめ割り当てられたものである。
+呼び出しが成功すると、これ以降のこの範囲からの読み出しでは 0 を返す。
+.sp
+.\"O Zeroing is done within the filesystem preferably by converting the
+.\"O range into unwritten extents.  This approach means that the specified
+.\"O range will not be physically zeroed out on the device (except for
+.\"O partial blocks at the either end of the range), and I/O is
+.\"O (otherwise) required only to update metadata.
+ゼロ埋めは、ファイルシステム内部では、指定された範囲を書き込みを
+伴わないエクステントに変換する方法をできるだけ使って行われる。
+この方法は、指定された範囲について物理的にゼロ埋めしたデータが
+デバイスに書き込まれるのではないことを意味する
+(例外は指定された範囲の端の部分的に使用しているブロックである)。
+(これ以外で) I/O が必要なのはメタデータの更新だけである。
+.sp
+.\"O Option \fB\-\-keep\-size\fP can be specified to prevent file length
+.\"O modification.
+ファイルの長さを変更しないように、オプション \fB\-\-keep\-size\fP が指定できる。
+.sp
+.\"O Available since Linux 3.14 for ext4 (only for extent-based files) and XFS.
+Linux 3.14 以降の ext4 (エクステントベースのファイルのみ) と XFS で利用可能である。
+.TP
+.BR \-V ", " \-\-version
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h ", " \-\-help
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH AUTHORS
+.SH 著者
+.MT sandeen@redhat.com
+Eric Sandeen
+.ME
+.br
+.MT kzak@redhat.com
+Karel Zak
+.ME
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR truncate (1),
+.BR fallocate (2),
+.BR posix_fallocate (3)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The fallocate command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+fallocate コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
