@@ -3,7 +3,7 @@
 .\"
 .\" Japanese Version Copyright (c) 2020 Yuichi SATO
 .\"         all rights reserved.
-.\" Translated Sun Apr  5 00:45:54 JST 2020
+.\" Translated Sun Apr  5 12:55:00 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH DMESG "1" "July 2012" "util-linux" "User Commands"
@@ -289,86 +289,137 @@ syslog メッセージを指定された
 .\"O Do not print kernel's timestamps.
 カーネルのタイムスタンプを表示しない。
 .IP "\fB\-\-time\-format\fR \fIformat\fR"
-Print timestamps using the given \fIformat\fR, which can be
+.\"O Print timestamps using the given \fIformat\fR, which can be
+.\"O .BR ctime ,
+.\"O .BR reltime ,
+.\"O .B delta
+.\"O or
+.\"O .BR iso .
+タイムスタンプを指定された \fIformat\fR で表示する。
+ \fIformat\fR は
 .BR ctime ,
 .BR reltime ,
-.B delta
-or
-.BR iso .
-The first three formats are aliases of the time-format-specific options.
-The
+.BR delta ,
 .B iso
-format is a
+のいずれかある。
+最初の 3 つの形式は、時間形式固有のオプションのエイリアスである。
+.\"O The
+.\"O .B iso
+.\"O format is a
+.\"O .B dmesg
+.\"O implementation of the ISO-8601 timestamp format.  The purpose of this format is
+.\"O to make the comparing of timestamps between two systems, and any other parsing,
+.\"O easy.  The definition of the \fBiso\fR timestamp is:
+.\"O YYYY-MM-DD<T>HH:MM:SS,<microseconds><-+><timezone offset from UTC>.
+.B iso
+形式は ISO-8601 タイムスタンプ形式の
 .B dmesg
-implementation of the ISO-8601 timestamp format.  The purpose of this format is
-to make the comparing of timestamps between two systems, and any other parsing,
-easy.  The definition of the \fBiso\fR timestamp is:
-YYYY-MM-DD<T>HH:MM:SS,<microseconds><-+><timezone offset from UTC>.
+での実装である。
+この形式の目的は、2 つのシステムのタイムスタンプの比較と、
+その他の解析をしやすくすることである。
+\fBiso\fR タイムスタンプの定義は、以下の通りである:
+YYYY-MM-DD<T>HH:MM:SS,<microseconds><-+><UTC からのタイムゾーンオフセット>。
 .IP
-The
+.\"O The
+.\"O .B iso
+.\"O format has the same issue as
+.\"O .BR ctime :
+.\"O the time may be inaccurate when a system is suspended and resumed.
 .B iso
-format has the same issue as
-.BR ctime :
-the time may be inaccurate when a system is suspended and resumed.
+形式は
+.B ctime
+と同じ問題がある:
+システムがサスペンドまたはレジュームすると、時間が正確でなくなる
+可能性がある。
 .TP
 .BR \-u , " \-\-userspace"
-Print userspace messages.
+.\"O Print userspace messages.
+ユーザー空間のメッセージを表示する。
 .TP
 .BR \-w , " \-\-follow"
-Wait for new messages.  This feature is supported only on systems with
-a readable /dev/kmsg (since kernel 3.5.0).
+.\"O Wait for new messages.  This feature is supported only on systems with
+.\"O a readable /dev/kmsg (since kernel 3.5.0).
+新しいメッセージを待つ。
+この機能は、読み込み可能な /dev/kmsg (カーネル 3.5.0 以降) を持つシステムでのみサポートされる。
 .TP
 .BR \-x , " \-\-decode"
-Decode facility and level (priority) numbers to human-readable prefixes.
+.\"O Decode facility and level (priority) numbers to human-readable prefixes.
+ファシリティとレベル (優先度) の数値を、人が読みやすいプレフィックスにデコードする。
 .TP
 .BR \-V , " \-\-version"
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .TP
 .BR \-h , " \-\-help"
-Display help text and exit.
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
 .\"O .SH COLORS
 .SH カラー表示
-Implicit coloring can be disabled by an empty file \fI/etc/terminal-colors.d/dmesg.disable\fR.
-See
+.\"O Implicit coloring can be disabled by an empty file \fI/etc/terminal-colors.d/dmesg.disable\fR.
+暗黙のカラー表示は、空ファイル \fI/etc/terminal-colors.d/dmesg.disable\fR で
+無効化できる。
+.\"O See
+.\"O .BR terminal-colors.d (5)
+.\"O for more details about colorization configuration.
+カラー表示設定のより詳細は、
 .BR terminal-colors.d (5)
-for more details about colorization configuration.
+を参照すること。
 .PP
-The logical color names supported by
+.\"O The logical color names supported by
+.\"O .B dmesg
+.\"O are:
 .B dmesg
-are:
+でサポートされる論理的なカラー名は以下の通り:
 .TP
 .B subsys
-The message sub-system prefix (e.g. "ACPI:").
+.\"O The message sub-system prefix (e.g. "ACPI:").
+メッセージのサブシステムプレフィックス (例えば、"ACPI:")。
 .TP
 .B time
-The message timestamp.
+.\"O The message timestamp.
+メッセージのタイムスタンプ。
 .TP
 .B timebreak
-The message timestamp in short ctime format in \fB\-\-reltime\fR 
-or \fB\-\-human\fR output.
+.\"O The message timestamp in short ctime format in \fB\-\-reltime\fR 
+.\"O or \fB\-\-human\fR output.
+\fB\-\-reltime\fR または \fB\-\-human\fR output における、
+短い ctime 形式のメッセージのタイムスタンプ。
 .TP
 .B alert
-The text of the message with the alert log priority.
+.\"O The text of the message with the alert log priority.
+アラートログ優先度のメッセージの文字列。
 .TP
 .B crit
-The text of the message with the critical log priority.
+.\"O The text of the message with the critical log priority.
+致命的ログ優先度のメッセージの文字列。
 .TP
 .B err
-The text of the message with the error log priority.
+.\"O The text of the message with the error log priority.
+エラーログ優先度のメッセージの文字列。
 .TP
 .B warn
-The text of the message with the warning log priority.
+.\"O The text of the message with the warning log priority.
+警告ログ優先度のメッセージの文字列。
 .TP
 .B segfault
-The text of the message that inform about segmentation fault.
+.\"O The text of the message that inform about segmentation fault.
+セグメンテーションフォールトを知らせるメッセージの文字列。
 .\"O .SH EXIT STATUS
 .SH 返り値
+.\"O .B dmesg
+.\"O can fail reporting permission denied error.  This is usually caused by
+.\"O .B dmesg_restrict
+.\"O kernel setting, please see
+.\"O .BR syslog (2)
+.\"O for more details.
 .B dmesg
-can fail reporting permission denied error.  This is usually caused by
+は権限不足によるエラーで、表示に失敗する可能性がある。
+これは多くの場合、
 .B dmesg_restrict
-kernel setting, please see
+カーネル設定で引き起こされる。
+より詳細は
 .BR syslog (2)
-for more details.
+を参照してほしい。
 .\"O .SH SEE ALSO
 .SH 関連項目
 .BR terminal-colors.d (5),
@@ -380,11 +431,17 @@ Karel Zak
 .ME
 
 .br
+.\"O .B dmesg
+.\"O was originally written by
+.\"O .MT tytso@athena.mit.edu
+.\"O Theodore Ts'o
+.\"O .ME
 .B dmesg
-was originally written by
+は元々
 .MT tytso@athena.mit.edu
 Theodore Ts'o
 .ME
+によって書かれた。
 .\"O .SH AVAILABILITY
 .SH 入手方法
 .\"O The dmesg command is part of the util-linux package and is available from
