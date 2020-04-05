@@ -1,0 +1,341 @@
+.\" Copyright (C) 1994-2005 Jeff Tranter (tranter@pobox.com)
+.\" Copyright (C) 2012 Karel Zak <kzak@redhat.com>
+.\"
+.\" It may be distributed under the GNU Public License, version 2, or
+.\" any higher version. See section COPYING of the GNU Public license
+.\" for conditions under which this file may be redistributed.
+.\"
+.\" Japanese Version Copyright (c) 2000 OOGAMI Atsushi
+.\"         all rights reserved.
+.\" Translated Tue Oct 31 20:58:03 JST 2000
+.\"         by OOGAMI Atsushi <ati@ff.iij4u.or.jp>, eject-2.0.2
+.\" Updated & Modified Sat Sep 29 09:34:15 JST 2001
+.\"         by Yuichi SATO <ysato@h4.dion.ne.jp>, eject-2.0.10
+.\" Updated & Modified Fri Oct 20 04:18:25 JST 2006
+.\"         by Yuichi SATO <ysato@h4.dion.ne.jp>, eject-2.1.5
+.\" Updated & Modified Sun Apr  5 16:38:19 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>, util-linux-2.34
+.\"
+.\"WORD:        eject                           イジェクトする
+.\"WORD:        multi-disc CD-ROM changer       連装 CD-ROM チェンジャ
+.\"WORD:        auto-eject                      自動イジェクト
+.\"WORD:        tray                            トレイ
+.\"WORD:        proprietary                     独自規格
+.\"
+.TH EJECT 1 "April 2012" "Linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O eject \- eject removable media
+eject \- リムーバブルメディアをイジェクトする
+.\"O .SH SYNOPSIS
+.SH 書式
+.B eject
+[options]
+.IR device | mountpoint
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B eject
+.\"O allows removable media (typically a CD-ROM, floppy disk, tape, JAZ, ZIP or USB
+.\"O disk) to be ejected under software control.  The command can also control some
+.\"O multi-disc CD-ROM changers, the auto-eject feature supported by some devices,
+.\"O and close the disc tray of some CD-ROM drives.
+.B eject
+を用いると、リムーバブルメディア (CD-ROM、フロッピーディスク、テープ、
+JAZ、ZIP、USB ディスクなど) をソフトウェア制御によってイジェクトできる。
+また eject は、連装 CD-ROM チェンジャを制御したり、
+デバイスの自動イジェクト機能を制御したり、CD-ROM ドライブのディスクトレイを
+閉じることもできる (製品によってはできないこともある)。
+.PP
+.\"O The device corresponding to \fIdevice\fP or \fImountpoint\fP is ejected.  If no
+.\"O name is specified, the default name \fB/dev/cdrom\fR is used.  The device may be
+.\"O addressed by device name (e.g. 'sda'), device path (e.g. '/dev/sda'),
+.\"O UUID=\fIuuid\fR or LABEL=\fIlabel\fR tags.
+
+引き数 \fIdevice\fP または \fImountpoint\fP に対応するデバイスがイジェクトされる。
+名前が指定されない場合、デフォルトでは \fB/dev/cdrom\fR が対象となる。
+デバイスは、デバイス名 (例えば 'sda')、デバイスパス (例えば '/dev/sda')、
+UUID=\fIuuid\fR、 LABEL=\fIlabel\fR タグのいずれかで指定できる。
+.PP
+.\"O There are four different methods of ejecting, depending on whether the device
+.\"O is a CD-ROM, SCSI device, removable floppy, or tape.  By default \fBeject\fR tries
+.\"O all four methods in order until it succeeds.
+対象デバイスが CD-ROM、SCSI デバイス、リムーバブルフロッピー、
+テープであるかによって、4 つの異なるイジェクト方法がある。
+デフォルトでは、\fBeject\fR は 4 つの方法全てを成功するまで順に試行する。
+.PP
+.\"O If a device partition is specified, the whole-disk device is used.  If the device
+.\"O or a device partition is currently mounted, it is unmounted before ejecting.
+デバイスパーティションが指定された場合、ディスクデバイス全体が使われる。
+対象デバイス、またはデバイスパーティションががマウントされている場合、
+イジェクト前にアンマウントされる。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-a , " \-\-auto on" | off
+.\"O This option controls the auto-eject mode, supported by some devices.  When
+.\"O enabled, the drive automatically ejects when the device is closed.
+このオプションは、いくつかのデバイスでサポートされている
+自動イジェクトモードを制御する。
+自動イジェクトモードを有効にすると、対象デバイスが
+クローズされたときに、そのドライブは自動的にイジェクトする。
+.TP
+.BR \-c , " \-\-changerslot " \fIslot
+.\"O With this option a CD slot can be selected from an ATAPI/IDE CD-ROM changer.
+.\"O The CD-ROM drive cannot be in use (mounted data CD or playing a music CD) for
+.\"O a change request to work. Please also note that the first slot of the changer
+.\"O is referred to as 0, not 1.
+このオプションにより、ATAPI/IDE CD-ROM チェンジャの CD スロットを選択できる。
+スロット切替要求が機能するためには、
+CD-ROM ドライブが動作中 (データ CD をマウントしていたり、
+音楽 CD を演奏していたり) であってはならない。
+チェンジャの最初のスロットが、
+1 ではなく 0 で参照される点についても注意してほしい。
+.TP
+.BR \-d , " \-\-default"
+.\"O List the default device name.
+デフォルトのデバイス名を表示する。
+.TP
+.BR \-F , " \-\-force"
+.\"O Force eject, don't check device type.
+デバイスタイプをチェックせず、強制的にイジェクトする。
+.TP
+.BR \-f , " \-\-floppy"
+.\"O This option specifies that the drive should be ejected using a removable floppy
+.\"O disk eject command.
+このオプションは、リムーバブルフロッピーディスクイジェクトコマンド
+を用いて対象ドライブをイジェクトするよう指定する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+.BR \-i , " \-\-manualeject on" | off
+.\"O This option controls locking of the hardware eject button.  When enabled, the
+.\"O drive will not be ejected when the button is pressed.  This is useful when you
+.\"O are carrying a laptop in a bag or case and don't want it to eject if the button
+.\"O is inadvertently pressed.
+このオプションは、ハードウェアイジェクトボタンのロックを制御する。
+有効にすると、ボタンが押されてもドライブがイジェクトしない。
+これは、ラップトップ PC をバックやケースに入れて運んでいるときに、
+意図せずボタンが押されてもイジェクトしてほしくない場合に役に立つ。
+.TP
+.BR \-M , " \-\-no\-partitions\-unmount"
+.\"O The option tells eject to not try to unmount other partitions on partitioned
+.\"O devices.  If another partition is still mounted, the program will not attempt
+.\"O to eject the media.  It will attempt to unmount only the device or mountpoint
+.\"O given on the command line.
+このオプションが指定されると、eject はパーティション区切りデバイスの
+他のパーティションをアンマウントしない。
+他のパーティションがまだマウントされている場合、このプログラムは
+メディアをイジェクトしようとしない。
+このプログラムは、デバイスまたはマウントポイントが
+コマンドラインで指定された場合にのみ、アンマウントを行う。
+.TP
+.BR \-m , " \-\-no\-unmount"
+.\"O The option tells eject to not try to unmount at all.
+このオプションは eject にアンマウントを全く行わせない。
+.TP
+.BR \-n , " \-\-noop"
+.\"O With this option the selected device is displayed but no action is performed.
+このオプションは選択されたデバイスを表示するが、何の操作も行わない。
+.TP
+.BR \-p , " \-\-proc"
+.\"O This option allows you to use /proc/mounts instead /etc/mtab.  It also passes the
+.\"O \fB\-n\fR option to \fBumount\fR(8).
+このオプションを指定すると、
+/etc/mtab ではなく /proc/mounts を使うことができる。
+このオプションは \fBumount\fR(8) に \fB\-n\fR オプションを渡す。
+.TP
+.BR \-q , " \-\-tape"
+.\"O This option specifies that the drive should be ejected using a tape drive
+.\"O offline command.
+このオプションは、テープドライブオフラインコマンドを用いて対象
+ドライブをイジェクトするよう指定する。
+.TP
+.BR \-r , " \-\-cdrom"
+.\"O This option specifies that the drive should be ejected using a CDROM eject
+.\"O command.
+このオプションは、CDROM イジェクトコマンドを用いて対象ドライブを
+イジェクトするよう指定する。
+.TP
+.BR \-s , " \-\-scsi"
+.\"O This option specifies that the drive should be ejected using SCSI commands.
+このオプションは、SCSI コマンドを用いて対象ドライブをイジェクト
+するよう指定する。
+.TP
+.BR \-T , " \-\-traytoggle"
+.\"O With this option the drive is given a CD-ROM tray close command if it's opened,
+.\"O and a CD-ROM tray eject command if it's closed.  Not all devices support this
+.\"O command, because it uses the above CD-ROM tray close command.
+このオプションは、CD-ROM トレイがオープンしている場合には、
+クローズコマンドを与える。
+また CD-ROM トレイがクローズしている場合には、イジェクトコマンドを与える。
+このオプションは上記の CD-ROM トレイのクローズコマンドを使うので、
+全てのデバイスでこのコマンドがサポートされている訳ではない。
+.TP
+.BR \-t , " \-\-trayclose"
+.\"O With this option the drive is given a CD-ROM tray close command.  Not all
+.\"O devices support this command.
+このオプションは、ドライブに CD-ROM トレイのクローズコマンドを与える。
+全てのデバイスがこのコマンドをサポートするわけではない。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-v , " \-\-verbose"
+.\"O Run in verbose mode; more information is displayed about what the command is
+.\"O doing.
+詳細表示モードで実行する; eject が実行していることについて、より多くの情報が表示される。
+.TP
+.BR \-X , " \-\-listspeed"
+.\"O With this option the CD-ROM drive will be probed to detect the available
+.\"O speeds.  The output is a list of speeds which can be used as an argument of the
+.\"O \fB\-x\fR option.  This only works with Linux 2.6.13 or higher, on previous versions
+.\"O solely the maximum speed will be reported.  Also note that some drives may not
+.\"O correctly report the speed and therefore this option does not work with them.
+このオプションは CD-ROM ドライブで利用可能なスピードを調べる。
+出力はスピードのリストで、\fB\-x\fR オプションの引き数として指定可能である。
+このオプションは Linux 2.6.13 以降でのみ動作し、
+それ以前のバージョンでは単に最大スピードだけが返される。
+スピードを正確に返さないドライブもあり、そのようなドライブでは、
+このオプションが動作しない点に注意すること。
+.TP
+.BR \-x , " \-\-cdspeed " \fIspeed
+.\"O With this option the drive is given a CD-ROM select speed command.  The
+.\"O .I speed
+.\"O argument is a number indicating the desired speed (e.g. 8 for 8X speed), or 0
+.\"O for maximum data rate.  Not all devices support this command and you can only
+.\"O specify speeds that the drive is capable of.  Every time the media is changed
+.\"O this option is cleared.  This option can be used alone, or with the
+.\"O \fB\-t\fR and \fB\-c\fR options.
+このオプションはドライブに CD-ROM スピード選択コマンドを与える。
+.I speed
+引き数は希望するスピード (たとえば 8 倍速の場合は 8) を表す数字である。
+最大データレートにする場合は 0 にする。
+全てのデバイスがこのコマンドをサポートしているわけではないので、
+これをサポートしているデバイスにのみ指定できる。
+メディアを交換するたびに、このオプションはクリアされる。
+このオプションは単独で使用するか、\fB\-t\fR と \fB\-c\fR オプションとともに使用する。
+.\"O .SH EXIT STATUS
+.SH 返り値
+.\"O Returns 0 if operation was successful, 1 if operation failed or command syntax
+.\"O was not valid.
+操作が成功すると 0 を返す。
+操作が失敗、またはコマンドの構文が間違っていると 1 を返す。
+.\"O .SH NOTES
+.SH 注意
+.\"O .B eject
+.\"O only works with devices that support one or more of the four methods of
+.\"O ejecting.  This includes most CD-ROM drives (IDE, SCSI, and proprietary), some
+.\"O SCSI tape drives, JAZ drives, ZIP drives (parallel port, SCSI, and IDE
+.\"O versions), and LS120 removable floppies.  Users have also reported success with
+.\"O floppy drives on Sun SPARC and Apple Macintosh systems.  If
+.\"O .B eject
+.\"O does not work, it is most likely a limitation of the kernel driver for the
+.\"O device and not the
+.\"O .B eject
+.\"O program itself.
+.B eject
+は、4 つのイジェクト方法のうち 1 つ以上をサポートするデバイスに対して
+のみ有効である。
+これには、ほとんどの CD-ROM ドライブ (IDE、SCSI、独自規格)、
+何種類かの SCSI テープドライブ、JAZ ドライブ、
+ZIP ドライブ (パラレルポート版、SCSI 版、IDE 版)、
+LS120 リムーバブルフロッピーが含まれる。
+Sun SPARC と Apple Macintosh のフロッピードライブについても、
+ユーザーからの成功報告がある。
+.B eject
+が動作しないのは、ほとんどの場合、
+そのデバイスのカーネルドライバの制限によるものであり、
+.B eject
+プログラム自体の制限ではない。
+.PP
+.\"O The \fB\-r\fR, \fB\-s\fR, \fB\-f\fR, and \fB\-q\fR options allow controlling
+.\"O which methods are used to
+.\"O eject.  More than one method can be specified.  If none of these options are
+.\"O specified, it tries all four (this works fine in most cases).
+\fB\-r\fR, \fB\-s\fR, \fB\-f\fR, \fB\-q\fR オプションで、
+どのイジェクト方法を用いるかを制御できる。
+複数のイジェクト方法を指定することができる。
+これらのオプションが全く指定されないと、eject は 4 つの方法全てを試行する
+(これはほとんどの場合に上手く動作する)。
+.PP
+.\"O .B eject
+.\"O may not always be able to determine if the device is mounted (e.g. if it has
+.\"O several names).  If the device name is a symbolic link,
+.\"O .B eject
+.\"O will follow the link and use the device that it points to.
+.B eject
+は、対象デバイスがマウントされているかどうかを常に判断できるわけではない
+(例えば、そのデバイスに複数の名前がある場合)。
+デバイス名がシンボリックリンクである場合、
+.B eject
+はリンクを辿り、リンク先のデバイスを使用する。
+.PP
+.\"O If
+.\"O .B eject
+.\"O determines that the device can have multiple partitions, it will attempt to
+.\"O unmount all mounted partitions of the device before ejecting (see also
+.\"O \fB--no-partitions-unmount\fR).  If an unmount fails, the program will not
+.\"O attempt to eject the media.
+対象デバイスが複数のパーティションを持ち得ると判断した場合、
+.B eject
+は、そのデバイスのマウントされたパーティションを
+イジェクト前に全てアンマウントしようとする (\fB--no-partitions-unmount\fR を参照)。
+アンマウントに失敗すると、eject はメディアのイジェクトを中止する。
+.PP
+.\"O You can eject an audio CD.  Some CD-ROM drives will refuse to open the tray if
+.\"O the drive is empty.  Some devices do not support the tray close command.
+音楽 CD をイジェクトすることができる。 CD-ROM ドライブによっては、
+ドライブが空である場合にトレイを開くことを拒否するものもある。
+トレイクローズコマンドをサポートしないデバイスもある。
+.PP
+.\"O If the auto-eject feature is enabled, then the drive will always be ejected
+.\"O after running this command.  Not all Linux kernel CD-ROM drivers support the
+.\"O auto-eject mode.  There is no way to find out the state of the auto-eject mode.
+自動イジェクト機能が有効になると、
+そのドライブは eject を実行すると常にイジェクトされるようになる。
+全ての Linux カーネル CD-ROM ドライバが、
+自動イジェクトモードをサポートするわけではない。
+自動イジェクトモードの状態を確認する方法は無い。
+.PP
+.\"O You need appropriate privileges to access the device files.  Running as root is
+.\"O required to eject some devices (e.g. SCSI devices).
+デバイスファイルへのアクセスには適切な権限が必要である。
+デバイスによっては (例えば SCSI デバイス)、eject を root で実行しなければならなかったする。
+.\"O .SH AUTHORS
+.SH 著者
+.MT tranter@\:pobox.com
+Jeff Tranter
+.ME
+.\"O - original author.
+- オリジナルの著者。
+.br
+.MT kzak@\:redhat.com
+Karel Zak
+.ME
+.\"O and
+と
+.MT mluscon@\:redhat.com
+Michal Luscon
+.ME
+.\"O - util-linux version.
+- util-linux バージョン。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR findmnt (8),
+.BR lsblk (8),
+.BR mount (8),
+.BR umount (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The eject command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+eject コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
