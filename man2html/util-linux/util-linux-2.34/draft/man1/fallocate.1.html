@@ -1,0 +1,427 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of FALLOCATE</TITLE>
+</HEAD><BODY>
+<H1>FALLOCATE</H1>
+Section: User Commands (1)<BR>Updated: April 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+fallocate - ファイルのスペースを事前割り当てまたは解放する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>fallocate</B>
+
+[<B>-c</B>|<B>-p</B>|<B>-z</B>]
+
+[<B>-o</B>
+
+<I>offset</I>]
+
+<B>-l</B>
+
+<I>length</I>
+
+[<B>-n</B>]
+
+<I>filename</I>
+
+<P>
+
+<B>fallocate -d</B>
+
+[<B>-o</B>
+
+<I>offset</I>]
+
+[<B>-l</B>
+
+<I>length</I>]
+
+<I>filename</I>
+
+<P>
+
+<B>fallocate -x</B>
+
+[<B>-o</B>
+
+<I>offset</I>]
+
+<B>-l</B>
+
+<I>length</I>
+
+<I>filename</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+<B>fallocate</B>
+
+は割り当てられたファイルのディスクスペースを操作 (解放または事前割り当て) するために使われる。
+fallocate システムコールをサポートするファイルシステムにおいて、
+ブロックを割り当て、そのブロックが初期化されていないとマークすることで、
+データブロックに I/O を必要としないので、事前割り当てが高速に行える。
+これは、ファイルを作成して 0 で埋めるより、ずっと高速である。
+<P>
+
+
+
+
+<B>fallocate</B>
+
+の返り値は、成功の場合は 0、失敗の場合は 1 である。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+
+
+
+
+
+
+
+<I>length</I>
+
+と
+<I>offset</I>
+
+引き数の後には倍数のサフィックス KiB (=1024),
+MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB などを付けることができる
+(&quot;iB&quot; is はオプションであり、例えば &quot;K&quot; は &quot;KiB&quot; と同じ意味である)。
+または、サフィックス KB (=1000), MB (=1000*1000),
+GB, TB, PB, EB, ZB, YB などを付けることができる。
+<P>
+
+
+
+
+
+
+オプション
+<B>--collapse-range</B>, <B>--dig-holes</B>, <B>--punch-hole</B>,
+
+<B>--zero-range</B>
+
+は、どれか 1 つしか指摘できない。
+<DL COMPACT>
+<DT><B>-c</B>, <B>--collapse-range</B>
+
+<DD>
+
+
+
+
+
+
+指定したバイト範囲をファイルから削除する。
+その際、ホールを残さない。
+削除されるバイト範囲は
+<I>offset</I>
+
+から始まる
+<I>length</I>
+
+バイトの範囲である。
+
+
+
+
+
+
+
+
+操作が完了すると、ファイルの
+<I>offset</I>+<I>length</I>
+
+の位置からから始まる内容が
+<I>offset</I>
+
+の位置に見えるようになり、
+ファイルのサイズは
+<I>length</I>
+
+バイトだけ小さくなる。
+
+
+
+オプション
+<B>--keep-size</B>
+
+は範囲削除操作に指定できない。
+<P>
+
+Linux 3.15 以降の ext4 (エクステントベースのファイルのみ) と XFS で利用可能である。
+<P>
+
+
+
+
+
+効率的に動作する実装にするため、ファイルシステムはこの操作の粒度に
+制限を設けることがある。
+通常は offset と length はファイルシステムの論理ブロックサイズの倍数でなければならない。
+論理ブロックサイズはファイルシステムの種類や設定により様々である。
+ファイルシステムにこのような要求条件がある場合、
+その要求条件が満たされていなければ、fallocate はエラー EINVAL で失敗する。
+<DT><B>-d</B>, <B>--dig-holes</B>
+
+<DD>
+
+
+
+
+
+
+
+
+
+
+
+ホールを検知と作成を行う。
+このオプションは、追加のディスクスペースを使わずに、
+ファイルをスパース (sparse: まばら) にする。
+ホールの最小サイズはファイルシステムの I/O ブロックサイズに依存する
+(通常は 4096 バイトである)。
+さらに、このオプションを使うと、
+<B>--keep-size</B>
+
+が暗黙のうちに指定される。
+範囲が
+<B>--offset</B>
+
+と
+<B>--length</B>
+
+で指定されない場合、ホールをファイル全体で分析する。
+<P>
+
+
+
+
+このオプションは、
+&quot;<B>cp --sparse</B>&quot;
+
+を行って、追加のディスクスペースを必要とせずに、
+コピー先ファイルを元のファイルにリネームするのと同じと考えられる。
+<P>
+
+サポートされるファイルシステムのリストは、<B>--punch-hole</B> を参照すること。
+<DT><B>-i</B>, <B>--insert-range</B>
+
+<DD>
+
+
+
+
+
+既存のデータをシフトさせ、
+<I>offset</I>
+
+から
+<I>length</I>
+
+バイトのホールを挿入する。
+<DT><B>-l</B>, <B>--length </B><I>length</I>
+
+<DD>
+
+範囲の長さをバイト単位で指定する。
+<DT><B>-n</B>, <B>--keep-size</B>
+
+<DD>
+
+
+ファイルの外見の長さを変更しない。
+このオプションは EOF の後に、効率的にブロックを割り当てられる。
+このブロックは切り詰めて削除できる。
+<DT><B>-o</B>, <B>--offset </B><I>offset</I>
+
+<DD>
+
+範囲の開始オフセットを、バイト単位で指定する。
+<DT><B>-p</B>, <B>--punch-hole</B>
+
+<DD>
+
+
+
+
+
+<I>offset</I>
+
+で始まる
+<I>length</I>
+
+バイトの領域の空間を解放する (ホールを作成する)。
+
+
+
+
+指定された範囲のうち、
+部分的に使用しているファイルシステムブロックは 0 で埋められ、
+全体を使用しているファイルシステムブロックはそのファイルから
+削除される。
+呼び出しが成功すると、これ以降のこの範囲からの読み出しでは 0 を返す。
+
+
+
+このオプションは
+<B>--zero-range</B>
+
+と同時に指定できない。
+
+
+
+このオプションを使うと、
+<B>--keep-size</B>
+
+が暗黙のうちに指定される。
+<P>
+
+
+XFS (Linux 2.6.38 以降), ext4 (Linux 3.0 以降),
+Btrfs (Linux 3.7 以降), tmpfs (Linux 3.5 以降) でサポートされる。
+<DT><B>-v</B>, <B>--verbose</B>
+
+<DD>
+
+詳細表示モードを有効にする。
+<DT><B>-x</B>, <B>--posix</B>
+
+<DD>
+
+
+
+
+POSIX 操作モードを有効にする。
+このモードでは割り当て操作は常に完了するが、ファイルが作られる
+ファイルシステムが高速な割り当てをサポートしていない場合、
+長い時間がかかる。
+<DT><B>-z</B>, <B>--zero-range</B>
+
+<DD>
+
+
+
+
+
+<I>offset</I>
+
+で始まる
+<I>length</I>
+
+バイト範囲の空間をゼロ埋めする。
+
+
+
+
+指定された範囲の中では、ブロックは、そのファイル内のホールが広がる
+領域にあらかじめ割り当てられたものである。
+呼び出しが成功すると、これ以降のこの範囲からの読み出しでは 0 を返す。
+<P>
+
+
+
+
+
+ゼロ埋めは、ファイルシステム内部では、指定された範囲を書き込みを
+伴わないエクステントに変換する方法をできるだけ使って行われる。
+この方法は、指定された範囲について物理的にゼロ埋めしたデータが
+デバイスに書き込まれるのではないことを意味する
+(例外は指定された範囲の端の部分的に使用しているブロックである)。
+(これ以外で) I/O が必要なのはメタデータの更新だけである。
+<P>
+
+
+ファイルの長さを変更しないように、オプション <B>--keep-size</B> が指定できる。
+<P>
+
+Linux 3.14 以降の ext4 (エクステントベースのファイルのみ) と XFS で利用可能である。
+<DT><B>-V</B>, <B>--version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>, <B>--help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>著者</H2>
+
+
+Eric Sandeen
+
+<BR>
+
+
+Karel Zak
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/truncate.1.html">truncate</A></B>(1),
+
+<B><A HREF="../man2/fallocate.2.html">fallocate</A></B>(2),
+
+<B><A HREF="../man3/posix_fallocate.3.html">posix_fallocate</A></B>(3)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+fallocate コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">著者</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:14:46 GMT, April 05, 2020
+</BODY>
+</HTML>
