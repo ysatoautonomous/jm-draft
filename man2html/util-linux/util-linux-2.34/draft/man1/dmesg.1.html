@@ -357,120 +357,171 @@ syslog メッセージを指定された
 
 カーネルのタイムスタンプを表示しない。
 <DT><B>--time-format</B> <I>format</I><DD>
-Print timestamps using the given <I>format</I>, which can be
+
+
+
+
+
+
+タイムスタンプを指定された <I>format</I> で表示する。
+<BR>&nbsp;<I>format</I>&nbsp;は
 <B>ctime</B>,
 
 <B>reltime</B>,
 
-<B>delta</B>
+<B>delta</B>,
 
-or
-<B>iso</B>.
-
-The first three formats are aliases of the time-format-specific options.
-The
 <B>iso</B>
 
-format is a
+のいずれかある。
+最初の 3 つの形式は、時間形式固有のオプションのエイリアスである。
+
+
+
+
+
+
+
+
+<B>iso</B>
+
+形式は ISO-8601 タイムスタンプ形式の
 <B>dmesg</B>
 
-implementation of the ISO-8601 timestamp format.  The purpose of this format is
-to make the comparing of timestamps between two systems, and any other parsing,
-easy.  The definition of the <B>iso</B> timestamp is:
-YYYY-MM-DD&lt;T&gt;HH:MM:SS,&lt;microseconds&gt;&lt;-+&gt;&lt;timezone offset from UTC&gt;.
+での実装である。
+この形式の目的は、2 つのシステムのタイムスタンプの比較と、
+その他の解析をしやすくすることである。
+<B>iso</B> タイムスタンプの定義は、以下の通りである:
+YYYY-MM-DD&lt;T&gt;HH:MM:SS,&lt;microseconds&gt;&lt;-+&gt;&lt;UTC からのタイムゾーンオフセット&gt;。
 <DT><DD>
-The
+
+
+
+
+
 <B>iso</B>
 
-format has the same issue as
-<B>ctime</B>:
+形式は
+<B>ctime</B>
 
-the time may be inaccurate when a system is suspended and resumed.
+と同じ問題がある:
+システムがサスペンドまたはレジュームすると、時間が正確でなくなる
+可能性がある。
 <DT><B>-u</B>,<B> --userspace</B>
 
 <DD>
-Print userspace messages.
+
+ユーザー空間のメッセージを表示する。
 <DT><B>-w</B>,<B> --follow</B>
 
 <DD>
-Wait for new messages.  This feature is supported only on systems with
-a readable /dev/kmsg (since kernel 3.5.0).
+
+
+新しいメッセージを待つ。
+この機能は、読み込み可能な /dev/kmsg (カーネル 3.5.0 以降) を持つシステムでのみサポートされる。
 <DT><B>-x</B>,<B> --decode</B>
 
 <DD>
-Decode facility and level (priority) numbers to human-readable prefixes.
+
+ファシリティとレベル (優先度) の数値を、人が読みやすいプレフィックスにデコードする。
 <DT><B>-V</B>,<B> --version</B>
 
 <DD>
-Display version information and exit.
+
+バージョン情報を表示して、終了する。
 <DT><B>-h</B>,<B> --help</B>
 
 <DD>
-Display help text and exit.
+
+ヘルプを表示して、終了する。
 
 </DL>
 <A NAME="lbAF">&nbsp;</A>
 <H2>カラー表示</H2>
 
-Implicit coloring can be disabled by an empty file <I>/etc/terminal-colors.d/dmesg.disable</I>.
-See
+
+暗黙のカラー表示は、空ファイル <I>/etc/terminal-colors.d/dmesg.disable</I> で
+無効化できる。
+
+
+
+カラー表示設定のより詳細は、
 <B><A HREF="../man5/terminal-colors.d.5.html">terminal-colors.d</A></B>(5)
 
-for more details about colorization configuration.
+を参照すること。
 <P>
 
-The logical color names supported by
+
+
+
 <B>dmesg</B>
 
-are:
+でサポートされる論理的なカラー名は以下の通り:
 <DL COMPACT>
 <DT><B>subsys</B>
 
 <DD>
-The message sub-system prefix (e.g. &quot;ACPI:&quot;).
+
+メッセージのサブシステムプレフィックス (例えば、&quot;ACPI:&quot;)。
 <DT><B>time</B>
 
 <DD>
-The message timestamp.
+
+メッセージのタイムスタンプ。
 <DT><B>timebreak</B>
 
 <DD>
-The message timestamp in short ctime format in <B>--reltime</B> 
-or <B>--human</B> output.
+
+
+<B>--reltime</B> または <B>--human</B> output における、
+短い ctime 形式のメッセージのタイムスタンプ。
 <DT><B>alert</B>
 
 <DD>
-The text of the message with the alert log priority.
+
+アラートログ優先度のメッセージの文字列。
 <DT><B>crit</B>
 
 <DD>
-The text of the message with the critical log priority.
+
+致命的ログ優先度のメッセージの文字列。
 <DT><B>err</B>
 
 <DD>
-The text of the message with the error log priority.
+
+エラーログ優先度のメッセージの文字列。
 <DT><B>warn</B>
 
 <DD>
-The text of the message with the warning log priority.
+
+警告ログ優先度のメッセージの文字列。
 <DT><B>segfault</B>
 
 <DD>
-The text of the message that inform about segmentation fault.
+
+セグメンテーションフォールトを知らせるメッセージの文字列。
 
 </DL>
 <A NAME="lbAG">&nbsp;</A>
 <H2>返り値</H2>
 
+
+
+
+
+
+
 <B>dmesg</B>
 
-can fail reporting permission denied error.  This is usually caused by
+は権限不足によるエラーで、表示に失敗する可能性がある。
+これは多くの場合、
 <B>dmesg_restrict</B>
 
-kernel setting, please see
+カーネル設定で引き起こされる。
+より詳細は
 <B><A HREF="../man2/syslog.2.html">syslog</A></B>(2)
 
-for more details.
+を参照してほしい。
 
 <A NAME="lbAH">&nbsp;</A>
 <H2>関連項目</H2>
@@ -489,12 +540,18 @@ Karel Zak
 <P>
 <BR>
 
+
+
+
+
+
 <B>dmesg</B>
 
-was originally written by
+は元々
 
 Theodore Ts'o
 
+によって書かれた。
 
 <A NAME="lbAJ">&nbsp;</A>
 <H2>入手方法</H2>
@@ -527,6 +584,6 @@ Linux Kernel Archive
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 23:06:35 GMT, April 04, 2020
+Time: 03:56:52 GMT, April 05, 2020
 </BODY>
 </HTML>
