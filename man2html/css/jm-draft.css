@@ -1,16 +1,27 @@
+HTML {
+    font-size: 62.5%;
+}
+BODY {
+    font-size: 12px;
+    font-size: 1.2rem;
+}
 H1 {
     background-color: #88FF88;
-    font-size: 16pt;
+    font-size: 16px;
+    font-size: 1.6rem;
 }
 H2 {
     background-color: #CCFFCC;
-    font-size: 14pt;
+    font-size: 14px;
+    font-size: 1.4rem;
 }
 H3 {
     background-color: #DDFFCC;
-    font-size: 12pt;
+    font-size: 12px;
+    font-size: 1.2rem;
 }
 DT {
     background-color: #EEFFCC;
-    font-size: 12pt;
+    font-size: 12px;
+    font-size: 1.2rem;
 }
