@@ -27,7 +27,7 @@ DT {
     font-size: 3.2rem;
 }
 
-@media screen and(min-width: 1280px) {
+@media screen and(min-width: 760px) {
     BODY {
 	font-size: 16px;
 	font-size: 1.6rem;
