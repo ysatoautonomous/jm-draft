@@ -2,50 +2,50 @@ HTML {
     font-size: 62.5%;
 }
 BODY {
-    font-size: 16px;
-    font-size: 1.6rem;
+    font-size: 32px;
+    font-size: 3.2rem;
     -webkit-text-size-adjust: 100%;
 }
 H1 {
     background-color: #88FF88;
-    font-size: 20px;
-    font-size: 2.0rem;
+    font-size: 40px;
+    font-size: 4.0rem;
 }
 H2 {
     background-color: #CCFFCC;
-    font-size: 18px;
-    font-size: 1.8rem;
+    font-size: 36px;
+    font-size: 3.6rem;
 }
 H3 {
     background-color: #DDFFCC;
-    font-size: 16px;
-    font-size: 1.6rem;
+    font-size: 32px;
+    font-size: 3.2rem;
 }
 DT {
     background-color: #EEFFCC;
-    font-size: 16px;
-    font-size: 1.6rem;
+    font-size: 32px;
+    font-size: 3.2rem;
 }
 
-@media screen and(max-width: 480px) {
+@media screen and(min-width: 1280px) {
     BODY {
-	font-size: 32px;
-	font-size: 3.2rem;
+	font-size: 16px;
+	font-size: 1.6rem;
     }
     H1 {
-	font-size: 40px;
-	font-size: 4.0rem;
+	font-size: 20px;
+	font-size: 2.0rem;
     }
     H2 {
-	font-size: 36px;
-	font-size: 3.6rem;
+	font-size: 18px;
+	font-size: 1.8rem;
     }
     H3 {
-	font-size: 32px;
-	font-size: 3.2rem;
+	font-size: 16px;
+	font-size: 1.6rem;
     }
     DT {
-	font-size: 32px;
-	font-size: 3.2rem;
+	font-size: 16px;
+	font-size: 1.6rem;
     }
 }
