@@ -2,22 +2,32 @@ HTML {
     font-size: 62.5%;
 }
 BODY {
+    font-size: 32px;
+    font-size: 3.2rem;
     -webkit-text-size-adjust: 100%;
 }
 H1 {
     background-color: #88FF88;
+    font-size: 40px;
+    font-size: 4.0rem;
 }
 H2 {
     background-color: #CCFFCC;
+    font-size: 36px;
+    font-size: 3.6rem;
 }
 H3 {
     background-color: #DDFFCC;
+    font-size: 32px;
+    font-size: 3.2rem;
 }
 DT {
     background-color: #EEFFCC;
+    font-size: 32px;
+    font-size: 3.2rem;
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (min-width: 480px) {
     BODY {
 	font-size: 32px;
 	font-size: 3.2rem;
@@ -40,7 +50,7 @@ DT {
     }
 }
 
-@media screen and (max-width: 760px) {
+@media screen and (min-width: 760px) {
     BODY {
 	font-size: 16px;
 	font-size: 1.6rem;
