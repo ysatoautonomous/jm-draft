@@ -1,0 +1,136 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Wed Apr  8 23:26:05 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH "hardlink" "1"
+.\"O .SH "NAME"
+.SH 名前
+.\"O hardlink \- Consolidate duplicate files via hardlinks
+hardlink \- 複製されたファイルをハードリンクで統合する
+.\"O .SH "SYNOPSIS"
+.SH 書式
+.B hardlink
+[options]
+.RI [ directory ...]
+.\"O .SH "DESCRIPTION"
+.SH 説明
+.PP
+.\"O This manual page documents \fBhardlink\fR, a
+.\"O program which consolidates duplicate files in one or more directories
+.\"O using hardlinks.
+このマニュアルページは \fBhardlink\fR のドキュメントである。
+このプログラムはハードリンクを使って 1 つ以上のディレクトリにある
+複製されたファイルを統合する。
+.PP
+.\"O \fBhardlink\fR traverses one
+.\"O or more directories searching for duplicate files.  When it finds duplicate
+.\"O files, it uses one of them as the master.  It then removes all other
+.\"O duplicates and places a hardlink for each one pointing to the master file.
+.\"O This allows for conservation of disk space where multiple directories
+.\"O on a single filesystem contain many duplicate files.
+\fBhardlink\fR は 1 つ以上のディレクトリをたどって、
+複製されたファイルを探す。
+複製されたファイルが見つかった場合、そのうちの 1 つをマスターとする。
+それから、その他の全ての複製されたファイルを削除し、
+マスターファイルを指すようにハードリンクを置く。
+これにより、多くの複製されたファイルを含む、1 つのファイルシステム上の
+複数ディレクトリのディスクスペースを少なくできる。
+.PP
+.\"O Since hard links can only span a single filesystem, \fBhardlink\fR
+.\"O is only useful when all directories specified are on the same filesystem.
+ハードリンクは 1 つのファイルシステムにしか適用できないので、
+\fBhardlink\fR は指定された全てのディレクトリが同じファイルシステム上にある場合にのみ
+有効である。
+.\"O .SH "OPTIONS"
+.SH オプション
+.TP
+.BR \-c , " \-\-content"
+.\"O Compare only the contents of the files being considered for consolidation.
+.\"O Disregards permission, ownership and other differences.
+統合するために、ファイルの内容のみを比較する。
+権限、所有者、その他の違いは無視する。
+.TP
+.BR \-f , " \-\-force"
+.\"O Force hardlinking across file systems.
+ファイルシステムをまたがって、ハードリンクを強制的に作成する。
+.TP
+.BR \-n , " \-\-dry\-run"
+.\"O Do not perform the consolidation; only print what would be changed.
+統合を行わず、何が変わるかの表示のみを行う。
+.TP
+.BR \-v , " \-\-verbose"
+.\"O Print summary after hardlinking. The option may be specified more than once. In
+.\"O this case (e.g. \fB-vv\fR) it prints every hardlinked file and bytes saved.
+ハードリンクを作成した後、サマリーを表示する。
+このオプションは 1 回以上指定できる。
+この場合 (例えば、\fB-vv\fR)、ハードリンクされたファイルと、削減されたバイト数を
+表示する。
+.TP
+.BR \-x , " \-\-exclude " \fIregex\fR
+.\"O Exclude files and directories matching pattern from hardlinking.
+パターンにマッチしたファイルまたはディレクトリを、ハードリンク
+作成から除外する。
+.sp
+.\"O The optional pattern for excluding files and directories must be a PCRE2
+.\"O compatible regular expression. Only the basename of the file or directory
+.\"O is checked, not its path. Excluded directories' contents will not be examined.
+ファイルとディレクトリを除外するオプションのパターンは、PCRE2 互換の正規表現である。
+ファイルとディレクトリのベース名のみをチェックし、
+パスはチェックしない。
+除外されたディレクトリの内容は調べない。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.\"O .SH "AUTHOR"
+.SH 著者
+.PP
+.\"O \fBhardlink\fR was written by Jakub Jelinek <jakub@redhat.com> and later modified by
+.\"O Ruediger Meier <ruediger.meier@ga-group.nl> and Karel Zak <kzak@redhat.com> for util-linux.
+\fBhardlink\fR は Jakub Jelinek <jakub@redhat.com> によって書かれ、
+後に util-linux 用に Ruediger Meier <ruediger.meier@ga-group.nl> と
+Karel Zak <kzak@redhat.com> によって修正された。
+.PP
+.\"O Man page written by Brian Long and later updated by Jindrich Novy <jnovy@redhat.com>
+man ページは Brian Long によって書かれ、
+後に Jindrich Novy <jnovy@redhat.com> によって更新された。
+.\"O .SH "BUGS"
+.SH バグ
+.PP
+.\"O \fBhardlink\fR assumes that its target directory trees do not change from under
+.\"O it.  If a directory tree does change, this may result in \fBhardlink\fR
+.\"O accessing files and/or directories outside of the intended directory tree.
+.\"O Thus, you must avoid running \fBhardlink\fR on potentially changing directory
+.\"O trees, and especially on directory trees under control of another user.
+\fBhardlink\fR はリンク先のディレクトリツリーが、変更されないことを仮定している。
+ディレクトリツリーが変更されると、意図したディレクトリの外で
+\fBhardlink\fR がファイルとディレクトリにアクセスしてしまう。
+変更される可能性のあるディレクトリツリー、
+特に他のユーザーの制御下にあるディレクトリツリーに対しては、
+\fBhardlink\fR を動かすのは避けるべきである。
+.PP
+.\"O Historically \fBhardlink\fR silently excluded any names beginning with
+.\"O ".in.", as well as any names beginning with "." followed by exactly 6
+.\"O other characters. That prior behavior can be achieved by specifying
+.\"O .br
+.\"O -x '^(\\.in\\.|\\.[^.]{6}$)'
+歴史的に \fBhardlink\fR は、
+".in." で始まる名前と、"." で始まるちょうど 6 文字の名前を
+暗黙のうちに除外していた。
+このような以前の挙動は
+.br
+-x '^(\\.in\\.|\\.[^.]{6}$)'
+を指定することで実現できる。
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The hardlink command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+hardlink コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
