@@ -1,7 +1,7 @@
 .\"
 .\" Japanese Version Copyright (c) 2020 Yuichi SATO
 .\"         all rights reserved.
-.\" Translated Wed Apr  8 23:26:05 JST 2020
+.\" Translated Thu Apr  9 23:01:57 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH IONICE 1 "July 2011" "util-linux" "User Commands"
@@ -100,80 +100,129 @@ ionice \- プロセス I/O のスケジューリングクラスと優先度を�
 同じベストエフォート優先度で実行されているプログラムは、
 ラウンドロビン方式で I/O が提供される。
 
-Note that before kernel 2.6.26 a process that has not asked for an I/O priority
-formally uses "\fBnone\fP" as scheduling class, but the I/O scheduler will treat
-such processes as if it were in the best-effort class.  The priority within the
-best-effort class will be dynamically derived from the CPU nice level of the
-process: io_priority = (cpu_nice + 20) / 5.
+.\"O Note that before kernel 2.6.26 a process that has not asked for an I/O priority
+.\"O formally uses "\fBnone\fP" as scheduling class, but the I/O scheduler will treat
+.\"O such processes as if it were in the best-effort class.  The priority within the
+.\"O best-effort class will be dynamically derived from the CPU nice level of the
+.\"O process: io_priority = (cpu_nice + 20) / 5.
+カーネル 2.6.26 以前では、I/O 優先度を要求しないプロセスは、
+正式にはスケジューリングクラスとして "\fBnone\fP" を使うが、
+I/O スケジューラはこのようなプロセスをベストエフォートクラスに
+あるかのように扱う点に注意すること。
+ベストエフォートクラスでの優先度は、プロセスの CPU nice レベルから
+動的に計算される: io_priority = (cpu_nice + 20) / 5.
 
-For kernels after 2.6.26 with the CFQ I/O scheduler, a process that has not asked
-for an I/O priority inherits its CPU scheduling class.  The I/O priority is derived
-from the CPU nice level of the process (same as before kernel 2.6.26).
+.\"O For kernels after 2.6.26 with the CFQ I/O scheduler, a process that has not asked
+.\"O for an I/O priority inherits its CPU scheduling class.  The I/O priority is derived
+.\"O from the CPU nice level of the process (same as before kernel 2.6.26).
+CFQ I/O スケジューラを持つカーネル 2.6.26 以降では、
+I/O 優先度を要求しないプロセスは、その CPU スケジューリングクラスを継承する。
+I/O 優先度はプロセスの CPU nice レベルから計算される
+(カーネル 2.6.26 以前と同じ)。
 
-.IP "\fBRealtime\fP"
-The RT scheduling class is given first access to the disk, regardless of
-what else is going on in the system.  Thus the RT class needs to be used with
-some care, as it can starve other processes.  As with the best-effort class,
-8 priority levels are defined denoting how big a time slice a given process
-will receive on each scheduling window.  This scheduling class is not
-permitted for an ordinary (i.e., non-root) user.
-.SH OPTIONS
+.\"O .IP "\fBRealtime\fP"
+.IP "\fBrealtime\fP"
+リアルタイムスケジューリングクラスが指定されると、
+システムで何が行われているかに関わらず、ディスクに最初に
+アクセスする。
+リアルタイムクラスは、他のプロセスをに飢餓状態 (starve) にしてしまうので、
+注意して使う必要がある。
+ベストエフォートクラスと同様に、指定されたプロセスが、
+各スケジューリングウィンドウにおいて、どれだけのタイムスライスを
+受けとるかについて、8 つの優先度レベルが定義される。
+このスケジューリングクラスは、通常ユーザー (つまり、root 以外) には許可されていない。
+.\"O .SH OPTIONS
+.SH オプション
 .TP
 .BR \-c , " \-\-class " \fIclass\fR
-Specify the name or number of the scheduling class to use; \fI0\fR for none,
-\fI1\fR for realtime, \fI2\fR for best-effort, \fI3\fR for idle.
+.\"O Specify the name or number of the scheduling class to use; \fI0\fR for none,
+.\"O \fI1\fR for realtime, \fI2\fR for best-effort, \fI3\fR for idle.
+使用するスケジューリングクラスの名前、または番号を指定する:
+\fI0\fR は none、\fI1\fR は realtime、\fI2\fR は best-effort、
+\fI3\fR は idle である。
 .TP
 .BR \-n , " \-\-classdata " \fIlevel\fR
-Specify the scheduling class data.  This only has an effect if the class
-accepts an argument.  For realtime and best-effort, \fI0-7\fR are valid data
-(priority levels), and \fI0\fR represents the highest priority level.
+.\"O Specify the scheduling class data.  This only has an effect if the class
+.\"O accepts an argument.  For realtime and best-effort, \fI0-7\fR are valid data
+.\"O (priority levels), and \fI0\fR represents the highest priority level.
+スケジューリングクラスのデータを指定する。
+これはクラスが引き数を受け付ける場合にのみ有効である。
+realtime と best-effort クラスでは、\fI0-7\fR が有効なデータ
+(優先度レベル) であり、\fI0\fR が最高の優先度レベルを表す。
 .TP
 .BR \-p , " \-\-pid " \fIPID\fR...
-Specify the process IDs of running processes for which to get or set the
-scheduling parameters.
+.\"O Specify the process IDs of running processes for which to get or set the
+.\"O scheduling parameters.
+スケジューリングパラメータを取得または設定する実行中プロセスの
+プロセス ID を指定する。
 .TP
 .BR \-P , " \-\-pgid " \fIPGID\fR...
-Specify the process group IDs of running processes for which to get or set the
-scheduling parameters.
+.\"O Specify the process group IDs of running processes for which to get or set the
+.\"O scheduling parameters.
+スケジューリングパラメータを取得または設定する実行中プロセスの
+プロセスグループ ID を指定する。
 .TP
 .BR \-t , " \-\-ignore"
-Ignore failure to set the requested priority.  If \fIcommand\fR was specified,
-run it even in case it was not possible to set the desired scheduling priority,
-which can happen due to insufficient privileges or an old kernel version.
+.\"O Ignore failure to set the requested priority.  If \fIcommand\fR was specified,
+.\"O run it even in case it was not possible to set the desired scheduling priority,
+.\"O which can happen due to insufficient privileges or an old kernel version.
+要求された優先度の設定に失敗した場合に無視する。
+\fIcommand\fR が指定されている場合、
+要求したスケジューリング優先度に設定できない場合でも、コマンドを
+実行する。
+これは、権限が不十分な場合や、カーネルバージョンが古い場合に
+起こる可能性がある。
 .TP
 .BR \-h , " \-\-help"
-Display help text and exit.
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
 .TP
 .BR \-u , " \-\-uid " \fIUID\fR...
-Specify the user IDs of running processes for which to get or set the
-scheduling parameters.
+.\"O Specify the user IDs of running processes for which to get or set the
+.\"O scheduling parameters.
+スケジューリングパラメータを取得または設定する実行中プロセスの
+ユーザー ID を指定する。
 .TP
 .BR \-V , " \-\-version"
-Display version information and exit.
-.SH EXAMPLES
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.\"O .SH EXAMPLES
+.SH 例
 .LP
 .TP 7
 # \fBionice\fP -c 3 -p 89
 .TP 7
-Sets process with PID 89 as an idle I/O process.
+.\"O Sets process with PID 89 as an idle I/O process.
+PID 89 のプロセスを、idle I/O プロセスに設定する。
 .TP 7
 # \fBionice\fP -c 2 -n 0 bash
 .TP 7
-Runs 'bash' as a best-effort program with highest priority.
+.\"O Runs 'bash' as a best-effort program with highest priority.
+\&'bash' を最高優先度の best-effort プログラムとして実行する。
 .TP 7
 # \fBionice\fP -p 89 91
 .TP 7
-Prints the class and priority of the processes with PID 89 and 91.
-.SH NOTES
-Linux supports I/O scheduling priorities and classes since 2.6.13 with the CFQ
-I/O scheduler.
-.SH AUTHORS
+.\"O Prints the class and priority of the processes with PID 89 and 91.
+PID 89 と 91 のプロセスのクラスと優先度を表示する。
+.\"O .SH NOTES
+.SH 注意
+.\"O Linux supports I/O scheduling priorities and classes since 2.6.13 with the CFQ
+.\"O I/O scheduler.
+Linux は、2.6.13 以降の CFQ I/O スケジューラで、
+I/O スケジューリングの優先度とクラスをサポートしている。
+.\"O .SH AUTHORS
+.SH 著者
 .nf
 Jens Axboe <jens@axboe.dk>
 Karel Zak <kzak@redhat.com>
 .fi
-.SH SEE ALSO
+.\"O .SH SEE ALSO
+.SH 関連項目
 .BR ioprio_set (2)
-.SH AVAILABILITY
-The ionice command is part of the util-linux package and is available from
-https://www.kernel.org/pub/linux/utils/util-linux/.
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The ionice command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+ionice コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
