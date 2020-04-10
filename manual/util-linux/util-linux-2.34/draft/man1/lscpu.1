@@ -167,59 +167,91 @@ CPU の最小 MHz の値。
 .SH オプション
 .TP
 .BR \-a , " \-\-all"
-Include lines for online and offline CPUs in the output (default for \fB-e\fR).
-This option may only be specified together with option \fB-e\fR or \fB-p\fR.
+.\"O Include lines for online and offline CPUs in the output (default for \fB-e\fR).
+.\"O This option may only be specified together with option \fB-e\fR or \fB-p\fR.
+オンラインとオフラインの CPU の情報を出力に含める (\fB-e\fR のデフォルト)。
+このオプションは、オプション \fB-e\fR または \fB-p\fR とのみ一緒に指定できる。
 .TP
 .BR \-B , " \-\-bytes"
-Print the sizes in bytes rather than in a human-readable format.
+.\"O Print the sizes in bytes rather than in a human-readable format.
+人が読みやすい形式ではなく、バイト単位でサイズを表示する。
 .TP
 .BR \-b , " \-\-online"
-Limit the output to online CPUs (default for \fB-p\fR).
-This option may only be specified together with option \fB-e\fR or \fB-p\fR.
+.\"O Limit the output to online CPUs (default for \fB-p\fR).
+.\"O This option may only be specified together with option \fB-e\fR or \fB-p\fR.
+出力をオンラインの CPU に限定する (\fB-p\fR のデフォルト)。
+このオプションは、オプション \fB-e\fR または \fB-p\fR とのみ一緒に指定できる。
 .TP
 .BR \-C , " \-\-caches" [=\fIlist\fP]
-Display details about CPU caches.  For details about available information see \fB\-\-help\fR
-output.
+.\"O Display details about CPU caches.  For details about available information see \fB\-\-help\fR
+.\"O output.
+CPU キャッシュの詳細を表示する。
+利用可能な情報の詳細は、\fB\-\-help\fR の出力を参照すること。
 
-If the \fIlist\fP argument is omitted, all columns for which data is available
-are included in the command output.
+.\"O If the \fIlist\fP argument is omitted, all columns for which data is available
+.\"O are included in the command output.
+\fIlist\fP 引き数が省略された場合、データが利用可能な全てのカラムが、
+コマンド出力に含まれる。
 
-When specifying the \fIlist\fP argument, the string of option, equal sign (=), and
-\fIlist\fP must not contain any blanks or other whitespace.
-Examples: '\fB-C=NAME,ONE-SIZE\fP' or '\fB--caches=NAME,ONE-SIZE\fP'.
+.\"O When specifying the \fIlist\fP argument, the string of option, equal sign (=), and
+.\"O \fIlist\fP must not contain any blanks or other whitespace.
+.\"O Examples: '\fB-C=NAME,ONE-SIZE\fP' or '\fB--caches=NAME,ONE-SIZE\fP'.
+\fIlist\fP 引き数を指定する場合、オプションの文字列とイコール (=) を指定する。
+\fIlist\fP には、ブランクまたは他の空白文字を含んではならない。
+例: '\fB-C=NAME,ONE-SIZE\fP' または '\fB--caches=NAME,ONE-SIZE\fP'。
 .TP
 .BR \-c , " \-\-offline"
-Limit the output to offline CPUs.
-This option may only be specified together with option \fB-e\fR or \fB-p\fR.
+.\"O Limit the output to offline CPUs.
+.\"O This option may only be specified together with option \fB-e\fR or \fB-p\fR.
+出力をオフラインの CPU に限定する。
+このオプションは、オプション \fB-e\fR または \fB-p\fR とのみ一緒に指定できる。
 .TP
 .BR \-e , " \-\-extended" [=\fIlist\fP]
-Display the CPU information in human-readable format.
+.\"O Display the CPU information in human-readable format.
+CPU 情報を人が読みやすい形式で表示する。
 
-If the \fIlist\fP argument is omitted, all columns for which data is available
-are included in the command output.
+.\"O If the \fIlist\fP argument is omitted, all columns for which data is available
+.\"O are included in the command output.
+\fIlist\fP 引き数が省略された場合、データが取得可能な全てのカラムが、
+コマンド出力に含まれる。
 
-When specifying the \fIlist\fP argument, the string of option, equal sign (=), and
-\fIlist\fP must not contain any blanks or other whitespace.
-Examples: '\fB-e=cpu,node\fP' or '\fB--extended=cpu,node\fP'.
+.\"O When specifying the \fIlist\fP argument, the string of option, equal sign (=), and
+.\"O \fIlist\fP must not contain any blanks or other whitespace.
+.\"O Examples: '\fB-e=cpu,node\fP' or '\fB--extended=cpu,node\fP'.
+\fIlist\fP 引き数を指定する場合、オプションの文字列とイコール (=) を指定する。
+\fIlist\fP には、ブランクまたは他の空白文字を含んではならない。
+例: '\fB-e=cpu,node\fP' または '\fB--extended=cpu,node\fP'。
 .TP
 .BR \-h , " \-\-help"
-Display help text and exit.
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
 .TP
 .BR \-J , " \-\-json"
-Use JSON output format for the default summary or extended output (see \fB\-\-extended\fP).
+.\"O Use JSON output format for the default summary or extended output (see \fB\-\-extended\fP).
+デフォルトのサマリと拡張出力 (\fB\-\-extended\fP を参照) について、
+JSON 出力形式を使う。
 .TP
 .BR \-p , " \-\-parse" [=\fIlist\fP]
-Optimize the command output for easy parsing.
+.\"O Optimize the command output for easy parsing.
+コマンド出力を解析しやすいように最適化する。
 
-If the \fIlist\fP argument is omitted, the command output is compatible with earlier
-versions of \fBlscpu\fP.  In this compatible format, two commas are used to separate
-CPU cache columns.  If no CPU caches are identified the cache column is omitted.
+.\"O If the \fIlist\fP argument is omitted, the command output is compatible with earlier
+.\"O versions of \fBlscpu\fP.  In this compatible format, two commas are used to separate
+.\"O CPU cache columns.  If no CPU caches are identified the cache column is omitted.
+\fIlist\fP 引き数が省略された場合、コマンド出力は以前の \fBlscpu\fP バージョンと
+互換性がある。
+この互換形式では、CPU キャッシュカラムを区切るのに、2 つのカンマが使われる。
+CPU キャッシュが確認できない場合、キャッシュカラムは省略される。
 .br
-If the \fIlist\fP argument is used, cache columns are separated with a colon (:).
+.\"O If the \fIlist\fP argument is used, cache columns are separated with a colon (:).
+\fIlist\fP 引き数が使われた場合、キャッシュカラムはコロン (:) で区切られる。
 
-When specifying the \fIlist\fP argument, the string of option, equal sign (=), and
-\fIlist\fP must not contain any blanks or other whitespace.
-Examples: '\fB-p=cpu,node\fP' or '\fB--parse=cpu,node\fP'.
+.\"O When specifying the \fIlist\fP argument, the string of option, equal sign (=), and
+.\"O \fIlist\fP must not contain any blanks or other whitespace.
+.\"O Examples: '\fB-p=cpu,node\fP' or '\fB--parse=cpu,node\fP'.
+\fIlist\fP 引き数を指定する場合、オプションの文字列とイコール (=) を指定する。
+\fIlist\fP には、ブランクまたは他の空白文字を含んではならない。
+例: '\fB-p=cpu,node\fP' または '\fB--parse=cpu,node\fP'。
 .TP
 .BR \-s , " \-\-sysroot " \fIdirectory\fP
 Gather CPU data for a Linux instance other than the instance from which the
