@@ -171,137 +171,241 @@ login \- システム上でセッションを開く
 .SH オプション
 .TP
 .B \-p
-Used by
+.\"O Used by
+.\"O .BR getty (8)
+.\"O to tell
+.\"O .B login
+.\"O not to destroy the environment.
 .BR getty (8)
-to tell
+によって使われ、
 .B login
-not to destroy the environment.
+が環境変数を破棄しないようにする。
 .TP
 .B \-f
-Used to skip a second login authentication.  This specifically does
-.B not
-work for root, and does not appear to work well under Linux.
+.\"O Used to skip a second login authentication.  This specifically does
+.\"O .B not
+.\"O work for root, and does not appear to work well under Linux.
+第 2 のログイン認証をスキップするのに使われる。
+これは、特に root では
+.B 動作せず、
+Linux ではうまく動作するか分からない。
 .TP
 .B \-h
-Used by other servers (i.e.,
-.BR telnetd (8))
-to pass the name of the remote host to
+.\"O Used by other servers (i.e.,
+.\"O .BR telnetd (8))
+.\"O to pass the name of the remote host to
+.\"O .B login
+.\"O so that it may be placed in utmp and wtmp.  Only the superuser may
+.\"O use this option.
+他のサーバ (つまり、
+.BR telnetd (8)
+など) によって使用され、リモートホストの名前を
 .B login
-so that it may be placed in utmp and wtmp.  Only the superuser may
-use this option.
+に渡すために使われて、utmp と wtmp に格納される。
+スーパーユーザのみがこのオプションを使用できる。
 .IP
-Note that the
+.\"O Note that the
+.\"O .B \-h
+.\"O option has impact on the
+.\"O .B PAM service
+.\"O .BR name .
 .B \-h
-option has impact on the
-.B PAM service
-.BR name .
-The standard service name is
-.IR login ,
-with the
+オプションは
+.B PAM サービス名
+に影響がある点に注意すること。
+.\"O The standard service name is
+.\"O .IR login ,
+.\"O with the
+.\"O .B \-h
+.\"O option the name is
+.\"O .IR remote .
+標準のサービス名
+.I login
+であり、
 .B \-h
-option the name is
-.IR remote .
-It is necessary to create proper PAM config files (e.g.
+オプションを指定すると、
+.I remote
+になる。
+.\"O It is necessary to create proper PAM config files (e.g.
+.\"O .I /etc\:/pam.d\:/login
+.\"O and
+.\"O .IR /etc\:/pam.d\:/remote ).
+正式な PAM 設定ファイル (例えば、
 .I /etc\:/pam.d\:/login
-and
-.IR /etc\:/pam.d\:/remote ).
+と
+.IR /etc\:/pam.d\:/remote )
+を作成することが必要である。
 .TP
 .B \-H
-Used by other servers (i.e.,
-.BR telnetd (8))
-to tell
+.\"O Used by other servers (i.e.,
+.\"O .BR telnetd (8))
+.\"O to tell
+.\"O .B login
+.\"O that printing the hostname should be suppressed in the login: prompt.
+他のサーバ (つまり、
+.BR telnetd (8)
+など) によって使用され、
 .B login
-that printing the hostname should be suppressed in the login: prompt.
-See also LOGIN_PLAIN_PROMPT below if your server does not allow to configure
+は login: プロンプトでのホスト名の表示を抑制する。
+.\"O See also LOGIN_PLAIN_PROMPT below if your server does not allow to configure
+.\"O .B login
+.\"O command line.
+サーバが
 .B login
-command line.
+コマンドラインの設定を許可していない場合、下記の LOGIN_PLAIN_PROMPT も参照すること。
 .TP
 \fB\-\-help\fR
-Display help text and exit.
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
 .TP
 \fB\-V\fR, \fB\-\-version\fR
-Display version information and exit.
-.SH CONFIG FILE ITEMS
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.\"O .SH CONFIG FILE ITEMS
+.SH 設定ファイルのアイテム
+.\"O .B login
+.\"O reads the
+.\"O .IR /etc\:/login.defs (5)
+.\"O configuration file.  Note that the configuration file could be
+.\"O distributed with another package (e.g. shadow-utils).  The following
+.\"O configuration items are relevant for
+.\"O .BR login (1):
 .B login
-reads the
+は設定ファイル
 .IR /etc\:/login.defs (5)
-configuration file.  Note that the configuration file could be
-distributed with another package (e.g. shadow-utils).  The following
-configuration items are relevant for
-.BR login (1):
+を読み込む。
+この設定ファイルは他のパッケージ (例えば、shadow-utils) で配布される
+可能性がある点に注意すること。
+以下の設定アイテムが
+.BR login (1)
+に関連する:
 .PP
 .B MOTD_FILE
-(string)
+.\"O (string)
+(文字列)
 .RS 4
-If defined, a ":" delimited list of "message of the day" files to be
-displayed upon login.  The default value is
-.IR /etc\:/motd .
-If the
+.\"O If defined, a ":" delimited list of "message of the day" files to be
+.\"O displayed upon login.  The default value is
+.\"O .IR /etc\:/motd .
+このアイテムが定義されている場合、
+":" 区切りの「その日のメッセージ (message of the day)」ファイルのリストが、
+ログイン時に表示される。
+デフォルトの値は
+.I /etc\:/motd
+である。
+.\"O If the
+.\"O .B MOTD_FILE
+.\"O item is empty or a quiet login is enabled, then the message of the day
+.\"O is not displayed.  Note that the same functionality is also provided
+.\"O by
+.\"O .BR pam_motd (8)
+.\"O PAM module.
 .B MOTD_FILE
-item is empty or a quiet login is enabled, then the message of the day
-is not displayed.  Note that the same functionality is also provided
-by
+アイテムが空、または静かなログインが有効にされている場合、
+その日のメッセージは表示されない。
+同様な機能は
 .BR pam_motd (8)
-PAM module.
+PAM モジュールで提供される点に注意すること。
 .RE
 .PP
 .B LOGIN_PLAIN_PROMPT
-(boolean)
+.\"O (boolean)
+(ブール値)
 .RS 4
-Tell login that printing the hostname should be suppressed in the login:
-prompt.  This is alternative to the \fB\-H\fR command line option.  The default
-value is
-.IR no .
+.\"O Tell login that printing the hostname should be suppressed in the login:
+.\"O prompt.  This is alternative to the \fB\-H\fR command line option.  The default
+.\"O value is
+.\"O .IR no .
+login に login: プロンプトでのホスト名の表示を抑制させる。
+これは \fB\-H\fR コマンドラインオプションの代替である。
+デフォルトの値は、
+.I no
+である。
 .RE
 .PP
 .B LOGIN_TIMEOUT
-(number)
+.\"O (number)
+(数値)
 .RS 4
-Max time in seconds for login.  The default value is
-.IR 60 .
+.\"O Max time in seconds for login.  The default value is
+.\"O .IR 60 .
+login を待つ最大時間 (秒)。
+デフォルトの値は、
+.I 60
+である。
 .RE
 .PP
 .B LOGIN_RETRIES
-(number)
+.\"O (number)
+(数値)
 .RS 4
-Maximum number of login retries in case of a bad password.  The default
-value is
-.IR 3 .
+.\"O Maximum number of login retries in case of a bad password.  The default
+.\"O value is
+.\"O .IR 3 .
+パスワードを間違えた場合に、ログインがリトライする最大回数。
+デフォルトの値は、
+.I 3
+である。
 .RE
 .PP
 .B FAIL_DELAY
-(number)
+.\"O (number)
+(数値)
 .RS 4
-Delay in seconds before being allowed another three tries after a
-login failure.  The default value is
-.IR 5 .
+.\"O Delay in seconds before being allowed another three tries after a
+.\"O login failure.  The default value is
+.\"O .IR 5 .
+ログインが 3 回失敗した場合に、再度ログインを許可するまでの遅延時間 (秒)。
+デフォルトの値は、
+.I 5
+である。
 .RE
 .PP
 .B TTYPERM
-(string)
+.\"O (string)
+(文字列)
 .RS 4
-The terminal permissions.  The default value is
+.\"O The terminal permissions.  The default value is
+.\"O .I 0600
+.\"O or
+.\"O .I 0620
+.\"O if tty group is used.
+端末の権限。
+デフォルトの値は、
 .I 0600
-or
+である。
+tty グループが使われている場合、デフォルトの値は、
 .I 0620
-if tty group is used.
+である。
 .RE
 .PP
 .B TTYGROUP
-(string)
+.\"O (string)
+(文字列)
 .RS 4
-The login tty will be owned by the
-.BR TTYGROUP .
-The default value is
-.IR tty .
-If the
+.\"O The login tty will be owned by the
+.\"O .BR TTYGROUP .
+ログイン tty は、
 .B TTYGROUP
-does not exist, then the ownership of the terminal is set to the
-user\'s primary group.
+に所有される。
+.\"O The default value is
+.\"O .IR tty .
+デフォルト値は
+.I tty
+である。
+.\"O If the
+.\"O .B TTYGROUP
+.\"O does not exist, then the ownership of the terminal is set to the
+.\"O user\'s primary group.
+.B TTYGROUP
+が存在しない場合、端末の所有権はユーザのプライマリグループに
+設定される。
 .PP
-The
+.\"O The
+.\"O .B TTYGROUP
+.\"O can be either the name of a group or a numeric group identifier.
 .B TTYGROUP
-can be either the name of a group or a numeric group identifier.
+はグループ名、または数値のグループ識別子である。
 .RE
 .PP
 .B HUSHLOGIN_FILE
