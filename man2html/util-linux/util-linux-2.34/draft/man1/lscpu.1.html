@@ -1,0 +1,419 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LSCPU</TITLE>
+</HEAD><BODY>
+<H1>LSCPU</H1>
+Section: User Commands (1)<BR>Updated: March 2019<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+lscpu - CPU アーキテクチャの情報を表示する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>lscpu</B>
+
+[options]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>lscpu</B>
+
+は CPU アーキテクチャ情報を sysfs, /proc/cpuinfo と
+利用可能なアーキテクチャ固有のライブラリ (例えば、Powerpc の librtas) から収集する。
+コマンドの出力は、解析しやすいように最適化したり、
+人が読みやすいように最適化できる。
+
+
+
+
+この情報には、例えば、CPU、スレッド、コア、ソケット、
+Non-Uniform Memory Access (NUMA) ノードの数などが含まれる。
+また、CPU のキャッシュ、キャッシュ共有、ファミリー、モデル、
+bogoMIPS、バイト順序、ステッピングなどの情報も含まれる。
+<P>
+
+
+
+
+
+
+仮想化環境では、表示される CPU アーキテクチャ情報は、
+ゲスト OS の設定を反映しており、物理 (ホスト) システムとは特に異なる。
+物理トポロジー情報の取得をサポートしているアーキテクチャでは、
+<B>lscpu</B>
+
+はホストシステム上の物理ソケット、チップ、コアの数も表示する。
+<P>
+
+
+
+
+
+出力テーブルに影響するオプションには、<I>list</I> 引き数がある。
+コマンド出力をカスタマイズするためには、この引き数を使うこと。
+カンマ区切りのカラムラベルを指定すると、出力テーブルは指定されたカラム
+のみに限定され、指定された順番に表示される。
+有効なカラムラベルのリストは、<B>カラム</B> を参照すること。
+カラムラベルは大文字小文字を無視する。
+<P>
+
+
+全てのアーキテクチャで、全てのカラムがサポートされているわけではない。
+サポートされていないカラムが指定された場合、<B>lscpu</B> はカラム名を表示するが、
+データは提供しない。
+<P>
+
+
+
+端末上でのデフォルトの出力形式は、より読みやすいように最適化されている。
+端末以外 (例えば、パイプ) での出力は、この最適化の影響を受けず、
+常に &quot;Field: data\n&quot; 形式である。
+
+<A NAME="lbAE">&nbsp;</A>
+<H3>カラム</H3>
+
+
+
+
+トポロジー要素 (コア、ソケットなど) は、0 で始まる連続した一意の ID を使う。
+しかし、CPU の論理番号はカーネルに従い、連続した番号である保証はない。
+<DL COMPACT>
+<DT><B>CPU</B>
+
+<DD>
+
+Linux カーネルが使う CPU の論理 CPU 数。
+<DT><B>CORE</B>
+
+<DD>
+
+論理コア数。コアは複数の CPU を持つ。
+<DT><B>SOCKET</B>
+
+<DD>
+
+論理ソケット数。ソケットは複数のコアを持つ。
+<DT><B>BOOK</B>
+
+<DD>
+
+論理ブック数。ブックは複数のソケットを持つ。
+<DT><B>DRAWER</B>
+
+<DD>
+
+論理ドロワー数。ドロワーは複数のブックを持つ。
+<DT><B>NODE</B>
+
+<DD>
+
+論理 NUMA ノード数。ノードは複数のドロワーを持つ。
+<DT><B>CACHE</B>
+
+<DD>
+
+キャッシュがどのように CPU で共有されているかの情報。
+<DT><B>ADDRESS</B>
+
+<DD>
+
+CPU の物理アドレス。
+<DT><B>ONLINE</B>
+
+<DD>
+
+この指標は、Linux インスタンスが CPU を現在使用しているかを表す。
+<DT><B>CONFIGURED</B>
+
+<DD>
+
+
+
+
+
+この指標は、Linux インスタンスが稼働する仮想ハードウェアに、
+ハイパーバイザーが CPU を割り当てたかを表す。
+設定された CPU は、Linux インスタンスによってオンラインにできる。
+このカラムには、ハードウェアシステムとハイパーバイザーが
+動的 CPU リソース割り当てをサポートしている場合にのみ、データが含まれる。
+<DT><B>POLARIZATION</B>
+
+<DD>
+
+
+
+このカラムには、CPU の分配モード (分極化: polarization) を切り替えられる
+ハイパーバイザーを持つ仮想ハードウェア上で実行される Linux インスタンスのデータが含まれる。
+分極化は以下のいずれかである:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>horizontal</B>
+
+<DD>
+
+負荷を利用可能な全ての CPU に分散する。
+<DT><B>vertical</B>
+
+<DD>
+
+負荷を特定の CPU に集中させる。
+</DL>
+<P>
+
+
+
+
+垂直分極化 (vertical polarization) では、
+集中の度合いが high, medium, low　でカラムに表示される。
+ハードウェアシステムとハイパーバイザーが CPU の分極化をサポートしている場合にのみ、
+このカラムにはデータが含まれる。
+</DL>
+
+<DT><B>MAXMHZ</B>
+
+<DD>
+
+
+
+CPU の最大 MHz の値。
+これは <B>lscpu</B> をハードウェアの明細情報の収集ツールとして使う場合に有用である。
+この MHz の値は、動的であり、現在のリソースの必要性に応じて
+CPU の調整装置で変更される。
+<DT><B>MINMHZ</B>
+
+<DD>
+
+CPU の最小 MHz の値。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-a</B>,<B> --all</B>
+
+<DD>
+
+
+オンラインとオフラインの CPU の情報を出力に含める (<B>-e</B> のデフォルト)。
+このオプションは、オプション <B>-e</B> または <B>-p</B> とのみ一緒に指定できる。
+<DT><B>-B</B>,<B> --bytes</B>
+
+<DD>
+
+人が読みやすい形式ではなく、バイト単位でサイズを表示する。
+<DT><B>-b</B>,<B> --online</B>
+
+<DD>
+
+
+出力をオンラインの CPU に限定する (<B>-p</B> のデフォルト)。
+このオプションは、オプション <B>-e</B> または <B>-p</B> とのみ一緒に指定できる。
+<DT><B>-C</B>,<B> --caches</B>[=<I>list</I>]
+
+<DD>
+
+
+CPU キャッシュの詳細を表示する。
+利用可能な情報の詳細は、<B>--help</B> の出力を参照すること。
+<P>
+
+
+<I>list</I> 引き数が省略された場合、データが利用可能な全てのカラムが、
+コマンド出力に含まれる。
+<P>
+
+
+
+<I>list</I> 引き数を指定する場合、オプションの文字列とイコール (=) を指定する。
+<I>list</I> には、ブランクまたは他の空白文字を含んではならない。
+例: '<B>-C=NAME,ONE-SIZE</B>' または '<B>--caches=NAME,ONE-SIZE</B>'。
+<DT><B>-c</B>,<B> --offline</B>
+
+<DD>
+
+
+出力をオフラインの CPU に限定する。
+このオプションは、オプション <B>-e</B> または <B>-p</B> とのみ一緒に指定できる。
+<DT><B>-e</B>,<B> --extended</B>[=<I>list</I>]
+
+<DD>
+
+CPU 情報を人が読みやすい形式で表示する。
+<P>
+
+
+<I>list</I> 引き数が省略された場合、データが取得可能な全てのカラムが、
+コマンド出力に含まれる。
+<P>
+
+
+
+<I>list</I> 引き数を指定する場合、オプションの文字列とイコール (=) を指定する。
+<I>list</I> には、ブランクまたは他の空白文字を含んではならない。
+例: '<B>-e=cpu,node</B>' または '<B>--extended=cpu,node</B>'。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-J</B>,<B> --json</B>
+
+<DD>
+
+デフォルトのサマリと拡張出力 (<B>--extended</B> を参照) について、
+JSON 出力形式を使う。
+<DT><B>-p</B>,<B> --parse</B>[=<I>list</I>]
+
+<DD>
+
+コマンド出力を解析しやすいように最適化する。
+<P>
+
+
+
+<I>list</I> 引き数が省略された場合、コマンド出力は以前の <B>lscpu</B> バージョンと
+互換性がある。
+この互換形式では、CPU キャッシュカラムを区切るのに、2 つのカンマが使われる。
+CPU キャッシュが確認できない場合、キャッシュカラムは省略される。
+<BR>
+
+
+<I>list</I> 引き数が使われた場合、キャッシュカラムはコロン (:) で区切られる。
+<P>
+
+
+
+<I>list</I> 引き数を指定する場合、オプションの文字列とイコール (=) を指定する。
+<I>list</I> には、ブランクまたは他の空白文字を含んではならない。
+例: '<B>-p=cpu,node</B>' または '<B>--parse=cpu,node</B>'。
+<DT><B>-s</B>,<B> --sysroot </B><I>directory</I>
+
+<DD>
+
+
+
+<B>lscpu</B> コマンドが発行された Linux インスタンス以外の、
+インスタンスの CPU データを収集する。
+指定された <I>directory</I> は、調査する Linux インスタンスのシステムルートである。
+<DT><B>-x</B>,<B> --hex</B>
+
+<DD>
+
+
+
+CPU セットに対して 16 進数のマスクを使う (例えば &quot;ff&quot;)。
+デフォルトは、リスト形式のセットを表示する (例えば 0,1)。
+バージョン 2.30 以前では、マスクはプレフィックス 0x を付けて表示されていた点に注意すること。
+<DT><B>-y</B>,<B> --physical</B>
+
+<DD>
+
+
+
+
+
+
+トポロジー要素 (コア、ソケットなど) の全てのカラムに対して、
+論理 ID ではなく、物理 ID を表示する。
+論理 ID は <B>lscpu</B> によって割り当てられたものであり、
+物理 ID はカーネルによって提供されるプラットフォーム固有の値である。
+物理 ID は一意である必要はなく、順番に割り当てられていない可能性がある。
+カーネルがトポロジー要素の物理 ID を取得できない場合、
+<B>lscpu</B> はダッシュ (-) 文字を表示する。
+<P>
+
+CPU の論理番号は、このオプションに影響されない。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>--output-all</B>
+
+<DD>
+
+
+全ての利用可能なカラムを出力する。
+このオプションは、
+<B>--extended</B>, <B>--parse</B>, <B>--caches</B>
+
+のいずれかと組み合わせなければならない。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+CPU のファミリー、モデルなどの概要は、常に最初の CPU にのみ基づいている。
+<P>
+
+Xen Dom0 では時折、カーネルが間違ったデータを報告することがある。
+<P>
+
+仮想ハードウェアでは、ソケットあたりのコア数などが正しくない場合がある。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>著者</H2>
+
+<PRE>
+Cai Qian &lt;<A HREF="mailto:qcai@redhat.com">qcai@redhat.com</A>&gt;
+Karel Zak &lt;<A HREF="mailto:kzak@redhat.com">kzak@redhat.com</A>&gt;
+Heiko Carstens &lt;<A HREF="mailto:heiko.carstens@de.ibm.com">heiko.carstens@de.ibm.com</A>&gt;
+</PRE>
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/chcpu.8.html">chcpu</A></B>(8)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+lscpu コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DL>
+<DT><A HREF="#lbAE">カラム</A><DD>
+</DL>
+<DT><A HREF="#lbAF">オプション</A><DD>
+<DT><A HREF="#lbAG">バグ</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 17:37:49 GMT, April 10, 2020
+</BODY>
+</HTML>
