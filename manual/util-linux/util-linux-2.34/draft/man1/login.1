@@ -8,7 +8,7 @@
 .\" Updated Fri Jan 12 04:05:44 JST 2001
 .\"         by Kentaro Shirakata <argrath@ub32.org>
 .\" Modified Tue 16 Sep 2002 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
-.\" Updated & Modified 
+.\" Updated & Modified Fri Apr 10 22:46:32 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH LOGIN "1" "June 2012" "util-linux" "User Commands"
@@ -563,43 +563,82 @@ ENV_ROOTPATH が優先される。
 .BR shutdown (8)
 .\"O .SH BUGS
 .SH バグ
-The undocumented BSD
+.\"O The undocumented BSD
+.\"O .B \-r
+.\"O option is not supported.  This may be required by some
+.\"O .BR rlogind (8)
+.\"O programs.
+ドキュメント化されていない BSD
 .B \-r
-option is not supported.  This may be required by some
+オプションはサポートされていない。
+このオプションは、いくつかの
 .BR rlogind (8)
-programs.
+プログラムで必要とされている場合がある。
 .PP
-A recursive login, as used to be possible in the good old days, no
-longer works; for most purposes
+.\"O A recursive login, as used to be possible in the good old days, no
+.\"O longer works; for most purposes
+.\"O .BR su (1)
+.\"O is a satisfactory substitute.  Indeed, for security reasons, login
+.\"O does a vhangup() system call to remove any possible listening
+.\"O processes on the tty.  This is to avoid password sniffing.  If one
+.\"O uses the command
+.\"O .BR login ,
+.\"O then the surrounding shell gets killed by vhangup() because it's no
+.\"O longer the true owner of the tty.  This can be avoided by using
+.\"O .B exec login
+.\"O in a top-level shell or xterm.
+古き良き時代に可能であった再帰ログインは、もはや動作しない。
+大部分の目的には、
 .BR su (1)
-is a satisfactory substitute.  Indeed, for security reasons, login
-does a vhangup() system call to remove any possible listening
-processes on the tty.  This is to avoid password sniffing.  If one
-uses the command
-.BR login ,
-then the surrounding shell gets killed by vhangup() because it's no
-longer the true owner of the tty.  This can be avoided by using
+が代替として要件を満たすことができる。
+実際、セキュリティ上の理由で、login は vhangup() システムコールを使って、
+tty 上でリッスンしているプロセスを削除する。
+これはパスワードの盗み見 (sniffing) を防止する。
+あるユーザがコマンド
+.B login
+を使った場合、そのユーザは、もはや tty の本当の所有者ではなくなるので、
+それを行っているシェルは vhangup() で kill される。
+これは、トップレベルシェル、または xterm で
 .B exec login
-in a top-level shell or xterm.
-.SH AUTHOR
-Derived from BSD login 5.40 (5/9/89) by
+を使うことで回避できる。
+.\"O .SH AUTHOR
+.SH 著者
+.\"O Derived from BSD login 5.40 (5/9/89) by
+.\"O .MT glad@\:daimi.\:dk
+.\"O Michael Glad
+.\"O .ME
+.\"O for HP-UX
 .MT glad@\:daimi.\:dk
 Michael Glad
 .ME
-for HP-UX
+が HP-UX のために、BSD login 5.40 (5/9/89) から派生させた。
 .br
-Ported to Linux 0.12:
+.\"O Ported to Linux 0.12:
+.\"O .MT poe@\:daimi.\:aau.\:dk
+.\"O Peter Orbaek
+.\"O .ME
 .MT poe@\:daimi.\:aau.\:dk
 Peter Orbaek
 .ME
+が Linux 0.12 に移植した。
 .br
-Rewritten to a PAM-only version by
+.\"O Rewritten to a PAM-only version by
+.\"O .MT kzak@\:redhat.\:com
+.\"O Karel Zak
+.\"O .ME
 .MT kzak@\:redhat.\:com
 Karel Zak
 .ME
-.SH AVAILABILITY
-The login command is part of the util-linux package and is
-available from
+が PAM のみのバージョンに書き直した。
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The login command is part of the util-linux package and is
+.\"O available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+login コマンドは util-linux パッケージの一部であり、
 .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
 Linux Kernel Archive
-.UE .
+.UE
+から入手できる。
