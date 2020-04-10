@@ -1,7 +1,7 @@
 .\"
 .\" Japanese Version Copyright (c) 2020 Yuichi SATO
 .\"         all rights reserved.
-.\" Translated Fri Apr 10 18:45:29 JST 2020
+.\" Translated Sat Apr 11 02:31:57 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH LSCPU 1 "March 2019" "util-linux" "User Commands"
@@ -28,7 +28,7 @@ lscpu \- CPU アーキテクチャの情報を表示する。
 .\"O sockets, and Non-Uniform Memory Access (NUMA) nodes.  There is also information
 .\"O about the CPU caches and cache sharing, family, model, bogoMIPS, byte order,
 .\"O and stepping.
-この情報には、例えば、CPU, スレッド、コア、ソケット、
+この情報には、例えば、CPU、スレッド、コア、ソケット、
 Non-Uniform Memory Access (NUMA) ノードの数などが含まれる。
 また、CPU のキャッシュ、キャッシュ共有、ファミリー、モデル、
 bogoMIPS、バイト順序、ステッピングなどの情報も含まれる。
@@ -40,7 +40,7 @@ bogoMIPS、バイト順序、ステッピングなどの情報も含まれる。
 .\"O .B lscpu
 .\"O also displays the number of physical sockets, chips, cores in the host system.
 仮想化環境では、表示される CPU アーキテクチャ情報は、
-ゲスト OS の設定を判定しており、物理 (ホスト) システムとは特に異なる。
+ゲスト OS の設定を反映しており、物理 (ホスト) システムとは特に異なる。
 物理トポロジー情報の取得をサポートしているアーキテクチャでは、
 .B lscpu
 はホストシステム上の物理ソケット、チップ、コアの数も表示する。
@@ -254,46 +254,75 @@ CPU キャッシュが確認できない場合、キャッシュカラムは省�
 例: '\fB-p=cpu,node\fP' または '\fB--parse=cpu,node\fP'。
 .TP
 .BR \-s , " \-\-sysroot " \fIdirectory\fP
-Gather CPU data for a Linux instance other than the instance from which the
-\fBlscpu\fP command is issued.  The specified \fIdirectory\fP is the system root
-of the Linux instance to be inspected.
+.\"O Gather CPU data for a Linux instance other than the instance from which the
+.\"O \fBlscpu\fP command is issued.  The specified \fIdirectory\fP is the system root
+.\"O of the Linux instance to be inspected.
+\fBlscpu\fP コマンドが発行された Linux インスタンス以外の、
+インスタンスの CPU データを収集する。
+指定された \fIdirectory\fP は、調査する Linux インスタンスのシステムルートである。
 .TP
 .BR \-x , " \-\-hex"
-Use hexadecimal masks for CPU sets (for example "ff").  The default is to print
-the sets in list format (for example 0,1).  Note that before version 2.30 the mask
-has been printed with 0x prefix.
+.\"O Use hexadecimal masks for CPU sets (for example "ff").  The default is to print
+.\"O the sets in list format (for example 0,1).  Note that before version 2.30 the mask
+.\"O has been printed with 0x prefix.
+CPU セットに対して 16 進数のマスクを使う (例えば "ff")。
+デフォルトは、リスト形式のセットを表示する (例えば 0,1)。
+バージョン 2.30 以前では、マスクはプレフィックス 0x を付けて表示されていた点に注意すること。
 .TP
 .BR \-y , " \-\-physical"
-Display physical IDs for all columns with topology elements (core, socket, etc.).
-Other than logical IDs, which are assigned by \fBlscpu\fP, physical IDs are
-platform-specific values that are provided by the kernel. Physical IDs are not
-necessarily unique and they might not be arranged sequentially.
-If the kernel could not retrieve a physical ID for an element \fBlscpu\fP prints
-the dash (-) character.
+.\"O Display physical IDs for all columns with topology elements (core, socket, etc.).
+.\"O Other than logical IDs, which are assigned by \fBlscpu\fP, physical IDs are
+.\"O platform-specific values that are provided by the kernel. Physical IDs are not
+.\"O necessarily unique and they might not be arranged sequentially.
+.\"O If the kernel could not retrieve a physical ID for an element \fBlscpu\fP prints
+.\"O the dash (-) character.
+トポロジー要素 (コア、ソケットなど) の全てのカラムに対して、
+論理 ID ではなく、物理 ID を表示する。
+論理 ID は \fBlscpu\fP によって割り当てられたものであり、
+物理 ID はカーネルによって提供されるプラットフォーム固有の値である。
+物理 ID は一意である必要はなく、順番に割り当てられていない可能性がある。
+カーネルがトポロジー要素の物理 ID を取得できない場合、
+\fBlscpu\fP はダッシュ (-) 文字を表示する。
 
-The CPU logical numbers are not affected by this option.
+.\"O The CPU logical numbers are not affected by this option.
+CPU の論理番号は、このオプションに影響されない。
 .TP
 .BR \-V , " \-\-version"
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .TP
 .B \-\-output\-all
-Output all available columns.  This option must be combined with either
-.BR \-\-extended ", " \-\-parse " or " \-\-caches .
-.SH BUGS
-The basic overview of CPU family, model, etc. is always based on the first
-CPU only.
+.\"O Output all available columns.  This option must be combined with either
+.\"O .BR \-\-extended ", " \-\-parse " or " \-\-caches .
+全ての利用可能なカラムを出力する。
+このオプションは、
+.BR \-\-extended ", " \-\-parse ", " \-\-caches
+のいずれかと組み合わせなければならない。
+.\"O .SH BUGS
+.SH バグ
+.\"O The basic overview of CPU family, model, etc. is always based on the first
+.\"O CPU only.
+CPU のファミリー、モデルなどの概要は、常に最初の CPU にのみ基づいている。
 
-Sometimes in Xen Dom0 the kernel reports wrong data.
+.\"O Sometimes in Xen Dom0 the kernel reports wrong data.
+Xen Dom0 では時折、カーネルが間違ったデータを報告することがある。
 
-On virtual hardware the number of cores per socket, etc. can be wrong.
-.SH AUTHOR
+.\"O On virtual hardware the number of cores per socket, etc. can be wrong.
+仮想ハードウェアでは、ソケットあたりのコア数などが正しくない場合がある。
+.\"O .SH AUTHOR
+.SH 著者
 .nf
 Cai Qian <qcai@redhat.com>
 Karel Zak <kzak@redhat.com>
 Heiko Carstens <heiko.carstens@de.ibm.com>
 .fi
-.SH "SEE ALSO"
+.\"O .SH "SEE ALSO"
+.SH 関連項目
 .BR chcpu (8)
-.SH AVAILABILITY
-The lscpu command is part of the util-linux package and is available from
-https://www.kernel.org/pub/linux/utils/util-linux/.
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The lscpu command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+lscpu コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
