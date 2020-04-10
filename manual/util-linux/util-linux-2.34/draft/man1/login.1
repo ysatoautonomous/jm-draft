@@ -1,0 +1,443 @@
+.\" Copyright 1993 Rickard E. Faith (faith@cs.unc.edu)
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 1997 Kazuyoshi Furutaka
+.\"         all rights reserved.
+.\" Translated Fri Feb 14 23:06:00 JST 1997
+.\"         by Kazuyoshi Furutaka <furutaka@Flux.tokai.jaeri.go.jp>
+.\" Updated Fri Jan 12 04:05:44 JST 2001
+.\"         by Kentaro Shirakata <argrath@ub32.org>
+.\" Modified Tue 16 Sep 2002 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified 
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH LOGIN "1" "June 2012" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O login \- begin session on the system
+login \- システム上でセッションを開く
+.\"O .SH SYNOPSIS
+.SH 書式
+.B login
+[
+.B \-p
+] [
+.B \-h
+.I host
+] [
+.B \-H
+] [
+.B \-f
+.I username
+|
+.I username
+]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B login
+.\"O is used when signing onto a system.  If no argument is given,
+.\"O .B login
+.\"O prompts for the username.
+.B login
+はシステムにサインインするために使われる。
+引き数が指定されない場合、
+.B login
+はユーザー名を入力するプロンプトを出す。
+.PP
+.\"O The user is then prompted for a password, where appropriate.  Echoing
+.\"O is disabled to prevent revealing the password.  Only a small number
+.\"O of password failures are permitted before
+.\"O .B login
+.\"O exits and the communications link is severed.
+次いで、必要な場合には、ユーザーはパスワードを入力するよう促される。
+パスワードを表示してしまわないよう、エコーは行われない。
+数回以上パスワード入力に失敗すると
+.B login
+は終了し、通信の接続は切断されてしまう。
+.PP
+.\"O If password aging has been enabled for the account, the user may be
+.\"O prompted for a new password before proceeding.  He will be forced to
+.\"O provide his old password and the new password before continuing.
+.\"O Please refer to
+.\"O .BR passwd (1)
+.\"O for more information.
+アカウントに対してパスワードの有効期限が設定されている場合は、
+先に進む前に新しいパスワードの設定を促されることもある。
+セッションを続けるためには古いパスワードと
+新しいパスワードを入力しなくてはならない。
+詳しい情報は
+.BR passwd (1)
+を参照すること。
+.PP
+.\"O The user and group ID will be set according to their values in the
+.\"O .I /etc/passwd
+.\"O file.  There is one exception if the user ID is zero: in this case,
+.\"O only the primary group ID of the account is set.  This should allow
+.\"O the system administrator to login even in case of network problems.
+ユーザ ID とグループの ID は
+.I /etc/passwd
+ファイル中に記載されている値に従って設定される。
+ユーザ ID が 0 の場合、1 つの例外がある。
+この場合、アカウントのプライマリグループ ID のみが設定される。
+これにより、ネットワーク問題の場合にもシステム管理者がログインすることが
+可能になる。
+.\"O The value for
+.\"O .BR $HOME ,
+.\"O .BR $USER ,
+.\"O .BR $SHELL ,
+.\"O .BR $PATH ,
+.\"O .BR $LOGNAME ,
+.\"O and
+.\"O .B $MAIL
+.\"O are set according to the appropriate fields in the password entry.
+.BR $HOME ,
+.BR $USER ,
+.BR $SHELL ,
+.BR $PATH ,
+.BR $LOGNAME ,
+.B $MAIL
+の値は、パスワードエントリのそれぞれのフィールドに従って設定される。
+.\"O .B $PATH
+.\"O defaults to
+.\"O .I /usr\:/local\:/bin:\:/bin:\:/usr\:/bin
+.\"O for normal users, and to
+.\"O .I /usr\:/local\:/sbin:\:/usr\:/local\:/bin:\:/sbin:\:/bin:\:/usr\:/sbin:\:/usr\:/bin
+.\"O for root, if not otherwise configured.
+.B $PATH
+のデフォルトは、通常ユーザでは
+.I /usr\:/local\:/bin:\:/bin:\:/usr\:/bin
+であり、root では
+.I /usr\:/local\:/sbin:\:/usr\:/local\:/bin:\:/sbin:\:/bin:\:/usr\:/sbin:\:/usr\:/bin
+であり、そうでない場合は設定がされている。
+.P
+.\"O The environment variable
+.\"O .B $TERM
+.\"O will be preserved, if it exists (other environment variables are
+.\"O preserved if the
+.\"O .B \-p
+.\"O option is given), else it will be initialized to the terminal type on your tty.
+環境変数
+.B $TERM
+が存在する場合は、保持される
+(他の環境変数は、
+.B \-p
+オプションが指定された場合に保持される)。
+存在しない場合は、tty の端末の型 (terminal type) に初期化される。
+.PP
+.\"O Then the user's shell is started.  If no shell is specified for the
+.\"O user in
+.\"O .IR /etc\:/passwd ,
+.\"O then
+.\"O .I /bin\:/sh
+.\"O is used.  If there is no directory specified in
+.\"O .IR /etc\:/passwd ,
+.\"O then
+.\"O .I /
+.\"O is used (the home directory is checked for the
+.\"O .I .hushlogin
+.\"O file described below).
+そして、ユーザのシェルが開始される。
+そのユーザのシェルが
+.I /etc\:/passwd
+で指定されていない場合、
+.I /bin\:/sh
+が使われる。
+ディレクトリが
+.I /etc\:/passwd
+で指定されていない場合、
+.I /
+が使われる
+(ホームディレクトリは、下記で説明されている
+.I .hushlogin
+ファイルでチェックされる)。
+.PP
+.\"O If the file
+.\"O .I .hushlogin
+.\"O exists, then a "quiet" login is performed (this disables the checking
+.\"O of mail and the printing of the last login time and message of the
+.\"O day).  Otherwise, if
+.\"O .I /var\:/log\:/lastlog
+.\"O exists, the last login time is printed (and the current login is
+.\"O recorded).
+ファイル
+.I .hushlogin
+が存在する場合、「静に」ログインが行われる
+(メールのチェック、最後のログイン時刻の表示、その日のメッセージの表示が
+無効化される)。
+ファイルが存在しない場合で、
+.I /var\:/log\:/lastlog
+が存在する場合、最後のログイン時刻が表示される (そして、現在のログインが記録される)。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.B \-p
+Used by
+.BR getty (8)
+to tell
+.B login
+not to destroy the environment.
+.TP
+.B \-f
+Used to skip a second login authentication.  This specifically does
+.B not
+work for root, and does not appear to work well under Linux.
+.TP
+.B \-h
+Used by other servers (i.e.,
+.BR telnetd (8))
+to pass the name of the remote host to
+.B login
+so that it may be placed in utmp and wtmp.  Only the superuser may
+use this option.
+.IP
+Note that the
+.B \-h
+option has impact on the
+.B PAM service
+.BR name .
+The standard service name is
+.IR login ,
+with the
+.B \-h
+option the name is
+.IR remote .
+It is necessary to create proper PAM config files (e.g.
+.I /etc\:/pam.d\:/login
+and
+.IR /etc\:/pam.d\:/remote ).
+.TP
+.B \-H
+Used by other servers (i.e.,
+.BR telnetd (8))
+to tell
+.B login
+that printing the hostname should be suppressed in the login: prompt.
+See also LOGIN_PLAIN_PROMPT below if your server does not allow to configure
+.B login
+command line.
+.TP
+\fB\-\-help\fR
+Display help text and exit.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Display version information and exit.
+.SH CONFIG FILE ITEMS
+.B login
+reads the
+.IR /etc\:/login.defs (5)
+configuration file.  Note that the configuration file could be
+distributed with another package (e.g. shadow-utils).  The following
+configuration items are relevant for
+.BR login (1):
+.PP
+.B MOTD_FILE
+(string)
+.RS 4
+If defined, a ":" delimited list of "message of the day" files to be
+displayed upon login.  The default value is
+.IR /etc\:/motd .
+If the
+.B MOTD_FILE
+item is empty or a quiet login is enabled, then the message of the day
+is not displayed.  Note that the same functionality is also provided
+by
+.BR pam_motd (8)
+PAM module.
+.RE
+.PP
+.B LOGIN_PLAIN_PROMPT
+(boolean)
+.RS 4
+Tell login that printing the hostname should be suppressed in the login:
+prompt.  This is alternative to the \fB\-H\fR command line option.  The default
+value is
+.IR no .
+.RE
+.PP
+.B LOGIN_TIMEOUT
+(number)
+.RS 4
+Max time in seconds for login.  The default value is
+.IR 60 .
+.RE
+.PP
+.B LOGIN_RETRIES
+(number)
+.RS 4
+Maximum number of login retries in case of a bad password.  The default
+value is
+.IR 3 .
+.RE
+.PP
+.B FAIL_DELAY
+(number)
+.RS 4
+Delay in seconds before being allowed another three tries after a
+login failure.  The default value is
+.IR 5 .
+.RE
+.PP
+.B TTYPERM
+(string)
+.RS 4
+The terminal permissions.  The default value is
+.I 0600
+or
+.I 0620
+if tty group is used.
+.RE
+.PP
+.B TTYGROUP
+(string)
+.RS 4
+The login tty will be owned by the
+.BR TTYGROUP .
+The default value is
+.IR tty .
+If the
+.B TTYGROUP
+does not exist, then the ownership of the terminal is set to the
+user\'s primary group.
+.PP
+The
+.B TTYGROUP
+can be either the name of a group or a numeric group identifier.
+.RE
+.PP
+.B HUSHLOGIN_FILE
+(string)
+.RS 4
+If defined, this file can inhibit all the usual chatter during the
+login sequence.  If a full pathname (e.g.
+.IR /etc\:/hushlogins )
+is specified, then hushed mode will be enabled if the user\'s name or
+shell are found in the file.  If this global hush login file is empty
+then the hushed mode will be enabled for all users.
+.PP
+If a full pathname is not specified, then hushed mode will be enabled
+if the file exists in the user\'s home directory.
+.PP
+The default is to check
+.I /etc\:/hushlogins
+and if it does not exist then
+.I ~/.hushlogin
+.PP
+If the
+.B HUSHLOGIN_FILE
+item is empty, then all the checks are disabled.
+.RE
+.PP
+.B DEFAULT_HOME
+(boolean)
+.RS 4
+Indicate if login is allowed if we cannot change directory to the
+home directory.  If set to
+.IR yes ,
+the user will login in the root (/) directory if it is not possible
+to change directory to her home.  The default value is
+.IR yes .
+.RE
+.PP
+.B LASTLOG_UID_MAX
+(unsigned number)
+.RS 4
+Highest user ID number for which the lastlog entries should be
+updated.  As higher user IDs are usually tracked by remote user
+identity and authentication services there is no need to create
+a huge sparse lastlog file for them.  No LASTLOG_UID_MAX option
+present in the configuration means that there is no user ID limit
+for writing lastlog entries.
+.RE
+.PP
+.B LOG_UNKFAIL_ENAB
+(boolean)
+.RS 4
+Enable display of unknown usernames when login failures are recorded.
+The default value is
+.IR no .
+.PP
+Note that logging unknown usernames may be a security issue if a
+user enters her password instead of her login name.
+.RE
+.PP
+.B ENV_PATH
+(string)
+.RS 4
+If set, it will be used to define the PATH environment variable when
+a regular user logs in.  The default value is
+.I /usr\:/local\:/bin:\:/bin:\:/usr\:/bin
+.RE
+.PP
+.B ENV_ROOTPATH
+(string)
+.br
+.B ENV_SUPATH
+(string)
+.RS 4
+If set, it will be used to define the PATH environment variable when
+the superuser logs in.  ENV_ROOTPATH takes precedence.  The default value is
+.I /usr\:/local\:/sbin:\:/usr\:/local\:/bin:\:/sbin:\:/bin:\:/usr\:/sbin:\:/usr\:/bin
+.RE
+.SH FILES
+.nf
+.I /var/run/utmp
+.I /var/log/wtmp
+.I /var/log/lastlog
+.I /var/spool/mail/*
+.I /etc/motd
+.I /etc/passwd
+.I /etc/nologin
+.I /etc/pam.d/login
+.I /etc/pam.d/remote
+.I /etc/hushlogins
+.I .hushlogin
+.fi
+.SH "SEE ALSO"
+.BR mail (1),
+.BR passwd (1),
+.BR passwd (5),
+.BR environ (7),
+.BR getty (8),
+.BR init (8),
+.BR shutdown (8)
+.SH BUGS
+The undocumented BSD
+.B \-r
+option is not supported.  This may be required by some
+.BR rlogind (8)
+programs.
+.PP
+A recursive login, as used to be possible in the good old days, no
+longer works; for most purposes
+.BR su (1)
+is a satisfactory substitute.  Indeed, for security reasons, login
+does a vhangup() system call to remove any possible listening
+processes on the tty.  This is to avoid password sniffing.  If one
+uses the command
+.BR login ,
+then the surrounding shell gets killed by vhangup() because it's no
+longer the true owner of the tty.  This can be avoided by using
+.B exec login
+in a top-level shell or xterm.
+.SH AUTHOR
+Derived from BSD login 5.40 (5/9/89) by
+.MT glad@\:daimi.\:dk
+Michael Glad
+.ME
+for HP-UX
+.br
+Ported to Linux 0.12:
+.MT poe@\:daimi.\:aau.\:dk
+Peter Orbaek
+.ME
+.br
+Rewritten to a PAM-only version by
+.MT kzak@\:redhat.\:com
+Karel Zak
+.ME
+.SH AVAILABILITY
+The login command is part of the util-linux package and is
+available from
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE .
