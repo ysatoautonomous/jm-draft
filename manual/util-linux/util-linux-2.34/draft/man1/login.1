@@ -42,14 +42,14 @@ login \- システム上でセッションを開く
 はシステムにサインインするために使われる。
 引き数が指定されない場合、
 .B login
-はユーザー名を入力するプロンプトを出す。
+はユーザ名を入力するプロンプトを出す。
 .PP
 .\"O The user is then prompted for a password, where appropriate.  Echoing
 .\"O is disabled to prevent revealing the password.  Only a small number
 .\"O of password failures are permitted before
 .\"O .B login
 .\"O exits and the communications link is severed.
-次いで、必要な場合には、ユーザーはパスワードを入力するよう促される。
+次いで、必要な場合には、ユーザはパスワードを入力するよう促される。
 パスワードを表示してしまわないよう、エコーは行われない。
 数回以上パスワード入力に失敗すると
 .B login
@@ -409,80 +409,136 @@ tty グループが使われている場合、デフォルトの値は、
 .RE
 .PP
 .B HUSHLOGIN_FILE
-(string)
+.\"O (string)
+(文字列)
 .RS 4
-If defined, this file can inhibit all the usual chatter during the
-login sequence.  If a full pathname (e.g.
+.\"O If defined, this file can inhibit all the usual chatter during the
+.\"O login sequence.  If a full pathname (e.g.
+.\"O .IR /etc\:/hushlogins )
+.\"O is specified, then hushed mode will be enabled if the user\'s name or
+.\"O shell are found in the file.  If this global hush login file is empty
+.\"O then the hushed mode will be enabled for all users.
+このファイルが定義された場合、通常のログインシーケンスでのいろいろな
+表示が抑制される。
+フルパス名 (例えば、
 .IR /etc\:/hushlogins )
-is specified, then hushed mode will be enabled if the user\'s name or
-shell are found in the file.  If this global hush login file is empty
-then the hushed mode will be enabled for all users.
+が指定された場合、このファイルがユーザの名前やシェルがあると、
+ハッシュモードが有効化される。
+このグローバルのハッシュログインファイルが空の場合、全てのユーザで
+ハッシュモードが有効化される。
 .PP
-If a full pathname is not specified, then hushed mode will be enabled
-if the file exists in the user\'s home directory.
+.\"O If a full pathname is not specified, then hushed mode will be enabled
+.\"O if the file exists in the user\'s home directory.
+フルパス名が指定されない場合、かつファイルがユーザのホーム
+ディレクトリにある場合、ハッシュモードが有効化される。
 .PP
-The default is to check
+.\"O The default is to check
+.\"O .I /etc\:/hushlogins
+.\"O and if it does not exist then
+.\"O .I ~/.hushlogin
+デフォルトでは、
 .I /etc\:/hushlogins
-and if it does not exist then
+をチェックし、存在しない場合は、
 .I ~/.hushlogin
+をチェックする。
 .PP
-If the
+.\"O If the
+.\"O .B HUSHLOGIN_FILE
+.\"O item is empty, then all the checks are disabled.
 .B HUSHLOGIN_FILE
-item is empty, then all the checks are disabled.
+アイテムが空の場合、全てのチェックが無効化される。
 .RE
 .PP
 .B DEFAULT_HOME
-(boolean)
+.\"O (boolean)
+(ブール値)
 .RS 4
-Indicate if login is allowed if we cannot change directory to the
-home directory.  If set to
-.IR yes ,
-the user will login in the root (/) directory if it is not possible
-to change directory to her home.  The default value is
-.IR yes .
+.\"O Indicate if login is allowed if we cannot change directory to the
+.\"O home directory.  If set to
+.\"O .IR yes ,
+.\"O the user will login in the root (/) directory if it is not possible
+.\"O to change directory to her home.  The default value is
+.\"O .IR yes .
+ホームディレクトリに移動できない場合に、ログインを許可するかを
+指定する。
+.I yes
+に設定すると、ユーザがホームディレクトリに移動できない場合、
+ルート (/) ディレクトリでログインする。
+デフォルトの値は、
+.I yes
+である。
 .RE
 .PP
 .B LASTLOG_UID_MAX
-(unsigned number)
+.\"O (unsigned number)
+(符号なし数値)
 .RS 4
-Highest user ID number for which the lastlog entries should be
-updated.  As higher user IDs are usually tracked by remote user
-identity and authentication services there is no need to create
-a huge sparse lastlog file for them.  No LASTLOG_UID_MAX option
-present in the configuration means that there is no user ID limit
-for writing lastlog entries.
+.\"O Highest user ID number for which the lastlog entries should be
+.\"O updated.  As higher user IDs are usually tracked by remote user
+.\"O identity and authentication services there is no need to create
+.\"O a huge sparse lastlog file for them.  No LASTLOG_UID_MAX option
+.\"O present in the configuration means that there is no user ID limit
+.\"O for writing lastlog entries.
+lastlog エントリを更新するユーザの、最大のユーザ ID 番号。
+大きいユーザ ID をリモートユーザの識別と認証サービスで常に追跡すると、
+大きく疎らな lastlog ファイルを作成することになる。
+設定に LASTLOG_UID_MAX オプションが存在しない場合、
+lastlog エントリを書き込むユーザ ID の制限はなくなる。
 .RE
 .PP
 .B LOG_UNKFAIL_ENAB
-(boolean)
+.\"O (boolean)
+(ブール値)
 .RS 4
-Enable display of unknown usernames when login failures are recorded.
-The default value is
-.IR no .
+.\"O Enable display of unknown usernames when login failures are recorded.
+.\"O The default value is
+.\"O .IR no .
+ログインの失敗が記録される場合、不明なユーザ名の表示を有効化する。
+デフォルト値は、
+.I no
+である。
 .PP
-Note that logging unknown usernames may be a security issue if a
-user enters her password instead of her login name.
+.\"O Note that logging unknown usernames may be a security issue if a
+.\"O user enters her password instead of her login name.
+ユーザがログイン名ではなく、パスワードを入力してしまった場合、
+不明やユーザ名をログに記録することで、セキュリティ問題になる
+可能性がある点に注意すること。
 .RE
 .PP
 .B ENV_PATH
-(string)
+.\"O (string)
+(文字列)
 .RS 4
-If set, it will be used to define the PATH environment variable when
-a regular user logs in.  The default value is
+.\"O If set, it will be used to define the PATH environment variable when
+.\"O a regular user logs in.  The default value is
+.\"O .I /usr\:/local\:/bin:\:/bin:\:/usr\:/bin
+この値が設定されると、通常ユーザがログインする際の
+PATH 環境変数を定義するために使われる。
+デフォルト値は、
 .I /usr\:/local\:/bin:\:/bin:\:/usr\:/bin
+である。
 .RE
 .PP
 .B ENV_ROOTPATH
-(string)
+.\"O (string)
+(文字列)
 .br
 .B ENV_SUPATH
-(string)
+.\"O (string)
+(文字列)
 .RS 4
-If set, it will be used to define the PATH environment variable when
-the superuser logs in.  ENV_ROOTPATH takes precedence.  The default value is
+.\"O If set, it will be used to define the PATH environment variable when
+.\"O the superuser logs in.  ENV_ROOTPATH takes precedence.  The default value is
+.\"O .I /usr\:/local\:/sbin:\:/usr\:/local\:/bin:\:/sbin:\:/bin:\:/usr\:/sbin:\:/usr\:/bin
+この値が設定されると、スーパーユーザがログインする際の
+PATH 環境変数を定義するために使われる。
+ENV_ROOTPATH が優先される。
+デフォルト値は、
 .I /usr\:/local\:/sbin:\:/usr\:/local\:/bin:\:/sbin:\:/bin:\:/usr\:/sbin:\:/usr\:/bin
+である。
 .RE
-.SH FILES
+.\"O .SH FILES
+.SH ファイル
 .nf
 .I /var/run/utmp
 .I /var/log/wtmp
@@ -496,7 +552,8 @@ the superuser logs in.  ENV_ROOTPATH takes precedence.  The default value is
 .I /etc/hushlogins
 .I .hushlogin
 .fi
-.SH "SEE ALSO"
+.\"O .SH "SEE ALSO"
+.SH 関連項目
 .BR mail (1),
 .BR passwd (1),
 .BR passwd (5),
@@ -504,7 +561,8 @@ the superuser logs in.  ENV_ROOTPATH takes precedence.  The default value is
 .BR getty (8),
 .BR init (8),
 .BR shutdown (8)
-.SH BUGS
+.\"O .SH BUGS
+.SH バグ
 The undocumented BSD
 .B \-r
 option is not supported.  This may be required by some
