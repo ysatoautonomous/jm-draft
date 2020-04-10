@@ -1,0 +1,274 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of IPCRM</TITLE>
+</HEAD><BODY>
+<H1>IPCRM</H1>
+Section: User Commands (1)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+ipcrm - 特定の IPC リソースを削除する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>ipcrm</B>
+
+[options]
+<P>
+<B>ipcrm</B>
+
+{<B>shm</B>|<B>msg</B>|<B>sem</B>}
+
+<I>id</I>...
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+<B>ipcrm</B>
+
+は System V プロセス間通信 (inter-process communication, IPC) オブジェクトと、
+関連するデータ構造をシステムから削除する。
+このようなオブジェクトを削除するためには、スーパーユーザーか、
+オブジェクトの作成者か、所有者でなければならない。
+<P>
+
+
+
+System V IPC オブジェクトは 3 つのタイプがある: 共有メモリ、メッセージキュー、
+セマフォである。
+
+
+
+メッセージキューとセマフォオブジェクトの削除は、
+(プロセスがオブジェクトの IPC 識別子をまだ持っているかに関わらず) 即時に行われる。
+
+
+
+
+共有メモリオブジェクトは、仮想アドレス空間でそのオブジェクトを
+付加　(attach) した現状の全てのプロセスが、
+(<B><A HREF="../man2/shmdt.2.html">shmdt</A></B>(2))
+
+で分離 (detach) した後でのみ削除される。
+<P>
+
+
+
+
+2 つの書式がサポートされている。
+古い Linux の歴史的な書式では、どのクラスのオブジェクトを削除するかを示す
+3 文字のキーワードの後に、そのタイプのオブジェクトの 1 つ以上の IPC 識別子を続ける。
+<P>
+
+
+
+
+SUS 互換の書式では、1 つのコマンドラインで、
+3 つ全てのタイプの 0 個以上のオブジェクトを指定できる。
+ここでオブジェクトはキーまたは識別子で指定できる (下記を参照)。
+
+
+
+キーと識別子は、10 進数、(先頭に '0x' または '0X' を付けた) 16 進数、
+(先頭に '0' を付けた) 8 進数で指定できる。
+<P>
+
+
+
+
+
+
+削除の詳細は
+<B><A HREF="../man2/shmctl.2.html">shmctl</A></B>(2),
+
+<B><A HREF="../man2/msgctl.2.html">msgctl</A></B>(2),
+
+<B><A HREF="../man2/semctl.2.html">semctl</A></B>(2)
+
+に記載されている。
+
+
+識別子とキーは
+<B><A HREF="../man1/ipcs.1.html">ipcs</A></B>(1)
+
+を使って知ることができる。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-a</B>, <B>--all</B> [<B>shm</B>] [<B>msg</B>] [<B>sem</B>]<DD>
+
+
+
+
+
+
+全てのリソースを削除する。
+オプションの引き数を指定すると、指定されたリソースタイプのみが
+削除される。
+<I>警告!</I> そのリソースを使っているソフトウェアが、オブジェクトを失った際に
+どのように動作するかが分からないなら、
+<B>-a</B>
+
+を使わないこと。
+<DT><B>-M</B>,<B> --shmem-key </B><I>shmkey</I>
+
+<DD>
+
+
+
+<I>shmkey</I>
+
+で作成された共有メモリセグメントを、最後の分離が終わった後に
+削除する。
+<DT><B>-m</B>,<B> --shmem-id </B><I>shmid</I>
+
+<DD>
+
+
+
+<I>shmid</I>
+
+で識別される共有メモリセグメントを、最後の分離が終わった後に
+削除する。
+<DT><B>-Q</B>,<B> --queue-key </B><I>msgkey</I>
+
+<DD>
+
+
+<I>msgkey</I>
+
+で作成されたメッセージキューを削除する。
+<DT><B>-q</B>,<B> --queue-id </B><I>msgid</I>
+
+<DD>
+
+
+<I>msgid</I>
+
+で識別されるメッセージキューを削除する。
+<DT><B>-S</B>,<B> --semaphore-key </B><I>semkey</I>
+
+<DD>
+
+
+<I>semkey</I>
+
+で作成されたセマフォを削除する。
+<DT><B>-s</B>,<B> --semaphore-id </B><I>semid</I>
+
+<DD>
+
+
+<I>semid</I>
+
+で識別されるセマフォを削除する。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+最初の Linux での実装では、<B>ipcrm</B> は
+<B>書式</B>
+
+の 2 行目に示した推奨されない書式を使っていた。
+
+
+
+
+それから、他の *nix での <B>ipcrm</B> の実装に存在する機能が追加された。
+つまり、(単に識別子だけでなく) キーを指定してリソースを削除する機能と、同じコマンドライン書式に
+従う機能が追加された。
+後方互換のため、以前の書式もまだサポートされている。
+
+
+
+
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+
+<B><A HREF="../man1/ipcmk.1.html">ipcmk</A></B>(1),
+
+<B><A HREF="../man1/ipcs.1.html">ipcs</A></B>(1),
+
+<B><A HREF="../man2/msgctl.2.html">msgctl</A></B>(2),
+
+<B><A HREF="../man2/msgget.2.html">msgget</A></B>(2),
+
+<B><A HREF="../man2/semctl.2.html">semctl</A></B>(2),
+
+<B><A HREF="../man2/semget.2.html">semget</A></B>(2),
+
+<B><A HREF="../man2/shmctl.2.html">shmctl</A></B>(2),
+
+<B><A HREF="../man2/shmdt.2.html">shmdt</A></B>(2),
+
+<B><A HREF="../man2/shmget.2.html">shmget</A></B>(2),
+
+<B><A HREF="../man3/ftok.3.html">ftok</A></B>(3)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+ipcrm コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">注意</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 06:25:24 GMT, April 10, 2020
+</BODY>
+</HTML>
