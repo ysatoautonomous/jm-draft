@@ -1,0 +1,232 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LSMEM</TITLE>
+</HEAD><BODY>
+<H1>LSMEM</H1>
+Section: User Commands (1)<BR>Updated: October 2016<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+lsmem - オンライン状態になっている利用可能なメモリの範囲をリスト表示する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>lsmem</B>
+
+[options]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>lsmem</B> コマンドは、オンライン状態になっている利用可能なメモリの範囲を
+リスト表示する。
+リストされたメモリブロックは、sysfs におけるメモリブロックの表現に対応する。
+このコマンドは、メモリブロックサイズと、オンラインとオフライン状態の
+メモリの総量も表示する。
+<P>
+
+
+
+
+デフォルトの出力は、元々の s390-tools の実装と互換性があるが、
+スクリプトの中ではデフォルトの出力を避けることを強く推奨する。
+一定の出力が必要な場合、環境変数のカラムリストとともに
+<B>--output</B> オプションを使って、期待するカラムを明示的に常に定義すべきである。
+<P>
+
+
+
+
+
+
+
+<B>lsmem</B> は、ある出力カラムについて、前のメモリブロックが現在のメモリブロックと
+区別される場合、新たなメモリ範囲としてリスト表示する。
+このデフォルトの挙動は、<B>--split</B> オプション
+(例えば <B>lsmem --split=ZONES</B>) で上書きできる。
+特別なワード &quot;none&quot; を使うと、メモリブロックの全ての違いを無視して、
+可能か限り大きな連続した範囲を作成する。
+<B>--all</B> は反対の意味で、個々のメモリブロックをリスト表示する。
+<P>
+
+
+
+
+分割ポリシーより、ある属性の違いを <B>lsmem</B> に強制的に無視させた場合、
+出力カラムに不正確な情報が表示されることがある点に注意すること。
+例えば、リムーバブルなメモリブロックとリムーバブルでないメモリブロックを
+1 つの範囲にマージしてしまった場合、<B>lsmem</B> の出力では、
+リムーバブルでないメモリとしてマークされる。
+<P>
+
+
+全てのシステムで全てのカラムがサポートされているわけではない。
+サポートされていないカラムが指定された場合、<B>lsmem</B> はカラム名を表示するが、
+データは表示しない。
+<P>
+
+カラムの説明を参照するには、<B>--help</B> オプションを使うこと。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-a</B>, <B>--all</B>
+
+<DD>
+
+
+同じ属性でメモリブロックを結合するのではなく、個々のメモリ
+ブロックをリスト表示する。
+<DT><B>-b</B>,<B> --bytes</B>
+
+<DD>
+
+SIZE カラムを、人が読みやすい形式ではなく、バイト単位で表示する。
+<DT><B>-h</B>, <B>--help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-J</B>,<B> --json</B>
+
+<DD>
+
+JSON 出力形式を使う。
+<DT><B>-n</B>,<B> --noheadings</B>
+
+<DD>
+
+ヘッダ行を表示しない。
+<DT><B>-o</B>,<B> --output </B><I>list</I>
+
+<DD>
+
+
+
+
+どの出力カラムを表示するかを指定する。
+サポートされる全てのカラムのリストを取得するには、<B>--help</B> を使うこと。
+<I>list</I> を <I>+list</I> の形式で指定することで、
+デフォルトのカラムのリストを拡張できる
+(例えば、<B>lsmem -o +NODE</B>)。
+<DT><B>--output-all</B>
+
+<DD>
+
+利用可能なカラムを全て出力する。
+<DT><B>-P</B>,<B> --pairs</B>
+
+<DD>
+
+
+出力を key=&quot;value&quot; ペアの形式にする。
+潜在的に安全でない全ての文字は、(\x&lt;code&gt; のように) 16 進数にエスケープされる。
+<DT><B>-r</B>,<B> --raw</B>
+
+<DD>
+
+
+出力を生の形式にする。
+潜在的に安全でない全ての文字は、(\x&lt;code&gt; のように) 16 進数にエスケープされる。
+<DT><B>-S</B>,<B> --split </B><I>list</I>
+
+<DD>
+
+
+
+どのカラム (属性) を使ってメモリブロックを範囲に分割するかを指定する。
+サポートされるカラムは、STATE, REMOVABLE, NODE, ZONES、もしくは &quot;none&quot; である。
+他のカラムは黙って無視される。
+より詳細は上記の「説明」セクションを参照すること。
+<DT><B>-s</B>,<B> --sysroot </B><I>directory</I>
+
+<DD>
+
+
+
+<B>lsmem</B> コマンドが発行された Linux インスタンスではなく、
+別のインスタンスのメモリデータを取得する。
+指定する <I>directory</I> は、調査を行う Linux インスタンスのシステムルートである。
+<DT><B>-V</B>, <B>--version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>--summary</B>[=<I>when</I>]<DD>
+
+
+
+
+このオプションはサマリ行の表示を制御する。
+オプションの引き数 <I>when</I> は、<B>never</B>, <B>always</B>,
+<B>only</B> のいずれかである。
+<I>when</I> 引き数が省略された場合、デフォルトは <B>&quot;only&quot;</B> である。
+<B>--raw</B>, <B>--pairs</B>, <B>--json</B> が指定された場合、
+サマリ行は出力されない。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>著者</H2>
+
+
+
+
+<B>lsmem</B>
+
+は元々 Gerald Schaefer によって s390-tools で Perl で書かれた。
+util-linux の C バージョンは、Clemens von Mann, Heiko Carstens,
+Karel Zak によって書かれた。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/chmem.8.html">chmem</A></B>(8)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+<B>lsmem</B> コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">著者</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 09:21:01 GMT, April 11, 2020
+</BODY>
+</HTML>
