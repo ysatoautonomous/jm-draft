@@ -1,0 +1,98 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Apr 11 19:43:38 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH MOUNTPOINT 1 "July 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O mountpoint \- see if a directory or file is a mountpoint
+mountpoint \- ディレクトリまたはファイルがマウントポイントかを見分ける。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B mountpoint
+.RB [ \-d | \-q ]
+.I directory
+|
+.I file
+.sp
+.B mountpoint
+.B \-x
+.I device
+
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B mountpoint
+.\"O checks whether the given
+.\"O .I directory
+.\"O or
+.\"O .I file
+.\"O is mentioned in the /proc/self/mountinfo file.
+.B mountpoint
+は、指定された
+.I directory
+または
+.I file
+が /proc/self/mountinfo に記載されているかをチェックする。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-d , " \-\-fs\-devno"
+.\"O Show the major/minor numbers of the device that is mounted on the given
+.\"O directory.
+指定されたディレクトリにマウントされてるデバイスの
+メジャー/マイナー番号を表示する。
+.TP
+.BR \-q , " \-\-quiet"
+.\"O Be quiet - don't print anything.
+静かにする - 何も表示しない。
+.TP
+.BR \-x , " \-\-devno"
+.\"O Show the major/minor numbers of the given blockdevice on standard output.
+指定されたブロックデバイスのメジャー/マイナー番号を表示出力に
+書き出す。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH EXIT STATUS
+.SH 返り値
+.\"O Zero if the directory or file is a mountpoint, non-zero if not.
+ディレクトリまたはファイルがマウントポイントの場合、0 を返す。
+マウントポイントでない場合、0 以外を返す。
+.\"O .SH AUTHOR
+.SH 著者
+.PP
+Karel Zak <kzak@redhat.com>
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.IP LIBMOUNT_DEBUG=all
+.\"O enables libmount debug output.
+libmount のデバッグ出力を有効にする。
+.\"O .SH NOTES
+.SH 注意
+.PP
+.\"O The util-linux
+.\"O .B mountpoint
+.\"O implementation was written from scratch for libmount.  The original version
+.\"O for sysvinit suite was written by Miquel van Smoorenburg.
+util-linux の
+.B mountpoint
+実装は、libmount のためにスクラッチで書かれた。
+sysvinit スイートの元々のバージョンは、Miquel van Smoorenburg によって書かれた。
+
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR mount (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The mountpoint command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+mountpoint コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
