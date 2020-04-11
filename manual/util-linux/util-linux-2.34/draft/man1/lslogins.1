@@ -3,7 +3,7 @@
 .\"
 .\" Japanese Version Copyright (c) 2020 Yuichi SATO
 .\"         all rights reserved.
-.\" Translated Sat Apr 11 14:19:10 JST 2020
+.\" Translated Sat Apr 11 16:35:10 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH LSLOGINS "1" "April 2014" "util-linux" "User Commands"
@@ -152,10 +152,10 @@ btmp の別のパス名。
 .\"O This hardcoded default may be overwritten by parameters SYS_UID_MIN and SYS_UID_MAX in
 .\"O the file /etc/login.defs.
 システムアカウントを表示する。
-Show system accounts.  These are by default all accounts with a UID between 101 and 999
-(inclusive), with the exception of either nobody or nfsnobody (UID 65534).
-This hardcoded default may be overwritten by parameters SYS_UID_MIN and SYS_UID_MAX in
-the file /etc/login.defs.
+UID が 101 から 999 (を含む) の全てのアカウントがデフォルトである。
+nobody と nfsnobody (UID 65534) は除外される。
+このハードコードされたデフォルトは /etc/login.defs ファイルの
+パラメータ SYS_UID_MIN と SYS_UID_MAX で上書きできる。
 .TP
 \fB\-\-time\-format\fR \fItype\fP
 .\"O Display dates in short, full or iso format.  The default is short, this time
@@ -165,10 +165,14 @@ the file /etc/login.defs.
 されている。
 .TP
 \fB\-u\fR, \fB\-\-user\-accs\fR
-Show user accounts.  These are by default all accounts with UID above 1000
-(inclusive), with the exception of either nobody or nfsnobody (UID 65534).
-This hardcoded default maybe overwritten by parameters UID_MIN and UID_MAX in
-the file /etc/login.defs.
+.\"O Show user accounts.  These are by default all accounts with UID above 1000
+.\"O (inclusive), with the exception of either nobody or nfsnobody (UID 65534).
+.\"O This hardcoded default maybe overwritten by parameters UID_MIN and UID_MAX in
+.\"O the file /etc/login.defs.
+UID が 1000 以上の全てのアカウントがデフォルトである。
+nobody と nfsnobody (UID 65534) は除外される。
+このハードコードされたデフォルトは /etc/login.defs ファイルの
+パラメータ UID_MIN と UID_MAX で上書きできる。
 .TP
 \fB\-V\fR, \fB\-\-version\fR
 .\"O Display version information and exit.
@@ -186,24 +190,35 @@ wtmp の別のパス名。
 .\"O Delimit user entries with a nul character, instead of a newline.
 ユーザーのエントリを、改行ではなく、nul 文字で区切る。
 
-.SH NOTES
-The default UID thresholds are read from /etc/login.defs.
+.\"O .SH NOTES
+.SH 注意
+.\"O The default UID thresholds are read from /etc/login.defs.
+UID の閾値のデフォルトは、/etc/login.defs から読み込まれる。
 
-.SH EXIT STATUS
+.\"O .SH EXIT STATUS
+.SH 返り値
 .TP
 0
-if OK,
+.\"O if OK,
+OK である。
 .TP
 1
-if incorrect arguments specified,
+.\"O if incorrect arguments specified,
+不正な引き数が指定された。
 .TP
 2
-if a serious error occurs (e.g. a corrupt log).
-.SH SEE ALSO
+.\"O if a serious error occurs (e.g. a corrupt log).
+致命的なエラーが起こった (例えば、ログが破損していた)。
+.\"O .SH SEE ALSO
+.SH 関連項目
 \fBgroup\fP(5), \fBpasswd\fP(5), \fBshadow\fP(5), \fButmp\fP(5)
-.SH HISTORY
-The \fBlslogins\fP utility is inspired by the \fBlogins\fP utility, which first appeared in FreeBSD 4.10.
-.SH AUTHORS
+.\"O .SH HISTORY
+.SH 履歴
+.\"O The \fBlslogins\fP utility is inspired by the \fBlogins\fP utility, which first appeared in FreeBSD 4.10.
+\fBlslogins\fP ユーティリティは、\fBlogins\fP ユーティリティによって触発され、
+FreeBSD 4.10 で登場した。
+.\"O .SH AUTHORS
+.SH 著者
 .MT ooprala@redhat.com
 Ondrej Oprala
 .ME
@@ -212,8 +227,14 @@ Ondrej Oprala
 Karel Zak
 .ME
 
-.SH AVAILABILITY
-The lslogins command is part of the util-linux package and is available from
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The lslogins command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+lslogins コマンドは util-linux パッケージの一部であり、
 .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
 Linux Kernel Archive
-.UE .
+.UE
+から入手できる。
