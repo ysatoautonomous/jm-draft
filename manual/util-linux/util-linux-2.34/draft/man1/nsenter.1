@@ -1,7 +1,7 @@
 .\"
 .\" Japanese Version Copyright (c) 2020 Yuichi SATO
 .\"         all rights reserved.
-.\" Translated Sat Apr 11 19:43:38 JST 2020
+.\" Translated Sun Apr 12 01:20:21 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH NSENTER 1 "June 2013" "util-linux" "User Commands"
@@ -269,7 +269,7 @@ PID 名前空間
 .TP
 /proc/\fIpid\fR/ns/cgroup
 .\"O the cgroup namespace
-コントロールグループ名前空間
+cgroup 名前空間
 .TP
 /proc/\fIpid\fR/root
 .\"O the root directory
@@ -298,99 +298,173 @@ PID 名前空間
 で指定されたマウント名前空間に入れる。
 .TP
 \fB\-u\fR, \fB\-\-uts\fR[=\fIfile\fR]
-Enter the UTS namespace.  If no file is specified, enter the UTS namespace of
-the target process.
-If
+.\"O Enter the UTS namespace.  If no file is specified, enter the UTS namespace of
+.\"O the target process.
+UTS 名前空間に入れる。
 .I file
-is specified, enter the UTS namespace specified by
-.IR file .
+が指定されない場合、対象プロセスの UTS 名前空間に入れる。
+.\"O If
+.\"O .I file
+.\"O is specified, enter the UTS namespace specified by
+.\"O .IR file .
+.I file
+が指定された場合、
+.I file
+で指定された UTS 名前空間に入れる。
 .TP
 \fB\-i\fR, \fB\-\-ipc\fR[=\fIfile\fR]
-Enter the IPC namespace.  If no file is specified, enter the IPC namespace of
-the target process.
-If
+.\"O Enter the IPC namespace.  If no file is specified, enter the IPC namespace of
+.\"O the target process.
+IPC 名前空間に入れる。
 .I file
-is specified, enter the IPC namespace specified by
-.IR file .
+が指定されない場合、対象プロセスの IPC 名前空間に入れる。
+.\"O If
+.\"O .I file
+.\"O is specified, enter the IPC namespace specified by
+.\"O .IR file .
+.I file
+が指定された場合、
+.I file
+で指定された IPC 名前空間に入れる。
 .TP
 \fB\-n\fR, \fB\-\-net\fR[=\fIfile\fR]
-Enter the network namespace.  If no file is specified, enter the network
-namespace of the target process.
-If
+.\"O Enter the network namespace.  If no file is specified, enter the network
+.\"O namespace of the target process.
+ネットワーク名前空間に入れる。
 .I file
-is specified, enter the network namespace specified by
-.IR file .
+が指定されない場合、対象プロセスのネットワーク名前空間に入れる。
+.\"O If
+.\"O .I file
+.\"O is specified, enter the network namespace specified by
+.\"O .IR file .
+.I file
+が指定された場合、
+.I file
+で指定されたネットワーク名前空間に入れる。
 .TP
 \fB\-p\fR, \fB\-\-pid\fR[=\fIfile\fR]
-Enter the PID namespace.  If no file is specified, enter the PID namespace of
-the target process.
-If
+.\"O Enter the PID namespace.  If no file is specified, enter the PID namespace of
+.\"O the target process.
+PID 名前空間に入れる。
 .I file
-is specified, enter the PID namespace specified by
-.IR file .
+が指定されない場合、対象プロセスの PID 名前空間に入れる。
+.\"O If
+.\"O .I file
+.\"O is specified, enter the PID namespace specified by
+.\"O .IR file .
+.I file
+が指定された場合、
+.I file
+で指定された PID 名前空間に入れる。
 .TP
 \fB\-U\fR, \fB\-\-user\fR[=\fIfile\fR]
-Enter the user namespace.  If no file is specified, enter the user namespace of
-the target process.
-If
+.\"O Enter the user namespace.  If no file is specified, enter the user namespace of
+.\"O the target process.
+ユーザー名前空間に入れる。
 .I file
-is specified, enter the user namespace specified by
-.IR file .
-See also the \fB\-\-setuid\fR and \fB\-\-setgid\fR options.
+が指定されない場合、対象プロセスのユーザー名前空間に入れる。
+.\"O If
+.\"O .I file
+.\"O is specified, enter the user namespace specified by
+.\"O .IR file .
+.I file
+が指定された場合、
+.I file
+で指定されたユーザー名前空間に入れる。
+.\"O See also the \fB\-\-setuid\fR and \fB\-\-setgid\fR options.
+\fB\-\-setuid\fR と \fB\-\-setgid\fR オプションも参照すること。
 .TP
 \fB\-C\fR, \fB\-\-cgroup\fR[=\fIfile\fR]
-Enter the cgroup namespace.  If no file is specified, enter the cgroup namespace of
-the target process.
-If
+.\"O Enter the cgroup namespace.  If no file is specified, enter the cgroup namespace of
+.\"O the target process.
+cgroup 名前空間に入れる。
 .I file
-is specified, enter the cgroup namespace specified by
-.IR file .
+が指定されない場合、対象プロセスの cgroup 名前空間に入れる。
+.\"O If
+.\"O .I file
+.\"O is specified, enter the cgroup namespace specified by
+.\"O .IR file .
+.I file
+が指定された場合、
+.I file
+で指定された cgroup 名前空間に入れる。
 .TP
 \fB\-G\fR, \fB\-\-setgid\fR \fIgid\fR
-Set the group ID which will be used in the entered namespace and drop
-supplementary groups.
+.\"O Set the group ID which will be used in the entered namespace and drop
+.\"O supplementary groups.
+入った名前空間で使われるグループ ID を設定する。
+補助 (supplementary) グループは落とされる。
+.\"O .BR nsenter (1)
+.\"O always sets GID for user namespaces, the default is 0.
 .BR nsenter (1)
-always sets GID for user namespaces, the default is 0.
+は常にユーザー名前空間で GID を設定し、デフォルトは 0 である。
 .TP
 \fB\-S\fR, \fB\-\-setuid\fR \fIuid\fR
-Set the user ID which will be used in the entered namespace.
+.\"O Set the user ID which will be used in the entered namespace.
+入った名前空間で使われるユーザー ID を設定する。
+.\"O .BR nsenter (1)
+.\"O always sets UID for user namespaces, the default is 0.
 .BR nsenter (1)
-always sets UID for user namespaces, the default is 0.
+は常にユーザー名前空間で UID を設定し、デフォルトは 0 である。
 .TP
 \fB\-\-preserve\-credentials\fR
-Don't modify UID and GID when enter user namespace. The default is to
-drops supplementary groups and sets GID and UID to 0.
+.\"O Don't modify UID and GID when enter user namespace. The default is to
+.\"O drops supplementary groups and sets GID and UID to 0.
+ユーザー名前空間に入ったときに、UID と GID を変更しない。
+デフォルトでは、補助グループを落とし、GID と UID を 0 にする。
 .TP
 \fB\-r\fR, \fB\-\-root\fR[=\fIdirectory\fR]
-Set the root directory.  If no directory is specified, set the root directory to
-the root directory of the target process.  If directory is specified, set the
-root directory to the specified directory.
+.\"O Set the root directory.  If no directory is specified, set the root directory to
+.\"O the root directory of the target process.  If directory is specified, set the
+.\"O root directory to the specified directory.
+ルートディレクトリを設定する。
+ディレクトリが指定されない場合、ルートディレクトリは、
+対象プロセスのルートディレクトリに設定される。
+ディレクトリが指定された場合、ルートディレクトリは、指定された
+ルートディレクトリに設定される。
 .TP
 \fB\-w\fR, \fB\-\-wd\fR[=\fIdirectory\fR]
-Set the working directory.  If no directory is specified, set the working
-directory to the working directory of the target process.  If directory is
-specified, set the working directory to the specified directory.
+.\"O Set the working directory.  If no directory is specified, set the working
+.\"O directory to the working directory of the target process.  If directory is
+.\"O specified, set the working directory to the specified directory.
+ワーキングディレクトリを設定する。
+ディレクトリが指定されない場合、ワーキングディレクトリは、
+対象プロセスのワーキングディレクトリに設定される。
+ディレクトリが指定された場合、ワーキングディレクトリは、指定された
+ワーキングディレクトリに設定される。
 .TP
 \fB\-F\fR, \fB\-\-no\-fork\fR
-Do not fork before exec'ing the specified program.  By default, when entering a
-PID namespace, \fBnsenter\fP calls \fBfork\fP before calling \fBexec\fP so that
-any children will also be in the newly entered PID namespace.
+.\"O Do not fork before exec'ing the specified program.  By default, when entering a
+.\"O PID namespace, \fBnsenter\fP calls \fBfork\fP before calling \fBexec\fP so that
+.\"O any children will also be in the newly entered PID namespace.
+指定されたプログラムを exec する前に、fork しない。
+デフォルトでは、PID 名前空間に入る際、
+\fBnsenter\fP は \fBexec\fP を呼ぶ前に \fBfork\fP を呼ぶので、
+新しく入った PID 名前空間に子プロセスも入る。
 .TP
 \fB\-Z\fR, \fB\-\-follow\-context\fR
-Set the SELinux security context used for executing a new process according to
-already running process specified by \fB\-\-target\fR PID. (The util-linux has
-to be compiled with SELinux support otherwise the option is unavailable.)
+.\"O Set the SELinux security context used for executing a new process according to
+.\"O already running process specified by \fB\-\-target\fR PID. (The util-linux has
+.\"O to be compiled with SELinux support otherwise the option is unavailable.)
+\fB\-\-target\fR PID で指定された既存の実行中プロセスに基づいて、
+新しいプロセスを実行するのに使う SELinux セキュリティコンテキストを設定する。
+ (util-linux が SELinux をサポートするようにコンパイルされている必要がある。
+さもなければ、このオプションは利用できない。)
 .TP
 \fB\-V\fR, \fB\-\-version\fR
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .TP
 \fB\-h\fR, \fB\-\-help\fR
-Display help text and exit.
-.SH SEE ALSO
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH SEE ALSO
+.SH 関連項目
 .BR clone (2),
 .BR setns (2),
 .BR namespaces (7)
-.SH AUTHORS
+.\"O .SH AUTHORS
+.SH 著者
 .UR biederm@xmission.com
 Eric Biederman
 .UE
@@ -398,8 +472,14 @@ Eric Biederman
 .UR kzak@redhat.com
 Karel Zak
 .UE
-.SH AVAILABILITY
-The nsenter command is part of the util-linux package and is available from
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The nsenter command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+nsenter コマンドは util-linux パッケージの一部であり、
 .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
 Linux Kernel Archive
-.UE .
+.UE
+から入手できる。
