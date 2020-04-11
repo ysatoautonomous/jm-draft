@@ -1,0 +1,282 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LSIPC</TITLE>
+</HEAD><BODY>
+<H1>LSIPC</H1>
+Section: User Commands (1)<BR>Updated: November 2015<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+lsipc - システムで現在利用されている IPC 機能 (facilities) の情報を表示する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>lsipc</B>
+
+[options]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>lsipc</B>
+
+は、呼び出しプロセスが読み込みアクセスを持つ、
+プロセス間通信 (inter-process communication) 機能の情報を表示する。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-i</B>, <B>--id</B> <I>id</I><DD>
+
+
+<I>id</I>
+
+で識別される 1 つのリソース要素の完全な詳細を表示する。
+
+
+
+
+このオプションは、以下の 3 つのリソースオプションのうちの 1 つと組み合わせる必要がある:
+<B>-m</B>,
+
+<B>-q</B>,
+
+<B>-s</B>.
+
+
+
+このオプションのデフォルトの出力形式は、
+<B>--list</B>, <B>--raw</B>, <B>--json</B>,  <B>--export</B>
+オプションで上書きできる。
+<DT><B>-g</B>, <B>--global</B><DD>
+
+IPC リソースのシステム全体での使用量と制限を表示する。
+
+
+
+
+このオプションは、以下の 3 つのリソースオプションのうちの 1 つと組み合わせることができる:
+<B>-m</B>,
+
+<B>-q</B>,
+
+<B>-s</B>.
+
+
+デフォルトでは全てのリソースの情報を表示する。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H3>リソースオプション</H3>
+
+<DL COMPACT>
+<DT><B>-m</B>, <B>--shmems</B><DD>
+
+アクティブな共有メモリセグメントの情報を書き出す。
+<DT><B>-q</B>, <B>--queues</B><DD>
+
+アクティブなメッセージキューの情報を書き出す。
+<DT><B>-s</B>, <B>--semaphores</B><DD>
+
+アクティブなセマフォセットの情報を書き出す。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H3>出力形式</H3>
+
+<DL COMPACT>
+<DT><B>-c</B>, <B>--creator</B><DD>
+
+作成者と所有者を表示する。
+<DT><B>-e</B>, <B>--export</B><DD>
+
+データを NAME=VALUE の形式で出力する。
+<DT><B>-J</B>, <B>--json</B><DD>
+
+JSON 出力形式を使う。
+<DT><B>-l</B>, <B>--list</B><DD>
+
+
+リスト出力形式を使う。
+<B>--id</B> が指定されているとき以外は、これがデフォルトである。
+<DT><B>-n</B>, <B>--newline</B><DD>
+
+各情報の塊を各行に書き出す。
+<DT><B>--noheadings</B><DD>
+
+ヘッダ行を表示しない。
+<DT><B>--notruncate</B><DD>
+
+出力を切り詰めない。
+<DT><B>-o</B>, <B>--output </B><I>list</I><DD>
+
+
+
+表示する出力カラムを指定する。
+サポートされる全てのカラムのリストは、
+<B>--help</B>
+
+で取得できる。
+<DT><B>-b</B>, <B>--bytes</B><DD>
+
+人が読みやすい形式ではなく、サイズをバイト単位で表示する。
+<DT><B>-r</B>, <B>--raw</B><DD>
+
+(カラム揃えをしない) 生の出力。
+<DT><B>-t</B>, <B>--time</B><DD>
+
+
+
+
+
+
+
+
+
+
+
+
+時刻情報を書き出す。
+全ての機能についてのアクセス権限の変更の操作時刻、
+メッセージキューについての最後の
+<B><A HREF="../man2/msgsnd.2.html">msgsnd</A></B>(2)
+
+と
+<B><A HREF="../man2/msgrcv.2.html">msgrcv</A></B>(2)
+
+操作の時刻、
+共有メモリについての最後の
+<B><A HREF="../man2/shmat.2.html">shmat</A></B>(2)
+
+と
+<B><A HREF="../man2/shmdt.2.html">shmdt</A></B>(2)
+
+操作の時刻、
+セマフォについての最後の
+<B><A HREF="../man2/semop.2.html">semop</A></B>(2)
+
+操作の時刻である。
+<DT><B>--time-format</B> <I>type</I><DD>
+
+
+時間を short, full, iso 形式で表示する。
+デフォルトは short で、この時間形式はスペースを使わず、人が読みやすいように設計
+されている。
+<DT><B>-P</B>, <B>--numeric-perms</B><DD>
+
+PERMS カラムに権限を数値で表示する。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>返り値</H2>
+
+<DL COMPACT>
+<DT>0<DD>
+
+OK である。
+<DT>1<DD>
+
+不正な引き数が指定された。
+<DT>2<DD>
+
+致命的なエラーが起こった。
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/ipcmk.1.html">ipcmk</A></B>(1),
+
+<B><A HREF="../man1/ipcrm.1.html">ipcrm</A></B>(1),
+
+<B><A HREF="../man2/msgrcv.2.html">msgrcv</A></B>(2),
+
+<B><A HREF="../man2/msgsnd.2.html">msgsnd</A></B>(2),
+
+<B><A HREF="../man2/semget.2.html">semget</A></B>(2),
+
+<B><A HREF="../man2/semop.2.html">semop</A></B>(2),
+
+<B><A HREF="../man2/shmat.2.html">shmat</A></B>(2),
+
+<B><A HREF="../man2/shmdt.2.html">shmdt</A></B>(2),
+
+<B><A HREF="../man2/shmget.2.html">shmget</A></B>(2)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>履歴</H2>
+
+
+<B>lsipc</B> ユーティリティは <B>ipcs</B> ユーティリティに触発されて作成された。
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>著者</H2>
+
+
+Ondrej Oprala
+
+<BR>
+
+
+Karel Zak
+
+<P>
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+lsipc コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DL>
+<DT><A HREF="#lbAF">リソースオプション</A><DD>
+<DT><A HREF="#lbAG">出力形式</A><DD>
+</DL>
+<DT><A HREF="#lbAH">返り値</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">履歴</A><DD>
+<DT><A HREF="#lbAK">著者</A><DD>
+<DT><A HREF="#lbAL">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 05:21:47 GMT, April 11, 2020
+</BODY>
+</HTML>
