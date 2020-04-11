@@ -1,0 +1,366 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Apr 11 19:43:38 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH NSENTER 1 "June 2013" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O nsenter \- run program with namespaces of other processes
+nsenter \- 他のプロセスの名前空間でプログラムを実行する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B nsenter
+[options]
+.RI [ program
+.RI [ arguments ]]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O Enters the namespaces of one or more other processes and then executes the specified
+.\"O \fIprogram\fP. If \fIprogram\fP is not given, then ``${SHELL}'' is run (default: /bin\:/sh).
+他の 1 つ以上のプロセスの名前空間に入って、指定された \fIprogram\fP を実行する。
+\fIprogram\fP が指定されない場合、``${SHELL}'' が実行される (デフォルトt: /bin\:/sh)。
+.PP
+.\"O Enterable namespaces are:
+入ることができる名前空間は以下の通り:
+.TP
+.\"O .B mount namespace
+.B マウント名前空間
+.\"O Mounting and unmounting filesystems will not affect the rest of the system,
+.\"O except for filesystems which are explicitly marked as shared (with
+.\"O \fBmount --make-\:shared\fP; see \fI/proc\:/self\:/mountinfo\fP for the
+.\"O \fBshared\fP flag).
+ファイルシステムのマウントとアンマウントが、他のファイルシステムに
+影響しない。
+ただし、明示的に共有 (shared) とマークされているファイルシステムは除く
+(共有は \fBmount --make-\:shared\fP で行われる;
+\fI/proc\:/self\:/mountinfo\fP の \fBshared\fP フラグを参照すること)。
+.\"O For further details, see
+.\"O .BR mount_namespaces (7)
+.\"O and the discussion of the
+.\"O .B CLONE_NEWNS
+.\"O flag in
+.\"O .BR clone (2).
+より詳細は、
+.BR mount_namespaces (7)
+と、
+.BR clone (2)
+の
+.B CLONE_NEWNS
+フラグの議論を参照すること。
+.TP
+.\"O .B UTS namespace
+.B UTS 名前空間
+.\"O Setting hostname or domainname will not affect the rest of the system.
+ホスト名とドメイン名の設定が、システムの他の部分に影響しない。
+.\"O For further details, see
+.\"O .BR namespaces (7)
+.\"O and the discussion of the
+.\"O .B CLONE_NEWUTS
+.\"O flag in
+.\"O .BR clone (2).
+より詳細は、
+.BR namespaces (7)
+と
+.BR clone (2)
+の
+.B CLONE_NEWUTS
+の議論を参照すること。
+.TP
+.\"O .B IPC namespace
+.B IPC 名前空間
+.\"O The process will have an independent namespace for POSIX message queues
+.\"O as well as System V message queues,
+.\"O semaphore sets and shared memory segments.
+POSIX メッセージキューと、System V メッセージキュー、
+セマフォセット、共有メモリセグメントについて、プロセスは独立した
+名前空間を持つ。
+.\"O For further details, see
+.\"O .BR namespaces (7)
+.\"O and the discussion of the
+.\"O .B CLONE_NEWIPC
+.\"O flag in
+.\"O .BR clone (2).
+より詳細は、
+.BR namespaces (7)
+と
+.BR clone (2)
+の
+.B CLONE_NEWIPC
+フラグの議論を参照すること。
+.TP
+.\"O .B network namespace
+.B ネットワーク名前空間
+.\"O The process will have independent IPv4 and IPv6 stacks, IP routing tables,
+.\"O firewall rules, the
+.\"O .I /proc\:/net
+.\"O and
+.\"O .I /sys\:/class\:/net
+.\"O directory trees, sockets, etc.
+プロセスが独立した IPv4 と IPv6 スタック、IP ルーティングテーブル、
+ファイアウォールルール、
+.I /proc\:/net
+と
+.I /sys\:/class\:/net
+のディレクトリツリー、ソケットなどを持つ。
+.\"O For further details, see
+.\"O .BR namespaces (7)
+.\"O and the discussion of the
+.\"O .B CLONE_NEWNET
+.\"O flag in
+.\"O .BR clone (2).
+より詳細は、
+.BR namespaces (7)
+と
+.BR clone (2)
+の
+.B CLONE_NEWNET
+フラグの議論を参照すること。
+.TP
+.\"O .B PID namespace
+.B PID 名前空間
+.\"O Children will have a set of PID to process mappings separate from the
+.\"O .B nsenter
+.\"O process
+.B nsenter
+プロセスとは別に、子プロセスがプロセスマッピングをするための PID セットを持つ。
+.\"O For further details, see
+.\"O .BR pid_namespaces (7)
+.\"O and
+.\"O the discussion of the
+.\"O .B CLONE_NEWPID
+.\"O flag in
+より詳細は、
+.BR pid_namespaces (7)
+と
+.BR clone (2)
+の
+.B CLONE_NEWPID
+フラグを参照すること。
+.\"O .B nsenter
+.\"O will fork by default if changing the PID namespace, so that the new program
+.\"O and its children share the same PID namespace and are visible to each other.
+PID 名前空間を変更する場合、デフォルトでは
+.B nsenter
+は fork を行う。
+そのため、新しいプログラムとその子プロセスは、同じ PID 名前空間を共有し、
+お互いに見えるようになる。
+.\"O If \fB\-\-no\-fork\fP is used, the new program will be exec'ed without forking.
+\fB\-\-no\-fork\fP が使われた場合、新しいプログラムは fork なしで exec される。
+.TP
+.\"O .B user namespace
+.B ユーザー名前空間
+.\"O The process will have a distinct set of UIDs, GIDs and capabilities.
+プロセスが個別の UID、GID、ケーパビリティ (capabilities) のセットを持つ。
+.\"O For further details, see
+.\"O .BR user_namespaces (7)
+.\"O and the discussion of the
+.\"O .B CLONE_NEWUSER
+.\"O flag in
+.\"O .BR clone (2).
+より詳細は、
+.BR user_namespaces (7)
+と
+.BR clone (2)
+の
+.B CLONE_NEWUSER
+フラグの議論を参照すること。
+.TP
+.\"O .B cgroup namespace
+.B コントロールグループ (cgroup) 名前空間
+.\"O The process will have a virtualized view of \fI/proc\:/self\:/cgroup\fP, and new
+.\"O cgroup mounts will be rooted at the namespace cgroup root.
+プロセスが \fI/proc\:/self\:/cgroup\fP の仮想化されたビューを持ち、
+新しい cgroup マウントで名前空間の cgroup ルートがルートにされる。
+.\"O For further details, see
+.\"O .BR cgroup_namespaces (7)
+.\"O and the discussion of the
+.\"O .B CLONE_NEWCGROUP
+.\"O flag in
+.\"O .BR clone (2).
+より詳細は、
+.BR cgroup_namespaces (7)
+と
+.BR clone (2)
+の
+.B CLONE_NEWCGROUP
+フラグの議論を参照すること。
+.TP
+.\"O See \fBclone\fP(2) for the exact semantics of the flags.
+フラグの正確な意味は、\fBclone\fP(2) を参照すること。
+.\"O .SH OPTIONS
+.SH オプション
+Various of the options below that relate to namespaces take an optional
+.I file
+argument.
+This should be one of the
+.I /proc/[pid]/ns/*
+files described in
+.BR namespaces (7).
+.TP
+\fB\-a\fR, \fB\-\-all\fR
+Enter all namespaces of the target process by the default
+.I /proc/[pid]/ns/*
+namespace paths. The default paths to the target process namespaces may be
+overwritten by namespace specific options (e.g. --all --mount=[path]).
+
+The user namespace will be ignored if the same as the caller's current user
+namespace. It prevents a caller that has dropped capabilities from regaining
+those capabilities via a call to setns().  See
+.BR setns (2)
+for more details.
+.TP
+\fB\-t\fR, \fB\-\-target\fR \fIpid\fP
+Specify a target process to get contexts from.  The paths to the contexts
+specified by
+.I pid
+are:
+.RS
+.PD 0
+.IP "" 20
+.TP
+/proc/\fIpid\fR/ns/mnt
+the mount namespace
+.TP
+/proc/\fIpid\fR/ns/uts
+the UTS namespace
+.TP
+/proc/\fIpid\fR/ns/ipc
+the IPC namespace
+.TP
+/proc/\fIpid\fR/ns/net
+the network namespace
+.TP
+/proc/\fIpid\fR/ns/pid
+the PID namespace
+.TP
+/proc/\fIpid\fR/ns/user
+the user namespace
+.TP
+/proc/\fIpid\fR/ns/cgroup
+the cgroup namespace
+.TP
+/proc/\fIpid\fR/root
+the root directory
+.TP
+/proc/\fIpid\fR/cwd
+the working directory respectively
+.PD
+.RE
+.TP
+\fB\-m\fR, \fB\-\-mount\fR[=\fIfile\fR]
+Enter the mount namespace.  If no file is specified, enter the mount namespace
+of the target process.
+If
+.I file
+is specified, enter the mount namespace
+specified by
+.IR file .
+.TP
+\fB\-u\fR, \fB\-\-uts\fR[=\fIfile\fR]
+Enter the UTS namespace.  If no file is specified, enter the UTS namespace of
+the target process.
+If
+.I file
+is specified, enter the UTS namespace specified by
+.IR file .
+.TP
+\fB\-i\fR, \fB\-\-ipc\fR[=\fIfile\fR]
+Enter the IPC namespace.  If no file is specified, enter the IPC namespace of
+the target process.
+If
+.I file
+is specified, enter the IPC namespace specified by
+.IR file .
+.TP
+\fB\-n\fR, \fB\-\-net\fR[=\fIfile\fR]
+Enter the network namespace.  If no file is specified, enter the network
+namespace of the target process.
+If
+.I file
+is specified, enter the network namespace specified by
+.IR file .
+.TP
+\fB\-p\fR, \fB\-\-pid\fR[=\fIfile\fR]
+Enter the PID namespace.  If no file is specified, enter the PID namespace of
+the target process.
+If
+.I file
+is specified, enter the PID namespace specified by
+.IR file .
+.TP
+\fB\-U\fR, \fB\-\-user\fR[=\fIfile\fR]
+Enter the user namespace.  If no file is specified, enter the user namespace of
+the target process.
+If
+.I file
+is specified, enter the user namespace specified by
+.IR file .
+See also the \fB\-\-setuid\fR and \fB\-\-setgid\fR options.
+.TP
+\fB\-C\fR, \fB\-\-cgroup\fR[=\fIfile\fR]
+Enter the cgroup namespace.  If no file is specified, enter the cgroup namespace of
+the target process.
+If
+.I file
+is specified, enter the cgroup namespace specified by
+.IR file .
+.TP
+\fB\-G\fR, \fB\-\-setgid\fR \fIgid\fR
+Set the group ID which will be used in the entered namespace and drop
+supplementary groups.
+.BR nsenter (1)
+always sets GID for user namespaces, the default is 0.
+.TP
+\fB\-S\fR, \fB\-\-setuid\fR \fIuid\fR
+Set the user ID which will be used in the entered namespace.
+.BR nsenter (1)
+always sets UID for user namespaces, the default is 0.
+.TP
+\fB\-\-preserve\-credentials\fR
+Don't modify UID and GID when enter user namespace. The default is to
+drops supplementary groups and sets GID and UID to 0.
+.TP
+\fB\-r\fR, \fB\-\-root\fR[=\fIdirectory\fR]
+Set the root directory.  If no directory is specified, set the root directory to
+the root directory of the target process.  If directory is specified, set the
+root directory to the specified directory.
+.TP
+\fB\-w\fR, \fB\-\-wd\fR[=\fIdirectory\fR]
+Set the working directory.  If no directory is specified, set the working
+directory to the working directory of the target process.  If directory is
+specified, set the working directory to the specified directory.
+.TP
+\fB\-F\fR, \fB\-\-no\-fork\fR
+Do not fork before exec'ing the specified program.  By default, when entering a
+PID namespace, \fBnsenter\fP calls \fBfork\fP before calling \fBexec\fP so that
+any children will also be in the newly entered PID namespace.
+.TP
+\fB\-Z\fR, \fB\-\-follow\-context\fR
+Set the SELinux security context used for executing a new process according to
+already running process specified by \fB\-\-target\fR PID. (The util-linux has
+to be compiled with SELinux support otherwise the option is unavailable.)
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Display version information and exit.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display help text and exit.
+.SH SEE ALSO
+.BR clone (2),
+.BR setns (2),
+.BR namespaces (7)
+.SH AUTHORS
+.UR biederm@xmission.com
+Eric Biederman
+.UE
+.br
+.UR kzak@redhat.com
+Karel Zak
+.UE
+.SH AVAILABILITY
+The nsenter command is part of the util-linux package and is available from
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE .
