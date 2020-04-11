@@ -1,0 +1,219 @@
+.\" Copyright 2014 Ondrej Oprala (ondrej.oprala@gmail.com)
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Apr 11 14:19:10 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH LSLOGINS "1" "April 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O lslogins \- display information about known users in the system
+lslogins \- システム上の既知のユーザーの情報を表示する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B lslogins
+[options]
+.RB [ \-s | \-u [ =\fIUID ]]
+.RB [ \-g " \fIgroups\fR]"
+.RB [ \-l " \fIlogins\fR]"
+.RB [\fIusername\fR]
+.\"O .SH DESCRIPTION
+.SH 説明
+.PP
+.\"O Examine the wtmp and btmp logs, /etc/shadow (if necessary) and /etc/passwd
+.\"O and output the desired data.
+wtmp ログ、btmp ログ、/etc/shadow (必要な場合) 、/etc/passwd を調べ、
+必要なデータを出力する。
+
+.\"O The optional argument \fIusername\fR forces
+.\"O .BR lslogins
+.\"O to print all available details about the specified user only. In this case the
+.\"O output format is different than in case of \fB\-l\fR or \fB\-g\fR and unknown
+.\"O is \fIusername\fR reported as an error.
+オプションの引き数 \fIusername\fR を指定すると、
+.BR lslogins
+は指定されたユーザーのみの入手可能な全ての情報を表示する。
+この場合、出力形式は \fB\-l\fR または \fB\-g\fR の場合と異なる。
+\fIusername\fR が不明な場合、エラーを返す。
+
+.PP
+.\"O The default action is to list info about all the users in the system.
+デフォルトの動作では、システム上の全てのユーザーの情報を表示する。
+.\"O .SH OPTIONS
+.SH オプション
+.\"O Mandatory arguments to long options are mandatory for short options too.
+長い形式のオプションで必須な引き数は、短い形式のオプションでも必須である。
+.TP
+\fB\-a\fR, \fB\-\-acc\-expiration\fR
+.\"O Display data about the date of last password change and the account expiration
+.\"O date (see \fBshadow\fR(5) for more info).  (Requires root privileges.)
+パスワードの最終更新日と、アカウントの失効日の情報を表示する
+(より詳細は \fBshadow\fR(5) を参照すること)。
+(root 権限が必要である。)
+.TP
+\fB\-\-btmp\-file \fIpath\fP
+.\"O Alternate path for btmp.
+btmp の別のパス名。
+.TP
+\fB\-c\fR, \fB\-\-colon\-separate\fR
+.\"O Separate info about each user with a colon instead of a newline.
+各ユーザの情報を改行ではなくコロンで区切る。
+.TP
+\fB\-e\fR, \fB\-\-export\fR
+.\"O Output data in the format of NAME=VALUE.
+データを NAME=VALUE の形式で出力する。
+.TP
+\fB\-f\fR, \fB\-\-failed\fR
+.\"O Display data about the users' last failed login attempts.
+
+.TP
+\fB\-G\fR, \fB\-\-supp\-groups\fR
+.\"O Show information about supplementary groups.
+補助 (supplementary) グループの情報を表示する。
+.TP
+\fB\-g\fR, \fB\-\-groups\fR=\fIgroups\fR
+.\"O Only show data of users belonging to \fIgroups\fR.  More than one group
+.\"O may be specified; the list has to be comma-separated.  The unknown group
+.\"O names are ignored.
+\fIgroups\fR に所属するユーザーの情報のみを表示する。
+1 つ以上のグループを指定できる。この場合、リストはカンマで区切る。
+不明なグループ名は無視される。
+
+.\"O Note that relation between user and group may be invisible for primary group if
+.\"O the user is not explicitly specify as group member (e.g. in /etc/group). If the
+.\"O command lslogins scans for groups than it uses groups database only, and user
+.\"O database with primary GID is not used at all.
+ユーザーが明示的にグループメンバー　(例えば、/etc/group) として指定されていない場合、
+プライマリグループについて、ユーザーとグループの関係が分からない
+点に注意すること。
+コマンド lslogins は、グループデータベースのみを使うのではなく、グループを
+スキャンするので、プライマリ GID を持つユーザーデータベースは全く使われない。
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+.\"O Display help information and exit.
+ヘルプ情報を表示して、終了する。
+.TP
+\fB\-L\fR, \fB\-\-last\fR
+.\"O Display data containing information about the users' last login sessions.
+ユーザーの最終ログインセッションの情報を含むデータを表示する。
+.TP
+\fB\-l\fR, \fB\-\-logins\fR=\fIlogins\fR
+.\"O Only show data of users with a login specified in \fIlogins\fR (user names or user
+.\"O IDS).  More than one login may be specified; the list has to be comma-separated.
+.\"O The unknown login names are ignored.
+\fIlogins\fR に指定されたログイン情報 (ユーザー名またはユーザー ID) の
+ユーザーの情報のみを表示する。
+1 つ以上のログイン情報を指定できる。
+リストはカンマ区切りの必要がある。
+不明なログイン名は無視される。
+.TP
+\fB\-n\fR, \fB\-\-newline\fR
+.\"O Display each piece of information on a separate line.
+各情報の塊を各行に書き出す。
+.TP
+\fB\-\-noheadings\fR
+.\"O Do not print a header line.
+ヘッダ行を表示しない。
+.TP
+\fB\-\-notruncate\fR
+.\"O Don't truncate output.
+出力を切り詰めない。
+.TP
+\fB\-o\fR, \fB\-\-output \fIlist\fP
+.\"O Specify which output columns to print. 
+.\"O The default list of columns may be extended if \fIlist\fP is
+.\"O specified in the format \fI+list\fP.
+どの出力カラムを表示するかを指定する。
+\fIlist\fP を \fI+list\fP の形式で指定することで、
+デフォルトのカラムのリストを拡張できる。
+.TP
+.B \-\-output\-all
+.\"O Output all available columns.
+.\"O .B \-\-help
+.\"O to get a list of all supported columns.
+利用可能な全てのカラムを出力する。
+サポートされる全てのカラムのリストは、
+.B \-\-help
+で取得できる。
+.TP
+\fB\-p\fR, \fB\-\-pwd\fR
+.\"O Display information related to login by password (see also \fB\-afL).
+パスワードでのログインに関連した情報を表示する (\fB\-afL も参照すること)。
+.TP
+\fB\-r\fR, \fB\-\-raw\fR
+.\"O Raw output (no columnation).
+(カラム揃えをしない) 生の出力。
+.TP
+\fB\-s\fR, \fB\-\-system\-accs\fR
+.\"O Show system accounts.  These are by default all accounts with a UID between 101 and 999
+.\"O (inclusive), with the exception of either nobody or nfsnobody (UID 65534).
+.\"O This hardcoded default may be overwritten by parameters SYS_UID_MIN and SYS_UID_MAX in
+.\"O the file /etc/login.defs.
+システムアカウントを表示する。
+Show system accounts.  These are by default all accounts with a UID between 101 and 999
+(inclusive), with the exception of either nobody or nfsnobody (UID 65534).
+This hardcoded default may be overwritten by parameters SYS_UID_MIN and SYS_UID_MAX in
+the file /etc/login.defs.
+.TP
+\fB\-\-time\-format\fR \fItype\fP
+.\"O Display dates in short, full or iso format.  The default is short, this time
+.\"O format is designed to be space efficient and human readable.
+時間を short, full, iso 形式で表示する。
+デフォルトは short で、この時間形式はスペースを使わず、人が読みやすいように設計
+されている。
+.TP
+\fB\-u\fR, \fB\-\-user\-accs\fR
+Show user accounts.  These are by default all accounts with UID above 1000
+(inclusive), with the exception of either nobody or nfsnobody (UID 65534).
+This hardcoded default maybe overwritten by parameters UID_MIN and UID_MAX in
+the file /etc/login.defs.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+\fB\-\-wtmp\-file \fIpath\fP
+.\"O Alternate path for wtmp.
+wtmp の別のパス名。
+.TP
+\fB\-Z\fR, \fB\-\-context\fR
+.\"O Display the users' security context.
+ユーザーのセキュリティコンテキストを表示する。
+.TP
+\fB\-z\fR, \fB\-\-print0\fR
+.\"O Delimit user entries with a nul character, instead of a newline.
+ユーザーのエントリを、改行ではなく、nul 文字で区切る。
+
+.SH NOTES
+The default UID thresholds are read from /etc/login.defs.
+
+.SH EXIT STATUS
+.TP
+0
+if OK,
+.TP
+1
+if incorrect arguments specified,
+.TP
+2
+if a serious error occurs (e.g. a corrupt log).
+.SH SEE ALSO
+\fBgroup\fP(5), \fBpasswd\fP(5), \fBshadow\fP(5), \fButmp\fP(5)
+.SH HISTORY
+The \fBlslogins\fP utility is inspired by the \fBlogins\fP utility, which first appeared in FreeBSD 4.10.
+.SH AUTHORS
+.MT ooprala@redhat.com
+Ondrej Oprala
+.ME
+.br
+.MT kzak@redhat.com
+Karel Zak
+.ME
+
+.SH AVAILABILITY
+The lslogins command is part of the util-linux package and is available from
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE .
