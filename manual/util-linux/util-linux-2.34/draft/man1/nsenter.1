@@ -191,72 +191,111 @@ PID 名前空間を変更する場合、デフォルトでは
 フラグの正確な意味は、\fBclone\fP(2) を参照すること。
 .\"O .SH OPTIONS
 .SH オプション
-Various of the options below that relate to namespaces take an optional
+.\"O Various of the options below that relate to namespaces take an optional
+.\"O .I file
+.\"O argument.
+下記の名前空間に関連したいろいろなオプションが、オプションとして
 .I file
-argument.
-This should be one of the
+引き数をとる。
+.\"O This should be one of the
+.\"O .I /proc/[pid]/ns/*
+.\"O files described in
+.\"O .BR namespaces (7).
+ファイルは
+.BR namespaces (7)
+に記載されている
 .I /proc/[pid]/ns/*
-files described in
-.BR namespaces (7).
+ファイルのうちの 1 つでなければならない。
 .TP
 \fB\-a\fR, \fB\-\-all\fR
-Enter all namespaces of the target process by the default
+.\"O Enter all namespaces of the target process by the default
+.\"O .I /proc/[pid]/ns/*
+.\"O namespace paths. The default paths to the target process namespaces may be
+.\"O overwritten by namespace specific options (e.g. --all --mount=[path]).
+対象プロセスの全ての名前空間を、デフォルトの
 .I /proc/[pid]/ns/*
-namespace paths. The default paths to the target process namespaces may be
-overwritten by namespace specific options (e.g. --all --mount=[path]).
+名前空間パスに入れる。
+対象プロセスの名前空間のデフォルトパスは、名前空間固有の
+オプションで上書きできる (例えば --all --mount=[path])。
 
-The user namespace will be ignored if the same as the caller's current user
-namespace. It prevents a caller that has dropped capabilities from regaining
-those capabilities via a call to setns().  See
+.\"O The user namespace will be ignored if the same as the caller's current user
+.\"O namespace. It prevents a caller that has dropped capabilities from regaining
+.\"O those capabilities via a call to setns().  See
+.\"O .BR setns (2)
+.\"O for more details.
+呼び出し元の現在のユーザー名前空間と同じ場合、ユーザー名前空間は
+無視される。
+これは、ケーパビリティを削除した呼び出し元が、
+setns() を呼び出して、そのケーパビリティを再取得することを防ぐ。
+より詳細は
 .BR setns (2)
-for more details.
+を参照すること。
 .TP
 \fB\-t\fR, \fB\-\-target\fR \fIpid\fP
-Specify a target process to get contexts from.  The paths to the contexts
-specified by
+.\"O Specify a target process to get contexts from.  The paths to the contexts
+.\"O specified by
+.\"O .I pid
+.\"O are:
+コンテキストを取得する対象プロセスを指定する。
 .I pid
-are:
+で指定されるコンテキストのパスは以下の通り:
 .RS
 .PD 0
 .IP "" 20
 .TP
 /proc/\fIpid\fR/ns/mnt
-the mount namespace
+.\"O the mount namespace
+マウント名前空間
 .TP
 /proc/\fIpid\fR/ns/uts
-the UTS namespace
+.\"O the UTS namespace
+UTS 名前空間
 .TP
 /proc/\fIpid\fR/ns/ipc
-the IPC namespace
+.\"O the IPC namespace
+IPC 名前空間
 .TP
 /proc/\fIpid\fR/ns/net
-the network namespace
+.\"O the network namespace
+ネットワーク名前空間
 .TP
 /proc/\fIpid\fR/ns/pid
-the PID namespace
+.\"O the PID namespace
+PID 名前空間
 .TP
 /proc/\fIpid\fR/ns/user
-the user namespace
+.\"O the user namespace
+ユーザー名前空間
 .TP
 /proc/\fIpid\fR/ns/cgroup
-the cgroup namespace
+.\"O the cgroup namespace
+コントロールグループ名前空間
 .TP
 /proc/\fIpid\fR/root
-the root directory
+.\"O the root directory
+ルートディレクトリ
 .TP
 /proc/\fIpid\fR/cwd
-the working directory respectively
+.\"O the working directory respectively
+ワーキングディレクトリ
 .PD
 .RE
 .TP
 \fB\-m\fR, \fB\-\-mount\fR[=\fIfile\fR]
-Enter the mount namespace.  If no file is specified, enter the mount namespace
-of the target process.
-If
+.\"O Enter the mount namespace.  If no file is specified, enter the mount namespace
+.\"O of the target process.
+マウント名前空間に入れる。
 .I file
-is specified, enter the mount namespace
-specified by
-.IR file .
+が指定されない場合、対象プロセスのマウント名前空間に入れる。
+.\"O If
+.\"O .I file
+.\"O is specified, enter the mount namespace
+.\"O specified by
+.\"O .IR file .
+.I file
+が指定された場合、
+.I file
+で指定されたマウント名前空間に入れる。
 .TP
 \fB\-u\fR, \fB\-\-uts\fR[=\fIfile\fR]
 Enter the UTS namespace.  If no file is specified, enter the UTS namespace of
