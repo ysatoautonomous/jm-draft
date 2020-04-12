@@ -1,0 +1,393 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun Apr 12 15:14:17 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH RUNUSER 1 "July 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O runuser \- run a command with substitute user and group ID
+runuser \- 代わりのユーザー ID とグループ ID でコマンドを実行する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.BR runuser " [options] " \-u
+.I user
+.RI "[[\-\-] " command " ["argument "...]]"
+.LP
+.BR runuser " [options] [" \- ]
+.RI [ user " [" argument "...]]"
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B runuser
+.\"O allows to run commands with a substitute user and group ID.
+.B runuser
+を使うと、代わりのユーザー ID とグループ ID でコマンドを実行できる。
+.\"O If the option \fB\-u\fR is not given, it falls back to
+.\"O .BR su -compatible
+.\"O semantics and a shell is executed.
+オプション \fB\-u\fR が指定されない場合、
+.B su
+互換の動作にフォールバックし、シェルが実行される。
+.\"O The difference between the commands
+.\"O .B runuser
+.\"O and
+.\"O .B su
+.\"O is that
+.\"O .B runuser
+.\"O does not ask for a password (because it may be executed by the root user only) and
+.\"O it uses a different PAM configuration.
+コマンド
+.B runuser
+と
+.B su
+の違いは、
+.B runuser
+が (root ユーザーのみから実行されるため) パスワードを尋ねない点と、
+別の PAM 設定を使っている点である。
+.\"O The command
+.\"O .B runuser
+.\"O does not have to be installed with set-user-ID permissions.
+コマンド
+.B runuser
+は set-user-ID 権限でインストールする必要はない。
+.PP
+.\"O If the PAM session is not required then recommended solution is to use
+.\"O .BR setpriv (1)
+.\"O command.
+PAM セッションが必要なければ、推奨される方法は
+.BR setpriv (1)
+コマンドを使うことである。
+.PP
+.\"O When called without arguments,
+.\"O .B runuser
+.\"O defaults to running an interactive shell as
+.\"O .IR root .
+引き数なしで呼び出された場合、
+.B runuser
+はデフォルトで対話シェルを
+.I root
+として実行する。
+.PP
+.\"O For backward compatibility,
+.\"O .B runuser
+.\"O defaults to not change the current directory and to only set the
+.\"O environment variables
+.\"O .B HOME
+.\"O and
+.\"O .B SHELL
+.\"O (plus
+.\"O .B USER
+.\"O and
+.\"O .B LOGNAME
+.\"O if the target
+.\"O .I user
+.\"O is not root).
+後方互換のため、
+.B runuser
+はデフォルトではカレントディレクトリを変更せず、
+環境変数
+.B HOME
+と
+.B SHELL
+を設定するだけである
+(対象の
+.I user
+が root でない場合、
+.B USER
+と
+.B LOGNAME
+も設定する)。
+.\"O This version of
+.\"O .B runuser
+.\"O uses PAM for session management.
+このバージョンの
+.B runuser
+はセッション管理に PAM を使う。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-c , " \-\-command" = \fIcommand
+.\"O Pass
+.\"O .I command
+.\"O to the shell with the
+.\"O .B \-c
+.\"O option.
+.I command
+をシェルに
+.B \-c
+オプションを付けて渡す。
+.TP
+.BR \-f , " \-\-fast"
+.\"O Pass
+.\"O .B \-f
+.\"O to the shell, which may or may not be useful depending on the
+.\"O shell.
+.B \-f
+をシェルに渡す。
+これはシェルによっては、使えたり、使えなかったりする。
+.TP
+.BR \-g , " \-\-group" = \fIgroup
+.\"O The primary group to be used.  This option is allowed for the root user only.
+使用するプライマリーグループ。
+このオプションは root ユーザーにのみ許可されている。
+.TP
+.BR \-G , " \-\-supp\-group" = \fIgroup
+.\"O Specify a supplemental group.  This option is available to the root user only.  The first specified
+.\"O supplementary group is also used as a primary group if the option \fB\-\-group\fR is unspecified.
+補助 (supplementary) グループを指定する。
+このオプションは root ユーザーにのみ許可されている。
+オプション \fB\-\-group\fR が指定されていない場合、補助グループがプライマリグループとして
+使われる。
+.TP
+.BR \- , " \-l" , " \-\-login"
+.\"O Start the shell as a login shell with an environment similar to a real
+.\"O login:
+シェルをログインシェルとして開始する。環境変数は実際の login と同様である:
+.RS 10
+.TP
+o
+.\"O clears all the environment variables except for
+.\"O .B TERM
+.\"O and variables specified by \fB\-\-whitelist\-environment\fR
+.B TERM
+と \fB\-\-whitelist\-environment\fR で指定された環境変数以外の、
+全ての環境変数をクリアする。
+.TP
+o
+.\"O initializes the environment variables
+環境変数
+.BR HOME ,
+.BR SHELL ,
+.BR USER ,
+.BR LOGNAME ,
+.B PATH
+を初期化する。
+.TP
+o
+.\"O changes to the target user's home directory
+対象ユーザーのホームディレクトリに変更する。
+.TP
+o
+.\"O sets argv[0] of the shell to
+.\"O .RB ' \- '
+.\"O in order to make the shell a login shell
+シェルの argv[0] に
+.RB ' \- '
+を設定し、シェルをログインシェルとする。
+.RE
+.TP
+.BR \-P , " \-\-pty"
+.\"O Create pseudo-terminal for the session. The independent terminal provides
+.\"O better security as user does not share terminal with the original
+.\"O session.  This allow to avoid TIOCSTI ioctl terminal injection and another
+.\"O security attacks against terminal file descriptors. The all session is also
+.\"O possible to move to background (e.g. "runuser --pty -u username -- command &").
+セッションに対して擬似端末 (pseudo-terminal) を作成する。
+独立した端末を使うことで、ユーザーが元のセッションと端末を
+共有しなくなり、より良いセキュリティ環境を提供する。
+これにより、端末のファイルディスクリプターに対する、
+TIOCSTI ioctl 端末インジェクションやセキュリティアタックを回避できる。
+全てのセッションはバックグランドに移すこともできる
+(例えば、 "runuser --pty -u username -- command &")。
+.\"O If the pseudo-terminal is enabled then runuser command works
+.\"O as a proxy between the sessions (copy stdin and stdout).
+擬似端末が有効になっている場合、 runuser はセッション間の
+プロキシとして動作する (標準入力と標準出力をコピーする)。
+.sp
+.\"O This feature is mostly designed for interactive sessions. If the standard input
+.\"O is not a terminal, but for example pipe (e.g. echo "date" | runuser --pty -u user)
+.\"O than ECHO flag for the pseudo-terminal is disabled to avoid messy output.
+この機能は大部分が対話セッションのために設計されている。
+標準入力が端末ではなく、例えばパイプの場合
+(例、echo "date" | runuser --pty -u user)、
+不要な出力を避けるため、擬似端末の ECHO フラグは無効化される。
+.TP
+.BR \-m , " \-p" , " \-\-preserve\-environment"
+.\"O Preserve the entire environment, i.e. it does not set
+.\"O .BR HOME ,
+.\"O .BR SHELL ,
+.\"O .B USER
+.\"O nor
+.\"O .BR LOGNAME .
+環境変数を保持する。つまり、
+.BR HOME ,
+.BR SHELL ,
+.BR USER ,
+.B LOGNAME
+を設定しない。
+.\"O The option is ignored if the option \fB\-\-login\fR is specified.
+オプション \fB\-\-login\fR が指定されている場合、このオプションは無視される。
+.TP
+.BR \-s , " \-\-shell" = \fIshell
+.\"O Run the specified \fIshell\fR instead of the default.  The shell to run is
+.\"O selected according to the following rules, in order:
+デフォルトのシェルの代わりに、指定した \fIshell\fR を実行する。
+実行するシェルは以下のルールに従って順番に選択される:
+.RS 10
+.TP
+o
+.\"O the shell specified with
+.\"O .B \-\-shell
+.B \-\-shell
+で指定したシェル。
+.TP
+o
+.\"O the shell specified in the environment variable
+.\"O .B SHELL
+.\"O if the
+.\"O .B \-\-preserve\-environment
+.\"O option is used
+.B \-\-preserve\-environment
+オプションが使われている場合は、環境変数
+.B SHELL
+で指定されたシェル。
+.TP
+o
+.\"O the shell listed in the passwd entry of the target user
+対象ユーザーの passwd エントリにリストされているシェル。
+.TP
+o
+/bin/sh
+.RE
+.IP
+.\"O If the target user has a restricted shell (i.e. not listed in
+.\"O /etc/shells) the
+.\"O .B \-\-shell
+.\"O option and the
+.\"O .B SHELL
+.\"O environment variables are ignored unless the calling user is root.
+対象ユーザーが制限されたシェル
+(つまり /etc/shells に記載されていないシェル) を使っている場合、
+呼び出し元ユーザーが root でない限り、
+.B \-\-shell
+オプションと
+.B SHELL
+環境変数は無視される。
+.TP
+.BI \-\-session\-command= command
+.\"O Same as
+.\"O .B \-c ,
+.\"O but do not create a new session.  (Discouraged.)
+.B \-c
+と同様であるが、新しいセッションを作成しない。(推奨しない)
+.TP
+.BR \-w , " \-\-whitelist\-environment" = \fIlist
+.\"O Don't reset environment variables specified in comma separated \fIlist\fR when clears
+.\"O environment for \fB\-\-login\fR. The whitelist is ignored for the environment variables
+.\"O .BR HOME ,
+.\"O .BR SHELL ,
+.\"O .BR USER ,
+.\"O .BR LOGNAME ", and"
+.\"O .BR PATH "."
+\fB\-\-login\fR で環境変数をクリアする際に、
+カンマ区切りの \fIlist\fR に指定された環境変数はリセットしない。
+このホワイトリストでは、環境変数
+.BR HOME ,
+.BR SHELL ,
+.BR USER ,
+.BR LOGNAME ,
+.B PATH
+は無視される。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH CONFIG FILES
+.SH 設定ファイル
+.B runuser
+reads the
+.I /etc/default/runuser
+and
+.I /etc/login.defs
+configuration files.  The following configuration items are relevant
+for
+.BR runuser :
+.PP
+.B ENV_PATH
+(string)
+.RS 4
+Defines the PATH environment variable for a regular user.  The
+default value is
+.IR /usr/local/bin:\:/bin:\:/usr/bin .
+.RE
+.PP
+.B ENV_ROOTPATH
+(string)
+.br
+.B ENV_SUPATH
+(string)
+.RS 4
+Defines the PATH environment variable for root.  ENV_SUPATH takes precedence.  The default value is
+.IR /usr/local/sbin:\:/usr/local/bin:\:/sbin:\:/bin:\:/usr/sbin:\:/usr/bin .
+.RE
+.PP
+.B ALWAYS_SET_PATH
+(boolean)
+.RS 4
+If set to
+.I yes
+and \-\-login and \-\-preserve\-environment were not specified
+.B runuser
+initializes
+.BR PATH .
+.RE
+.sp
+The environment variable PATH may be different on systems where /bin and /sbin
+are merged into /usr.
+.SH EXIT STATUS
+.B runuser
+normally returns the exit status of the command it executed.  If the
+command was killed by a signal,
+.B runuser
+returns the number of the signal plus 128.
+.PP
+Exit status generated by
+.B runuser
+itself:
+.RS 10
+.TP
+1
+Generic error before executing the requested command
+.TP
+126
+The requested command could not be executed
+.TP
+127
+The requested command was not found
+.RE
+.SH FILES
+.PD 0
+.TP 17
+/etc/pam.d/runuser
+default PAM configuration file
+.TP
+/etc/pam.d/runuser-l
+PAM configuration file if \-\-login is specified
+.TP
+/etc/default/runuser
+runuser specific logindef config file
+.TP
+/etc/login.defs
+global logindef config file
+.PD 1
+.SH "SEE ALSO"
+.BR setpriv (1),
+.BR su (1),
+.BR login.defs (5),
+.BR shells (5),
+.BR pam (8)
+.SH HISTORY
+This \fB runuser\fR command was
+derived from coreutils' \fBsu\fR, which was based on an implementation by
+David MacKenzie, and the Fedora \fBrunuser\fR command by Dan Walsh.
+.SH AVAILABILITY
+The runuser command is part of the util-linux package and is
+available from
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE .
