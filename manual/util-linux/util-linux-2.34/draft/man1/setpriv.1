@@ -1,7 +1,7 @@
 .\"
 .\" Japanese Version Copyright (c) 2020 Yuichi SATO
 .\"         all rights reserved.
-.\" Translated Sun Apr 12 21:21:02 JST 2020
+.\" Translated Mon Apr 13 01:05:12 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH SETPRIV 1 "July 2014" "util-linux" "User Commands"
@@ -46,7 +46,7 @@ setpriv \- 別の Linux 特権 (privilege) 設定でプログラムを実行す�
 .\"O or similar tools shipped by other service managers.
 これは単純なプログラムで、
 .BR execve (2)
-の set-user-ID をしないラッパーであり、特権を落とすために使われる。
+の set-user-ID をしないラッパーであり、特権を削除するために使われる。
 これは
 .BR daemontools
 の
@@ -54,7 +54,7 @@ setpriv \- 別の Linux 特権 (privilege) 設定でプログラムを実行す�
 .BR runit
 の
 .BR chpst (8)
-など他のサービスマネージャーと一緒にて提供される同様のツールと同じように
+など、他のサービスマネージャーと一緒に提供される同様のツールと同じように
 行われる。
 .\"O .SH OPTION
 .SH オプション
@@ -200,8 +200,8 @@ no_new_privs ビットは、Linux 3.5 以降でサポートされている。
 .BI \-\-rgid " gid\fR, " \-\-egid " gid\fR, " \-\-regid " gid"
 .\"O Set the real, effective, or both GIDs.  The \fIgid\fR argument can be
 .\"O given as textual group name.
-実 (real) GID、実効 (effective) GID、またはその両方を設定する。
-\fIgid\fR 引数は、テキストのグループ名でも指定できる。
+実 (real) GID、実効 (effective) GID、またはその両方の GID を設定する。
+\fIgid\fR 引き数は、テキストのグループ名でも指定できる。
 .sp
 .\"O For safety, you must specify one of
 .\"O .BR \-\-clear\-groups ,
@@ -220,111 +220,196 @@ no_new_privs ビットは、Linux 3.5 以降でサポートされている。
 のうちの 1 つを指定しなければならない。
 .TP
 .BI \-\-ruid " uid\fR, " \-\-euid " uid\fR, " \-\-reuid " uid"
-Set the real, effective, or both UIDs.  The \fIuid\fR argument can be
-given as textual login name.
+.\"O Set the real, effective, or both UIDs.  The \fIuid\fR argument can be
+.\"O given as textual login name.
+実 (real) UID、実効 (effective)、またはその両方の UID を設定する。
+\fIuid\fR 引き数は、テキストのログイン名でも指定できる。
 .sp
-Setting a
+.\"O Setting a
+.\"O .I uid
+.\"O or
+.\"O .I gid
+.\"O does not change capabilities, although the exec call at the end might change
+.\"O capabilities.  This means that, if you are root, you probably want to do
+.\"O something like:
 .I uid
-or
+または
 .I gid
-does not change capabilities, although the exec call at the end might change
-capabilities.  This means that, if you are root, you probably want to do
-something like:
+を設定しても、ケーパビリティを変更しないが、
+最終的な exec コールでケーパビリティが変更される可能性がある。
+root の場合、以下のようにしたいことがあるかもしれないという意味である:
 .sp
 .B "        setpriv \-\-reuid=1000 \-\-regid=1000 \-\-inh\-caps=\-all"
 .TP
 .BR \-\-securebits " (" + | \- ) \fIsecurebit ...
-Set or clear securebits.  The argument is a comma-separated list.
-The valid securebits are
+.\"O Set or clear securebits.  The argument is a comma-separated list.
+セキュアビットを設定またはクリアする。
+引き数はカンマ区切りのリストである。
+.\"O The valid securebits are
+.\"O .IR noroot ,
+.\"O .IR noroot_locked ,
+.\"O .IR no_setuid_fixup ,
+.\"O .IR no_setuid_fixup_locked ,
+.\"O and
+.\"O .IR keep_caps_locked .
+有効なセキュアビットは
 .IR noroot ,
 .IR noroot_locked ,
 .IR no_setuid_fixup ,
 .IR no_setuid_fixup_locked ,
-and
-.IR keep_caps_locked .
+.IR keep_caps_locked
+である。
+.\"O .I keep_caps
+.\"O is cleared by
+.\"O .BR execve (2)
+.\"O and is therefore not allowed.
 .I keep_caps
-is cleared by
+は
 .BR execve (2)
-and is therefore not allowed.
+でクリアされるので、許可されない。
 .TP
 .BR "\-\-pdeathsig keep" | clear | <signal>
-Keep, clear or set the parent death signal.  Some LSMs, most notably SELinux and
-AppArmor, clear the signal when the process' credentials change.  Using
-\fB--pdeathsig keep\fR will restore the parent death signal after changing
-credentials to remedy that situation.
+.\"O Keep, clear or set the parent death signal.  Some LSMs, most notably SELinux and
+.\"O AppArmor, clear the signal when the process' credentials change.  Using
+.\"O \fB--pdeathsig keep\fR will restore the parent death signal after changing
+.\"O credentials to remedy that situation.
+親プロセスが死んだ場合のシグナル (parent death signal) を、保持・クリア・設定する。
+いくつかの LSM、特に SELinux と AppArmor は、プロセスのクレデンシャルが変更されたときに、
+このシグナルをクリアする。
+\fB--pdeathsig keep\fR は、このような状況に対処するため、クレデンシャルを変更した後で、
+親プロセスが死んだ場合のシグナルを回復する。
 .TP
 .BI \-\-selinux\-label " label"
-Request a particular SELinux transition (using a transition on exec, not
-dyntrans).  This will fail and cause
+.\"O Request a particular SELinux transition (using a transition on exec, not
+.\"O dyntrans).  This will fail and cause
+.\"O .BR setpriv (1)
+.\"O to abort if SELinux is not in use, and the transition may be ignored or cause
+.\"O .BR execve (2)
+.\"O to fail at SELinux's whim.  (In particular, this is unlikely to work in
+.\"O conjunction with
+.\"O .IR no_new_privs .)
+.\"O This is similar to
+.\"O .BR runcon (1).
+特定の SELinux 遷移 (transition) を要求する
+(dyntrans ではなく、exec での遷移を使う)。
+SELinux が使われていない場合、要求は失敗し、
 .BR setpriv (1)
-to abort if SELinux is not in use, and the transition may be ignored or cause
+はアボートする。
+遷移は無視されるか、SELinux の気まぐれ (whim) で
 .BR execve (2)
-to fail at SELinux's whim.  (In particular, this is unlikely to work in
-conjunction with
-.IR no_new_privs .)
-This is similar to
-.BR runcon (1).
+が失敗する
+(特に、これは
+.I no_new_privs
+と組み合わせた場合、動作しないだろう)。
+これは、
+.BR runcon (1)
+と同様である。
 .TP
 .BI \-\-apparmor\-profile " profile"
-Request a particular AppArmor profile (using a transition on exec).  This will
-fail and cause
+.\"O Request a particular AppArmor profile (using a transition on exec).  This will
+.\"O fail and cause
+.\"O .BR setpriv (1)
+.\"O to abort if AppArmor is not in use, and the transition may be ignored or cause
+.\"O .BR execve (2)
+.\"O to fail at AppArmor's whim.
+特定の AppArmor プロファイルを要求する (exec での遷移を使う)。
+AppArmor が使われていない場合、要求は失敗し、
 .BR setpriv (1)
-to abort if AppArmor is not in use, and the transition may be ignored or cause
+はアボートする。
+遷移は無視されるか、AppArmor の気まぐれ (whim) で
 .BR execve (2)
-to fail at AppArmor's whim.
+が失敗する。
 .TP
 .BI \-\-reset\-env
-Clears all the environment variables except TERM; initializes the environment variables HOME, SHELL, USER, LOGNAME
-according to the user's passwd entry; sets PATH to \fI/usr/local/bin:/bin:/usr/bin\fR for a regual user and to
-\fI/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\fR for root.
+.\"O Clears all the environment variables except TERM; initializes the environment variables HOME, SHELL, USER, LOGNAME
+.\"O according to the user's passwd entry; sets PATH to \fI/usr/local/bin:/bin:/usr/bin\fR for a regual user and to
+.\"O \fI/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\fR for root.
+TERM 以外の環境変数をクリアする。
+ユーザーの passwd エントリに基づいて、環境変数 HOME, SHELL, USER, LOGNAME を初期化する。
+一般ユーザーでは PATH が \fI/usr/local/bin:/bin:/usr/bin\fR に設定される。
+root では
+\fI/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\fR に設定される。
 .sp
-The environment variable PATH may be different on systems where /bin and /sbin
-are merged into /usr.  The environment variable SHELL defaults to \fI/bin/sh\fR if none is given in the user's
-passwd entry.
+.\"O The environment variable PATH may be different on systems where /bin and /sbin
+.\"O are merged into /usr.  The environment variable SHELL defaults to \fI/bin/sh\fR if none is given in the user's
+.\"O passwd entry.
+/bin と /sbin が /usr の中に統合されているシステムでは、
+環境変数 PATH が違っているかもしれない。
+ユーザーの passwd エントリで指定されていない場合、
+環境変数 SHELL のデフォルトは \fI/bin/sh\fR に設定される。
 .TP
 .BR \-V , " \-\-version"
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .TP
 .BR \-h , " \-\-help"
-Display help text and exit.
-.SH NOTES
-If applying any specified option fails,
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH NOTES
+.SH 注意
+.\"O If applying any specified option fails,
+.\"O .I program
+.\"O will not be run and
+.\"O .B setpriv
+.\"O will return with exit code 127.
+指定したオプションの適用が失敗した場合、
 .I program
-will not be run and
+は実行されず、
 .B setpriv
-will return with exit code 127.
+は返り値 127 を返す。
 .PP
-Be careful with this tool \-\- it may have unexpected security consequences.
-For example, setting no_new_privs and then execing a program that is
-SELinux\-confined (as this tool would do) may prevent the SELinux
-restrictions from taking effect.
-.SH EXAMPLE
-If you're looking for behaviour similar to
-.BR su (1)/ runuser "(1), or " sudo (8)
-(without the
-.B -g
-option), try something like:
+.\"O Be careful with this tool \-\- it may have unexpected security consequences.
+.\"O For example, setting no_new_privs and then execing a program that is
+.\"O SELinux\-confined (as this tool would do) may prevent the SELinux
+.\"O restrictions from taking effect.
+このツールは注意して使うこと \-\- 予期しないセキュリティ上の結果を出すかもしれない。
+例えば、(このツールが行うように) no_new_privs を設定して、
+SELinux で制限されているプログラムを実行した場合、
+SELinux の制限が妨げられるかもしれない。
+.\"O .SH EXAMPLE
+.SH 例
+.\"O If you're looking for behaviour similar to
+.\"O .BR su (1)/ runuser "(1), or " sudo (8)
+.\"O (without the
+.\"O .B -g
+.\"O option), try something like:
+.BR su (1)/ runuser "(1) または " sudo (8)
+と同様の動作がほしい場合
+.RB ( -g
+オプションを指定せず)、以下のようにすればよい:
 .sp
 .B "    setpriv \-\-reuid=1000 \-\-regid=1000 \-\-init\-groups"
 .PP
-If you want to mimic daemontools'
-.BR setuid (8),
-try:
+.\"O If you want to mimic daemontools'
+.\"O .BR setuid (8),
+.\"O try:
+daemontools の
+.BR setuid (8)
+の真似をしたい場合、以下のようにすればよい:
 .sp
 .B "    setpriv \-\-reuid=1000 \-\-regid=1000 \-\-clear\-groups"
-.SH SEE ALSO
+.\"O .SH SEE ALSO
+.SH 関連項目
 .BR runuser (1),
 .BR su (1),
 .BR prctl (2),
 .BR capabilities (7)
-.SH AUTHOR
+.\"O .SH AUTHOR
+.SH 著者
 .MT luto@amacapital.net
 Andy Lutomirski
 .ME
-.SH AVAILABILITY
-The
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The
+.\"O .B setpriv
+.\"O command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
 .B setpriv
-command is part of the util-linux package and is available from
+コマンドは util-linux パッケージの一部であり、
 .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
 Linux Kernel Archive
-.UE .
+.UE
+から入手できる。
