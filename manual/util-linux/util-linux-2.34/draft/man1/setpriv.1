@@ -1,0 +1,330 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun Apr 12 21:21:02 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH SETPRIV 1 "July 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O setpriv \- run a program with different Linux privilege settings
+setpriv \- 別の Linux 特権 (privilege) 設定でプログラムを実行する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B setpriv
+[options]
+.I program
+.RI [ arguments ]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O Sets or queries various Linux privilege settings that are inherited across
+.\"O .BR execve (2).
+.BR execve (2)
+で継承される、いろいろな Linux 特権設定を設定または取得する。
+.PP
+.\"O In comparison to
+.\"O .BR su (1)
+.\"O and
+.\"O .BR runuser (1),
+.\"O .BR setpriv (1)
+.\"O neither uses PAM, nor does it prompt for a password.
+.BR su (1)
+と
+.BR runuser (1),
+と比較して、
+.BR setpriv (1)
+は PAM を使わず、パスワードのプロンプトも出さない。
+.\"O It is a simple, non-set-user-ID wrapper around
+.\"O .BR execve (2),
+.\"O and can be used to drop privileges in the same way as
+.\"O .BR setuidgid (8)
+.\"O from
+.\"O .BR daemontools ,
+.\"O .BR chpst (8)
+.\"O from
+.\"O .BR runit ,
+.\"O or similar tools shipped by other service managers.
+これは単純なプログラムで、
+.BR execve (2)
+の set-user-ID をしないラッパーであり、特権を落とすために使われる。
+これは
+.BR daemontools
+の
+.BR setuidgid (8)、
+.BR runit
+の
+.BR chpst (8)
+など他のサービスマネージャーと一緒にて提供される同様のツールと同じように
+行われる。
+.\"O .SH OPTION
+.SH オプション
+.TP
+.B \-\-clear\-groups
+.\"O Clear supplementary groups.
+補助 (supplementary) グループをクリアする。
+.TP
+.BR \-d , " \-\-dump"
+.\"O Dump current privilege state.  Can be specified more than once to show extra,
+.\"O mostly useless, information.  Incompatible with all other options.
+現在の特権状態をダンプする。
+1 回以上指定することが可能で、追加のほとんど使い道のない情報も
+表示できる。
+他の全てのオプションとは互換性がない (一緒には指定できない)。
+.TP
+.B \-\-groups \fIgroup\fR...
+.\"O Set supplementary groups.  The argument is a comma-separated list of GIDs or names.
+補助グループを設定する。引き数はカンマ区切りの GID またはグループ名のリストである。
+.TP
+.BR \-\-inh\-caps " (" + | \- ) \fIcap "...  or  " \-\-ambient-caps " (" + | \- ) \fIcap "...  or  " \-\-bounding\-set " (" + | \- ) \fIcap ...
+.\"O Set the inheritable capabilities, ambient capabilities or the capability bounding set.  See
+.\"O .BR capabilities (7).
+継承可能 (inheritable) ケーパビリティ、環境 (ambient) ケーパビリティ、
+ケーパビリティバウンディングセット (bounding set) を設定する。
+.BR capabilities (7)
+を参照すること。
+.\"O The argument is a comma-separated list of
+.\"O .BI + cap
+.\"O and
+.\"O .BI \- cap
+.\"O entries, which add or remove an entry respectively. \fIcap\fR can either be a
+.\"O human-readable name as seen in
+.\"O .BR capabilities (7)
+.\"O without the \fIcap_\fR prefix or of the format
+.\"O .BI cap_N ,
+.\"O where \fIN\fR is the internal capability index used by Linux.
+引き数は
+.BI + cap
+と
+.BI \- cap
+エントリのカンマ区切りのリストであり、それぞれエントリを追加と
+削除を行う。
+\fIcap\fR は、
+.BR capabilities (7)
+に書かれている \fIcap_\fR プレフィックスが付いていない、人が読みやすい名前、
+または
+.B cap_N
+の形式である。
+ここで \fIN\fR は Linux が使う内部ケーパビリティのインデックスである。
+.\"O .B +all
+.\"O and
+.\"O .B \-all
+.\"O can be used to add or remove all caps.  The set of capabilities starts out as
+.\"O the current inheritable set for
+.\"O .BR \-\-inh\-caps ,
+.\"O the current ambient set for
+.\"O .B \-\-ambient\-caps
+.\"O and the current bounding set for
+.\"O .BR \-\-bounding\-set .
+.B +all
+と
+.B \-all
+は全てのケーパビリティを追加または削除する。
+ケーパビリティのセットは、
+.B \-\-inh\-caps
+では現在の継承可能セット、
+.B \-\-ambient\-caps
+では現在の環境セット、
+.B \-\-bounding\-set
+では現在のバウンディングセットから始める。
+.\"O If you drop something from the bounding set without also dropping it from the
+.\"O inheritable set, you are likely to become confused.  Do not do that.
+ケーパビリティをバウンディングセットから削除して、
+継承可能セットから削除しないと、混乱しやすくなるだろう。
+そのようなことをしてはいけない。
+.TP
+.B \-\-keep\-groups
+.\"O Preserve supplementary groups.  Only useful in conjunction with
+.\"O .BR \-\-rgid ,
+.\"O .BR \-\-egid ", or"
+.\"O .BR \-\-regid .
+補助グループを保持する。
+.BR \-\-rgid ,
+.BR \-\-egid ,
+.B \-\-regid
+と組み合わせた場合にのみ使用できる。
+.TP
+.B \-\-init\-groups
+.\"O Initialize supplementary groups using
+.\"O .BR initgroups "(3)."
+.\"O Only useful in conjunction with
+.\"O .B \-\-ruid
+.\"O or
+.\"O .BR \-\-reuid .
+.BR initgroups (3)
+を使って補助グループを初期化する。
+.B \-\-ruid
+または
+.B \-\-reuid
+と組み合わせた場合にのみ使用できる。
+.TP
+.B \-\-list\-caps
+.\"O List all known capabilities.  This option must be specified alone.
+既存の全てのケーパビリティを表示する。
+このオプションは単独で指定しなけばならない。
+.TP
+.B \-\-no\-new\-privs
+.\"O Set the
+.\"O .I no_new_privs
+.\"O bit.  With this bit set,
+.\"O .BR execve (2)
+.\"O will not grant new privileges.
+.I no_new_privs
+ビットを設定する。
+このビットを設定すると、
+.BR execve (2)
+は新しい特権を許可しない。
+.\"O For example, the set-user-ID and set-group-ID bits as well
+.\"O as file capabilities will be disabled.  (Executing binaries with these bits set
+.\"O will still work, but they will not gain privileges.  Certain LSMs, especially
+.\"O AppArmor, may result in failures to execute certain programs.)  This bit is
+.\"O inherited by child processes and cannot be unset.  See
+.\"O .BR prctl (2)
+.\"O and
+.\"O .I Documentation/\:prctl/\:no_\:new_\:privs.txt
+.\"O in the Linux kernel source.
+例えば、set-user-ID と set-group-ID ビットと同じく、
+ファイルケーパビリティも無効化される。
+(これらのビットを設定してバイナリを実行すると、動作はするが、
+特権を取得しない。
+特定の LSM (Linux Security Module)、特に AppArmor は特定のプログラムの
+実行に失敗する可能性がある。)
+このビットは、子プロセスに継承され、無効化できない。
+.BR prctl (2)
+と、Linux カーネルソースの
+.I Documentation/\:prctl/\:no_\:new_\:privs.txt
+を参照すること。
+.sp
+.\"O The no_new_privs bit is supported since Linux 3.5.
+no_new_privs ビットは、Linux 3.5 以降でサポートされている。
+.TP
+.BI \-\-rgid " gid\fR, " \-\-egid " gid\fR, " \-\-regid " gid"
+.\"O Set the real, effective, or both GIDs.  The \fIgid\fR argument can be
+.\"O given as textual group name.
+実 (real) GID、実効 (effective) GID、またはその両方を設定する。
+\fIgid\fR 引数は、テキストのグループ名でも指定できる。
+.sp
+.\"O For safety, you must specify one of
+.\"O .BR \-\-clear\-groups ,
+.\"O .BR \-\-groups ,
+.\"O .BR \-\-keep\-groups ", or"
+.\"O .B \-\-init\-groups
+.\"O if you set any primary
+.\"O .IR gid .
+プライマリ
+.I gid
+を設定した場合、安全のため、
+.BR \-\-clear\-groups ,
+.BR \-\-groups ,
+.BR \-\-keep\-groups ,
+.B \-\-init\-groups
+のうちの 1 つを指定しなければならない。
+.TP
+.BI \-\-ruid " uid\fR, " \-\-euid " uid\fR, " \-\-reuid " uid"
+Set the real, effective, or both UIDs.  The \fIuid\fR argument can be
+given as textual login name.
+.sp
+Setting a
+.I uid
+or
+.I gid
+does not change capabilities, although the exec call at the end might change
+capabilities.  This means that, if you are root, you probably want to do
+something like:
+.sp
+.B "        setpriv \-\-reuid=1000 \-\-regid=1000 \-\-inh\-caps=\-all"
+.TP
+.BR \-\-securebits " (" + | \- ) \fIsecurebit ...
+Set or clear securebits.  The argument is a comma-separated list.
+The valid securebits are
+.IR noroot ,
+.IR noroot_locked ,
+.IR no_setuid_fixup ,
+.IR no_setuid_fixup_locked ,
+and
+.IR keep_caps_locked .
+.I keep_caps
+is cleared by
+.BR execve (2)
+and is therefore not allowed.
+.TP
+.BR "\-\-pdeathsig keep" | clear | <signal>
+Keep, clear or set the parent death signal.  Some LSMs, most notably SELinux and
+AppArmor, clear the signal when the process' credentials change.  Using
+\fB--pdeathsig keep\fR will restore the parent death signal after changing
+credentials to remedy that situation.
+.TP
+.BI \-\-selinux\-label " label"
+Request a particular SELinux transition (using a transition on exec, not
+dyntrans).  This will fail and cause
+.BR setpriv (1)
+to abort if SELinux is not in use, and the transition may be ignored or cause
+.BR execve (2)
+to fail at SELinux's whim.  (In particular, this is unlikely to work in
+conjunction with
+.IR no_new_privs .)
+This is similar to
+.BR runcon (1).
+.TP
+.BI \-\-apparmor\-profile " profile"
+Request a particular AppArmor profile (using a transition on exec).  This will
+fail and cause
+.BR setpriv (1)
+to abort if AppArmor is not in use, and the transition may be ignored or cause
+.BR execve (2)
+to fail at AppArmor's whim.
+.TP
+.BI \-\-reset\-env
+Clears all the environment variables except TERM; initializes the environment variables HOME, SHELL, USER, LOGNAME
+according to the user's passwd entry; sets PATH to \fI/usr/local/bin:/bin:/usr/bin\fR for a regual user and to
+\fI/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\fR for root.
+.sp
+The environment variable PATH may be different on systems where /bin and /sbin
+are merged into /usr.  The environment variable SHELL defaults to \fI/bin/sh\fR if none is given in the user's
+passwd entry.
+.TP
+.BR \-V , " \-\-version"
+Display version information and exit.
+.TP
+.BR \-h , " \-\-help"
+Display help text and exit.
+.SH NOTES
+If applying any specified option fails,
+.I program
+will not be run and
+.B setpriv
+will return with exit code 127.
+.PP
+Be careful with this tool \-\- it may have unexpected security consequences.
+For example, setting no_new_privs and then execing a program that is
+SELinux\-confined (as this tool would do) may prevent the SELinux
+restrictions from taking effect.
+.SH EXAMPLE
+If you're looking for behaviour similar to
+.BR su (1)/ runuser "(1), or " sudo (8)
+(without the
+.B -g
+option), try something like:
+.sp
+.B "    setpriv \-\-reuid=1000 \-\-regid=1000 \-\-init\-groups"
+.PP
+If you want to mimic daemontools'
+.BR setuid (8),
+try:
+.sp
+.B "    setpriv \-\-reuid=1000 \-\-regid=1000 \-\-clear\-groups"
+.SH SEE ALSO
+.BR runuser (1),
+.BR su (1),
+.BR prctl (2),
+.BR capabilities (7)
+.SH AUTHOR
+.MT luto@amacapital.net
+Andy Lutomirski
+.ME
+.SH AVAILABILITY
+The
+.B setpriv
+command is part of the util-linux package and is available from
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE .
