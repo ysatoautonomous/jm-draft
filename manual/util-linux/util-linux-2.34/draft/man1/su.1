@@ -1,0 +1,503 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Tue Apr 14 00:07:34 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH SU 1 "July 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O su \- run a command with substitute user and group ID
+su \- 代わりのユーザー ID とグループ ID でコマンドを実行する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.BR su " [options] [" \- ]
+.RI [ user " [" argument ...]]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B su
+.\"O allows to run commands with a substitute user and group ID.
+.B su
+を使うと、代わりのユーザー ID とグループ ID でコマンドを実行できる。
+.PP
+.\"O When called without arguments,
+.\"O .B su
+.\"O defaults to running an interactive shell as
+.\"O .IR root .
+引き数なしで実行された場合、
+.B su
+は
+.I root
+で対話シェルを実行する。
+.PP
+.\"O For backward compatibility,
+.\"O .B su
+.\"O defaults to not change the current directory and to only set the
+.\"O environment variables
+.\"O .B HOME
+.\"O and
+.\"O .B SHELL
+.\"O (plus
+.\"O .B USER
+.\"O and
+.\"O .B LOGNAME
+.\"O if the target
+.\"O .I user
+.\"O is not root).  It is recommended to always use the
+.\"O .B \-\-login
+.\"O option (instead of its shortcut
+.\"O .BR \- )
+.\"O to avoid side effects caused by mixing environments.
+後方互換のため、
+.B su
+はデフォルトではカレントディレクトリを変更せず、
+環境変数
+.B HOME
+と
+.B SHELL
+を設定するだけである
+(対象の
+.I user
+が root でない場合、
+.B USER
+と
+.B LOGNAME
+も設定する)。
+いろいろな環境で副作用が出ないように、
+(ショートカットの
+.B \-
+ではなく)
+.B \-\-login
+オプションを常に使うことが推奨される。
+.PP
+.\"O This version of
+.\"O .B su
+.\"O uses PAM for authentication, account and session management.  Some
+.\"O configuration options found in other
+.\"O .B su
+.\"O implementations, such as support for a wheel group, have to be
+.\"O configured via PAM.
+このバージョンの
+.B su
+はアカウントとセッション管理に PAM を使う。
+wheel グループのサポートといった、他の
+.B su
+実装にある設定オプションを使うには、PAM で設定する必要がある。
+.PP
+.\"O .B su
+.\"O is mostly designed for unprivileged users, the recommended solution for
+.\"O privileged users (e.g. scripts executed by root) is to use
+.\"O non-set-user-ID command
+.\"O .BR runuser (1)
+.\"O that does not require authentication and provide separate PAM configuration. If
+.\"O the PAM session is not required at all then the recommend solution is to use
+.\"O command
+.\"O .BR setpriv (1).
+.B su
+は主に非特権ユーザーのために設計されている。
+特権ユーザーのための推奨される方法 (例えば、root が実行するスクリプト) は、
+set-user-ID が設定されていないコマンド
+.BR runuser (1)
+を使うことである。
+.BR runuser (1)
+は認証は必要なく、別の PAM 設定で提供される。
+PAM セッションが全く必要ない場合、推奨される方法は、コマンド
+.BR setpriv (1)
+を使うことである。
+
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-c , " \-\-command" = \fIcommand
+.\"O Pass
+.\"O .I command
+.\"O to the shell with the
+.\"O .B \-c
+.\"O option.
+.I command
+をシェルに
+.B \-c
+オプションを付けて渡す。
+.TP
+.BR \-f , " \-\-fast"
+.\"O Pass
+.\"O .B \-f
+.\"O to the shell, which may or may not be useful, depending on the shell.
+.B \-f
+をシェルに渡す。
+これはシェルによっては、使えたり、使えなかったりする。
+.TP
+.BR \-g , " \-\-group" = \fIgroup
+.\"O Specify the primary group.  This option is available to the root user only.
+使用するプライマリーグループ。
+このオプションは root ユーザーにのみ許可されている。
+.TP
+.BR \-G , " \-\-supp\-group" = \fIgroup
+.\"O Specify a supplemental group.  This option is available to the root user only.  The first specified
+.\"O supplementary group is also used as a primary group if the option \fB\-\-group\fR is unspecified.
+補助 (supplementary) グループを指定する。
+このオプションは root ユーザーにのみ許可されている。
+オプション \fB\-\-group\fR が指定されていない場合、補助グループがプライマリグループとして
+使われる。
+.TP
+.BR \- , " \-l" , " \-\-login"
+.\"O Start the shell as a login shell with an environment similar to a real
+.\"O login:
+シェルをログインシェルとして開始する。環境変数は実際の login と同様である:
+.RS 10
+.TP
+o
+.\"O clears all the environment variables except
+.\"O .B TERM
+.\"O and variables specified by \fB\-\-whitelist\-environment\fR
+.B TERM
+と \fB\-\-whitelist\-environment\fR で指定された環境変数以外の、
+全ての環境変数をクリアする。
+.TP
+o
+.\"O initializes the environment variables
+環境変数
+.BR HOME ,
+.BR SHELL ,
+.BR USER ,
+.\"O .BR LOGNAME ", and"
+.BR LOGNAME ,
+.B PATH
+を初期化する。
+.TP
+o
+.\"O changes to the target user's home directory
+対象ユーザーのホームディレクトリに変更する。
+.TP
+o
+.\"O sets argv[0] of the shell to
+.\"O .RB ' \- '
+.\"O in order to make the shell a login shell
+シェルの argv[0] に
+.RB ' \- '
+を設定し、シェルをログインシェルとする。
+.RE
+.TP
+.BR \-m , " \-p" , " \-\-preserve\-environment"
+.\"O Preserve the entire environment, i.e. it does not set
+.\"O .BR HOME ,
+.\"O .BR SHELL ,
+.\"O .B USER
+.\"O nor
+.\"O .BR LOGNAME .
+環境変数を保持する。つまり、
+.BR HOME ,
+.BR SHELL ,
+.BR USER ,
+.B LOGNAME
+を設定しない。
+.\"O This option is ignored if the option \fB\-\-login\fR is specified.
+オプション \fB\-\-login\fR が指定されている場合、このオプションは無視される。
+.TP
+.BR \-P , " \-\-pty"
+.\"O Create pseudo-terminal for the session. The independent terminal provides
+.\"O better security as user does not share terminal with the original
+.\"O session.  This allow to avoid TIOCSTI ioctl terminal injection and another
+.\"O security attacks against terminal file descriptors. The all session is also
+.\"O possible to move to background (e.g. "su --pty - username -c
+.\"O application &"). If the pseudo-terminal is enabled then su command works
+.\"O as a proxy between the sessions (copy stdin and stdout).
+セッションに対して擬似端末 (pseudo-terminal) を作成する。
+独立した端末を使うことで、ユーザーが元のセッションと端末を
+共有しなくなり、より良いセキュリティ環境を提供する。
+これにより、端末のファイルディスクリプターに対する、
+TIOCSTI ioctl 端末インジェクションやセキュリティアタックを回避できる。
+全てのセッションはバックグランドに移すこともできる
+(例えば、 "su --pty - username -c application &")。
+擬似端末が有効になっている場合、 su コマンドはセッション間の
+プロキシとして動作する (標準入力と標準出力をコピーする)。
+.sp
+.\"O This feature is mostly designed for interactive sessions. If the standard input
+.\"O is not a terminal, but for example pipe (e.g. echo "date" | su --pty) than ECHO
+.\"O flag for the pseudo-terminal is disabled to avoid messy output.
+この機能は大部分が対話セッションのために設計されている。
+標準入力が端末ではなく、例えばパイプの場合
+(例、echo "date" | su --pty)、
+不要な出力を避けるため、擬似端末の ECHO フラグは無効化される。
+.TP
+.BR \-s , " \-\-shell" = \fIshell
+.\"O Run the specified \fIshell\fR instead of the default.  The shell to run is
+.\"O selected according to the following rules, in order:
+デフォルトのシェルの代わりに、指定した \fIshell\fR を実行する。
+実行するシェルは以下のルールに従って順番に選択される:
+.RS 10
+.TP
+o
+.\"O the shell specified with
+.\"O .B \-\-shell
+.B \-\-shell
+で指定したシェル
+.TP
+o
+.\"O the shell specified in the environment variable
+.\"O .BR SHELL ,
+.\"O if the
+.\"O .B \-\-preserve\-environment
+.\"O option is used
+オプションが使われている場合は、環境変数
+.B SHELL
+で指定されたシェル
+.TP
+o
+.\"O the shell listed in the passwd entry of the target user
+対象ユーザーの passwd エントリにリストされているシェル
+.TP
+o
+/bin/sh
+.RE
+.IP
+.\"O If the target user has a restricted shell (i.e. not listed in
+.\"O /etc/shells), the
+.\"O .B \-\-shell
+.\"O option and the
+.\"O .B SHELL
+.\"O environment variables are ignored unless the calling user is root.
+対象ユーザーが制限されたシェル
+(つまり /etc/shells に記載されていないシェル) を使っている場合、
+呼び出し元ユーザーが root でない限り、
+.B \-\-shell
+オプションと
+.B SHELL
+環境変数は無視される。
+.TP
+.BI \-\-session\-command= command
+.\"O Same as
+.\"O .B \-c
+.\"O but do not create a new session.  (Discouraged.)
+.B \-c
+と同様であるが、新しいセッションを作成しない。(推奨しない)
+.TP
+.BR \-w , " \-\-whitelist\-environment" = \fIlist
+.\"O Don't reset environment variables specified in comma separated \fIlist\fR when clears
+.\"O environment for \fB\-\-login\fR. The whitelist is ignored for the environment variables
+.\"O .BR HOME ,
+.\"O .BR SHELL ,
+.\"O .BR USER ,
+.\"O .BR LOGNAME ", and"
+.\"O .BR PATH "."
+\fB\-\-login\fR で環境変数をクリアする際に、
+カンマ区切りの \fIlist\fR に指定された環境変数はリセットしない。
+このホワイトリストでは、環境変数
+.BR HOME ,
+.BR SHELL ,
+.BR USER ,
+.BR LOGNAME ,
+.B PATH
+は無視される。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH SIGNALS
+.SH シグナル
+.\"O Upon receiving either
+.\"O .BR SIGINT ,
+.\"O .B SIGQUIT
+.\"O or
+.\"O .BR SIGTERM ,
+.\"O .B su
+.\"O terminates its child and afterwards terminates itself with the received signal.
+.BR SIGINT ,
+.BR SIGQUIT ,
+.B SIGTERM
+を受けとると、
+.B su
+は、受け取ったシグナルで子プロセスを終了し、その後で自身を終了する。
+.\"O The child is terminated by SIGTERM, after unsuccessful attempt and 2 seconds of
+.\"O delay the child is killed by SIGKILL.
+子プロセスが SIGTERM で終了されて失敗すると、2 秒後に SIGKILL で kill される。
+.\"O .SH CONFIG FILES
+.SH 設定ファイル
+.\"O .B su
+.\"O reads the
+.\"O .I /etc/default/su
+.\"O and
+.\"O .I /etc/login.defs
+.\"O configuration files.  The following configuration items are relevant
+.\"O for
+.\"O .BR su (1):
+.B su
+は設定ファイル
+.I /etc/default/runuser
+と
+.I /etc/login.defs
+を読み込む。
+以下の設定項目が
+.BR su (1)
+と関連する:
+.PP
+.B FAIL_DELAY
+.\"O (number)
+(数値)
+.RS 4
+.\"O Delay in seconds in case of an authentication failure. The number must be
+.\"O a non-negative integer.
+認証が失敗した場合の待ち時間。数値は、負ではない整数である。
+.RE
+.PP
+.B ENV_PATH
+.\"O (string)
+(文字列)
+.RS 4
+.\"O Defines the PATH environment variable for a regular user.  The
+.\"O default value is
+.\"O .IR /usr/local/bin:\:/bin:\:/usr/bin .
+一般ユーザーの PATH 環境変数を定義する。
+デフォルト値は、
+.I /usr/local/bin:\:/bin:\:/usr/bin
+である。
+.RE
+.PP
+.B ENV_ROOTPATH
+.\"O (string)
+(文字列)
+.br
+.B ENV_SUPATH
+.\"O (string)
+(文字列)
+.RS 4
+.\"O Defines the PATH environment variable for root.  ENV_SUPATH takes precedence.  The default value is
+.\"O .IR /usr/local/sbin:\:/usr/local/bin:\:/sbin:\:/bin:\:/usr/sbin:\:/usr/bin .
+root の PATH 環境変数を定義する。
+ENV_SUPATH が優先される。
+デフォルト値は、
+.I /usr/local/sbin:\:/usr/local/bin:\:/sbin:\:/bin:\:/usr/sbin:\:/usr/bin
+である。
+.RE
+.PP
+.B ALWAYS_SET_PATH
+.\"O (boolean)
+(ブール値)
+.RS 4
+.\"O If set to
+.\"O .I yes
+.\"O and \-\-login and \-\-preserve\-environment were not specified
+.\"O .B su
+.\"O initializes
+.\"O .BR PATH .
+この項目が
+.I yes
+に設定されており、\-\-login と \-\-preserve\-environment が指定されない場合、
+.B su
+は
+.B PATH
+を初期化する。
+.RE
+.sp
+.\"O The environment variable PATH may be different on systems where /bin and /sbin
+.\"O are merged into /usr.
+/bin と /sbin が /usr の中に統合されているシステムでは、
+環境変数 PATH が違うかもしれない。
+.\"O .SH EXIT STATUS
+.SH 返り値
+.\"O .B su
+.\"O normally returns the exit status of the command it executed.  If the
+.\"O command was killed by a signal,
+.\"O .B su
+.\"O returns the number of the signal plus 128.
+通常、
+.B su
+は実行したコマンドの返り値を返す。
+コマンドがシグナルで kill された場合、
+.B su
+はシグナルの番号 + 128 を返す。
+.PP
+.\"O Exit status generated by
+.\"O .B su
+.\"O itself:
+.B su
+自身が生成する返り値は、以下の通り:
+.RS 10
+.TP
+1
+.\"O Generic error before executing the requested command
+要求されたコマンドを実行する前の一般的なエラー。
+.TP
+126
+.\"O The requested command could not be executed
+要求されたコマンドが実行できなかった。
+.TP
+127
+.\"O The requested command was not found
+要求されたコマンドが見つからなかった。
+.RE
+.\"O .SH FILES
+.SH ファイル
+.PD 0
+.TP 17
+/etc/pam.d/su
+.\"O default PAM configuration file
+デフォルトの PAM 設定ファイル
+.TP
+/etc/pam.d/su-l
+.\"O PAM configuration file if \-\-login is specified
+\-\-login が指定された場合の PAM 設定ファイル
+.TP
+/etc/default/su
+.\"O command specific logindef config file
+su コマンド固有の logindef 設定ファイル
+.TP
+/etc/login.defs
+.\"O global logindef config file
+グローバルの logindef 設定ファイル
+.PD 1
+.\"O .SH NOTES
+.SH 注意
+.\"O For security reasons
+.\"O .B su
+.\"O always logs failed log-in attempts to the btmp file, but it does not write to
+.\"O the lastlog file at all.  This solution allows to control
+.\"O .B su
+.\"O behavior by PAM configuration.  If you want to use the pam_lastlog module to
+.\"O print warning message about failed log-in attempts then the pam_lastlog has to
+.\"O be configured to update the lastlog file as well. For example by:
+セキュリティ上の理由から、
+.B su
+はログインの失敗を btmp ファイルに記録するが、lastlog ファイルには書き出さない。
+この
+.B su
+挙動は PAM 設定で制御できる。
+pam_lastlog モジュールを使って、ログインの失敗の警告メッセージを表示する場合、
+lastlog ファイルも更新するように pam_lastlog 設定しなければならない。
+例えば、以下のように設定する:
+
+.RS
+.br
+session  required  pam_lastlog.so nowtmp
+.RE
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR setpriv (1),
+.BR login.defs (5),
+.BR shells (5),
+.BR pam (8),
+.BR runuser (8)
+.\"O .SH HISTORY
+.SH 履歴
+.\"O This \fBsu\fR command was
+.\"O derived from coreutils' \fBsu\fR, which was based on an implementation by
+.\"O David MacKenzie. The util-linux has been refactored by Karel Zak.
+この \fBsu\fR コマンドは、
+David MacKenzie によって実装された coreutils の \fBsu\fR コマンドから派生している。
+util-linux バージョンは Karel Zak によってリファクタされた。
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The su command is part of the util-linux package and is
+.\"O available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+su コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
