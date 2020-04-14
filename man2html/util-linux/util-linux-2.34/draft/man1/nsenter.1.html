@@ -40,9 +40,9 @@ nsenter - 他のプロセスの名前空間でプログラムを実行する。
 
 入ることができる名前空間は以下の通り:
 <DL COMPACT>
-<DT>
+<DT><B>マウント名前空間</B>
+
 <DD>
-<B>マウント名前空間</B>
 
 
 
@@ -69,9 +69,9 @@ nsenter - 他のプロセスの名前空間でプログラムを実行する。
 <B>CLONE_NEWNS</B>
 
 フラグの議論を参照すること。
-<DT>
+<DT><B>UTS 名前空間</B>
+
 <DD>
-<B>UTS 名前空間</B>
 
 
 ホスト名とドメイン名の設定が、システムの他の部分に影響しない。
@@ -91,9 +91,9 @@ nsenter - 他のプロセスの名前空間でプログラムを実行する。
 <B>CLONE_NEWUTS</B>
 
 の議論を参照すること。
-<DT>
+<DT><B>IPC 名前空間</B>
+
 <DD>
-<B>IPC 名前空間</B>
 
 
 
@@ -117,9 +117,9 @@ POSIX メッセージキューと、System V メッセージキュー、
 <B>CLONE_NEWIPC</B>
 
 フラグの議論を参照すること。
-<DT>
+<DT><B>ネットワーク名前空間</B>
+
 <DD>
-<B>ネットワーク名前空間</B>
 
 
 
@@ -151,9 +151,9 @@ POSIX メッセージキューと、System V メッセージキュー、
 <B>CLONE_NEWNET</B>
 
 フラグの議論を参照すること。
-<DT>
+<DT><B>PID 名前空間</B>
+
 <DD>
-<B>PID 名前空間</B>
 
 
 
@@ -188,9 +188,9 @@ PID 名前空間を変更する場合、デフォルトでは
 お互いに見えるようになる。
 
 <B>--no-fork</B> が使われた場合、新しいプログラムは fork なしで exec される。
-<DT>
+<DT><B>ユーザー名前空間</B>
+
 <DD>
-<B>ユーザー名前空間</B>
 
 
 プロセスが個別の UID、GID、ケーパビリティ (capabilities) のセットを持つ。
@@ -210,9 +210,9 @@ PID 名前空間を変更する場合、デフォルトでは
 <B>CLONE_NEWUSER</B>
 
 フラグの議論を参照すること。
-<DT>
+<DT><B>コントロールグループ (cgroup) 名前空間</B>
+
 <DD>
-<B>コントロールグループ (cgroup) 名前空間</B>
 
 
 
@@ -568,6 +568,6 @@ Linux Kernel Archive
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 16:40:27 GMT, April 11, 2020
+Time: 13:09:12 GMT, April 14, 2020
 </BODY>
 </HTML>
