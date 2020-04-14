@@ -1,7 +1,7 @@
 .\"
 .\" Japanese Version Copyright (c) 2020 Yuichi SATO
 .\"         all rights reserved.
-.\" Translated Tue Apr 14 21:04:31 JST 2020
+.\" Translated Wed Apr 15 00:53:59 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH UNSHARE 1 "February 2016" "util-linux" "User Commands"
@@ -273,7 +273,7 @@ cgroup 名前空間を共有しない。
 .\"O This option implies \fB--fork\fR.
 \fBunshare\fR が終了する時に、fork した子プロセスに \fIsigname\fP を送る。
 \fB--pid\fR と組み合わせることにより、\fBunshare\fR 以下のプロセスツリー全体を、
-簡単に信頼性を持って kill することができる。
+簡単に確実に kill することができる。
 \fIsigname\fP が指定されない場合、デフォルトは \fBSIGKILL\fR である。
 このオプションは \fB--fork\fR を暗黙のうちに指定する。
 .TP
@@ -311,67 +311,103 @@ cgroup 名前空間を共有しない。
 このオプションは、\fB--setgroups=deny\fR を暗黙のうちに指定する。
 .TP
 .BR "\-\-propagation private" | shared | slave | unchanged
-Recursively set the mount propagation flag in the new mount namespace.  The default
-is to set the propagation to \fIprivate\fP.  It is possible to disable this feature
-with the argument \fBunchanged\fR.  The option is silently ignored when the mount
-namespace (\fB\-\-mount\fP) is not requested.
+.\"O Recursively set the mount propagation flag in the new mount namespace.  The default
+.\"O is to set the propagation to \fIprivate\fP.  It is possible to disable this feature
+.\"O with the argument \fBunchanged\fR.  The option is silently ignored when the mount
+.\"O namespace (\fB\-\-mount\fP) is not requested.
+新しいマウント名前空間のマウント伝搬フラグを再帰的に設定する。
+デフォルトでは伝搬を \fIprivate\fP　に設定する。
+この機能は引き数 \fBunchanged\fR で無効化できる。
+このオプションは、マウント名前空間 (\fB\-\-mount\fP) が指定されない場合、
+黙って無視される。
 .TP
 .BR "\-\-setgroups allow" | deny
-Allow or deny the
+.\"O Allow or deny the
+.\"O .BR setgroups (2)
+.\"O system call in a user namespace.
+ユーザー名前空間で
 .BR setgroups (2)
-system call in a user namespace.
+システムコールを許可または拒否する。
 .sp
-To be able to call
-.BR setgroups (2),
-the calling process must at least have CAP_SETGID.
-But since Linux 3.19 a further restriction applies:
-the kernel gives permission to call
+.\"O To be able to call
+.\"O .BR setgroups (2),
+.\"O the calling process must at least have CAP_SETGID.
+.BR setgroups (2)
+を呼び出すには、呼び出しプロセスは少なくとも CAP_SETGID 権限を持たなければならない。
+.\"O But since Linux 3.19 a further restriction applies:
+.\"O the kernel gives permission to call
+.\"O .BR \%setgroups (2)
+.\"O only after the GID map (\fB/proc/\fIpid\fB/gid_map\fR) has been set.
+しかし、Linux 3.19 以降ではさらに厳しい制限が適用される:
+GID マップ (\fB/proc/\fIpid\fB/gid_map\fR) が設定された後でのみ、
+カーネルは、
 .BR \%setgroups (2)
-only after the GID map (\fB/proc/\fIpid\fB/gid_map\fR) has been set.
-The GID map is writable by root when
+の呼び出しを許可する。
+.\"O The GID map is writable by root when
+.\"O .BR \%setgroups (2)
+.\"O is enabled (i.e. \fBallow\fR, the default), and
+.\"O the GID map becomes writable by unprivileged processes when
+.\"O .BR \%setgroups (2)
+.\"O is permanently disabled (with \fBdeny\fR).
+(\fBallow\fR, デフォルトで)
 .BR \%setgroups (2)
-is enabled (i.e. \fBallow\fR, the default), and
-the GID map becomes writable by unprivileged processes when
+が有効化されると、GID マップは root による書き込みが可能なる。
+(\fBdeny\fR で)
 .BR \%setgroups (2)
-is permanently disabled (with \fBdeny\fR).
+が永続的に無効化されると、GID マップは非特権プロセスによる書き込みが可能になる。
 .TP
 .BR \-R, "\-\-root=\fIdir"
-run the command with root directory set to \fIdir\fP.
+.\"O run the command with root directory set to \fIdir\fP.
+ルートディレクトリを \fIdir\fP に設定し、コマンドを実行する。
 .TP
 .BR \-w, "\-\-wd=\fIdir"
-change working directory to \fIdir\fP.
+.\"O change working directory to \fIdir\fP.
+ワーキングディレクトリを \fIdir\fP に変更する。
 .TP
 .BR \-S, "\-\-setuid \fIuid"
-Set the user ID which will be used in the entered namespace.
+.\"O Set the user ID which will be used in the entered namespace.
+名前空間全体で使われるユーザー ID を設定する。
 .TP
 .BR \-G, "\-\-setgid \fIgid"
-Set the group ID which will be used in the entered namespace and drop
-supplementary groups.
+.\"O Set the group ID which will be used in the entered namespace and drop
+.\"O supplementary groups.
+名前空間全体で使われるグループ ID を設定し、補助 (supplementary) グループを削除する。
 .TP
 .BR \-V , " \-\-version"
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .TP
 .BR \-h , " \-\-help"
-Display help text and exit.
-.SH NOTES
-The proc and sysfs filesystems mounting as root in a user namespace have to be
-restricted so that a less privileged user can not get more access to sensitive
-files that a more privileged user made unavailable. In short the rule for proc
-and sysfs is as close to a bind mount as possible.
-.SH EXAMPLES
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH NOTES
+.SH 注意
+.\"O The proc and sysfs filesystems mounting as root in a user namespace have to be
+.\"O restricted so that a less privileged user can not get more access to sensitive
+.\"O files that a more privileged user made unavailable. In short the rule for proc
+.\"O and sysfs is as close to a bind mount as possible.
+ユーザー名前空間で root として proc と sysfs ファイルシステムをマウントすることは
+制限されなければならない。
+これにより、特権のあるユーザーが見えなくした機微なファイルを、
+特権の少ないユーザーがアクセスできないようにできる。
+端的にいうと、proc と sysfs は可能な限り閉じて bind マウントしなければならない。
+.\"O .SH EXAMPLES
+.SH 例
 .TP
 .B # unshare --fork --pid --mount-proc readlink /proc/self
 .TQ
 1
 .br
-Establish a PID namespace, ensure we're PID 1 in it against a newly mounted
-procfs instance.
+.\"O Establish a PID namespace, ensure we're PID 1 in it against a newly mounted
+.\"O procfs instance.
+PID 名前空間を作成し、新しくマウントされた procfs インスタンスで PID 1 であることを保証する。
 .TP
 .B $ unshare --map-root-user --user sh -c whoami
 .TQ
 root
 .br
-Establish a user namespace as an unprivileged user with a root user within it.
+.\"O Establish a user namespace as an unprivileged user with a root user within it.
+ユーザー名前空間を作成し、その名前空間で非特権ユーザーを root ユーザーとする。
 .TP
 .B # touch /root/uts-ns
 .TQ
@@ -383,9 +419,12 @@ FOO
 .TQ
 .B # umount /root/uts-ns
 .br
-Establish a persistent UTS namespace, and modify the hostname.  The namespace
-is then entered with \fBnsenter\fR.  The namespace is destroyed by unmounting
-the bind reference.
+.\"O Establish a persistent UTS namespace, and modify the hostname.  The namespace
+.\"O is then entered with \fBnsenter\fR.  The namespace is destroyed by unmounting
+.\"O the bind reference.
+永続的な UTS 名前空間を作成し、ホスト名を変更する。
+そして、\fBnsenter\fR で名前空間に入る。
+名前空間は bind 参照をアンマウントすることで破棄される。
 .TP
 .B # mount --bind /root/namespaces /root/namespaces
 .TQ
@@ -395,9 +434,13 @@ the bind reference.
 .TQ
 .B # unshare --mount=/root/namespaces/mnt
 .br
-Establish a persistent mount namespace referenced by the bind mount
-/root/namespaces/mnt.  This example shows a portable solution, because it
-makes sure that the bind mount is created on a shared filesystem.
+.\"O Establish a persistent mount namespace referenced by the bind mount
+.\"O /root/namespaces/mnt.  This example shows a portable solution, because it
+.\"O makes sure that the bind mount is created on a shared filesystem.
+bind マウント /root/namespaces/mnt で参照される
+永続的なマウント名前空間を作成する。
+この例は汎用性の高いやり方を示しており、
+bind マウントが共有ファイルシステム上に作成される。
 .TP
 .B # unshare -pf --kill-child -- bash -c "(sleep 999 &) && sleep 1000" &
 .TQ
@@ -405,17 +448,22 @@ makes sure that the bind mount is created on a shared filesystem.
 .TQ
 .B # kill $pid
 .br
-Reliable killing of subprocesses of the \fIprogram\fR.
-When \fBunshare\fR gets killed, everything below it gets killed as well.
-Without it, the children of \fIprogram\fR would have orphaned and
-been re-parented to PID 1.
+.\"O Reliable killing of subprocesses of the \fIprogram\fR.
+.\"O When \fBunshare\fR gets killed, everything below it gets killed as well.
+.\"O Without it, the children of \fIprogram\fR would have orphaned and
+.\"O been re-parented to PID 1.
+\fIprogram\fR のサブプロセスを確実に kill する。
+\fBunshare\fR が kill されると、それ以下のプロセスも kill される。
+そうしないと、\fIprogram\fR の子プロセスは孤立して (orphaned)、PID 1 が親にされる。
 
-.SH SEE ALSO
+.\"O .SH SEE ALSO
+.SH 関連項目
 .BR clone (2),
 .BR unshare (2),
 .BR namespaces (7),
 .BR mount (8)
-.SH AUTHORS
+.\"O .SH AUTHORS
+.SH 著者
 .UR dottedmag@dottedmag.net
 Mikhail Gusarov
 .UE
@@ -423,6 +471,10 @@ Mikhail Gusarov
 .UR kzak@redhat.com
 Karel Zak
 .UE
-.SH AVAILABILITY
-The unshare command is part of the util-linux package and is available from
-https://www.kernel.org/pub/linux/utils/util-linux/.
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The unshare command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+unshare コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
