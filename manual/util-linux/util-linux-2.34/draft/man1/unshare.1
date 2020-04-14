@@ -1,0 +1,384 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Tue Apr 14 21:04:31 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH UNSHARE 1 "February 2016" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O unshare \- run program with some namespaces unshared from parent
+unshare \- プログラムを親プロセスと同じ名前空間を共有せずに実行する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B unshare
+[options]
+.RI [ program
+.RI [ arguments ]]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O Unshares the indicated namespaces from the parent process and then executes
+.\"O the specified \fIprogram\fR. If \fIprogram\fR is not given, then ``${SHELL}'' is
+.\"O run (default: /bin/sh).
+指定された名前空間を親プロセスと共有させず、指定した \fIprogram\fR を実行する。
+\fIprogram\fR が指定されない場合、``${SHELL}'' (デフォルトは: /bin/sh) が実行される。
+.PP
+.\"O The namespaces can optionally be made persistent by bind mounting
+.\"O /proc/\fIpid\fR/ns/\fItype\fR files to a filesystem path and entered with
+.\"O .BR \%nsenter (1)
+.\"O even after the \fIprogram\fR terminates (except PID namespaces where
+.\"O permanently running init process is required).
+オプションとして /proc/\fIpid\fR/ns/\fItype\fR ファイルを
+ファイルシステムに bind マウントして、
+.BR \%nsenter (1)
+で名前空間に入れることで、\fIprogram\fR が終了した後でも、名前空間を永続化できる
+(PID 名前空間は例外であり、init プロセスをずっと動作させる必要がある)。
+.\"O Once a persistent \%namespace is no longer needed, it can be unpersisted with
+.\"O .BR umount (8).
+.\"O See the \fBEXAMPLES\fR section for more details.
+一度永続化した名前空間が必要なくなった場合、
+.BR umount (8)
+で永続化を解除できる。
+より詳細は、\fB例\fRのセクションを参照すること。
+.PP
+.\"O The namespaces to be unshared are indicated via options.  Unshareable namespaces are:
+共有しない名前空間はオプションで指定できる。
+共有しない名前空間は以下の通り:
+.TP
+.B マウント名前空間
+.\"O .B mount namespace
+.\"O Mounting and unmounting filesystems will not affect the rest of the system,
+.\"O except for filesystems which are explicitly marked as
+.\"O shared (with \fBmount --make-shared\fP; see \fI/proc/self/mountinfo\fP or
+.\"O \fBfindmnt -o+PROPAGATION\fP for the \fBshared\fP flags).
+ファイルシステムのマウントとアンマウントが、他のファイルシステムに
+影響しない。
+ただし、明示的に共有 (shared) とマークされているファイルシステムは除く
+(共有は \fBmount --make-shared\fP で行われる。
+\fI/proc/self/mountinfo\fP または
+\fBfindmnt -o+PROPAGATION\fP で \fBshared\fP フラグを参照すること)。
+.\"O For further details, see
+.\"O .BR mount_namespaces (7)
+.\"O and the discussion of the
+.\"O .B CLONE_NEWNS
+.\"O flag in
+.\"O .BR clone (2).
+より詳細は、
+.BR mount_namespaces (7)
+と
+.BR clone (2)
+の
+.B CLONE_NEWNS
+フラグの議論を参照すること。
+.sp
+.\"O .B unshare
+.\"O since util-linux version 2.27 automatically sets propagation to \fBprivate\fP
+.\"O in a new mount namespace to make sure that the new namespace is really
+.\"O unshared.  It's possible to disable this feature with option
+.\"O \fB\-\-propagation unchanged\fP.
+.\"O Note that \fBprivate\fP is the kernel default.
+.B unshare
+は util-linux バージョン 2.27 以降で、新たなマウント名前空間で伝搬を
+自動的に \fBprivate\fP にして、新しい名前空間を共有しないようにする。
+この機能はオプション \fB\-\-propagation unchanged\fP で無効化できる。
+\fBprivate\fP はカーネルのデフォルトである点に注意すること。
+.TP
+.B UTS 名前空間
+.\"O .B UTS namespace
+.\"O Setting hostname or domainname will not affect the rest of the system.
+ホスト名またはドメイン名の設定が、システムの他の部分に影響しない。
+.\"O For further details, see
+.\"O .BR namespaces (7)
+.\"O and the discussion of the
+.\"O .B CLONE_NEWUTS
+.\"O flag in
+.\"O .BR clone (2).
+より詳細は、
+.BR namespaces (7)
+と
+.BR clone (2)
+の
+.B CLONE_NEWUTS
+の議論を参照すること。
+.TP
+.B IPC 名前空間
+.\"O .B IPC namespace
+.\"O The process will have an independent namespace for POSIX message queues
+.\"O as well as System V \%message queues,
+.\"O semaphore sets and shared memory segments.
+POSIX メッセージキューと、System V メッセージキュー、
+セマフォセット、共有メモリセグメントについて、プロセスは独立した
+名前空間を持つ。
+.\"O For further details, see
+.\"O .BR namespaces (7)
+.\"O and the discussion of the
+.\"O .B CLONE_NEWIPC
+.\"O flag in
+.\"O .BR clone (2).
+より詳細は、
+.BR namespaces (7)
+と
+.BR clone (2)
+の
+.B CLONE_NEWIPC
+フラグの議論を参照すること。
+.TP
+.B ネットワーク名前空間
+.\"O .B network namespace
+.\"O The process will have independent IPv4 and IPv6 stacks, IP routing tables,
+.\"O firewall rules, the \fI/proc/net\fP and \fI/sys/class/net\fP directory trees,
+.\"O sockets, etc.
+プロセスが独立した IPv4 と IPv6 スタック、IP ルーティングテーブル、
+ファイアウォールルール、
+.I /proc\:/net
+と
+.I /sys\:/class\:/net
+のディレクトリツリー、ソケットなどを持つ。
+.\"O For further details, see
+.\"O .BR namespaces (7)
+.\"O and the discussion of the
+.\"O .B CLONE_NEWNET
+.\"O flag in
+.\"O .BR clone (2).
+より詳細は、
+.BR namespaces (7)
+と
+.BR clone (2)
+の
+.B CLONE_NEWNET
+フラグの議論を参照すること。
+.TP
+.B PID 名前空間
+.\"O .B PID namespace
+.\"O Children will have a distinct set of PID-to-process mappings from their parent.
+親プロセスとは別に、子プロセスがプロセスマッピングをするための PID セットを持つ。
+.\"O For further details, see
+.\"O .BR pid_namespaces (7)
+.\"O and
+.\"O the discussion of the
+.\"O .B CLONE_NEWPID
+.\"O flag in
+.\"O .BR clone (2).
+より詳細は、
+.BR pid_namespaces (7)
+と
+.BR clone (2)
+の
+.B CLONE_NEWPID
+フラグを参照すること。
+.TP
+.B コントロールグループ (cgroup) 名前空間
+.\"O .B cgroup namespace
+.\"O The process will have a virtualized view of \fI/proc\:/self\:/cgroup\fP, and new
+.\"O cgroup mounts will be rooted at the namespace cgroup root.
+プロセスが \fI/proc\:/self\:/cgroup\fP の仮想化されたビューを持ち、
+新しい cgroup マウントで名前空間の cgroup ルートがルートにされる。
+.\"O For further details, see
+.\"O .BR cgroup_namespaces (7)
+.\"O and the discussion of the
+.\"O .B CLONE_NEWCGROUP
+.\"O flag in
+.\"O .BR clone (2).
+より詳細は、
+.BR cgroup_namespaces (7)
+と
+.BR clone (2)
+の
+.B CLONE_NEWCGROUP
+フラグの議論を参照すること。
+.TP
+.B ユーザー名前空間
+.\"O .B user namespace
+.\"O The process will have a distinct set of UIDs, GIDs and capabilities.
+プロセスが個別の UID、GID、ケーパビリティ (capabilities) のセットを持つ。
+.\"O For further details, see
+.\"O .BR user_namespaces (7)
+.\"O and the discussion of the
+.\"O .B CLONE_NEWUSER
+.\"O flag in
+.\"O .BR clone (2).
+より詳細は、
+.BR user_namespaces (7)
+と
+.BR clone (2)
+の
+.B CLONE_NEWUSER
+フラグの議論を参照すること。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-i , " \-\-ipc" [ =\fIfile ]
+Unshare the IPC namespace.  If \fIfile\fP is specified, then a persistent
+namespace is created by a bind mount.
+.TP
+.BR \-m , " \-\-mount" [ =\fIfile ]
+Unshare the mount namespace.  If \fIfile\fP is specified, then a persistent
+namespace is created by a bind mount.
+Note that \fIfile\fP has to be located on a filesystem with the propagation
+flag set to \fBprivate\fP.  Use the command \fBfindmnt -o+PROPAGATION\fP
+when not sure about the current setting.  See also the examples below.
+.TP
+.BR \-n , " \-\-net" [ =\fIfile ]
+Unshare the network namespace.  If \fIfile\fP is specified, then a persistent
+namespace is created by a bind mount.
+.TP
+.BR \-p , " \-\-pid" [ =\fIfile ]
+Unshare the PID namespace.  If \fIfile\fP is specified then persistent
+namespace is created by a bind mount.  See also the \fB--fork\fP and
+\fB--mount-proc\fP options.
+.TP
+.BR \-u , " \-\-uts" [ =\fIfile ]
+Unshare the UTS namespace.  If \fIfile\fP is specified, then a persistent
+namespace is created by a bind mount.
+.TP
+.BR \-U , " \-\-user" [ =\fIfile ]
+Unshare the user namespace.  If \fIfile\fP is specified, then a persistent
+namespace is created by a bind mount.
+.TP
+.BR \-C , " \-\-cgroup"[=\fIfile\fP]
+Unshare the cgroup namespace. If \fIfile\fP is specified then persistent namespace is created
+by bind mount.
+.TP
+.BR \-f , " \-\-fork"
+Fork the specified \fIprogram\fR as a child process of \fBunshare\fR rather than
+running it directly.  This is useful when creating a new PID namespace.
+.TP
+.BR \-\-kill\-child [ =\fIsigname ]
+When \fBunshare\fR terminates, have \fIsigname\fP be sent to the forked child process.
+Combined with \fB--pid\fR this allows for an easy and reliable killing of the entire
+process tree below \fBunshare\fR.
+If not given, \fIsigname\fP defaults to \fBSIGKILL\fR.
+This option implies \fB--fork\fR.
+.TP
+.BR \-\-mount\-proc [ =\fImountpoint ]
+Just before running the program, mount the proc filesystem at \fImountpoint\fP
+(default is /proc).  This is useful when creating a new PID namespace.  It also
+implies creating a new mount namespace since the /proc mount would otherwise
+mess up existing programs on the system.  The new proc filesystem is explicitly
+mounted as private (with MS_PRIVATE|MS_REC).
+.TP
+.BR \-r , " \-\-map\-root\-user"
+Run the program only after the current effective user and group IDs have been mapped to
+the superuser UID and GID in the newly created user namespace.  This makes it possible to
+conveniently gain capabilities needed to manage various aspects of the newly created
+namespaces (such as configuring interfaces in the network namespace or mounting filesystems in
+the mount namespace) even when run unprivileged.  As a mere convenience feature, it does not support
+more sophisticated use cases, such as mapping multiple ranges of UIDs and GIDs.
+This option implies \fB--setgroups=deny\fR.
+.TP
+.BR "\-\-propagation private" | shared | slave | unchanged
+Recursively set the mount propagation flag in the new mount namespace.  The default
+is to set the propagation to \fIprivate\fP.  It is possible to disable this feature
+with the argument \fBunchanged\fR.  The option is silently ignored when the mount
+namespace (\fB\-\-mount\fP) is not requested.
+.TP
+.BR "\-\-setgroups allow" | deny
+Allow or deny the
+.BR setgroups (2)
+system call in a user namespace.
+.sp
+To be able to call
+.BR setgroups (2),
+the calling process must at least have CAP_SETGID.
+But since Linux 3.19 a further restriction applies:
+the kernel gives permission to call
+.BR \%setgroups (2)
+only after the GID map (\fB/proc/\fIpid\fB/gid_map\fR) has been set.
+The GID map is writable by root when
+.BR \%setgroups (2)
+is enabled (i.e. \fBallow\fR, the default), and
+the GID map becomes writable by unprivileged processes when
+.BR \%setgroups (2)
+is permanently disabled (with \fBdeny\fR).
+.TP
+.BR \-R, "\-\-root=\fIdir"
+run the command with root directory set to \fIdir\fP.
+.TP
+.BR \-w, "\-\-wd=\fIdir"
+change working directory to \fIdir\fP.
+.TP
+.BR \-S, "\-\-setuid \fIuid"
+Set the user ID which will be used in the entered namespace.
+.TP
+.BR \-G, "\-\-setgid \fIgid"
+Set the group ID which will be used in the entered namespace and drop
+supplementary groups.
+.TP
+.BR \-V , " \-\-version"
+Display version information and exit.
+.TP
+.BR \-h , " \-\-help"
+Display help text and exit.
+.SH NOTES
+The proc and sysfs filesystems mounting as root in a user namespace have to be
+restricted so that a less privileged user can not get more access to sensitive
+files that a more privileged user made unavailable. In short the rule for proc
+and sysfs is as close to a bind mount as possible.
+.SH EXAMPLES
+.TP
+.B # unshare --fork --pid --mount-proc readlink /proc/self
+.TQ
+1
+.br
+Establish a PID namespace, ensure we're PID 1 in it against a newly mounted
+procfs instance.
+.TP
+.B $ unshare --map-root-user --user sh -c whoami
+.TQ
+root
+.br
+Establish a user namespace as an unprivileged user with a root user within it.
+.TP
+.B # touch /root/uts-ns
+.TQ
+.B # unshare --uts=/root/uts-ns hostname FOO
+.TQ
+.B # nsenter --uts=/root/uts-ns hostname
+.TQ
+FOO
+.TQ
+.B # umount /root/uts-ns
+.br
+Establish a persistent UTS namespace, and modify the hostname.  The namespace
+is then entered with \fBnsenter\fR.  The namespace is destroyed by unmounting
+the bind reference.
+.TP
+.B # mount --bind /root/namespaces /root/namespaces
+.TQ
+.B # mount --make-private /root/namespaces
+.TQ
+.B # touch /root/namespaces/mnt
+.TQ
+.B # unshare --mount=/root/namespaces/mnt
+.br
+Establish a persistent mount namespace referenced by the bind mount
+/root/namespaces/mnt.  This example shows a portable solution, because it
+makes sure that the bind mount is created on a shared filesystem.
+.TP
+.B # unshare -pf --kill-child -- bash -c "(sleep 999 &) && sleep 1000" &
+.TQ
+.B # pid=$!
+.TQ
+.B # kill $pid
+.br
+Reliable killing of subprocesses of the \fIprogram\fR.
+When \fBunshare\fR gets killed, everything below it gets killed as well.
+Without it, the children of \fIprogram\fR would have orphaned and
+been re-parented to PID 1.
+
+.SH SEE ALSO
+.BR clone (2),
+.BR unshare (2),
+.BR namespaces (7),
+.BR mount (8)
+.SH AUTHORS
+.UR dottedmag@dottedmag.net
+Mikhail Gusarov
+.UE
+.br
+.UR kzak@redhat.com
+Karel Zak
+.UE
+.SH AVAILABILITY
+The unshare command is part of the util-linux package and is available from
+https://www.kernel.org/pub/linux/utils/util-linux/.
