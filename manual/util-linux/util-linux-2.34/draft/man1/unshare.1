@@ -78,7 +78,7 @@ unshare \- プログラムを親プロセスと同じ名前空間を共有せず
 .\"O \fB\-\-propagation unchanged\fP.
 .\"O Note that \fBprivate\fP is the kernel default.
 .B unshare
-は util-linux バージョン 2.27 以降で、新たなマウント名前空間で伝搬を
+は util-linux バージョン 2.27 以降で、新たなマウント名前空間で伝搬 (propagation) を
 自動的に \fBprivate\fP にして、新しい名前空間を共有しないようにする。
 この機能はオプション \fB\-\-propagation unchanged\fP で無効化できる。
 \fBprivate\fP はカーネルのデフォルトである点に注意すること。
@@ -208,63 +208,107 @@ POSIX メッセージキューと、System V メッセージキュー、
 .SH オプション
 .TP
 .BR \-i , " \-\-ipc" [ =\fIfile ]
-Unshare the IPC namespace.  If \fIfile\fP is specified, then a persistent
-namespace is created by a bind mount.
+.\"O Unshare the IPC namespace.  If \fIfile\fP is specified, then a persistent
+.\"O namespace is created by a bind mount.
+IPC 名前空間を共有しない。
+\fIfile\fP が指定された場合、永続化された名前空間が bind マウントにより作成される。
 .TP
 .BR \-m , " \-\-mount" [ =\fIfile ]
-Unshare the mount namespace.  If \fIfile\fP is specified, then a persistent
-namespace is created by a bind mount.
-Note that \fIfile\fP has to be located on a filesystem with the propagation
-flag set to \fBprivate\fP.  Use the command \fBfindmnt -o+PROPAGATION\fP
-when not sure about the current setting.  See also the examples below.
+.\"O Unshare the mount namespace.  If \fIfile\fP is specified, then a persistent
+.\"O namespace is created by a bind mount.
+.\"O Note that \fIfile\fP has to be located on a filesystem with the propagation
+.\"O flag set to \fBprivate\fP.  Use the command \fBfindmnt -o+PROPAGATION\fP
+.\"O when not sure about the current setting.  See also the examples below.
+マウント名前空間を共有しない。
+\fIfile\fP が指定された場合、永続化された名前空間が bind マウントにより作成される。
+\fIfile\fP は伝搬フラグを \fBprivate\fP　に設定したファイルシステムに
+置かれる必要がある点に注意すること。
+現在の設定が分からない場合は、コマンド \fBfindmnt -o+PROPAGATION\fP を使うこと。
+以下の例も参照すること。
 .TP
 .BR \-n , " \-\-net" [ =\fIfile ]
-Unshare the network namespace.  If \fIfile\fP is specified, then a persistent
-namespace is created by a bind mount.
+.\"O Unshare the network namespace.  If \fIfile\fP is specified, then a persistent
+.\"O namespace is created by a bind mount.
+ネットワーク名前空間を共有しない。
+\fIfile\fP が指定された場合、永続化された名前空間が bind マウントにより作成される。
 .TP
 .BR \-p , " \-\-pid" [ =\fIfile ]
-Unshare the PID namespace.  If \fIfile\fP is specified then persistent
-namespace is created by a bind mount.  See also the \fB--fork\fP and
-\fB--mount-proc\fP options.
+.\"O Unshare the PID namespace.  If \fIfile\fP is specified then persistent
+.\"O namespace is created by a bind mount.  See also the \fB--fork\fP and
+.\"O \fB--mount-proc\fP options.
+PID 名前空間を共有しない。
+\fIfile\fP が指定された場合、永続化された名前空間が bind マウントにより作成される。
+\fB--fork\fP と \fB--mount-proc\fP オプションも参照すること。
 .TP
 .BR \-u , " \-\-uts" [ =\fIfile ]
-Unshare the UTS namespace.  If \fIfile\fP is specified, then a persistent
-namespace is created by a bind mount.
+.\"O Unshare the UTS namespace.  If \fIfile\fP is specified, then a persistent
+.\"O namespace is created by a bind mount.
+UTS 名前空間を共有しない。
+\fIfile\fP が指定された場合、永続化された名前空間が bind マウントにより作成される。
 .TP
 .BR \-U , " \-\-user" [ =\fIfile ]
-Unshare the user namespace.  If \fIfile\fP is specified, then a persistent
-namespace is created by a bind mount.
+.\"O Unshare the user namespace.  If \fIfile\fP is specified, then a persistent
+.\"O namespace is created by a bind mount.
+ユーザー名前空間を共有しない。
+\fIfile\fP が指定された場合、永続化された名前空間が bind マウントにより作成される。
 .TP
 .BR \-C , " \-\-cgroup"[=\fIfile\fP]
-Unshare the cgroup namespace. If \fIfile\fP is specified then persistent namespace is created
-by bind mount.
+.\"O Unshare the cgroup namespace. If \fIfile\fP is specified then persistent namespace is created
+.\"O by bind mount.
+cgroup 名前空間を共有しない。
+\fIfile\fP が指定された場合、永続化された名前空間が bind マウントにより作成される。
 .TP
 .BR \-f , " \-\-fork"
-Fork the specified \fIprogram\fR as a child process of \fBunshare\fR rather than
-running it directly.  This is useful when creating a new PID namespace.
+.\"O Fork the specified \fIprogram\fR as a child process of \fBunshare\fR rather than
+.\"O running it directly.  This is useful when creating a new PID namespace.
+指定された \fIprogram\fR を、直接実行するのではなく、
+\fBunshare\fR の子プロセスとして fork する。
+これは新しい PID 名前空間を作成する際に役立つ。
 .TP
 .BR \-\-kill\-child [ =\fIsigname ]
-When \fBunshare\fR terminates, have \fIsigname\fP be sent to the forked child process.
-Combined with \fB--pid\fR this allows for an easy and reliable killing of the entire
-process tree below \fBunshare\fR.
-If not given, \fIsigname\fP defaults to \fBSIGKILL\fR.
-This option implies \fB--fork\fR.
+.\"O When \fBunshare\fR terminates, have \fIsigname\fP be sent to the forked child process.
+.\"O Combined with \fB--pid\fR this allows for an easy and reliable killing of the entire
+.\"O process tree below \fBunshare\fR.
+.\"O If not given, \fIsigname\fP defaults to \fBSIGKILL\fR.
+.\"O This option implies \fB--fork\fR.
+\fBunshare\fR が終了する時に、fork した子プロセスに \fIsigname\fP を送る。
+\fB--pid\fR と組み合わせることにより、\fBunshare\fR 以下のプロセスツリー全体を、
+簡単に信頼性を持って kill することができる。
+\fIsigname\fP が指定されない場合、デフォルトは \fBSIGKILL\fR である。
+このオプションは \fB--fork\fR を暗黙のうちに指定する。
 .TP
 .BR \-\-mount\-proc [ =\fImountpoint ]
-Just before running the program, mount the proc filesystem at \fImountpoint\fP
-(default is /proc).  This is useful when creating a new PID namespace.  It also
-implies creating a new mount namespace since the /proc mount would otherwise
-mess up existing programs on the system.  The new proc filesystem is explicitly
-mounted as private (with MS_PRIVATE|MS_REC).
+.\"O Just before running the program, mount the proc filesystem at \fImountpoint\fP
+.\"O (default is /proc).  This is useful when creating a new PID namespace.  It also
+.\"O implies creating a new mount namespace since the /proc mount would otherwise
+.\"O mess up existing programs on the system.  The new proc filesystem is explicitly
+.\"O mounted as private (with MS_PRIVATE|MS_REC).
+プログラムを実行する直前に、proc ファイルシステムを \fImountpoint\fP
+(デフォルトは /proc) にマウントする。
+これは新しい PID 名前空間を作成するのに役立つ。
+これは暗黙のうちに新しいマウント名前空間を作成する。
+そうしなければ、/proc マウントはシステム上の既存のプログラムの実行に失敗する。
+新しい proc システムは、(MS_PRIVATE|MS_REC で) 明示的に private としてマウントされる。
 .TP
 .BR \-r , " \-\-map\-root\-user"
-Run the program only after the current effective user and group IDs have been mapped to
-the superuser UID and GID in the newly created user namespace.  This makes it possible to
-conveniently gain capabilities needed to manage various aspects of the newly created
-namespaces (such as configuring interfaces in the network namespace or mounting filesystems in
-the mount namespace) even when run unprivileged.  As a mere convenience feature, it does not support
-more sophisticated use cases, such as mapping multiple ranges of UIDs and GIDs.
-This option implies \fB--setgroups=deny\fR.
+.\"O Run the program only after the current effective user and group IDs have been mapped to
+.\"O the superuser UID and GID in the newly created user namespace.  This makes it possible to
+.\"O conveniently gain capabilities needed to manage various aspects of the newly created
+.\"O namespaces (such as configuring interfaces in the network namespace or mounting filesystems in
+.\"O the mount namespace) even when run unprivileged.  As a mere convenience feature, it does not support
+.\"O more sophisticated use cases, such as mapping multiple ranges of UIDs and GIDs.
+.\"O This option implies \fB--setgroups=deny\fR.
+現在の実効 (effective) ユーザー ID とグループ ID を、
+新しく作られた名前空間のスーパーユーザーの UID と GID にマッピングした後で、
+プログラムを実行する。
+これにより、非特権で実行されている場合でも、
+新しく作られた名前空間のいろいろな側面を管理するのに必要な
+ケーパビリティ (capabilities) を簡単に取得できる
+(これには、ネットワーク名前空間でのインタフェースの設定や、
+マウント名前空間でのファイルシステムのマウントなどがある)。
+これは単なる便利機能に過ぎず、複数の範囲の UID と GID をマッピングするといった、
+より洗練された使い方はサポートしていない。
+このオプションは、\fB--setgroups=deny\fR を暗黙のうちに指定する。
 .TP
 .BR "\-\-propagation private" | shared | slave | unchanged
 Recursively set the mount propagation flag in the new mount namespace.  The default
