@@ -25,8 +25,8 @@ nsenter \- 他のプロセスの名前空間でプログラムを実行する。
 .\"O Enterable namespaces are:
 入ることができる名前空間は以下の通り:
 .TP
-.\"O .B mount namespace
 .B マウント名前空間
+.\"O .B mount namespace
 .\"O Mounting and unmounting filesystems will not affect the rest of the system,
 .\"O except for filesystems which are explicitly marked as shared (with
 .\"O \fBmount --make-\:shared\fP; see \fI/proc\:/self\:/mountinfo\fP for the
@@ -50,8 +50,8 @@ nsenter \- 他のプロセスの名前空間でプログラムを実行する。
 .B CLONE_NEWNS
 フラグの議論を参照すること。
 .TP
-.\"O .B UTS namespace
 .B UTS 名前空間
+.\"O .B UTS namespace
 .\"O Setting hostname or domainname will not affect the rest of the system.
 ホスト名とドメイン名の設定が、システムの他の部分に影響しない。
 .\"O For further details, see
@@ -68,8 +68,8 @@ nsenter \- 他のプロセスの名前空間でプログラムを実行する。
 .B CLONE_NEWUTS
 の議論を参照すること。
 .TP
-.\"O .B IPC namespace
 .B IPC 名前空間
+.\"O .B IPC namespace
 .\"O The process will have an independent namespace for POSIX message queues
 .\"O as well as System V message queues,
 .\"O semaphore sets and shared memory segments.
@@ -90,8 +90,8 @@ POSIX メッセージキューと、System V メッセージキュー、
 .B CLONE_NEWIPC
 フラグの議論を参照すること。
 .TP
-.\"O .B network namespace
 .B ネットワーク名前空間
+.\"O .B network namespace
 .\"O The process will have independent IPv4 and IPv6 stacks, IP routing tables,
 .\"O firewall rules, the
 .\"O .I /proc\:/net
@@ -118,8 +118,8 @@ POSIX メッセージキューと、System V メッセージキュー、
 .B CLONE_NEWNET
 フラグの議論を参照すること。
 .TP
-.\"O .B PID namespace
 .B PID 名前空間
+.\"O .B PID namespace
 .\"O Children will have a set of PID to process mappings separate from the
 .\"O .B nsenter
 .\"O process
@@ -149,8 +149,8 @@ PID 名前空間を変更する場合、デフォルトでは
 .\"O If \fB\-\-no\-fork\fP is used, the new program will be exec'ed without forking.
 \fB\-\-no\-fork\fP が使われた場合、新しいプログラムは fork なしで exec される。
 .TP
-.\"O .B user namespace
 .B ユーザー名前空間
+.\"O .B user namespace
 .\"O The process will have a distinct set of UIDs, GIDs and capabilities.
 プロセスが個別の UID、GID、ケーパビリティ (capabilities) のセットを持つ。
 .\"O For further details, see
@@ -167,8 +167,8 @@ PID 名前空間を変更する場合、デフォルトでは
 .B CLONE_NEWUSER
 フラグの議論を参照すること。
 .TP
-.\"O .B cgroup namespace
 .B コントロールグループ (cgroup) 名前空間
+.\"O .B cgroup namespace
 .\"O The process will have a virtualized view of \fI/proc\:/self\:/cgroup\fP, and new
 .\"O cgroup mounts will be rooted at the namespace cgroup root.
 プロセスが \fI/proc\:/self\:/cgroup\fP の仮想化されたビューを持ち、
