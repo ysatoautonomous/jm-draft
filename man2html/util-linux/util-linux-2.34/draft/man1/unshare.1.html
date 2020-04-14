@@ -1,0 +1,616 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of UNSHARE</TITLE>
+</HEAD><BODY>
+<H1>UNSHARE</H1>
+Section: User Commands (1)<BR>Updated: February 2016<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+unshare - プログラムを親プロセスと同じ名前空間を共有せずに実行する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>unshare</B>
+
+[options]
+[<I>program</I>
+
+[<I>arguments</I>]]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+指定された名前空間を親プロセスと共有させず、指定した <I>program</I> を実行する。
+<I>program</I> が指定されない場合、``${SHELL}'' (デフォルトは: /bin/sh) が実行される。
+<P>
+
+
+
+
+
+
+オプションとして /proc/<I>pid</I>/ns/<I>type</I> ファイルを
+ファイルシステムに bind マウントして、
+<B><A HREF="../man1/nsenter.1.html">nsenter</A></B>(1)
+
+で名前空間に入れることで、<I>program</I> が終了した後でも、名前空間を永続化できる
+(PID 名前空間は例外であり、init プロセスをずっと動作させる必要がある)。
+
+
+
+一度永続化した名前空間が必要なくなった場合、
+<B><A HREF="../man8/umount.8.html">umount</A></B>(8)
+
+で永続化を解除できる。
+より詳細は、<B>例</B>のセクションを参照すること。
+<P>
+
+
+共有しない名前空間はオプションで指定できる。
+共有しない名前空間は以下の通り:
+<DL COMPACT>
+<DT><B>マウント名前空間</B>
+
+<DD>
+
+
+
+
+
+ファイルシステムのマウントとアンマウントが、他のファイルシステムに
+影響しない。
+ただし、明示的に共有 (shared) とマークされているファイルシステムは除く
+(共有は <B>mount --make-shared</B> で行われる。
+<I>/proc/self/mountinfo</I> または
+<B>findmnt -o+PROPAGATION</B> で <B>shared</B> フラグを参照すること)。
+
+
+
+
+
+
+より詳細は、
+<B><A HREF="../man7/mount_namespaces.7.html">mount_namespaces</A></B>(7)
+
+と
+<B><A HREF="../man2/clone.2.html">clone</A></B>(2)
+
+の
+<B>CLONE_NEWNS</B>
+
+フラグの議論を参照すること。
+<P>
+
+
+
+
+
+
+<B>unshare</B>
+
+は util-linux バージョン 2.27 以降で、新たなマウント名前空間で伝搬 (propagation) を
+自動的に <B>private</B> にして、新しい名前空間を共有しないようにする。
+この機能はオプション <B>--propagation unchanged</B> で無効化できる。
+<B>private</B> はカーネルのデフォルトである点に注意すること。
+<DT><B>UTS 名前空間</B>
+
+<DD>
+
+
+ホスト名またはドメイン名の設定が、システムの他の部分に影響しない。
+
+
+
+
+
+
+より詳細は、
+<B><A HREF="../man7/namespaces.7.html">namespaces</A></B>(7)
+
+と
+<B><A HREF="../man2/clone.2.html">clone</A></B>(2)
+
+の
+<B>CLONE_NEWUTS</B>
+
+の議論を参照すること。
+<DT><B>IPC 名前空間</B>
+
+<DD>
+
+
+
+
+POSIX メッセージキューと、System V メッセージキュー、
+セマフォセット、共有メモリセグメントについて、プロセスは独立した
+名前空間を持つ。
+
+
+
+
+
+
+より詳細は、
+<B><A HREF="../man7/namespaces.7.html">namespaces</A></B>(7)
+
+と
+<B><A HREF="../man2/clone.2.html">clone</A></B>(2)
+
+の
+<B>CLONE_NEWIPC</B>
+
+フラグの議論を参照すること。
+<DT><B>ネットワーク名前空間</B>
+
+<DD>
+
+
+
+
+プロセスが独立した IPv4 と IPv6 スタック、IP ルーティングテーブル、
+ファイアウォールルール、
+<I>/proc:/net</I>
+
+と
+<I>/sys:/class:/net</I>
+
+のディレクトリツリー、ソケットなどを持つ。
+
+
+
+
+
+
+より詳細は、
+<B><A HREF="../man7/namespaces.7.html">namespaces</A></B>(7)
+
+と
+<B><A HREF="../man2/clone.2.html">clone</A></B>(2)
+
+の
+<B>CLONE_NEWNET</B>
+
+フラグの議論を参照すること。
+<DT><B>PID 名前空間</B>
+
+<DD>
+
+
+親プロセスとは別に、子プロセスがプロセスマッピングをするための PID セットを持つ。
+
+
+
+
+
+
+
+より詳細は、
+<B><A HREF="../man7/pid_namespaces.7.html">pid_namespaces</A></B>(7)
+
+と
+<B><A HREF="../man2/clone.2.html">clone</A></B>(2)
+
+の
+<B>CLONE_NEWPID</B>
+
+フラグを参照すること。
+<DT><B>コントロールグループ (cgroup) 名前空間</B>
+
+<DD>
+
+
+
+プロセスが <I>/proc:/self:/cgroup</I> の仮想化されたビューを持ち、
+新しい cgroup マウントで名前空間の cgroup ルートがルートにされる。
+
+
+
+
+
+
+より詳細は、
+<B><A HREF="../man7/cgroup_namespaces.7.html">cgroup_namespaces</A></B>(7)
+
+と
+<B><A HREF="../man2/clone.2.html">clone</A></B>(2)
+
+の
+<B>CLONE_NEWCGROUP</B>
+
+フラグの議論を参照すること。
+<DT><B>ユーザー名前空間</B>
+
+<DD>
+
+
+プロセスが個別の UID、GID、ケーパビリティ (capabilities) のセットを持つ。
+
+
+
+
+
+
+より詳細は、
+<B><A HREF="../man7/user_namespaces.7.html">user_namespaces</A></B>(7)
+
+と
+<B><A HREF="../man2/clone.2.html">clone</A></B>(2)
+
+の
+<B>CLONE_NEWUSER</B>
+
+フラグの議論を参照すること。
+
+</DL>
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-i</B>,<B> --ipc</B>[<B>=</B><I>file</I>]
+
+<DD>
+
+
+IPC 名前空間を共有しない。
+<I>file</I> が指定された場合、永続化された名前空間が bind マウントにより作成される。
+<DT><B>-m</B>,<B> --mount</B>[<B>=</B><I>file</I>]
+
+<DD>
+
+
+
+
+
+マウント名前空間を共有しない。
+<I>file</I> が指定された場合、永続化された名前空間が bind マウントにより作成される。
+<I>file</I> は伝搬フラグを <B>private</B>　に設定したファイルシステムに
+置かれる必要がある点に注意すること。
+現在の設定が分からない場合は、コマンド <B>findmnt -o+PROPAGATION</B> を使うこと。
+以下の例も参照すること。
+<DT><B>-n</B>,<B> --net</B>[<B>=</B><I>file</I>]
+
+<DD>
+
+
+ネットワーク名前空間を共有しない。
+<I>file</I> が指定された場合、永続化された名前空間が bind マウントにより作成される。
+<DT><B>-p</B>,<B> --pid</B>[<B>=</B><I>file</I>]
+
+<DD>
+
+
+
+PID 名前空間を共有しない。
+<I>file</I> が指定された場合、永続化された名前空間が bind マウントにより作成される。
+<B>--fork</B> と <B>--mount-proc</B> オプションも参照すること。
+<DT><B>-u</B>,<B> --uts</B>[<B>=</B><I>file</I>]
+
+<DD>
+
+
+UTS 名前空間を共有しない。
+<I>file</I> が指定された場合、永続化された名前空間が bind マウントにより作成される。
+<DT><B>-U</B>,<B> --user</B>[<B>=</B><I>file</I>]
+
+<DD>
+
+
+ユーザー名前空間を共有しない。
+<I>file</I> が指定された場合、永続化された名前空間が bind マウントにより作成される。
+<DT><B>-C</B>,<B> --cgroup[=</B><I>file</I>]
+
+<DD>
+
+
+cgroup 名前空間を共有しない。
+<I>file</I> が指定された場合、永続化された名前空間が bind マウントにより作成される。
+<DT><B>-f</B>,<B> --fork</B>
+
+<DD>
+
+
+指定された <I>program</I> を、直接実行するのではなく、
+<B>unshare</B> の子プロセスとして fork する。
+これは新しい PID 名前空間を作成する際に役立つ。
+<DT><B>--kill-child</B>[<B>=</B><I>signame</I>]
+
+<DD>
+
+
+
+
+
+<B>unshare</B> が終了する時に、fork した子プロセスに <I>signame</I> を送る。
+<B>--pid</B> と組み合わせることにより、<B>unshare</B> 以下のプロセスツリー全体を、
+簡単に確実に kill することができる。
+<I>signame</I> が指定されない場合、デフォルトは <B>SIGKILL</B> である。
+このオプションは <B>--fork</B> を暗黙のうちに指定する。
+<DT><B>--mount-proc</B>[<B>=</B><I>mountpoint</I>]
+
+<DD>
+
+
+
+
+
+プログラムを実行する直前に、proc ファイルシステムを <I>mountpoint</I>
+(デフォルトは /proc) にマウントする。
+これは新しい PID 名前空間を作成するのに役立つ。
+これは暗黙のうちに新しいマウント名前空間を作成する。
+そうしなければ、/proc マウントはシステム上の既存のプログラムの実行に失敗する。
+新しい proc システムは、(MS_PRIVATE|MS_REC で) 明示的に private としてマウントされる。
+<DT><B>-r</B>,<B> --map-root-user</B>
+
+<DD>
+
+
+
+
+
+
+
+現在の実効 (effective) ユーザー ID とグループ ID を、
+新しく作られた名前空間のスーパーユーザーの UID と GID にマッピングした後で、
+プログラムを実行する。
+これにより、非特権で実行されている場合でも、
+新しく作られた名前空間のいろいろな側面を管理するのに必要な
+ケーパビリティ (capabilities) を簡単に取得できる
+(これには、ネットワーク名前空間でのインタフェースの設定や、
+マウント名前空間でのファイルシステムのマウントなどがある)。
+これは単なる便利機能に過ぎず、複数の範囲の UID と GID をマッピングするといった、
+より洗練された使い方はサポートしていない。
+このオプションは、<B>--setgroups=deny</B> を暗黙のうちに指定する。
+<DT><B>--propagation private</B>|<B>shared</B>|<B>slave</B>|<B>unchanged</B>
+
+<DD>
+
+
+
+
+新しいマウント名前空間のマウント伝搬フラグを再帰的に設定する。
+デフォルトでは伝搬を <I>private</I>　に設定する。
+この機能は引き数 <B>unchanged</B> で無効化できる。
+このオプションは、マウント名前空間 (<B>--mount</B>) が指定されない場合、
+黙って無視される。
+<DT><B>--setgroups allow</B>|<B>deny</B>
+
+<DD>
+
+
+
+ユーザー名前空間で
+<B><A HREF="../man2/setgroups.2.html">setgroups</A></B>(2)
+
+システムコールを許可または拒否する。
+<P>
+
+
+
+<B><A HREF="../man2/setgroups.2.html">setgroups</A></B>(2)
+
+を呼び出すには、呼び出しプロセスは少なくとも CAP_SETGID 権限を持たなければならない。
+
+
+
+
+しかし、Linux 3.19 以降ではさらに厳しい制限が適用される:
+GID マップ (<B>/proc/</B><I>pid</I><B>/gid_map</B>) が設定された後でのみ、
+カーネルは、
+<B><A HREF="../man2/setgroups.2.html">setgroups</A></B>(2)
+
+の呼び出しを許可する。
+
+
+
+
+
+
+(<B>allow</B>, デフォルトで)
+<B><A HREF="../man2/setgroups.2.html">setgroups</A></B>(2)
+
+が有効化されると、GID マップは root による書き込みが可能なる。
+(<B>deny</B> で)
+<B><A HREF="../man2/setgroups.2.html">setgroups</A></B>(2)
+
+が永続的に無効化されると、GID マップは非特権プロセスによる書き込みが可能になる。
+<DT><B>-R,</B>--root=<I>dir</I>
+
+<DD>
+
+ルートディレクトリを <I>dir</I> に設定し、コマンドを実行する。
+<DT><B>-w,</B>--wd=<I>dir</I>
+
+<DD>
+
+ワーキングディレクトリを <I>dir</I> に変更する。
+<DT><B>-S,</B>--setuid <I>uid</I>
+
+<DD>
+
+名前空間全体で使われるユーザー ID を設定する。
+<DT><B>-G,</B>--setgid <I>gid</I>
+
+<DD>
+
+
+名前空間全体で使われるグループ ID を設定し、補助 (supplementary) グループを削除する。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+ユーザー名前空間で root として proc と sysfs ファイルシステムをマウントすることは
+制限されなければならない。
+これにより、特権のあるユーザーが見えなくした機微なファイルを、
+特権の少ないユーザーがアクセスできないようにできる。
+端的にいうと、proc と sysfs は可能な限り閉じて bind マウントしなければならない。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+<DL COMPACT>
+<DT><B># unshare --fork --pid --mount-proc readlink /proc/self</B>
+
+<DD>
+
+1
+<BR>
+
+
+
+PID 名前空間を作成し、新しくマウントされた procfs インスタンスで PID 1 であることを保証する。
+<DT><B>$ unshare --map-root-user --user sh -c whoami</B>
+
+<DD>
+
+root
+<BR>
+
+
+ユーザー名前空間を作成し、その名前空間で非特権ユーザーを root ユーザーとする。
+<DT><B># touch /root/uts-ns</B>
+
+<DD>
+
+<B># unshare --uts=/root/uts-ns hostname FOO</B>
+
+
+<B># nsenter --uts=/root/uts-ns hostname</B>
+
+
+FOO
+
+<B># umount /root/uts-ns</B>
+
+<BR>
+
+
+
+
+永続的な UTS 名前空間を作成し、ホスト名を変更する。
+そして、<B>nsenter</B> で名前空間に入る。
+名前空間は bind 参照をアンマウントすることで破棄される。
+<DT><B># mount --bind /root/namespaces /root/namespaces</B>
+
+<DD>
+
+<B># mount --make-private /root/namespaces</B>
+
+
+<B># touch /root/namespaces/mnt</B>
+
+
+<B># unshare --mount=/root/namespaces/mnt</B>
+
+<BR>
+
+
+
+
+bind マウント /root/namespaces/mnt で参照される
+永続的なマウント名前空間を作成する。
+この例は汎用性の高いやり方を示しており、
+bind マウントが共有ファイルシステム上に作成される。
+<DT><B># unshare -pf --kill-child -- bash -c (sleep 999 &amp;) &amp;&amp; sleep 1000 &amp;</B>
+
+<DD>
+
+<B># pid=$!</B>
+
+
+<B># kill $pid</B>
+
+<BR>
+
+
+
+
+
+<I>program</I> のサブプロセスを確実に kill する。
+<B>unshare</B> が kill されると、それ以下のプロセスも kill される。
+そうしないと、<I>program</I> の子プロセスは孤立して (orphaned)、PID 1 が親にされる。
+<P>
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/clone.2.html">clone</A></B>(2),
+
+<B><A HREF="../man2/unshare.2.html">unshare</A></B>(2),
+
+<B><A HREF="../man7/namespaces.7.html">namespaces</A></B>(7),
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+
+Mikhail Gusarov
+
+<BR>
+
+
+Karel Zak
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+unshare コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">注意</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:56:16 GMT, April 14, 2020
+</BODY>
+</HTML>
