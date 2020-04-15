@@ -1,0 +1,256 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of UUIDGEN</TITLE>
+</HEAD><BODY>
+<H1>UUIDGEN</H1>
+Section: User Commands (1)<BR>Updated: June 2011<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+uuidgen - 新しい UUID 値を生成する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>uuidgen</B>
+
+[options]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+
+<B>uuidgen</B>
+
+プログラムは新しい universally unique identifier (UUID) を
+<B><A HREF="../man3/libuuid.3.html">libuuid</A></B>(3)
+
+ライブラリを使って生成する (そして、表示する)。
+新しい UUID は、過去から将来に渡って、
+ローカルシステムで作成された (される) 全ての UUID、
+他のシステムで作成された全ての UUID の中で、概ね一意と考えられる。
+<P>
+
+
+
+
+<B>uuidgen</B>
+
+は 3 つタイプの UUID を生成できる:
+時刻ベースの UUID、乱数ベースの UUID、ハッシュベースの UUID。
+
+
+
+
+高品質な乱数生成器が存在する場合、
+<B>uuidgen</B>
+
+はデフォルトでは乱数ベースの UUID を生成する。
+存在しない場合は、時刻ベースの UUID を選択する。
+
+
+
+
+
+
+最初の 2 つの UUID タイプは、
+<B>--random</B>
+
+と
+<B>--time</B>
+
+オプションを使って生成できる。
+<P>
+
+
+
+
+
+
+
+
+
+3 つめのタイプの UUID は、
+<B>--md5</B>
+
+または
+<B>--sha1</B>
+
+オプションの後に、
+<B>--namespace</B> <I>namespace</I>
+と
+<B>--name</B> <I>name</I>
+を付けることで生成できる。
+
+
+
+
+
+
+
+<I>namespace</I> は良く知られた UUID、または
+RFC 4122 で定義された良く知られた UUID のエイリアス (別名) の 1 つである。
+つまり、
+<B>@dns</B>,
+
+<B>@url</B>,
+
+<B>@oid</B>,
+
+<B>@x500</B>
+
+のいずれかである。
+
+
+
+
+
+
+<I>name</I> は任意の文字列である。
+生成される UUID は、名前空間 UUID、name の値、
+MD5 または SHA1 アルゴリズムでのハッシュを連結したダイジェスト (digest) である。
+よって、UUID をより複雑な値や直接開示すべきでない値の、
+ハンドルやノンス (nonce: 暗号などで使われる使い捨ての値) として使用する場合には、
+予測できる値が有用である。
+詳細な情報は RFC を参照すること。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-r</B>,<B> --random</B>
+
+<DD>
+
+
+
+
+乱数ベースの UUID を生成する。
+この方法では、大部分がランダムビットで構成される UUID が生成される。
+このオプションでは、システムに
+<I>/dev/random</I>
+
+のような高品質な乱数生成器が必要である。
+<DT><B>-t</B>,<B> --time</B>
+
+<DD>
+
+
+時刻ベースの UUID を生成する。
+この方法では、システムクロックと (もし存在すれば) イーサーネットの
+ハードウェアアドレスに基づいて、UUID を生成する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-m</B>,<B> --md5</B>
+
+<DD>
+
+MD5 をハッシュアルゴリズムとして使う。
+<DT><B>-s</B>,<B> --sha1</B>
+
+<DD>
+
+SHA1 をハッシュアルゴリズムとして使う。
+<DT><B>-n</B>,<B> --namespace </B><I>namespace</I>
+
+<DD>
+
+
+
+<I>namespace</I> プレフィックスでハッシュを生成する。
+<I>namespace</I> は UUID または '@ns' である。
+ここで &quot;ns&quot; は良く知られた事前定義された UUID であり、名前空間の名前で示される。
+(上記を参照)。
+<DT><B>-N</B>,<B> --name </B><I>name</I>
+
+<DD>
+
+<I>name</I> のハッシュを生成する。
+<DT><B>-x</B>,<B> --hex</B>
+
+<DD>
+
+名前 <I>name</I> を 16 進数の文字列として解釈する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>準拠</H2>
+
+OSF DCE 1.1
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+uuidgen --sha1 --namespace @dns --name &quot;<A HREF="http://www.example.com">www.example.com</A>&quot;
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>著者</H2>
+
+
+
+<B>uuidgen</B>
+
+は Andreas Dilger によって libuuid のために書かれた。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man3/libuuid.3.html">libuuid</A></B>(3),
+
+<B>RFC 4122</B>
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+uuidgen コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">準拠</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:05:43 GMT, April 15, 2020
+</BODY>
+</HTML>
