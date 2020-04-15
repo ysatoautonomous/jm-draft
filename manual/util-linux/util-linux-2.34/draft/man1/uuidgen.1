@@ -1,0 +1,184 @@
+.\" Copyright 1999 Andreas Dilger (adilger@enel.ucalgary.ca)
+.\"
+.\" This file may be copied under the terms of the GNU Public License.
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Wed Apr 15 23:00:25 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH UUIDGEN 1 "June 2011" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O uuidgen \- create a new UUID value
+uuidgen \- 新しい UUID 値を生成する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B uuidgen
+[options]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The
+.\"O .B uuidgen
+.\"O program creates (and prints)
+.\"O a new universally unique identifier (UUID) using the
+.\"O .BR libuuid (3)
+.\"O library.  The new UUID can reasonably be considered unique among
+.\"O all UUIDs created on the local system,
+.\"O and among UUIDs created on other systems in the past
+.\"O and in the future.
+.B uuidgen
+プログラムは新しい universally unique identifier (UUID) を
+.BR libuuid (3)
+ライブラリを使って生成する (そして、表示する)。
+新しい UUID は、過去から将来に渡って、
+ローカルシステムで作成された (される) 全ての UUID、
+他のシステムで作成された全ての UUID の中で、概ね一意と考えられる。
+.PP
+.\"O There are three types of UUIDs which
+.\"O .B uuidgen
+.\"O can generate: time-based UUIDs, random-based UUIDs, and hash-based UUIDs.
+.B uuidgen
+は 3 つタイプの UUID を生成できる:
+時刻ベースの UUID、乱数ベースの UUID、ハッシュベースの UUID。
+.\"O By default
+.\"O .B uuidgen
+.\"O will generate a random-based UUID if a high-quality random number
+.\"O generator is present.  Otherwise, it will choose a time-based UUID.
+高品質な乱数生成器が存在する場合、
+.B uuidgen
+はデフォルトでは乱数ベースの UUID を生成する。
+存在しない場合は、時刻ベースの UUID を選択する。
+.\"O It is possible to force the generation of one of these first two
+.\"O UUID types by using the
+.\"O .B \-\-random
+.\"O or
+.\"O .B \-\-time
+.\"O options.
+最初の 2 つの UUID タイプは、
+.B \-\-random
+と
+.B \-\-time
+オプションを使って生成できる。
+.PP
+.\"O The third type of UUID is generated with the
+.\"O .B \-\-md5
+.\"O or
+.\"O .B \-\-sha1
+.\"O options, followed by
+.\"O \fB\-\-namespace\fR \fInamespace\fR
+.\"O and
+.\"O \fB\-\-name\fR \fIname\fR.
+3 つめのタイプの UUID は、
+.B \-\-md5
+または
+.B \-\-sha1
+オプションの後に、
+\fB\-\-namespace\fR \fInamespace\fR
+と
+\fB\-\-name\fR \fIname\fR
+を付けることで生成できる。
+.\"O The \fInamespace\fR may either be a well-known UUID, or else
+.\"O an alias to one of the well-known UUIDs defined in RFC 4122, that is
+.\"O .BR @dns ,
+.\"O .BR @url ,
+.\"O .BR @oid ,
+.\"O or
+.\"O .BR @x500 .
+\fInamespace\fR は良く知られた UUID、または
+RFC 4122 で定義された良く知られた UUID のエイリアス (別名) の 1 つである。
+つまり、
+.BR @dns ,
+.BR @url ,
+.BR @oid ,
+.BR @x500
+のいずれかである。
+.\"O The \fIname\fR is an arbitrary string value.  The generated UUID is the
+.\"O digest of the concatenation of the namespace UUID and the name value, hashed
+.\"O with the MD5 or SHA1 algorithms.  It is, therefore, a predictable value
+.\"O which may be useful when UUIDs are being used as handles or nonces for
+.\"O more complex values or values which shouldn't be disclosed directly.
+.\"O See the RFC for more information.
+\fIname\fR は任意の文字列である。
+生成される UUID は、名前空間 UUID、name の値、
+MD5 または SHA1 アルゴリズムでのハッシュを連結したダイジェスト (digest) である。
+よって、UUID をより複雑な値や直接開示すべきでない値の、
+ハンドルやノンス (nonce: 暗号などで使われる使い捨ての値) として使用する場合には、
+予測できる値が有用である。
+詳細な情報は RFC を参照すること。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-r , " \-\-random"
+.\"O Generate a random-based UUID.  This method creates a UUID consisting mostly
+.\"O of random bits.  It requires that the operating system have a high
+.\"O quality random number generator, such as
+.\"O .IR /dev/random .
+乱数ベースの UUID を生成する。
+この方法では、大部分がランダムビットで構成される UUID が生成される。
+このオプションでは、システムに
+.I /dev/random
+のような高品質な乱数生成器が必要である。
+.TP
+.BR \-t , " \-\-time"
+.\"O Generate a time-based UUID.  This method creates a UUID based on the system
+.\"O clock plus the system's ethernet hardware address, if present.
+時刻ベースの UUID を生成する。
+この方法では、システムクロックと (もし存在すれば) イーサーネットの
+ハードウェアアドレスに基づいて、UUID を生成する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-m , " \-\-md5"
+.\"O Use MD5 as the hash algorithm.
+MD5 をハッシュアルゴリズムとして使う。
+.TP
+.BR \-s , " \-\-sha1"
+.\"O Use SHA1 as the hash algorithm.
+SHA1 をハッシュアルゴリズムとして使う。
+.TP
+.BR \-n , " \-\-namespace " \fInamespace\fP
+.\"O Generate the hash with the \fInamespace\fP prefix. The \fInamespace\fP is UUID,
+.\"O .\"O or '@ns' where "ns" is well-known predefined UUID addressed by namespace name
+.\"O (see above).
+\fInamespace\fP プレフィックスでハッシュを生成する。
+\fInamespace\fP は UUID または '@ns' である。
+ここで "ns" は良く知られた事前定義された UUID であり、名前空間の名前で示される。
+(上記を参照)。
+.TP
+.BR \-N , " \-\-name " \fIname\fR
+.\"O Generate the hash of the \fIname\fR.
+\fIname\fR のハッシュを生成する。
+.TP
+.BR \-x , " \-\-hex"
+.\"O Interpret name \fIname\fR as a hexadecimal string.
+名前 \fIname\fR を 16 進数の文字列として解釈する。
+.\"O .SH "CONFORMING TO"
+.SH 準拠
+OSF DCE 1.1
+.\"O .SH EXAMPLES
+.SH 例
+uuidgen \-\-sha1 \-\-namespace @dns \-\-name "www.example.com"
+.\"O .SH AUTHOR
+.SH 著者
+.\"O .B uuidgen
+.\"O was written by Andreas Dilger for libuuid.
+.B uuidgen
+は Andreas Dilger によって libuuid のために書かれた。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR libuuid (3),
+.B "RFC 4122"
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The uuidgen command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+uuidgen コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
