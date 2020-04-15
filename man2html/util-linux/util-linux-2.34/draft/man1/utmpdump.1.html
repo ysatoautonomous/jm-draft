@@ -1,0 +1,209 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of UTMPDUMP</TITLE>
+</HEAD><BODY>
+<H1>UTMPDUMP</H1>
+Section: User Commands (1)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+utmpdump -UTMP と WTMP ファイルを生の形式にダンプする。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>utmpdump</B> [options]
+
+[<I>filename</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>utmpdump</B>
+
+は UTMP と WTMP ファイルを生の形式にダンプする単純なプログラムである。
+これにより、ファイルを調査できる。
+
+
+
+
+<B>utmpdump</B>
+
+は
+<I>filename</I>
+
+が渡されない場合、標準入力を読み込む。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-f</B>,<B> --follow</B>
+
+<DD>
+
+ファイルが書き足された時に、追加されたデータを出力する。
+<DT><B>-o</B>,<B> --output </B><I>file</I>
+
+<DD>
+
+コマンド出力を標準出力ではなく <I>file</I> に書き出す。
+<DT><B>-r</B>,<B> --reverse</B>
+
+<DD>
+
+ダンプの逆を行う。編集したログイン情報を utmp または wtmp ファイルに書き戻す。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+<B>utmpdump</B>
+
+は、 utmp または wtmp のエントリが壊れている場合に役に立つ。
+utmp/wtmp ファイルを ASCII ファイルにダンプし、壊れたエントリを削除した後、
+以下のようにして再統合を行う:
+<P>
+
+<DL COMPACT><DT><DD>
+<B>utmpdump -r &lt; ascii_file &gt; wtmp</B>
+
+</DL>
+
+<P>
+
+
+
+
+しかし、
+<B>utmpdump</B>
+
+はデバッグ目的のみでかかれている点に注意すること。
+
+<A NAME="lbAG">&nbsp;</A>
+<H3>ファイル形式</H3>
+
+<P>
+
+
+
+
+バイナリバージョンの
+<B><A HREF="../man5/utmp.5.html">utmp</A></B>(5)
+
+のみが標準化されている。
+テキスト形式のダンプは、将来、互換性がなくかもしれない。
+<P>
+
+
+
+
+
+
+
+バージョン 2.28 は、
+<B><A HREF="../man3/ctime.3.html">ctime</A></B>(3)
+
+タイムスタンプ形式でテキスト出力をする最後のバージョンである。
+UTC-0 タイムゾーンのミリ秒の精度の ISO-8601 タイムスタンプ形式では、もはや書き出さない。
+以前のタイムスタンプ形式からの変換で、バイナリ形式にできるが、
+タイムスタンプがタイムゾーンオフセットの分ずれる。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+
+
+
+
+
+utmp/wtmp ファイルは入力形式に強く依存しているので、
+<B>-r</B>
+
+オプションは<B>使うべきではない</B>。
+このツールは、デバッグ用途のみであり、通常の利用用途には<B>書かれていない</B>。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+Michael Krapp
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/last.1.html">last</A></B>(1),
+
+<B><A HREF="../man1/w.1.html">w</A></B>(1),
+
+<B><A HREF="../man1/who.1.html">who</A></B>(1),
+
+<B><A HREF="../man5/utmp.5.html">utmp</A></B>(5)
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+
+utmpdump コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">注意</A><DD>
+<DL>
+<DT><A HREF="#lbAG">ファイル形式</A><DD>
+</DL>
+<DT><A HREF="#lbAH">バグ</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 12:25:27 GMT, April 15, 2020
+</BODY>
+</HTML>
