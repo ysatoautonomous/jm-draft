@@ -1,78 +1,121 @@
 .\" Copyright (c) 2017 Sami Kerola
 .\" The 3-Clause BSD License
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Wed Apr 15 23:49:31 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
 .TH UUIDPARSE "1" "2017-06-18" "util-linux" "User Commands"
-.SH NAME
-uuidparse \- a utility to parse unique identifiers
-.SH SYNOPSIS
+.\"O .SH NAME
+.SH 名前
+.\"O uuidparse \- a utility to parse unique identifiers
+uuidparse \- universal unique identifiers (UUID) を解析するユーティリティ
+.\"O .SH SYNOPSIS
+.SH 書式
 .B uuidparse
 [options]
 .I uuid
-.SH DESCRIPTION
-This command will parse unique identifier inputs from either command line
-arguments or standard input.  The inputs are white-space separated.
-.SH OUTPUT
-.SS Variants
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O This command will parse unique identifier inputs from either command line
+.\"O arguments or standard input.  The inputs are white-space separated.
+このコマンドは、コマンドライン引き数または標準入力で与えられた
+universal unique identifiers (UUID) を解析する。
+入力は空白で区切られる。
+.\"O .SH OUTPUT
+.SH 出力
+.\"O .SS Variants
+.SS 変数
 .nr WI \n(.lu-\n(.iu-\w'Microsoft'u-3n
 .TS
 tab(:);
 l lw(\n(WIu).
 NCS:T{
-Network Computing System identifier.  These were the original UUIDs.
+.\"O Network Computing System identifier.  These were the original UUIDs.
+Network Computing System 識別子。これが元々の UUID である。
 T}
 DCE:T{
-The Open Software Foundation's (OSF) Distributed Computing Environment UUIDs.
+.\"O The Open Software Foundation's (OSF) Distributed Computing Environment UUIDs.
+The Open Software Foundation (OSF) の Distributed Computing Environment UUID。
 T}
 Microsoft:T{
-Microsoft Windows platform globally unique identifier (GUID).
+.\"O Microsoft Windows platform globally unique identifier (GUID).
+Microsoft Windows プラットフォームの globally unique identifier (GUID)。
 T}
 other:T{
-Unknown variant.  Usually invalid input data.
+.\"O Unknown variant.  Usually invalid input data.
+不明な変数。通常は不正な入力データ。
 T}
 .TE
-.SS Types
+.\"O .SS Types
+.SS タイプ
 .TS
 tab(:);
 l l.
-nil:Special type for zero in type file.
-time-based:The DCE time based.
-DCE:The DCE time and MAC Address.
-name-based:RFC 4122 md5sum hash.
-random:RFC 4122 random.
-sha1-based:RFC 4122 sha-1 hash.
-unknown:Unknown type.  Usually invalid input data.
+.\"O nil:Special type for zero in type file.
+nil:タイプファイルにおける 0 を表す特別なタイプ。
+.\"O time-based:The DCE time based.
+time-based:DCE の時刻ベースの UUID。
+.\"O DCE:The DCE time and MAC Address.
+DCE:DCE の時刻と MAC アドレスベースの UUID。
+.\"O name-based:RFC 4122 md5sum hash.
+name-based:RFC 4122 の md5sum ハッシュ。
+.\"O random:RFC 4122 random.
+random:RFC 4122 の乱数ベースの UUID。
+.\"O sha1-based:RFC 4122 sha-1 hash.
+sha1-based:RFC 4122 の sha-1 ハッシュ。
+.\"O unknown:Unknown type.  Usually invalid input data.
+unknown:不明なタイプ。通常は不正な入力データ。
 .TE
-.SH OPTIONS
+.\"O .SH OPTIONS
+.SH オプション
 .TP
 \fB\-J\fR, \fB\-\-json\fR
-Use JSON output format.
+.\"O Use JSON output format.
+JSON 出力形式を使う。
 .TP
 \fB\-n\fR, \fB\-\-noheadings\fR
-Do not print a header line.
+.\"O Do not print a header line.
+ヘッダ行を表示しない。
 .TP
 \fB\-o\fR, \fB\-\-output\fR
-Specify which output columns to print.  Use \-\-help to get a list of all
-supported columns.
+.\"O Specify which output columns to print.  Use \-\-help to get a list of all
+.\"O supported columns.
+どの出力カラムを表示するかを指定する。
+サポートされる全てのカラムのリストを取得するには、\-\-help を使うこと。
 .TP
 \fB\-r\fR, \fB\-\-raw\fR
-Use the raw output format.
+.\"O Use the raw output format.
+生の出力形式を使う。
 .TP
 \fB\-V\fR, \fB\-\-version\fR
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .TP
 \fB\-h\fR, \fB\-\-help\fR
-Display help text and exit.
-.SH AUTHORS
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH AUTHORS
+.SH 著者
 .MT kerolasa@iki.fi
 Sami Kerola
 .ME
-.SH "SEE ALSO"
+.\"O .SH "SEE ALSO"
+.SH 関連項目
 .BR uuidgen (1),
 .BR libuuid (3),
 .UR https://\:tools.ietf.org\:/html\:/rfc4122
 RFC 4122
 .UE
-.SH AVAILABILITY
-The example command is part of the util-linux package and is available from
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The example command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+uuidparse コマンドは util-linux パッケージの一部であり、
 .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
 Linux Kernel Archive
-.UE .
+.UE
+から入手できる。
