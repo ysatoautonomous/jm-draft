@@ -110,9 +110,10 @@ blkid - ブロックデバイスの属性を検索/表示する。
 <B><A HREF="../man3/libblkid.3.html">libblkid</A></B>(3)
 
 とともに動作するコマンドラインインタフェースである。
-これはコンテキストメタデータ (例えば、LABEL または UUID フィールド) から
-ブロックデバイスが保持するコンテキストタイプ (例えば、ファイルシステムまたはスワップ) と
-属性 (トークン、NAME=value ペア) も決定する。
+このプログラムは、ブロックデバイスが保持するコンテンツ種別
+(ファイルシステムやスワップなど)を判定する。
+また、コンテンツメタデータ (LABEL や UUID フィールドなど) から
+属性 (トークン、NAME=value ペア) を判定する。
 <P>
 
 
@@ -214,106 +215,176 @@ blkid - ブロックデバイスの属性を検索/表示する。
 <A NAME="lbAE">&nbsp;</A>
 <H2>オプション</H2>
 
-The <I>size</I> and <I>offset</I> arguments may be followed by the multiplicative
-suffixes like KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
-(the &quot;iB&quot; is optional, e.g. &quot;K&quot; has the same meaning as &quot;KiB&quot;), or the suffixes
-KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+
+
+
+
+<I>size</I> と <I>offset</I> 
+引き数には倍数のサフィックス KiB (=1024), MiB (=1024*1024),
+GiB, TiB, PiB, EiB, ZiB, YiB を付けることができる
+(&quot;iB&quot; はオプションであり、例えば &quot;K&quot; は &quot;KiB&quot; と同じ意味である)。
+また、フィックス KB (=1000), MB (=1000*1000),
+GB, TB, PB, EB, ZB, YB を付けることもできる。
 <DL COMPACT>
 <DT><B>-c</B>, <B>--cache-file</B> <I>cachefile</I><DD>
-Read from
+
+
+
+
+
+
+デフォルトのキャッシュファイルではなく、
 <I>cachefile</I>
 
-instead of reading from the default cache file (see the CONFIGURATION FILE section
-for more details).  If you want to start with a clean cache (i.e. don't report
-devices previously scanned but not necessarily available at this time), specify
-<I>/dev/null</I>.
+を読み込む (より詳細は、「設定ファイル」のセクションを参照すること)。
+何もキャッシュしていない状態で開始したい場合 (すなわち、以前はスキャンを行ったが
+今回は利用する必要のないデバイスを表示しない場合) は、
+<I>/dev/null</I>
 
+を指定すること。
 <DT><B>-d</B>, <B>--no-encoding</B><DD>
-Don't encode non-printing characters.  The non-printing characters are encoded
-by ^ and M- notation by default.  Note that the <B>--output udev</B> output format uses
-a different encoding which cannot be disabled.
+
+
+
+非表示文字をエンコードしない。
+デフォルトでは、非表示文字は ^ と M- の形式でエンコードされる。
+<B>--output udev</B> の出力形式では、無効化できない別のエンコーディングを使う点に
+注意すること。
 <DT><B>-D</B>, <B>--no-part-details</B> <DD>
-Don't print information (PART_ENTRY_* tags) from partition table in low-level probing mode.
+
+低レベル検出モードでパーティションテーブルからの情報 (PART_ENTRY_* タグ) を表示しない。
 <DT><B>-g</B>, <B>--garbage-collect</B><DD>
-Perform a garbage collection pass on the blkid cache to remove
-devices which no longer exist.
+
+
+既に存在しないデバイスを blkid キャッシュから削除するために、
+ガベージコレクションを実施する。
 <DT><B>-h</B>, <B>--help</B><DD>
-Display a usage message and exit.
+
+使用法のメッセージを表示して、終了する。
 <DT><B>-i</B>, <B>--info</B><DD>
-Display information about I/O Limits (aka I/O topology).  The 'export' output format is
-automatically enabled.  This option can be used together with the <B>--probe</B> option.
+
+
+I/O 制限 (別名 I/O トポロジー) の情報を表示する。
+'export' 出力形式は自動的に有効にされる。
+このオプションは <B>--probe</B> オプションと一緒に指定できる。
 <DT><B>-k</B>, <B>--list-filesystems</B><DD>
-List all known filesystems and RAIDs and exit.
+
+既存の全てのファイルシステムと RAID を表示して、終了する。
 <DT><B>-l</B>, <B>--list-one</B><DD>
-Look up only one device that matches the search parameter specified with the <B>--match-token</B>
-option.  If there are multiple devices that match the specified search
-parameter, then the device with the highest priority is returned, and/or
-the first device found at a given priority.  Device types in order of
-decreasing priority are: Device Mapper, EVMS, LVM, MD, and finally regular
-block devices.  If this option is not specified,
+
+
+
+
+
+
+
+
+<B>--match-token</B> オプションで指定された検索パラメータにマッチする
+唯一のデバイスを検索する。
+指定された検索パラメータにマッチする複数のデバイスがある場合、
+もっとも高い優先度のデバイスが返されるか、
+指定された優先度で見つかった最初のデバイスが返される。
+優先度の高い順のデバイスタイプは以下の通り:
+デバイスマッパー, EVMS, LVM, MD, 最後が通常のブロックデバイス。
+このオプションが指定されてない場合、
 <B>blkid</B>
 
-will print all of the devices that match the search parameter.
+は検索パラメータにマッチする全てのデバイスを表示する。
 <DT><B>-L</B>, <B>--label</B> <I>label</I><DD>
-Look up the device that uses this filesystem <I>label</I>; this is equal to
-<B>--list-one --output device --match-token LABEL=</B><I>label</I>.
 
-This lookup method is able to reliably use /dev/disk/by-label
-udev symlinks (dependent on a setting in /etc/blkid.conf).  Avoid using the
-symlinks directly; it is not reliable to use the symlinks without verification.
-The <B>--label</B> option works on systems with and without udev.
+
+このファイルシステム <I>label</I> を使うデバイスを検索する。
+これは、
+<B>--list-one --output device --match-token LABEL=</B><I>label</I>
+
+と等しい。
+
+
+
+この検索方法では、(/etc/blkid.conf の設定に依存する)
+/dev/disk/by-label udev シンボリックリンクを使うことができる。
+このシンボリックリンクを直接使わないこと。
+検証せずにシンボリックリンクを使うことは信頼できない。
+
+<B>--label</B> オプションは、udev があるシステムでも、ないシステムでも動作する。
 <P>
-Unfortunately, the original
+
+
+
+
+
+不幸なことに、元々の e2fsprogs の
 <B><A HREF="../man8/blkid.8.html">blkid</A></B>(8)
 
-from e2fsprogs uses the <B>-L</B> option as a
-synonym for <B>-o list</B>.  For better portability, use <B>-l -o device
--t LABEL=</B><I>label</I> and <B>-o list</B> in your scripts rather than the <B>-L</B> option.
+は <B>-L</B> オプションを、<B>-o list</B> の別名として使う。
+移植性を良くするには、スクリプト中では、<B>-L</B> オプションではなく、
+<B>-l -o device -t LABEL=</B><I>label</I> と <B>-o list</B> を使うこと。
 <DT><B>-n</B>, <B>--match-types</B> <I>list</I><DD>
-Restrict the probing functions to the specified (comma-separated) <I>list</I> of
-superblock types (names).
-The list items may be prefixed with &quot;no&quot; to specify the types which should be ignored.
-For example:
+
+
+
+
+(カンマ区切りの) <I>list</I> で指定したスーパーブロックタイプ (名) に検出機能を制限する。
+リストのアイテムは、&quot;no&quot; を前置して指定したタイプを無視させることができる。
+例:
 <P>
 <BR>&nbsp;&nbsp;blkid&nbsp;--probe&nbsp;--match-types&nbsp;vfat,ext3,ext4&nbsp;/dev/sda1
 <P>
-probes for vfat, ext3 and ext4 filesystems, and
+
+で vfat, ext3, ext4 ファイルシステムを検出できる。
 <P>
 <BR>&nbsp;&nbsp;blkid&nbsp;--probe&nbsp;--match-types&nbsp;nominix&nbsp;/dev/sda1
 <P>
-probes for all supported formats except minix filesystems.
-This option is only useful together with <B>--probe</B>.
+
+で minix ファイルシステム以外の全てのサポートされているフォーマットを
+検出できる。
+
+このオプションは、<B>--probe</B> と一緒に指定された場合にのみ、役に立つ。
 <DT><B>-o</B>, <B>--output</B> <I>format</I><DD>
-Use the specified output format.  Note that the order of variables and
-devices is not fixed.  See also option <B>-s</B>.  The
+
+
+
+
+指定した出力形式を使う。
+変数とデバイスの順番は固定されていない点に注意すること。
+オプション <B>-s</B> も参照すること。
 <I>format</I>
 
-parameter may be:
+引き数は以下の通り:
 <DL COMPACT><DT><DD>
 <DL COMPACT>
 <DT><B>full</B>
 
 <DD>
-print all tags (the default)
+
+全てのタグを表示する (デフォルト)。
 <DT><B>value</B>
 
 <DD>
-print the value of the tags
+
+指定した値のタグを表示する。
 <DT><B>list</B>
 
 <DD>
-print the devices in a user-friendly format; this output format is unsupported
-for low-level probing (<B>--probe</B> or <B>--info</B>).
+
+
+デバイスをユーザーに使いやすい形式で表示する。
+この形式は、低レベルの検出 (<B>--probe</B> または<B>--info</B>) ではサポートされない。
 <P>
-This output format is <B>DEPRECATED</B> in favour of the
+
+
+
+この出力形式は<B>推奨されず</B>、
 <B><A HREF="../man8/lsblk.8.html">lsblk</A></B>(8)
 
-command.
+コマンドを使うべきである。
 <DT><B>device</B>
 
 <DD>
-print the device name only; this output format is always enabled for the <B>--label</B>
-and <B>--uuid</B> options
+
+
+デバイス名のみを表示する。
+この出力形式は <B>--label</B> と <B>--uuid</B> オプションで常に有効にされる。
 <DT><B>udev</B>
 
 <DD>
@@ -510,6 +581,6 @@ The blkid command is part of the util-linux package and is available from
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 15:18:14 GMT, April 16, 2020
+Time: 17:16:47 GMT, April 16, 2020
 </BODY>
 </HTML>
