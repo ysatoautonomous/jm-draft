@@ -2,9 +2,10 @@
 .\"
 .\" This file may be copied under the terms of the GNU Public License.
 .\"
-.\" Japanese Version Copyright (c) 2020 Yuichi SATO
-.\"         all rights reserved.
-.\" Translated Wed Apr 15 23:00:25 JST 2020
+.\" Japanese Version Copyright 1999 by NAKANO Takeo. All Rights Reserved.
+.\" Translated Sat 23 Oct 1999 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated Tue 16 Nov 1999 by NAKANO Takeo
+.\" Updated & Modified Wed Apr 15 23:00:25 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH UUIDGEN 1 "June 2011" "util-linux" "User Commands"
@@ -28,12 +29,13 @@ uuidgen \- 新しい UUID 値を生成する。
 .\"O and among UUIDs created on other systems in the past
 .\"O and in the future.
 .B uuidgen
-プログラムは新しい universally unique identifier (UUID) を
+プログラムは、
 .BR libuuid (3)
-ライブラリを使って生成する (そして、表示する)。
-新しい UUID は、過去から将来に渡って、
-ローカルシステムで作成された (される) 全ての UUID、
-他のシステムで作成された全ての UUID の中で、概ね一意と考えられる。
+ライブラリを用いて、 UUID (universal unique identifier:
+汎システム的に他とは重ならない識別子) を生成し、表示する。
+新しい UUID は、ローカルシステムで以前に生成された
+UUID はもちろん、 他のシステムで過去・未来に作成された/作成される UUID のいずれ
+とも重ならないと考えて良い。
 .PP
 .\"O There are three types of UUIDs which
 .\"O .B uuidgen
@@ -45,21 +47,20 @@ uuidgen \- 新しい UUID 値を生成する。
 .\"O .B uuidgen
 .\"O will generate a random-based UUID if a high-quality random number
 .\"O generator is present.  Otherwise, it will choose a time-based UUID.
-高品質な乱数生成器が存在する場合、
+質の良い乱数生成機構があれば、
 .B uuidgen
-はデフォルトでは乱数ベースの UUID を生成する。
-存在しない場合は、時刻ベースの UUID を選択する。
+は乱数ベースの UUID を生成しようとする。
+そうでなければ 時刻ベースの UUID を生成する。
 .\"O It is possible to force the generation of one of these first two
 .\"O UUID types by using the
 .\"O .B \-\-random
 .\"O or
 .\"O .B \-\-time
 .\"O options.
-最初の 2 つの UUID タイプは、
 .B \-\-random
-と
+または
 .B \-\-time
-オプションを使って生成できる。
+オプションを指定すれば、2 つのタイプのいずれかを生成するかを強制できる。
 .PP
 .\"O The third type of UUID is generated with the
 .\"O .B \-\-md5
@@ -115,17 +116,17 @@ MD5 または SHA1 アルゴリズムでのハッシュを連結したダイジ�
 .\"O quality random number generator, such as
 .\"O .IR /dev/random .
 乱数ベースの UUID を生成する。
-この方法では、大部分がランダムビットで構成される UUID が生成される。
-このオプションでは、システムに
+この方法は、ほとんどがランダムなビットから なる UUID を生成する。
+これを用いるには、オペレーティングシステムが
 .I /dev/random
-のような高品質な乱数生成器が必要である。
+のような質の良い乱数生成機構を備えていなければならない。
 .TP
 .BR \-t , " \-\-time"
 .\"O Generate a time-based UUID.  This method creates a UUID based on the system
 .\"O clock plus the system's ethernet hardware address, if present.
 時刻ベースの UUID を生成する。
-この方法では、システムクロックと (もし存在すれば) イーサーネットの
-ハードウェアアドレスに基づいて、UUID を生成する。
+この手法では、システムクロックとシステムのイーサネットハードウェア
+アドレスが取得できればそれとに基づいて UUID を生成する。
 .TP
 .BR \-h , " \-\-help"
 .\"O Display help text and exit.
