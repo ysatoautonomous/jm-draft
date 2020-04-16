@@ -2,9 +2,13 @@
 .\"
 .\" This file may be copied under the terms of the GNU Public License.
 .\"
-.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\" Japanese Version Copyright (c) 2004-2020 Yuichi SATO
 .\"         all rights reserved.
-.\" Translated Thu Apr 16 22:47:17 JST 2020
+.\" Translated Sun Mar  7 00:00:12 JST 2004
+.\"         by Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated & Modified Sat Apr 30 07:25:35 JST 2005 by Yuichi SATO
+.\" Updated & Modified Tue Dec 20 05:57:54 JST 2005 by Yuichi SATO
+.\" Updated & Modified Thu Apr 16 22:47:17 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH BLKID 8 "March 2013" "util-linux" "System Administration"
@@ -67,9 +71,10 @@ blkid \- ブロックデバイスの属性を検索/表示する。
 プログラムは
 .BR libblkid (3)
 とともに動作するコマンドラインインタフェースである。
-これはコンテキストメタデータ (例えば、LABEL または UUID フィールド) から
-ブロックデバイスが保持するコンテキストタイプ (例えば、ファイルシステムまたはスワップ) と
-属性 (トークン、NAME=value ペア) も決定する。
+このプログラムは、ブロックデバイスが保持するコンテンツ種別
+(ファイルシステムやスワップなど)を判定する。
+また、コンテンツメタデータ (LABEL や UUID フィールドなど) から
+属性 (トークン、NAME=value ペア) を判定する。
 .PP
 .\"O .B It is recommended to use
 .\"O .BR lsblk (8)
@@ -172,8 +177,8 @@ GB, TB, PB, EB, ZB, YB を付けることもできる。
 デフォルトのキャッシュファイルではなく、
 .I cachefile
 を読み込む (より詳細は、「設定ファイル」のセクションを参照すること)。
-クリーンなキャッシュで開始したい場合 (つまり、以前スキャンされたデバイスが、
-今回の表示では必要ない場合)、
+何もキャッシュしていない状態で開始したい場合 (すなわち、以前はスキャンを行ったが
+今回は利用する必要のないデバイスを表示しない場合) は、
 .I /dev/null
 を指定すること。
 .TP
@@ -232,58 +237,93 @@ I/O 制限 (別名 I/O トポロジー) の情報を表示する。
 は検索パラメータにマッチする全てのデバイスを表示する。
 .TP
 \fB\-L\fR, \fB\-\-label\fR \fIlabel\fR
-Look up the device that uses this filesystem \fIlabel\fR; this is equal to
-.BR "--list-one --output device --match-token LABEL=\fIlabel\fR" .
-This lookup method is able to reliably use /dev/disk/by-label
-udev symlinks (dependent on a setting in /etc/blkid.conf).  Avoid using the
-symlinks directly; it is not reliable to use the symlinks without verification.
-The \fB-\-label\fR option works on systems with and without udev.
+.\"O Look up the device that uses this filesystem \fIlabel\fR; this is equal to
+.\"O .BR "--list-one --output device --match-token LABEL=\fIlabel\fR" .
+このファイルシステム \fIlabel\fR を使うデバイスを検索する。
+これは、
+.B "--list-one --output device --match-token LABEL=\fIlabel\fR"
+と等しい。
+.\"O This lookup method is able to reliably use /dev/disk/by-label
+.\"O udev symlinks (dependent on a setting in /etc/blkid.conf).  Avoid using the
+.\"O symlinks directly; it is not reliable to use the symlinks without verification.
+この検索方法では、(/etc/blkid.conf の設定に依存する)
+/dev/disk/by-label udev シンボリックリンクを使うことができる。
+このシンボリックリンクを直接使わないこと。
+検証せずにシンボリックリンクを使うことは信頼できない。
+.\"O The \fB-\-label\fR option works on systems with and without udev.
+\fB-\-label\fR オプションは、udev があるシステムでも、ないシステムでも動作する。
 
-Unfortunately, the original
+.\"O Unfortunately, the original
+.\"O .BR blkid (8)
+.\"O from e2fsprogs uses the \fB-L\fR option as a
+.\"O synonym for \fB-o list\fR.  For better portability, use \fB-l -o device
+.\"O -t LABEL=\fIlabel\fR and \fB-o list\fR in your scripts rather than the \fB-L\fR option.
+不幸なことに、元々の e2fsprogs の
 .BR blkid (8)
-from e2fsprogs uses the \fB-L\fR option as a
-synonym for \fB-o list\fR.  For better portability, use \fB-l -o device
--t LABEL=\fIlabel\fR and \fB-o list\fR in your scripts rather than the \fB-L\fR option.
+は \fB-L\fR オプションを、\fB-o list\fR の別名として使う。
+移植性を良くするには、スクリプト中では、\fB-L\fR オプションではなく、
+\fB-l -o device -t LABEL=\fR\fIlabel\fR と \fB-o list\fR を使うこと。
 .TP
 \fB\-n\fR, \fB\-\-match\-types\fR \fIlist\fR
-Restrict the probing functions to the specified (comma-separated) \fIlist\fR of
-superblock types (names).
-The list items may be prefixed with "no" to specify the types which should be ignored.
-For example:
+.\"O Restrict the probing functions to the specified (comma-separated) \fIlist\fR of
+.\"O superblock types (names).
+.\"O The list items may be prefixed with "no" to specify the types which should be ignored.
+.\"O For example:
+(カンマ区切りの) \fIlist\fR で指定したスーパーブロックタイプ (名) に検出機能を制限する。
+リストのアイテムは、"no" を前置して指定したタイプを無視させることができる。
+例:
 .sp
   blkid --probe --match-types vfat,ext3,ext4 /dev/sda1
 .sp
-probes for vfat, ext3 and ext4 filesystems, and
+.\"O probes for vfat, ext3 and ext4 filesystems, and
+で vfat, ext3, ext4 ファイルシステムを検出できる。
 .sp
   blkid --probe --match-types nominix /dev/sda1
 .sp
-probes for all supported formats except minix filesystems.
-This option is only useful together with \fB\-\-probe\fR.
+.\"O probes for all supported formats except minix filesystems.
+で minix ファイルシステム以外の全てのサポートされているフォーマットを
+検出できる。
+.\"O This option is only useful together with \fB\-\-probe\fR.
+このオプションは、\fB\-\-probe\fR と一緒に指定された場合にのみ、役に立つ。
 .TP
 \fB\-o\fR, \fB\-\-output\fR \fIformat\fR
-Use the specified output format.  Note that the order of variables and
-devices is not fixed.  See also option \fB-s\fR.  The
+.\"O Use the specified output format.  Note that the order of variables and
+.\"O devices is not fixed.  See also option \fB-s\fR.  The
+.\"O .I format
+.\"O parameter may be:
+指定した出力形式を使う。
+変数とデバイスの順番は固定されていない点に注意すること。
+オプション \fB-s\fR も参照すること。
 .I format
-parameter may be:
+引き数は以下の通り:
 .RS
 .TP
 .B full
-print all tags (the default)
+.\"O print all tags (the default)
+全てのタグを表示する (デフォルト)。
 .TP
 .B value
-print the value of the tags
+.\"O print the value of the tags
+指定した値のタグを表示する。
 .TP
 .B list
-print the devices in a user-friendly format; this output format is unsupported
-for low-level probing (\fB\-\-probe\fR or \fB\-\-info\fR).
+.\"O print the devices in a user-friendly format; this output format is unsupported
+.\"O for low-level probing (\fB\-\-probe\fR or \fB\-\-info\fR).
+デバイスをユーザーに使いやすい形式で表示する。
+この形式は、低レベルの検出 (\fB\-\-probe\fR または\fB\-\-info\fR) ではサポートされない。
 
-This output format is \fBDEPRECATED\fR in favour of the
+.\"O This output format is \fBDEPRECATED\fR in favour of the
+.\"O .BR lsblk (8)
+.\"O command.
+この出力形式は\fB推奨されず\fR、
 .BR lsblk (8)
-command.
+コマンドを使うべきである。
 .TP
 .B device
-print the device name only; this output format is always enabled for the \fB\-\-label\fR
-and \fB\-\-uuid\fR options
+.\"O print the device name only; this output format is always enabled for the \fB\-\-label\fR
+.\"O and \fB\-\-uuid\fR options
+デバイス名のみを表示する。
+この出力形式は \fB\-\-label\fR と \fB\-\-uuid\fR オプションで常に有効にされる。
 .TP
 .B udev
 print key="value" pairs for easy import into the udev environment; the keys are
