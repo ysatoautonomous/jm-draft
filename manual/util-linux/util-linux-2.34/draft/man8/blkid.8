@@ -151,50 +151,85 @@ blkid \- ブロックデバイスの属性を検索/表示する。
 
 .\"O .SH OPTIONS
 .SH オプション
-The \fIsize\fR and \fIoffset\fR arguments may be followed by the multiplicative
-suffixes like KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
-(the "iB" is optional, e.g. "K" has the same meaning as "KiB"), or the suffixes
-KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+.\"O The \fIsize\fR and \fIoffset\fR arguments may be followed by the multiplicative
+.\"O suffixes like KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
+.\"O (the "iB" is optional, e.g. "K" has the same meaning as "KiB"), or the suffixes
+.\"O KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+\fIsize\fR と \fIoffset\fR 
+引き数には倍数のサフィックス KiB (=1024), MiB (=1024*1024),
+GiB, TiB, PiB, EiB, ZiB, YiB を付けることができる
+("iB" はオプションであり、例えば "K" は "KiB" と同じ意味である)。
+また、フィックス KB (=1000), MB (=1000*1000),
+GB, TB, PB, EB, ZB, YB を付けることもできる。
 .TP
 \fB\-c\fR, \fB\-\-cache\-file\fR \fIcachefile\fR
-Read from
+.\"O Read from
+.\"O .I cachefile
+.\"O instead of reading from the default cache file (see the CONFIGURATION FILE section
+.\"O for more details).  If you want to start with a clean cache (i.e. don't report
+.\"O devices previously scanned but not necessarily available at this time), specify
+.\"O .IR /dev/null .
+デフォルトのキャッシュファイルではなく、
 .I cachefile
-instead of reading from the default cache file (see the CONFIGURATION FILE section
-for more details).  If you want to start with a clean cache (i.e. don't report
-devices previously scanned but not necessarily available at this time), specify
-.IR /dev/null .
+を読み込む (より詳細は、「設定ファイル」のセクションを参照すること)。
+クリーンなキャッシュで開始したい場合 (つまり、以前スキャンされたデバイスが、
+今回の表示では必要ない場合)、
+.I /dev/null
+を指定すること。
 .TP
 \fB\-d\fR, \fB\-\-no\-encoding\fR
-Don't encode non-printing characters.  The non-printing characters are encoded
-by ^ and M- notation by default.  Note that the \fB\-\-output udev\fR output format uses
-a different encoding which cannot be disabled.
+.\"O Don't encode non-printing characters.  The non-printing characters are encoded
+.\"O by ^ and M- notation by default.  Note that the \fB\-\-output udev\fR output format uses
+.\"O a different encoding which cannot be disabled.
+非表示文字をエンコードしない。
+デフォルトでは、非表示文字は ^ と M- の形式でエンコードされる。
+\fB\-\-output udev\fR の出力形式では、無効化できない別のエンコーディングを使う点に
+注意すること。
 .TP
 \fB\-D\fR, \fB\-\-no\-part\-details\fR 
-Don't print information (PART_ENTRY_* tags) from partition table in low-level probing mode.
+.\"O Don't print information (PART_ENTRY_* tags) from partition table in low-level probing mode.
+低レベル検出モードでパーティションテーブルからの情報 (PART_ENTRY_* タグ) を表示しない。
 .TP
 \fB\-g\fR, \fB\-\-garbage\-collect\fR
-Perform a garbage collection pass on the blkid cache to remove
-devices which no longer exist.
+.\"O Perform a garbage collection pass on the blkid cache to remove
+.\"O devices which no longer exist.
+既に存在しないデバイスを blkid キャッシュから削除するために、
+ガベージコレクションを実施する。
 .TP
 \fB\-h\fR, \fB\-\-help\fR
-Display a usage message and exit.
+.\"O Display a usage message and exit.
+使用法のメッセージを表示して、終了する。
 .TP
 \fB\-i\fR, \fB\-\-info\fR
-Display information about I/O Limits (aka I/O topology).  The 'export' output format is
-automatically enabled.  This option can be used together with the \fB\-\-probe\fR option.
+.\"O Display information about I/O Limits (aka I/O topology).  The 'export' output format is
+.\"O automatically enabled.  This option can be used together with the \fB\-\-probe\fR option.
+I/O 制限 (別名 I/O トポロジー) の情報を表示する。
+\&'export' 出力形式は自動的に有効にされる。
+このオプションは \fB\-\-probe\fR オプションと一緒に指定できる。
 .TP
 \fB\-k\fR, \fB\-\-list\-filesystems\fR
-List all known filesystems and RAIDs and exit.
+.\"O List all known filesystems and RAIDs and exit.
+既存の全てのファイルシステムと RAID を表示して、終了する。
 .TP
 \fB\-l\fR, \fB\-\-list\-one\fR
-Look up only one device that matches the search parameter specified with the \fB\-\-match\-token\fR
-option.  If there are multiple devices that match the specified search
-parameter, then the device with the highest priority is returned, and/or
-the first device found at a given priority.  Device types in order of
-decreasing priority are: Device Mapper, EVMS, LVM, MD, and finally regular
-block devices.  If this option is not specified,
+.\"O Look up only one device that matches the search parameter specified with the \fB\-\-match\-token\fR
+.\"O option.  If there are multiple devices that match the specified search
+.\"O parameter, then the device with the highest priority is returned, and/or
+.\"O the first device found at a given priority.  Device types in order of
+.\"O decreasing priority are: Device Mapper, EVMS, LVM, MD, and finally regular
+.\"O block devices.  If this option is not specified,
+.\"O .B blkid
+.\"O will print all of the devices that match the search parameter.
+\fB\-\-match\-token\fR オプションで指定された検索パラメータにマッチする
+唯一のデバイスを検索する。
+指定された検索パラメータにマッチする複数のデバイスがある場合、
+もっとも高い優先度のデバイスが返されるか、
+指定された優先度で見つかった最初のデバイスが返される。
+優先度の高い順のデバイスタイプは以下の通り:
+デバイスマッパー, EVMS, LVM, MD, 最後が通常のブロックデバイス。
+このオプションが指定されてない場合、
 .B blkid
-will print all of the devices that match the search parameter.
+は検索パラメータにマッチする全てのデバイスを表示する。
 .TP
 \fB\-L\fR, \fB\-\-label\fR \fIlabel\fR
 Look up the device that uses this filesystem \fIlabel\fR; this is equal to
