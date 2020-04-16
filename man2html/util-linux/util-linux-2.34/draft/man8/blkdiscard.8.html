@@ -1,0 +1,219 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of BLKDISCARD</TITLE>
+</HEAD><BODY>
+<H1>BLKDISCARD</H1>
+Section: System Administration (8)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+blkdiscard - デバイスのセクタを破棄する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>blkdiscard</B>
+
+[options]
+[<B>-o</B>
+
+<I>offset</I>]
+
+[<B>-l</B>
+
+<I>length</I>]
+
+<I>device</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+<B>blkdiscard</B>
+
+はデバイスのセクタを破棄するために使われる。
+これはソリッドステートドライブ (SSD) と、シンプロビジョニングされたストレージで役立つ。
+<B><A HREF="../man8/fstrim.8.html">fstrim</A></B>(8)
+
+とは違い、このコマンドはブロックデバイスに直接使用される。
+<P>
+
+
+
+
+
+デフォルトでは
+<B>blkdiscard</B>
+
+はデバイスの全てのブロックを破棄する。
+以下に示すように、この挙動はオプションを用いて範囲またはサイズに
+基づくように変更できる。
+<P>
+
+
+
+
+<I>device</I>
+
+引き数はブロックデバイスのパス名である。
+<P>
+
+
+<B>警告: デバイス上の破棄された範囲の全てのデータは失われる!</B>
+
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+
+
+
+
+
+
+
+<I>offset</I>
+
+と
+<I>length</I>
+
+引き数には倍数のサフィックス KiB (=1024), MiB (=1024*1024),
+GiB, TiB, PiB, EiB, ZiB, YiB を付けることができる
+(&quot;iB&quot; はオプションであり、例えば &quot;K&quot; は &quot;KiB&quot; と同じ意味である)。
+また、フィックス KB (=1000), MB (=1000*1000),
+GB, TB, PB, EB, ZB, YB を付けることもできる。
+<DL COMPACT>
+<DT><B>-o</B>,<B> --offset </B><I>offset</I>
+
+<DD>
+
+
+デバイス上で破棄を開始するバイトオフセット。
+指定された値は、デバイスのセクタサイズで調整される。
+デフォルト値は 0 である。
+<DT><B>-l</B>,<B> --length </B><I>length</I>
+
+<DD>
+
+
+
+
+
+
+(開始地点から数えた) 破棄するバイト数。
+指定された値は、デバイスのセクタサイズで調整される。
+指定された値が、デバイスの終わりを越した場合、
+<B>blkdiscard</B>
+
+はデバイスのサイズ境界で停止する。
+デフォルト値はデバイスの終わりまでである。
+<DT><B>-p</B>,<B> --step </B><I>length</I>
+
+<DD>
+
+
+1 回で破棄するバイト数。
+デフォルトでは 1 回の ioctl 呼び出しで全てを破棄する。
+<DT><B>-s</B>,<B> --secure</B>
+
+<DD>
+
+
+
+セキュアな破棄を行う。
+セキュアな破棄は、通常の破棄と同様であるが、
+ガベージコレクションで作成される可能性がある破棄ブロックのコピーも
+消去される。
+これにはデバイスのサポートが必要である。
+<DT><B>-z</B>,<B> --zeroout</B>
+
+<DD>
+
+破棄ではなく 0 埋めする。
+<DT><B>-v</B>,<B> --verbose</B>
+
+<DD>
+
+
+
+
+
+調整された
+<I>offset</I>
+
+と
+<I>length</I>
+
+の値を表示する。
+<B>--step</B> オプションが指定された場合、破棄の進捗を毎秒表示する。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>著者</H2>
+
+
+Lukas Czerner
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/fstrim.8.html">fstrim</A></B>(8)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+blkdiscard コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">著者</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:50:21 GMT, April 16, 2020
+</BODY>
+</HTML>
