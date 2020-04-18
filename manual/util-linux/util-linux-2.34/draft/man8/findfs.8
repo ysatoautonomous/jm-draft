@@ -1,0 +1,134 @@
+.\" Copyright 1993, 1994, 1995 by Theodore Ts'o.  All Rights Reserved.
+.\" This file may be copied under the terms of the GNU Public License.
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun Apr 19 00:32:28 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH FINDFS 8 "March 2014" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O findfs \- find a filesystem by label or UUID
+findfs \- ラベルまたは UUID でファイルシステムを見つける。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B findfs
+.BI NAME= value
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B findfs
+.\"O will search the block devices in the system looking for a filesystem or
+.\"O partition with specified tag. The currently supported tags are:
+.B findfs
+は、システム上のブロックデバイスを検索し、
+指定されたタグをもつファイルシステムまたはパーティションを探す。
+現在サポートされているタグは以下の通り:
+.TP
+.B LABEL=<label>
+.\"O Specifies filesystem label.
+ファイルシステムラベルを指定する。
+.TP
+.B UUID=<uuid>
+.\"O Specifies filesystem UUID.
+ファイルシステム UUID を指定する。
+.TP
+.B PARTUUID=<uuid>
+.\"O Specifies partition UUID. This partition identifier is supported for example for
+.\"O GUID  Partition  Table (GPT) partition tables.
+パーティション UUID を指定する。
+このパーティション識別子は、例えば、GUID Partition Table (GPT) パーティションテーブルで
+サポートされる。
+.TP
+.B PARTLABEL=<label>
+.\"O Specifies partition label (name). The partition labels are supported for example for
+.\"O GUID Partition Table (GPT) or MAC partition tables.
+パーティションラベル (名) を指定する。
+このパーティションラベルは、例えば、
+GUID Partition Table (GPT) または MAC パーティションテーブルでサポートされる。
+.PP
+.\"O If the filesystem or partition is found, the device name will be printed on
+.\"O stdout.
+ファイルシステムまたはパーティションが見つかった場合、デバイス名が
+標準出力に表示される。
+
+.\"O The complete overview about filesystems and partitions you can get for example
+.\"O by
+ファイルシステムとパーティションの完全な概要については、例えば以下で
+取得できる。
+.RS
+
+.br
+.B lsblk \-\-fs
+.br
+
+.B partx --show <disk>
+.br
+
+.B blkid
+.br
+
+.RE
+
+.PP
+.\"O .SH "EXIT STATUS"
+.SH 返り値
+.RS
+.PD 0
+.TP
+.B 0
+.\"O success
+成功
+.TP
+.B 1
+.\"O label or uuid cannot be found
+ラベルまたは UUID が見つからなかった。
+.TP
+.B 2
+.\"O usage error, wrong number of arguments or unknown option
+使用法のエラー。引き数の数の間違い。不明なオプション。
+.PD
+.RE
+.\"O .SH AUTHOR
+.SH 著者
+.\"O .B findfs
+.\"O was originally written by
+.\"O .MT tytso@mit.edu
+.\"O Theodore Ts'o
+.\"O .ME
+.B findfs
+は元々
+.MT tytso@mit.edu
+Theodore Ts'o
+.ME
+によって書かれた。
+.\"O and re-written for the util-linux package by
+.\"O .MT kzak@redhat.com
+.\"O Karel Zak
+.\"O .ME .
+そして、util-linux パッケージのために
+.MT kzak@redhat.com
+Karel Zak
+.ME
+によって書き直された。
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.IP LIBBLKID_DEBUG=all
+.\"O enables libblkid debug output.
+libblkid デバッグ出力を有効にする。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR blkid (8),
+.BR lsblk (8),
+.BR partx (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The findfs command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+findfs コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
