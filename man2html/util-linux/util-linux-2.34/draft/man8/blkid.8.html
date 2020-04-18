@@ -339,7 +339,7 @@ I/O 制限 (別名 I/O トポロジー) の情報を表示する。
 で minix ファイルシステム以外の全てのサポートされているフォーマットを
 検出できる。
 
-このオプションは、<B>--probe</B> と一緒に指定された場合にのみ、役に立つ。
+このオプションは、<B>--probe</B> と一緒に指定された場合にのみ、有効になる。
 <DT><B>-o</B>, <B>--output</B> <I>format</I><DD>
 
 
@@ -388,165 +388,275 @@ I/O 制限 (別名 I/O トポロジー) の情報を表示する。
 <DT><B>udev</B>
 
 <DD>
-print key=&quot;value&quot; pairs for easy import into the udev environment; the keys are
-prefixed by ID_FS_ or ID_PART_ prefixes.  The value may be modified to be
-safe for udev environment; allowed is plain ASCII, hex-escaping and valid UTF-8,
-everything else (including whitespaces) is replaced with '_'. The keys with
-_ENC postfix use hex-escaping for unsafe chars.
+
+
+
+
+
+udev 環境で簡単にインポートできる key=&quot;value&quot; ペアを表示する。
+キーにはプレフィックス ID_FS_ または ID_PART_ が付く。
+値は udev 環境で安全なように修正される場合がある。
+値は、プレーンの ASCII、16 進数エスケープ、有効な UTF-8、
+(空白を含む) 任意の文字がある。空白はアンダースコア '_' に置換される。
+キーに安全でない文字が含まれる場合、16 進数エスケープが行われ、
+ポストフィックス _ENC が付く。
 <P>
-The udev output returns the ID_FS_AMBIVALENT tag if more superblocks are detected,
-and ID_PART_ENTRY_* tags are always returned for all partitions including empty
-partitions.
+
+
+
+1 つ以上のスーパーブロックが検出された場合、udev の出力として、
+ID_FS_AMBIVALENT タグが返される。
+また、パーティションに空のパーティションが含まれる場合は、
+ID_PART_ENTRY_* タグが常に返される。
 <P>
-This output format is <B>DEPRECATED</B>.
+
+この出力形式は<B>推奨されない</B>。
 <DT><B>export</B>
 
 <DD>
-print key=value pairs for easy import into the environment; this output format
-is automatically enabled when I/O Limits (<B>--info</B> option) are requested.
+
+
+環境にインポートしやすい key=value ペアを表示する。
+この出力形式は、I/O 制限 (<B>--info</B> オプション) が要求された場合、
+自動的に有効化される。
 <P>
-The non-printing characters are encoded by ^ and M- notation and all
-potentially unsafe characters are escaped.
+
+
+非表示文字は ^ と M- 形式でエンコードされ、
+潜在的に安全でない文字はエスケープされる。
 </DL>
 </DL>
 
 <DT><B>-O</B>, <B>--offset</B> <I>offset</I><DD>
-Probe at the given <I>offset</I> (only useful with <B>--probe</B>).  This option can be
-used together with the <B>--info</B> option.
-<DT><B>-p</B>, <B>--probe</B><DD>
-Switch to low-level superblock probing mode (bypassing the cache).
-<P>
-Note that low-level probing also returns information about partition table type
-(PTTYPE tag) and partitions (PART_ENTRY_* tags). The tag names produced by
-low-level probing are based on names used internally by libblkid and it may be
-different than when executed without <B>--probe</B> (for example PART_ENTRY_UUID= vs
-PARTUUID=). See also <B>--no-part-details</B>.
-<DT><B>-s</B>, <B>--match-tag</B> <I>tag</I><DD>
-For each (specified) device, show only the tags that match
-<I>tag</I>.
 
-It is possible to specify multiple
+
+指定された <I>offset</I> で検出を行う
+(<B>--probe</B> と一緒に指定された場合にのみ有効になる)。
+このオプションは、<B>--info</B> オプションと一緒に指定できる。
+<DT><B>-p</B>, <B>--probe</B><DD>
+
+(キャッシュをバイバスして) 低レベルのスーパーブロック検出モードに切り替える。
+<P>
+
+
+
+
+
+低レベルの検出モードでは、パーティションテーブルタイプ (PTTYPE タグ) と
+パーティション (PART_ENTRY_* タグ) の情報も返される。
+低レベルの検出モードで出力されるタグ名は、
+libblkid が内部で使っている名前に基づいており、
+<B>--probe</B> なしで実行した場合の名前とは異なる
+(例えば PART_ENTRY_UUID= と PARTUUID= のようになる)。
+<B>--no-part-details</B> も参照すること。
+<DT><B>-s</B>, <B>--match-tag</B> <I>tag</I><DD>
+
+
+(指定された) 各デバイスについて、
+<I>tag</I>
+
+にマッチしたタグのみを表示する。
+
+
+
+
+複数の
 <B>--match-tag</B>
 
-options.  If no tag is specified, then all tokens are shown for all
-(specified) devices.
-In order to just refresh the cache without showing any tokens, use
+オプションを指定できる。
+タグが指定されない場合、(指定された) 全てのデバイスについて、
+全てのトークンを表示する。
+
+
+
+トークンを何も表示せず、単純にキャッシュをリフレッシュしたい場合、
+他のオプションを付けず、
 <B>--match-tag none</B>
 
-with no other options.
+を使うこと。
 <DT><B>-S</B>, <B>--size</B> <I>size</I><DD>
-Override the size of device/file (only useful with <B>--probe</B>).
+
+デバイス/ファイルのサイズを上書きする
+(<B>--probe</B> と一緒に指定した場合のみ有効である)。
 <DT><B>-t</B>, <B>--match-token</B> <I>NAME=value</I><DD>
-Search for block devices with tokens named
+
+
+
+
+
 <I>NAME</I>
 
-that have the value
-<I>value</I>,
+で指定された名前で、値が
+<I>value</I>
 
-and display any devices which are found.
-Common values for
+のトークンを持つブロックデバイスを検索し、
+見つかったデバイスを表示する。
+
+
+
+
+
+
+
 <I>NAME</I>
 
-include
+で良く使われる値は
 <B>TYPE</B>,
 
 <B>LABEL</B>,
 
-and
-<B>UUID</B>.
+<B>UUID</B>
 
-If there are no devices specified on the command line, all block devices
-will be searched; otherwise only the specified devices are searched.
+である。
+
+
+コマンドラインでデバイスが指定されない場合、全てのブロック
+デバイスが検索される。
+指定された場合は、そのデバイスのみが検索される。
 <DT><B>-u</B>, <B>--usages</B> <I>list</I><DD>
-Restrict the probing functions to the specified (comma-separated) <I>list</I> of &quot;usage&quot; types.
-Supported usage types are: filesystem, raid, crypto and other.  The list items may be
-prefixed with &quot;no&quot; to specify the usage types which should be ignored.  For example:
+
+
+
+検知機能を指定した (カンマ区切りの) <I>list</I> の「使用法」のタイプに限定する。
+サポートされる使用法のタイプは以下の通り: filesystem, raid, crypto, other.
+リストのアイテムはプレフィックス &quot;no&quot; を指定して、
+その使用法を無視させることができる。
+例:
 <P>
 <BR>&nbsp;&nbsp;blkid&nbsp;--probe&nbsp;--usages&nbsp;filesystem,other&nbsp;/dev/sda1
 <P>
-probes for all filesystem and other (e.g. swap) formats, and
+
+では、全てのファイルシステムとその他 (例えば、スワップ) 形式を検知する。
 <P>
 <BR>&nbsp;&nbsp;blkid&nbsp;--probe&nbsp;--usages&nbsp;noraid&nbsp;/dev/sda1
 <P>
-probes for all supported formats except RAIDs.
-This option is only useful together with <B>--probe</B>.
+
+では、RAID 以外の全てのサポートされる形式を検知する。
+
+このオプションは <B>--probe</B> と一緒に指定された場合にのみ有効である。
 <DT><B>-U</B>, <B>--uuid</B> <I>uuid</I><DD>
-Look up the device that uses this filesystem <I>uuid</I>.  For more details see the
-<B>--label</B> option.
+
+
+ファイルシステム<I>uuid</I> を使うデバイスを検索する。
+より詳細は <B>--label</B> オプションを参照すること。
 <DT><B>-V</B>, <B>--version</B><DD>
-Display version number and exit.
+
+バージョン番号を表示して、終了する。
+
 </DL>
 <A NAME="lbAF">&nbsp;</A>
-<H2>RETURN CODE</H2>
+<H2>返り値</H2>
 
-If the specified device or device addressed by specified token (option
-<B>--match-token</B>) was found and it's possible to gather any information about the
-device, an exit code 0 is returned.  Note the option <B>--match-tag</B> filters output
-tags, but it does not affect return code.
+
+
+
+
+指定されたデバイス、または指定されたトークン (オプション <B>--match-token</B>) で
+指し示されるデバイスが見つかって、デバイスの情報が収集できた場合、
+返り値 0 が返される。
+オプション <B>--match-tag</B> は出力タグをフィルタするが、
+返り値には影響しない点に注意すること。
 <P>
-If the specified token was not found, or no (specified) devices could be
-identified, or it is impossible to gather any information about the device
-identifiers or device content an exit code of 2 is returned.
+
+
+
+指定されたトークンが見つからなかった場合、または (指定された) デバイスが特定できなかった場合、
+またはデバイスの識別子やデバイスの内容についての情報が収集できなかった
+場合、返り値 2 が返される。
 <P>
-For usage or other errors, an exit code of 4 is returned.
+
+使用法または他のエラーの場合、返り値 4 が返される。
 <P>
-If an ambivalent probing result was detected by low-level probing mode (<B>-p</B>), an exit code of 8 is
-returned.
+
+
+低レベルの検知モード (<B>-p</B>) で、曖昧な検知結果が返された場合、返り値 8 が返される。
+
 <A NAME="lbAG">&nbsp;</A>
-<H2>CONFIGURATION FILE</H2>
+<H2>設定ファイル</H2>
 
-The standard location of the
+
+
+
+
+設定ファイル
 <I>/etc/blkid.conf</I>
 
-config file can be overridden by the environment variable BLKID_CONF.
-The following options control the libblkid library:
+の標準的な配置場所は、環境変数 BLKID_CONF で上書きできる。
+以下のオプションで libblkid ライブラリを制御できる:
 <DL COMPACT>
 <DT><I>SEND_UEVENT=&lt;yes|not&gt;</I>
 
 <DD>
-Sends uevent when
+
+
+
 <I>/dev/disk/by-{label,uuid,partuuid,partlabel}/</I>
 
-symlink does not match with LABEL, UUID, PARTUUID or PARTLABEL on the device.  Default is &quot;yes&quot;.
+シンボリックリンクがデバイスの LABEL, UUID, PARTUUID, PARTLABEL にマッチしない場合、
+uevent を送る。
+デフォルトは &quot;yes&quot; である。
 <DT><I>CACHE_FILE=&lt;path&gt;</I>
 
 <DD>
-Overrides the standard location of the cache file.  This setting can be
-overridden by the environment variable BLKID_FILE.  Default is
-<I>/run/blkid/blkid.tab</I>,
 
-or
+
+
+
+
+
+キャッシュファイルの標準の配置場所を上書きする。
+この設定は環境変数 BLKID_FILE で上書きできる。
+デフォルトは
+<I>/run/blkid/blkid.tab</I>、
+
+または /run ディレクトリがない場合は
 <I>/etc/blkid.tab</I>
 
-on systems without a /run directory.
+である。
 <DT><I>EVALUATE=&lt;methods&gt;</I>
 
 <DD>
-Defines LABEL and UUID evaluation method(s).  Currently, the libblkid library
-supports the &quot;udev&quot; and &quot;scan&quot; methods.  More than one method may be specified in
-a comma-separated list.  Default is &quot;udev,scan&quot;.  The &quot;udev&quot; method uses udev
+
+
+
+
+
+
+
+LABEL と UUID の評価方法を定義する。
+現在のところ、libblkid ライブラリは、評価方法として &quot;udev&quot; と &quot;scan&quot; をサポートしている。
+1 つ以上の評価方法をカンマ区切りのリストで指定できる。
+デフォルトは &quot;udev,scan&quot; である。
+&quot;udev&quot; は udev
 <I>/dev/disk/by-*</I>
 
-symlinks and the &quot;scan&quot; method scans all block devices from the
+シンボリックリンクを使い、&quot;scan&quot; は
 <I>/proc/partitions</I>
 
-file.
+ファイルにある全てのブロックデバイスをスキャンする。
+
 </DL>
 <A NAME="lbAH">&nbsp;</A>
-<H2>AUTHOR</H2>
+<H2>著者</H2>
+
+
+
 
 <B>blkid</B>
 
-was written by Andreas Dilger for libblkid and improved by Theodore Ts'o
-and Karel Zak.
+は libblkid のために Andreas Dilger によって書かれた。
+そして、Theodore Ts'o と Karel Zak によって完了された。
+
 <A NAME="lbAI">&nbsp;</A>
-<H2>ENVIRONMENT</H2>
+<H2>環境変数</H2>
+
 
 <DL COMPACT>
-<DT>Setting LIBBLKID_DEBUG=all enables debug output.<DD>
+<DT>LIBBLKID_DEBUG=all を設定することで、デバッグ出力を有効化できる。<DD>
+
 </DL>
 <A NAME="lbAJ">&nbsp;</A>
-<H2>SEE ALSO</H2>
+<H2>関連項目</H2>
 
 <B><A HREF="../man3/libblkid.3.html">libblkid</A></B>(3),
 
@@ -556,11 +666,15 @@ and Karel Zak.
 
 <B><A HREF="../man8/wipefs.8.html">wipefs</A></B>(8)
 
-<A NAME="lbAK">&nbsp;</A>
-<H2>AVAILABILITY</H2>
 
-The blkid command is part of the util-linux package and is available from
-<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/.">https://www.kernel.org/pub/linux/utils/util-linux/.</A>
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+blkid コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
 <P>
 
 <HR>
@@ -570,17 +684,17 @@ The blkid command is part of the util-linux package and is available from
 <DT><A HREF="#lbAC">書式</A><DD>
 <DT><A HREF="#lbAD">説明</A><DD>
 <DT><A HREF="#lbAE">オプション</A><DD>
-<DT><A HREF="#lbAF">RETURN CODE</A><DD>
-<DT><A HREF="#lbAG">CONFIGURATION FILE</A><DD>
-<DT><A HREF="#lbAH">AUTHOR</A><DD>
-<DT><A HREF="#lbAI">ENVIRONMENT</A><DD>
-<DT><A HREF="#lbAJ">SEE ALSO</A><DD>
-<DT><A HREF="#lbAK">AVAILABILITY</A><DD>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">設定ファイル</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+<DT><A HREF="#lbAI">環境変数</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
 </DL>
 <HR>
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 17:16:47 GMT, April 16, 2020
+Time: 09:20:33 GMT, April 18, 2020
 </BODY>
 </HTML>
