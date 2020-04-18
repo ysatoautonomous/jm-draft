@@ -284,7 +284,7 @@ I/O 制限 (別名 I/O トポロジー) の情報を表示する。
 で minix ファイルシステム以外の全てのサポートされているフォーマットを
 検出できる。
 .\"O This option is only useful together with \fB\-\-probe\fR.
-このオプションは、\fB\-\-probe\fR と一緒に指定された場合にのみ、役に立つ。
+このオプションは、\fB\-\-probe\fR と一緒に指定された場合にのみ、有効になる。
 .TP
 \fB\-o\fR, \fB\-\-output\fR \fIformat\fR
 .\"O Use the specified output format.  Note that the order of variables and
@@ -326,68 +326,124 @@ I/O 制限 (別名 I/O トポロジー) の情報を表示する。
 この出力形式は \fB\-\-label\fR と \fB\-\-uuid\fR オプションで常に有効にされる。
 .TP
 .B udev
-print key="value" pairs for easy import into the udev environment; the keys are
-prefixed by ID_FS_ or ID_PART_ prefixes.  The value may be modified to be
-safe for udev environment; allowed is plain ASCII, hex-escaping and valid UTF-8,
-everything else (including whitespaces) is replaced with '_'. The keys with
-_ENC postfix use hex-escaping for unsafe chars.
+.\"O print key="value" pairs for easy import into the udev environment; the keys are
+.\"O prefixed by ID_FS_ or ID_PART_ prefixes.  The value may be modified to be
+.\"O safe for udev environment; allowed is plain ASCII, hex-escaping and valid UTF-8,
+.\"O everything else (including whitespaces) is replaced with '_'. The keys with
+.\"O _ENC postfix use hex-escaping for unsafe chars.
+udev 環境で簡単にインポートできる key="value" ペアを表示する。
+キーにはプレフィックス ID_FS_ または ID_PART_ が付く。
+値は udev 環境で安全なように修正される場合がある。
+値は、プレーンの ASCII、16 進数エスケープ、有効な UTF-8、
+(空白を含む) 任意の文字がある。空白はアンダースコア '_' に置換される。
+キーに安全でない文字が含まれる場合、16 進数エスケープが行われ、
+ポストフィックス _ENC が付く。
 
-The udev output returns the ID_FS_AMBIVALENT tag if more superblocks are detected,
-and ID_PART_ENTRY_* tags are always returned for all partitions including empty
-partitions.
+.\"O The udev output returns the ID_FS_AMBIVALENT tag if more superblocks are detected,
+.\"O and ID_PART_ENTRY_* tags are always returned for all partitions including empty
+.\"O partitions.
+1 つ以上のスーパーブロックが検出された場合、udev の出力として、
+ID_FS_AMBIVALENT タグが返される。
+また、パーティションに空のパーティションが含まれる場合は、
+ID_PART_ENTRY_* タグが常に返される。
 
-This output format is \fBDEPRECATED\fR.
+.\"O This output format is \fBDEPRECATED\fR.
+この出力形式は\fB推奨されない\fR。
 .TP
 .B export
-print key=value pairs for easy import into the environment; this output format
-is automatically enabled when I/O Limits (\fB\-\-info\fR option) are requested.
+.\"O print key=value pairs for easy import into the environment; this output format
+.\"O is automatically enabled when I/O Limits (\fB\-\-info\fR option) are requested.
+環境にインポートしやすい key=value ペアを表示する。
+この出力形式は、I/O 制限 (\fB\-\-info\fR オプション) が要求された場合、
+自動的に有効化される。
 
-The non-printing characters are encoded by ^ and M- notation and all
-potentially unsafe characters are escaped.
+.\"O The non-printing characters are encoded by ^ and M- notation and all
+.\"O potentially unsafe characters are escaped.
+非表示文字は ^ と M- 形式でエンコードされ、
+潜在的に安全でない文字はエスケープされる。
 .RE
 .TP
 \fB\-O\fR, \fB\-\-offset\fR \fIoffset\fR
-Probe at the given \fIoffset\fR (only useful with \fB\-\-probe\fR).  This option can be
-used together with the \fB\-\-info\fR option.
+.\"O Probe at the given \fIoffset\fR (only useful with \fB\-\-probe\fR).  This option can be
+.\"O used together with the \fB\-\-info\fR option.
+指定された \fIoffset\fR で検出を行う
+(\fB\-\-probe\fR と一緒に指定された場合にのみ有効になる)。
+このオプションは、\fB\-\-info\fR オプションと一緒に指定できる。
 .TP
 \fB\-p\fR, \fB\-\-probe\fR
-Switch to low-level superblock probing mode (bypassing the cache).
+.\"O Switch to low-level superblock probing mode (bypassing the cache).
+(キャッシュをバイバスして) 低レベルのスーパーブロック検出モードに切り替える。
 
-Note that low-level probing also returns information about partition table type
-(PTTYPE tag) and partitions (PART_ENTRY_* tags). The tag names produced by
-low-level probing are based on names used internally by libblkid and it may be
-different than when executed without \fB\-\-probe\fR (for example PART_ENTRY_UUID= vs
-PARTUUID=). See also \fB\-\-no\-part\-details\fR.
+.\"O Note that low-level probing also returns information about partition table type
+.\"O (PTTYPE tag) and partitions (PART_ENTRY_* tags). The tag names produced by
+.\"O low-level probing are based on names used internally by libblkid and it may be
+.\"O different than when executed without \fB\-\-probe\fR (for example PART_ENTRY_UUID= vs
+.\"O PARTUUID=). See also \fB\-\-no\-part\-details\fR.
+低レベルの検出モードでは、パーティションテーブルタイプ (PTTYPE タグ) と
+パーティション (PART_ENTRY_* タグ) の情報も返される。
+低レベルの検出モードで出力されるタグ名は、
+libblkid が内部で使っている名前に基づいており、
+\fB\-\-probe\fR なしで実行した場合の名前とは異なる
+(例えば PART_ENTRY_UUID= と PARTUUID= のようになる)。
+\fB\-\-no\-part\-details\fR も参照すること。
 .TP
 \fB\-s\fR, \fB\-\-match\-tag\fR \fItag\fR
-For each (specified) device, show only the tags that match
-.IR tag .
-It is possible to specify multiple
+.\"O For each (specified) device, show only the tags that match
+.\"O .IR tag .
+(指定された) 各デバイスについて、
+.I tag
+にマッチしたタグのみを表示する。
+.\"O It is possible to specify multiple
+.\"O .B \-\-match\-tag
+.\"O options.  If no tag is specified, then all tokens are shown for all
+.\"O (specified) devices.
+複数の
 .B \-\-match\-tag
-options.  If no tag is specified, then all tokens are shown for all
-(specified) devices.
-In order to just refresh the cache without showing any tokens, use
+オプションを指定できる。
+タグが指定されない場合、(指定された) 全てのデバイスについて、
+全てのトークンを表示する。
+.\"O In order to just refresh the cache without showing any tokens, use
+.\"O .B "\-\-match\-tag none"
+.\"O with no other options.
+トークンを何も表示せず、単純にキャッシュをリフレッシュしたい場合、
+他のオプションを付けず、
 .B "\-\-match\-tag none"
-with no other options.
+を使うこと。
 .TP
 \fB\-S\fR, \fB\-\-size\fR \fIsize\fR
-Override the size of device/file (only useful with \fB\-\-probe\fR).
+.\"O Override the size of device/file (only useful with \fB\-\-probe\fR).
+デバイス/ファイルのサイズを上書きする
+(\fB\-\-probe\fR と一緒に指定した場合のみ有効である)。
 .TP
 \fB\-t\fR, \fB\-\-match\-token\fR \fINAME=value\fR
-Search for block devices with tokens named
+.\"O Search for block devices with tokens named
+.\"O .I NAME
+.\"O that have the value
+.\"O .IR value ,
+.\"O and display any devices which are found.
 .I NAME
-that have the value
-.IR value ,
-and display any devices which are found.
-Common values for
+で指定された名前で、値が
+.I value
+のトークンを持つブロックデバイスを検索し、
+見つかったデバイスを表示する。
+.\"O Common values for
+.\"O .I NAME
+.\"O include
+.\"O .BR TYPE ,
+.\"O .BR LABEL ,
+.\"O and
+.\"O .BR UUID .
 .I NAME
-include
+で良く使われる値は
 .BR TYPE ,
 .BR LABEL ,
-and
-.BR UUID .
-If there are no devices specified on the command line, all block devices
-will be searched; otherwise only the specified devices are searched.
+.B UUID
+である。
+.\"O If there are no devices specified on the command line, all block devices
+.\"O will be searched; otherwise only the specified devices are searched.
+コマンドラインでデバイスが指定されない場合、全てのブロック
+デバイスが検索される。
+指定された場合は、そのデバイスのみが検索される。
 .TP
 \fB\-u\fR, \fB\-\-usages\fR \fIlist\fR
 Restrict the probing functions to the specified (comma-separated) \fIlist\fR of "usage" types.
