@@ -8,7 +8,7 @@
 .\"         by Yuichi SATO <ysato444@yahoo.co.jp>
 .\" Updated & Modified Sat Apr 30 07:25:35 JST 2005 by Yuichi SATO
 .\" Updated & Modified Tue Dec 20 05:57:54 JST 2005 by Yuichi SATO
-.\" Updated & Modified Thu Apr 16 22:47:17 JST 2020
+.\" Updated & Modified Sat Apr 18 18:19:20 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH BLKID 8 "March 2013" "util-linux" "System Administration"
@@ -446,77 +446,135 @@ libblkid が内部で使っている名前に基づいており、
 指定された場合は、そのデバイスのみが検索される。
 .TP
 \fB\-u\fR, \fB\-\-usages\fR \fIlist\fR
-Restrict the probing functions to the specified (comma-separated) \fIlist\fR of "usage" types.
-Supported usage types are: filesystem, raid, crypto and other.  The list items may be
-prefixed with "no" to specify the usage types which should be ignored.  For example:
+.\"O Restrict the probing functions to the specified (comma-separated) \fIlist\fR of "usage" types.
+.\"O Supported usage types are: filesystem, raid, crypto and other.  The list items may be
+.\"O prefixed with "no" to specify the usage types which should be ignored.  For example:
+検知機能を指定した (カンマ区切りの) \fIlist\fR の「使用法」のタイプに限定する。
+サポートされる使用法のタイプは以下の通り: filesystem, raid, crypto, other.
+リストのアイテムはプレフィックス "no" を指定して、
+その使用法を無視させることができる。
+例:
 .sp
   blkid --probe --usages filesystem,other /dev/sda1
 .sp
-probes for all filesystem and other (e.g. swap) formats, and
+.\"O probes for all filesystem and other (e.g. swap) formats, and
+では、全てのファイルシステムとその他 (例えば、スワップ) 形式を検知する。
 .sp
   blkid --probe --usages noraid /dev/sda1
 .sp
-probes for all supported formats except RAIDs.
-This option is only useful together with \fB\-\-probe\fR.
+.\"O probes for all supported formats except RAIDs.
+では、RAID 以外の全てのサポートされる形式を検知する。
+.\"O This option is only useful together with \fB\-\-probe\fR.
+このオプションは \fB\-\-probe\fR と一緒に指定された場合にのみ有効である。
 .TP
 \fB\-U\fR, \fB\-\-uuid\fR \fIuuid\fR
-Look up the device that uses this filesystem \fIuuid\fR.  For more details see the
-\fB\-\-label\fR option.
+.\"O Look up the device that uses this filesystem \fIuuid\fR.  For more details see the
+.\"O \fB\-\-label\fR option.
+ファイルシステム\fIuuid\fR を使うデバイスを検索する。
+より詳細は \fB\-\-label\fR オプションを参照すること。
 .TP
 \fB\-V\fR, \fB\-\-version\fR
-Display version number and exit.
-.SH "RETURN CODE"
-If the specified device or device addressed by specified token (option
-\fB\-\-match\-token\fR) was found and it's possible to gather any information about the
-device, an exit code 0 is returned.  Note the option \fB\-\-match\-tag\fR filters output
-tags, but it does not affect return code.
+.\"O Display version number and exit.
+バージョン番号を表示して、終了する。
+.\"O .SH "RETURN CODE"
+.SH 返り値
+.\"O If the specified device or device addressed by specified token (option
+.\"O \fB\-\-match\-token\fR) was found and it's possible to gather any information about the
+.\"O device, an exit code 0 is returned.  Note the option \fB\-\-match\-tag\fR filters output
+.\"O tags, but it does not affect return code.
+指定されたデバイス、または指定されたトークン (オプション \fB\-\-match\-token\fR) で
+指し示されるデバイスが見つかって、デバイスの情報が収集できた場合、
+返り値 0 が返される。
+オプション \fB\-\-match\-tag\fR は出力タグをフィルタするが、
+返り値には影響しない点に注意すること。
 
-If the specified token was not found, or no (specified) devices could be
-identified, or it is impossible to gather any information about the device
-identifiers or device content an exit code of 2 is returned.
+.\"O If the specified token was not found, or no (specified) devices could be
+.\"O identified, or it is impossible to gather any information about the device
+.\"O identifiers or device content an exit code of 2 is returned.
+指定されたトークンが見つからなかった場合、または (指定された) デバイスが特定できなかった場合、
+またはデバイスの識別子やデバイスの内容についての情報が収集できなかった
+場合、返り値 2 が返される。
 
-For usage or other errors, an exit code of 4 is returned.
+.\"O For usage or other errors, an exit code of 4 is returned.
+使用法または他のエラーの場合、返り値 4 が返される。
 
-If an ambivalent probing result was detected by low-level probing mode (\fB\-p\fR), an exit code of 8 is
-returned.
-.SH CONFIGURATION FILE
-The standard location of the
+.\"O If an ambivalent probing result was detected by low-level probing mode (\fB\-p\fR), an exit code of 8 is
+.\"O returned.
+低レベルの検知モード (\fB\-p\fR) で、曖昧な検知結果が返された場合、返り値 8 が返される。
+.\"O .SH CONFIGURATION FILE
+.SH 設定ファイル
+.\"O The standard location of the
+.\"O .I /etc/blkid.conf
+.\"O config file can be overridden by the environment variable BLKID_CONF.
+.\"O The following options control the libblkid library:
+設定ファイル
 .I /etc/blkid.conf
-config file can be overridden by the environment variable BLKID_CONF.
-The following options control the libblkid library:
+の標準的な配置場所は、環境変数 BLKID_CONF で上書きできる。
+以下のオプションで libblkid ライブラリを制御できる:
 .TP
 .I SEND_UEVENT=<yes|not>
-Sends uevent when
+.\"O Sends uevent when
+.\"O .I /dev/disk/by-{label,uuid,partuuid,partlabel}/
+.\"O symlink does not match with LABEL, UUID, PARTUUID or PARTLABEL on the device.  Default is "yes".
 .I /dev/disk/by-{label,uuid,partuuid,partlabel}/
-symlink does not match with LABEL, UUID, PARTUUID or PARTLABEL on the device.  Default is "yes".
+シンボリックリンクがデバイスの LABEL, UUID, PARTUUID, PARTLABEL にマッチしない場合、
+uevent を送る。
+デフォルトは "yes" である。
 .TP
 .I CACHE_FILE=<path>
-Overrides the standard location of the cache file.  This setting can be
-overridden by the environment variable BLKID_FILE.  Default is
-.IR /run/blkid/blkid.tab ,
-or
+.\"O Overrides the standard location of the cache file.  This setting can be
+.\"O overridden by the environment variable BLKID_FILE.  Default is
+.\"O .IR /run/blkid/blkid.tab ,
+.\"O or
+.\"O .I /etc/blkid.tab
+.\"O on systems without a /run directory.
+キャッシュファイルの標準の配置場所を上書きする。
+この設定は環境変数 BLKID_FILE で上書きできる。
+デフォルトは
+.IR /run/blkid/blkid.tab 、
+または /run ディレクトリがない場合は
 .I /etc/blkid.tab
-on systems without a /run directory.
+である。
 .TP
 .I EVALUATE=<methods>
-Defines LABEL and UUID evaluation method(s).  Currently, the libblkid library
-supports the "udev" and "scan" methods.  More than one method may be specified in
-a comma-separated list.  Default is "udev,scan".  The "udev" method uses udev
+.\"O Defines LABEL and UUID evaluation method(s).  Currently, the libblkid library
+.\"O supports the "udev" and "scan" methods.  More than one method may be specified in
+.\"O a comma-separated list.  Default is "udev,scan".  The "udev" method uses udev
+.\"O .I /dev/disk/by-*
+.\"O symlinks and the "scan" method scans all block devices from the
+.\"O .I /proc/partitions
+.\"O file.
+LABEL と UUID の評価方法を定義する。
+現在のところ、libblkid ライブラリは、評価方法として "udev" と "scan" をサポートしている。
+1 つ以上の評価方法をカンマ区切りのリストで指定できる。
+デフォルトは "udev,scan" である。
+"udev" は udev
 .I /dev/disk/by-*
-symlinks and the "scan" method scans all block devices from the
+シンボリックリンクを使い、"scan" は
 .I /proc/partitions
-file.
-.SH AUTHOR
+ファイルにある全てのブロックデバイスをスキャンする。
+.\"O .SH AUTHOR
+.SH 著者
+.\"O .B blkid
+.\"O was written by Andreas Dilger for libblkid and improved by Theodore Ts'o
+.\"O and Karel Zak.
 .B blkid
-was written by Andreas Dilger for libblkid and improved by Theodore Ts'o
-and Karel Zak.
-.SH ENVIRONMENT
-.IP "Setting LIBBLKID_DEBUG=all enables debug output."
-.SH SEE ALSO
+は libblkid のために Andreas Dilger によって書かれた。
+そして、Theodore Ts'o と Karel Zak によって完了された。
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.\"O .IP "Setting LIBBLKID_DEBUG=all enables debug output."
+.IP "LIBBLKID_DEBUG=all を設定することで、デバッグ出力を有効化できる。"
+.\"O .SH SEE ALSO
+.SH 関連項目
 .BR libblkid (3),
 .BR findfs (8),
 .BR lsblk (8),
 .BR wipefs (8)
-.SH AVAILABILITY
-The blkid command is part of the util-linux package and is available from
-https://www.kernel.org/pub/linux/utils/util-linux/.
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The blkid command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+blkid コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
