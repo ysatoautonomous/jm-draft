@@ -166,19 +166,30 @@ JSON 出力形式を使う。
 含まれる (\fB\-\-mtab\fP を参照すること)。
 .TP
 .BR \-l , " \-\-list"
-Use the list output format.  This output format is automatically enabled if the
-output is restricted by the \fB\-t\fP, \fB\-O\fP, \fB\-S\fP or \fB\-T\fP
-option and the option \fB\-\-submounts\fP is not used or if more that one
-source file (the option \fB\-F\fP) is specified.
+.\"O Use the list output format.  This output format is automatically enabled if the
+.\"O output is restricted by the \fB\-t\fP, \fB\-O\fP, \fB\-S\fP or \fB\-T\fP
+.\"O option and the option \fB\-\-submounts\fP is not used or if more that one
+.\"O source file (the option \fB\-F\fP) is specified.
+リスト出力形式を使う。
+出力が \fB\-t\fP, \fB\-O\fP, \fB\-S\fP, \fB\-T\fP オプションで制限された場合、
+またはオプション \fB\-\-submounts\fP が指定されなかった場合、
+または 1 つ以上のソースファイル (オプション \fB\-F\fP) が指定された場合、
+この出力形式が自動的に有効化される。
 .TP
 .BR \-M , " \-\-mountpoint \fIpath\fP"
-Explicitly define the mountpoint file or directory.  See also \fB\-\-target\fP.
+.\"O Explicitly define the mountpoint file or directory.  See also \fB\-\-target\fP.
+明示的にマウントポイントファイルまたはディレクトリを定義する。
+\fB\-\-target\fP も参照すること。
 .TP
 .BR \-m , " \-\-mtab"
-Search in
-.IR /etc/mtab .
-The output is in the list format by default (see \fB\-\-tree\fP).  The output may include user
-space mount options.
+.\"O Search in
+.\"O .IR /etc/mtab .
+.\"O The output is in the list format by default (see \fB\-\-tree\fP).  The output may include user
+.\"O space mount options.
+.I /etc/mtab
+を検索する。
+出力は、デフォルトでリスト形式である (\fB\-\-tree\fP を参照すること)。
+出力にはユーザー空間のマウントオプションが含まれる。
 .TP
 .BR \-N , " \-\-task \fItid\fP"
 Use alternative namespace /proc/<tid>/mountinfo rather than the default
@@ -352,24 +363,36 @@ Monitors mount, unmount, remount and move on /mnt/foo.
 Waits for /mnt/foo unmount.
 .IP "\fBfindmnt \-\-poll=remount \-t ext3 \-O ro\fP"
 Monitors remounts to read-only mode on all ext3 filesystems.
-.SH ENVIRONMENT
+.\"O .SH ENVIRONMENT
+.SH 環境変数
 .IP LIBMOUNT_FSTAB=<path>
-overrides the default location of the fstab file
+.\"O overrides the default location of the fstab file
+fstab ファイルのデフォルトの場所を上書きする。
 .IP LIBMOUNT_MTAB=<path>
-overrides the default location of the mtab file
+.\"O overrides the default location of the mtab file
+mtab ファイルのデフォルトの場所を上書きする。
 .IP LIBMOUNT_DEBUG=all
-enables libmount debug output
+.\"O enables libmount debug output
+libmount デバッグ出力を有効にする。
 .IP LIBSMARTCOLS_DEBUG=all
-enables libsmartcols debug output
+.\"O enables libsmartcols debug output
+libsmartcols デバッグ出力を有効にする。
 .IP LIBSMARTCOLS_DEBUG_PADDING=on
-use visible padding characters. Requires enabled LIBSMARTCOLS_DEBUG.
-.SH AUTHORS
+.\"O use visible padding characters. Requires enabled LIBSMARTCOLS_DEBUG.
+表示される埋め文字を使う。LIBSMARTCOLS_DEBUG を有効にする必要がある。
+.\"O .SH AUTHORS
+.SH 著者
 .nf
 Karel Zak <kzak@redhat.com>
 .fi
-.SH SEE ALSO
+.\"O .SH SEE ALSO
+.SH 関連項目
 .BR fstab (5),
 .BR mount (8)
-.SH AVAILABILITY
-The findmnt command is part of the util-linux package and is available from
-https://www.kernel.org/pub/linux/utils/util-linux/.
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The findmnt command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+findmnt コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手可能である。
