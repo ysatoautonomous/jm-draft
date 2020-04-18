@@ -1,0 +1,191 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Apr 18 19:45:30 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH BLKZONE 8 "February 2017" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O blkzone \- run zone command on a device
+blkzone \- デバイスにゾーン (zone) コマンドを実行する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B blkzone
+.I command
+[options]
+.I device
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B blkzone
+.\"O is used to run zone command on device that support the Zoned Block Commands
+.\"O (ZBC) or Zoned-device ATA Commands (ZAC). The zones to operate on can be
+.\"O specified using the offset, count and length options.
+.B blkzone
+は Zoned Block Commands (ZBC) または Zoned-device ATA Commands (ZAC) を
+サポートするデバイスにゾーンコマンドを実行するのに使われる。
+操作するゾーンは、offset, count, length オプションを使って指定できる。
+.PP
+.\"O The
+.\"O .I device
+.\"O argument is the pathname of the block device.
+.I device
+引き数はブロックデバイスのパス名である。
+.\"O .SH COMMANDS
+.SH コマンド
+.SS report
+.\"O The command \fBblkzone report\fP is used to report device zone information.
+コマンド \fBblkzone report\fP を使って、デバイスのゾーン情報を表示できる。
+.PP
+.\"O By default, the command will report all zones from the start of the
+.\"O block device. Options may be used to modify this behavior, changing the
+.\"O starting zone or the size of the report, as explained below.
+デフォルトでは、このコマンドはブロックデバイスの開始点からの全ての
+ゾーンを表示する。
+オプションでこの挙動を変更することができる。
+以下に説明するように、開始ゾーンやレポートのサイズを変更できる。
+
+.\"O .B Report output
+.B レポート出力
+.TS
+tab(:);
+l l.
+.\"O start:Zone start sector
+.\"O len:Zone length in number of sectors
+.\"O wptr:Zone write pointer position
+.\"O reset:Reset write pointer recommended
+.\"O non-seq:Non-sequential write resources active
+.\"O cond:Zone condition
+.\"O type:Zone type
+start:ゾーンの開始セクタ
+len:ゾーンの長さ (セクタ数)
+wptr:ゾーンの書き込みポインターの位置
+reset:推奨される書き込みポインターのリセット
+non-seq:非連続書き込みリソースがアクティブであるか
+cond:ゾーンの条件
+type:ゾーンのタイプ
+.TE
+
+.\"O .B Zone conditions
+.B ゾーン条件
+.TS
+tab(:);
+l l.
+.\"O cl:Closed
+.\"O nw:Not write pointer
+.\"O em:Empty
+.\"O fu:Full
+.\"O oe:Explicitly opened
+.\"O oi:Implicitly opened
+.\"O ol:Offline
+.\"O ro:Read only
+.\"O x?:Reserved conditions (should not be reported)
+cl:クローズされている。
+nw:書き込みポインターではない。
+em:空である。
+fu:いっぱいである。
+oe:明示的にオープンされている。
+oi:暗黙的にオープンされている。
+ol:オフラインである。
+ro:書き込みのみである。
+x?:予約された条件である (レポートすべきでない)。
+.TE
+
+.SS reset
+.\"O The command \fBblkzone reset\fP is used to reset one or more zones. Unlike
+.\"O .BR sg_reset_wp (8),
+.\"O this command operates from the block layer and can reset a range of zones.
+コマンド \fBblkzone reset\fP を使い、1 つ以上のゾーンをリセットできる。
+.BR sg_reset_wp (8)
+と異なり、このコマンドはブロックレイヤーから操作し、ゾーンの範囲を
+リセットできる。
+.PP
+.\"O By default, the command will operate from the zone at device 
+.\"O sector 0 and reset all zones. Options may be used to modify this behavior
+.\"O as well as specify the operation to be performed on the zone, as explained below.
+デフォルトでは、このコマンドはデバイスのセクタ 0 にあるゾーンから操作し、
+全てのゾーンをリセットする。
+オプションを使ってこの挙動を変更可能であり、下記に示すゾーンに対する
+操作も指定できる。
+
+.\"O .SH OPTIONS
+.SH オプション
+.\"O The
+.\"O .I offset
+.\"O and
+.\"O .I length
+.\"O option arguments may be followed by the multiplicative suffixes KiB (=1024),
+.\"O MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB (the "iB" is
+.\"O optional, e.g., "K" has the same meaning as "KiB") or the suffixes
+.\"O KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+オプションの引き数
+.I offset
+と
+.I length
+は倍数のサフィックス KiB (=1024), MiB (=1024*1024),
+GiB, TiB, PiB, EiB, ZiB, YiB を付けることができる
+("iB" はオプションであり、例えば "K" は "KiB" と同じ意味である)。
+また、フィックス KB (=1000), MB (=1000*1000),
+GB, TB, PB, EB, ZB, YB を付けることもできる。
+.\"O Additionally, the 0x prefix can be used to specify \fIoffset\fR and
+.\"O \fIlength\fR in hex.
+さらに、\fIoffset\fR と\fIlength\fR を 16 進数で指定する場合は、
+プレフィックス 0x を付ける。
+.TP
+.BR \-o , " \-\-offset "\fIsector\fP
+.\"O The starting zone specified as a sector offset. The provided offset in sector
+.\"O units (512 bytes) should match the start of a zone. The default value is zero.
+開始ゾーンをセクタオフセットで指定する。
+指定されたセクタ単位 (512 バイト単位) のオフセットは、
+ゾーンの開始点を一致する必要がある。
+デフォルト値は 0 である。
+.TP
+.BR \-l , " \-\-length "\fIsectors\fP
+.\"O The maximum number of sectors the command should operate on. The default value
+.\"O is the number of sectors remaining after \fIoffset\fR. This option cannot be
+.\"O used together with the option \fB\-\-count\fP.
+コマンドで操作する最大セクタ数。
+デフォルト値は、\fIoffset\fR 以降の残りのセクタである。
+このオプションは、\fB\-\-count\fP オプションと一緒に指定できない。
+.TP
+.BR \-c , " \-\-count "\fIcount\fP
+.\"O The maximum number of zones the command should operate on. The default value
+.\"O is the number of zones starting from \fIoffset\fR. This option cannot be
+.\"O used together with the option \fB\-\-length\fP.
+コマンドで操作する最大ゾーン数。
+デフォルト値は、\fIoffset\fR から始まるゾーン数である。
+このオプションは、\fB\-\-length\fP オプションと一緒に指定できない。
+.TP
+.BR \-v , " \-\-verbose"
+.\"O Display the number of zones returned in the report or the range of sectors
+.\"O reset..
+レポートで返されるゾーン数、またはリセットされるセクタの範囲を
+表示する。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH AUTHORS
+.SH 著者
+.nf
+Shaun Tancheff <shaun@tancheff.com>
+Karel Zak <kzak@redhat.com>
+.fi
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR sg_rep_zones (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The blkzone command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+blkzone コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
