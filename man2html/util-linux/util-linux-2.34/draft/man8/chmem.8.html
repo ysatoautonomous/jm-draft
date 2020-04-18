@@ -1,0 +1,259 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of CHMEM</TITLE>
+</HEAD><BODY>
+<H1>CHMEM</H1>
+Section: System Administration (8)<BR>Updated: October 2016<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+chmem - メモリを設定する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>chmem</B>
+
+[<B>-h</B>] [<B>-V</B>] [<B>-v</B>] [<B>-e</B>|<B>-d</B>]
+
+[<I>SIZE</I>|<I>RANGE</I>|<B>-b</B> <I>BLOCKRANGE</I>]
+[-z ZONE]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+chmem コマンドは、指定されたサイズまたは範囲のメモリを、オンラインまたは
+オフラインに設定する。
+<DL COMPACT>
+<DT>-<DD>
+
+
+
+<I>SIZE</I> を &lt;size&gt;[m|M|g|G] で指定する。
+m または M を付けると、&lt;size&gt; はメモリサイズを MiB (1024 x 1024 バイト) で指定する。
+g または G を付けると、&lt;size&gt; はメモリサイズを
+GiB (1024 x 1024 x 1024 バイト) で指定する。
+デフォルトの単位は MiB である。
+<DT>-<DD>
+
+
+
+<I>RANGE</I> を 0x&lt;start&gt;-0x&lt;end&gt; の形式で指定する。
+これは <B>lsmem</B> コマンドの出力と同じである。
+&lt;start&gt; はメモリ範囲の最初のバイトの 16 進数アドレスであり、
+&lt;end&gt; は最後のバイトの 16 進数アドレスである。
+<DT>-<DD>
+
+
+
+
+
+<I>BLOCKRANGE</I> を &lt;first&gt;-&lt;last&gt; の形式、または &lt;block&gt; の形式で指定する。
+これは <B>lsmem</B> コマンドの出力と同じである。
+&lt;first&gt; はメモリ範囲の最初のメモリブロック番号であり、
+&lt;last&gt; は最後のメモリブロック番号である。
+もしくは、1 つのブロックを指定することもできる。
+<I>BLOCKRANGE</I> は、<B>--blocks</B> オプションが必要である。
+<DT>-<DD>
+
+
+
+
+
+
+<I>ZONE</I> をメモリゾーンの名前として指定する。
+これは <B>lsmem -o +ZONES</B> コマンドの出力と同じである。
+この出力では、各メモリ範囲の 1 つ以上の有効なメモリゾーンを表示する。
+複数のゾーンが表示された場合、メモリ範囲は現在の最初のゾーンに紐づく。
+デフォルトでは、chmem は、メモリが有効なゾーンにある場合、
+オンラインのメモリを移動可能ゾーン (zone Movable) にする。
+デフォルトは、<B>--zone</B> オプションで他の有効なゾーンを指定して、変更できる。
+
+
+
+
+
+メモリバルーンニングでは、可能であれば、オンラインのメモリと
+オフラインのメモリに、移動可能ゾーンを選択することが推奨される。
+このゾーンにあるメモリは、再度オフラインにされやすいが、
+任意のカーネル割り当てでは使われず、移動可能な (migratable) ページ
+(例えば、匿名 (anonymous) ページまたはページキャッシュのページ) に使われず。
+全ての利用可能なゾーンを見るには、<B>--help</B> オプションを使うこと。
+</DL>
+<P>
+
+
+
+<I>SIZE</I> と <I>RANGE</I> は Linux メモリブロックサイズに調整される。
+これは <B>lsmem</B> コマンドの出力で表示されるものである。
+<P>
+
+
+
+
+
+
+メモリをオンラインする設定は、様々な理由で失敗する。
+仮想化システムでは、例えばメモリがオーバーコミットされていて、
+ハイパーバイザーに十分なメモリが残っていない場合に失敗する。
+メモリをオフラインにする設定は、Linux がメモリを解放できない場合に失敗する。
+要求したメモリの一部しかオンラインまたはオフラインに設定できなかった場合、
+要求された総量ではなく、オフラインまたはオンラインに設定できたメモリ量を
+メッセージで返す。
+<P>
+
+
+
+メモリをオンラインに設定する場合、<B>chmem</B> は最下位のメモリブロックから開始する。
+メモリをオフラインに設定する場合、<B>chmem</B> は最上位のメモリブロックから開始する。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-b</B>, <B>--blocks</B>
+
+<DD>
+
+
+<B>--enable</B> と <B>--disable</B> オプションで、
+<I>RANGE</I> または <I>SIZE</I> の代わりに、<I>BLOCKRANGE</I> 引き数を使う。
+<DT><B>-d</B>, <B>--disable</B>
+
+<DD>
+
+指定した <I>RANGE</I>, <I>SIZE</I>, <I>BLOCKRANGE</I> でメモリをオフラインに設定する。
+<DT><B>-e</B>, <B>--enable</B>
+
+<DD>
+
+指定した <I>RANGE</I>, <I>SIZE</I>, <I>BLOCKRANGE</I> でメモリをオンラインに設定する。
+<DT><B>-z</B>, <B>--zone</B>
+
+<DD>
+
+
+
+指定された <I>RANGE</I>, <I>SIZE</I>, <I>BLOCKRANGE</I> で、
+メモリをオンラインまたはオフラインにするメモリ <I>ZONE</I> を選択する。
+デフォルトでは、もし可能であれば、移動可能ゾーン (zone Movable) でオンラインに設定される。
+<DT><B>-h</B>, <B>--help</B>
+
+<DD>
+
+簡単なヘルプを表示して、終了する。
+<DT><B>-v</B>, <B>--verbose</B>
+
+<DD>
+
+
+詳細モード。<B>chmem</B> に、進捗についてのデバッグメッセージを表示させる。
+<DT><B>-V</B>, <B>--version</B>
+
+<DD>
+
+バージョン番号を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+<B>chmem</B>
+
+は以下の返り値を持つ:
+<DL COMPACT>
+<DT><B>0</B>
+
+<DD>
+
+成功
+<DT><B>1</B>
+
+<DD>
+
+失敗
+<DT><B>64</B>
+
+<DD>
+
+部分的に成功
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+<DL COMPACT>
+<DT><B>chmem --enable 1024</B>
+
+<DD>
+
+このコマンドでは、1024 MiB のメモリをオンラインに設定することを要求する。
+<DT><B>chmem -e 2g</B>
+
+<DD>
+
+このコマンドでは、2 GiB のメモリをオンラインに設定することを要求する。
+<DT><B>chmem --disable 0x00000000e4000000-0x00000000f3ffffff</B>
+
+<DD>
+
+
+このコマンドでは、0x00000000e4000000 で開始して
+0x00000000f3ffffff で終了するメモリ範囲をオフラインに設定することを要求する。
+<DT><B>chmem -b -d 10</B>
+
+<DD>
+
+このコマンドでは、メモリブロック番号 10 をオフラインに設定することを要求する。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/lsmem.1.html">lsmem</A></B>(1)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+<B>chmem</B> コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:02:59 GMT, April 18, 2020
+</BODY>
+</HTML>
