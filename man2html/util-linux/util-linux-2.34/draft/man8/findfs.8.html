@@ -1,0 +1,205 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of FINDFS</TITLE>
+</HEAD><BODY>
+<H1>FINDFS</H1>
+Section: System Administration (8)<BR>Updated: March 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+findfs - ラベルまたは UUID でファイルシステムを見つける。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>findfs</B>
+
+<B>NAME=</B><I>value</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>findfs</B>
+
+は、システム上のブロックデバイスを検索し、
+指定されたタグをもつファイルシステムまたはパーティションを探す。
+現在サポートされているタグは以下の通り:
+<DL COMPACT>
+<DT><B>LABEL=&lt;label&gt;</B>
+
+<DD>
+
+ファイルシステムラベルを指定する。
+<DT><B>UUID=&lt;uuid&gt;</B>
+
+<DD>
+
+ファイルシステム UUID を指定する。
+<DT><B>PARTUUID=&lt;uuid&gt;</B>
+
+<DD>
+
+
+パーティション UUID を指定する。
+このパーティション識別子は、例えば、GUID Partition Table (GPT) パーティションテーブルで
+サポートされる。
+<DT><B>PARTLABEL=&lt;label&gt;</B>
+
+<DD>
+
+
+パーティションラベル (名) を指定する。
+このパーティションラベルは、例えば、
+GUID Partition Table (GPT) または MAC パーティションテーブルでサポートされる。
+</DL>
+<P>
+
+
+
+ファイルシステムまたはパーティションが見つかった場合、デバイス名が
+標準出力に表示される。
+<P>
+
+
+ファイルシステムとパーティションの完全な概要については、例えば以下で
+取得できる。
+<DL COMPACT><DT><DD>
+<P>
+<BR>
+
+<B>lsblk --fs</B>
+
+<BR>
+
+<P>
+<B>partx --show &lt;disk&gt;</B>
+
+<BR>
+
+<P>
+<B>blkid</B>
+
+<BR>
+
+<P>
+</DL>
+
+<P>
+<P>
+
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>返り値</H2>
+
+<DL COMPACT><DT><DD>
+
+<DL COMPACT>
+<DT><B>0</B>
+
+<DD>
+
+成功
+<DT><B>1</B>
+
+<DD>
+
+ラベルまたは UUID が見つからなかった。
+<DT><B>2</B>
+
+<DD>
+
+使用法のエラー。引き数の数の間違い。不明なオプション。
+
+</DL>
+</DL>
+
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>著者</H2>
+
+
+
+
+
+
+<B>findfs</B>
+
+は元々
+
+Theodore Ts'o
+
+によって書かれた。
+
+
+
+
+そして、util-linux パッケージのために
+
+Karel Zak
+
+によって書き直された。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT>LIBBLKID_DEBUG=all<DD>
+
+libblkid デバッグ出力を有効にする。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/blkid.8.html">blkid</A></B>(8),
+
+<B><A HREF="../man8/lsblk.8.html">lsblk</A></B>(8),
+
+<B><A HREF="../man8/partx.8.html">partx</A></B>(8)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+findfs コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">返り値</A><DD>
+<DT><A HREF="#lbAF">著者</A><DD>
+<DT><A HREF="#lbAG">環境変数</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:36:19 GMT, April 18, 2020
+</BODY>
+</HTML>
