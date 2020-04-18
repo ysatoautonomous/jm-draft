@@ -1,0 +1,375 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun Apr 19 00:32:28 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH FINDMNT 8 "May 2018" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O findmnt \- find a filesystem
+findmnt \- ファイルシステムを見つける。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B findmnt
+[options]
+.sp
+.B findmnt
+[options]
+.IR device | mountpoint
+.sp
+.B findmnt
+[options]
+.RB [ \-\-source ]
+.I device
+.RB [ \-\-target | \-\-mountpoint ]
+.I mountpoint
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B findmnt
+.\"O will list all mounted filesystems or search for a filesystem.  The
+.\"O .B \%findmnt
+.\"O command is able to search in
+.\"O .IR /etc/fstab ,
+.\"O .I /etc/mtab
+.\"O or
+.\"O .IR /proc/self/mountinfo .
+.B findmnt
+は全てのマウントされているファイルシステムをリストするか、
+ファイルシステムを検索する。
+.B \%findmnt
+コマンドは
+.IR /etc/fstab ,
+.IR /etc/mtab ,
+.I /proc/self/mountinfo
+を検索できる。
+.\"O If
+.\"O .I device
+.\"O or
+.\"O .I mountpoint
+.\"O is not given, all filesystems are shown.
+.I device
+または
+.I mountpoint
+が指定されていない場合、全てのファイルシステムが表示される。
+.PP
+.\"O The device may be specified by device name, major:minor numbers,
+.\"O filesystem label or UUID, or partition label or UUID.  Note that
+.\"O .B \%findmnt
+.\"O follows
+.\"O .BR mount (8)
+.\"O behavior where a device name may be interpreted
+.\"O as a mountpoint (and vice versa) if the \fB\-\-target\fR, \fB\-\-mountpoint\fR or
+.\"O \fB\-\-source\fR options are not specified.
+デバイスは、デバイス名、メジャー:マイナー番号、
+ファイルシステムのラベルまたは UUID、
+パーティションのラベルまたは UUID で指定できる。
+\fB\-\-target\fR, \fB\-\-mountpoint\fR, \fB\-\-source\fR が指定されていない場合、
+.B \%findmnt
+は
+.BR mount (8)
+の挙動に従い、デバイス名はマウントポイントとして解釈される (その逆もある)。
+.PP
+.\"O The command prints all mounted filesystems in the tree-like format by default.
+このコマンドは、デフォルトでは全てのマウントされているファイルシステムを
+ツリー状の形式で表示する。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-A , " \-\-all"
+.\"O Disable all built-in filters and print all filesystems.
+全ての組み込みのフィルターを無効化し、全てのファイルシステムを
+表示する。
+.TP
+.BR \-a , " \-\-ascii"
+.\"O Use ascii characters for tree formatting.
+ツリー形式で ascii 文字を使う。
+.TP
+.BR \-b , " \-\-bytes"
+.\"O Print the SIZE, USED and AVAIL columns in bytes rather than in a human-readable format.
+SIZE, USED, AVAIL カラムを、人が読みやすい形式ではなく、バイト単位で表示する。
+.TP
+.BR \-C , " \-\-nocanonicalize"
+.\"O Do not canonicalize paths at all.  This option affects the comparing of paths
+.\"O and the evaluation of tags (LABEL, UUID, etc.).
+パスを正則化 (canonicalize) しない。
+このオプションはパスの比較とタグ (LABEL, UUID など)　の評価に影響する。
+.TP
+.BR \-c , " \-\-canonicalize"
+.\"O Canonicalize all printed paths.
+全ての表示されたパスを正則化する。
+.TP
+.BR \-D , " \-\-df"
+.\"O Imitate the output of
+.\"O .BR df (1).
+.\"O This option is equivalent to
+.\"O .B \-o\ SOURCE,FSTYPE,SIZE,USED,AVAIL,USE%,TARGET
+.\"O but excludes all pseudo filesystems.
+.\"O Use \fB\-\-all\fP to print all filesystems.
+.BR df (1)
+の出力を模倣する。
+このオプションは
+.B \-o\ SOURCE,FSTYPE,SIZE,USED,AVAIL,USE%,TARGET
+と同様であるが、全ての擬似 (pseudo) ファイルシステムは除く。
+全てのファイルシステムを表示するには、\fB\-\-all\fP を使うこと。
+.TP
+.BR \-d , " \-\-direction \fIword\fP"
+.\"O The search direction, either
+.\"O .B forward
+.\"O or
+.\"O .BR backward .
+検索方向を
+.B forward
+または
+.B backward
+で指定する。
+.TP
+.BR \-e , " \-\-evaluate"
+.\"O Convert all tags (LABEL, UUID, PARTUUID or PARTLABEL) to the corresponding device names.
+全てのタグ (LABEL, UUID, PARTUUID, PARTLABEL) を対応するデバイス名に変換する。
+.TP
+.BR \-F , " \-\-tab\-file \fIpath\fP"
+.\"O Search in an alternative file.  If used with \fB\-\-fstab\fP, \fB\-\-mtab\fP
+.\"O or \fB\-\-kernel\fP, then it overrides the default paths.  If specified more
+.\"O than once, then tree-like output is disabled (see the \fB\-\-list\fP option).
+別のファイルを検索する。
+\fB\-\-fstab\fP, \fB\-\-mtab\fP, \fB\-\-kernel\fP と一緒に指定した場合、
+デフォルトのパスを上書きする。
+2 回以上指定された場合、ツリー状の出力は無効化される
+(\fB\-\-list\fP オプションを参照すること)。
+.TP
+.BR \-f , " \-\-first\-only"
+.\"O Print the first matching filesystem only.
+最初にマッチしたファイルシステムのみを表示する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+.BR \-i , " \-\-invert"
+.\"O Invert the sense of matching.
+マッチングの意味を逆にする。
+.TP
+.BR \-J , " \-\-json"
+.\"O Use JSON output format.
+JSON 出力形式を使う。
+.TP
+.BR \-k , " \-\-kernel"
+.\"O Search in
+.\"O .IR /proc/self/mountinfo .
+.\"O The output is in the tree-like format.  This is the default.  The output
+.\"O contains only mount options maintained by kernel (see also \fB\-\-mtab)\fP.
+.I /proc/self/mountinfo
+を検索する。
+出力はツリー状の形式である。これがデフォルトである。
+この出力にはカーネルによって管理されているマウントオプションのみが
+含まれる (\fB\-\-mtab\fP を参照すること)。
+.TP
+.BR \-l , " \-\-list"
+Use the list output format.  This output format is automatically enabled if the
+output is restricted by the \fB\-t\fP, \fB\-O\fP, \fB\-S\fP or \fB\-T\fP
+option and the option \fB\-\-submounts\fP is not used or if more that one
+source file (the option \fB\-F\fP) is specified.
+.TP
+.BR \-M , " \-\-mountpoint \fIpath\fP"
+Explicitly define the mountpoint file or directory.  See also \fB\-\-target\fP.
+.TP
+.BR \-m , " \-\-mtab"
+Search in
+.IR /etc/mtab .
+The output is in the list format by default (see \fB\-\-tree\fP).  The output may include user
+space mount options.
+.TP
+.BR \-N , " \-\-task \fItid\fP"
+Use alternative namespace /proc/<tid>/mountinfo rather than the default
+/proc/self/mountinfo.  If the option is specified more than once, then
+tree-like output is disabled (see the \fB\-\-list\fP option).  See also the
+.BR unshare (1)
+command.
+.TP
+.BR \-n , " \-\-noheadings"
+Do not print a header line.
+.TP
+.BR \-O , " \-\-options \fIlist\fP"
+Limit the set of printed filesystems.  More than one option
+may be specified in a comma-separated list.  The
+.B \-t
+and
+.B \-O
+options are cumulative in effect.  It is different from
+.B \-t
+in that each option is matched exactly; a leading
+.I no
+at the beginning does not have global meaning.  The "no" can used for
+individual items in the list.  The "no" prefix interpretation can be disabled
+by "+" prefix.
+.TP
+.BR \-o , " \-\-output \fIlist\fP"
+Define output columns.  See the \fB\-\-help\fP output to get a list of the
+currently supported columns.  The
+.B TARGET
+column contains tree formatting if the
+.B \-\-list
+or
+.B \-\-raw
+options are not specified.
+
+The default list of columns may be extended if \fIlist\fP is
+specified in the format \fI+list\fP (e.g. \fBfindmnt \-o +PROPAGATION\fP).
+.TP
+.B \-\-output\-all
+Output almost all available columns.  The columns that require
+.B \-\-poll
+are not included.
+.TP
+.BR \-P , " \-\-pairs"
+Use key="value" output format.  All potentially unsafe characters are hex-escaped (\\x<code>).
+.TP
+.BR \-p , " \-\-poll\fR[\fI=list\fR]"
+Monitor changes in the /proc/self/mountinfo file.  Supported actions are: mount,
+umount, remount and move.  More than one action may be specified in a
+comma-separated list.  All actions are monitored by default.
+
+The time for which \fB\-\-poll\fR will block can be restricted with the \fB\-\-timeout\fP
+or \fB\-\-first\-only\fP options.
+
+The standard columns always use the new version of the information from the
+mountinfo file, except the umount action which is based on the original
+information cached by
+.BR findmnt (8).
+The poll mode allows to use extra columns:
+.RS
+.TP
+.B ACTION
+mount, umount, move or remount action name; this column is enabled by default
+.TP
+.B OLD-TARGET
+available for umount and move actions
+.TP
+.B OLD-OPTIONS
+available for umount and remount actions
+.RE
+.TP
+.B \-\-pseudo
+Print only pseudo filesystems.
+.TP
+.BR \-R , " \-\-submounts"
+Print recursively all submounts for the selected filesystems.  The restrictions
+defined by options \fB\-t\fP, \fB\-O\fP, \fB\-S\fP, \fB\-T\fP and
+\fB\%\-\-direction\fP are not applied to submounts.  All submounts are always
+printed in tree-like order.  The option enables the tree-like output format by
+default.  This option has no effect for \fB\-\-mtab\fP or \fB\-\-fstab\fP.
+.TP
+.BR \-r , " \-\-raw"
+Use raw output format.  All potentially unsafe characters are hex-escaped (\\x<code>).
+.TP
+.B \-\-real
+Print only real filesystems.
+.TP
+.BR \-S , " \-\-source \fIspec\fP"
+Explicitly define the mount source.  Supported specifications are \fIdevice\fR,
+\fImaj\fB:\fImin\fR, \fBLABEL=\fIlabel\fR, \fBUUID=\fIuuid\fR,
+\fBPARTLABEL=\fIlabel\fR and \fBPARTUUID=\fIuuid\fR.
+.TP
+.BR \-s , " \-\-fstab"
+Search in
+.IR /etc/fstab .
+The output is in the list format (see \fB\-\-list\fR).
+.TP
+.BR \-T , " \-\-target \fIpath\fP"
+Define the mount target.  If \fIpath\fR
+is not a mountpoint file or directory, then
+.B findmnt
+checks the \fIpath\fR elements in reverse order to get the mountpoint (this feature is
+supported only when searching in kernel files and unsupported for \fB\-\-fstab\fP).  It's
+recommended to use the option \fB\-\-mountpoint\fR when checks of \fIpath\fR elements are
+unwanted and \fIpath\fR is a strictly specified mountpoint.
+.TP
+.BR \-t , " \-\-types \fIlist\fP"
+Limit the set of printed filesystems.  More than one type may be
+specified in a comma-separated list.  The list of filesystem types can be
+prefixed with
+.B no
+to specify the filesystem types on which no action should be taken.  For
+more details see
+.BR mount (8).
+.TP
+.B \-\-tree
+Enable tree-like output if possible.  The options is silently ignored for
+tables where is missing child-parent relation (e.g. fstab).
+.TP
+.BR \-U , " \-\-uniq"
+Ignore filesystems with duplicate mount targets, thus effectively skipping
+over-mounted mount points.
+.TP
+.BR \-u , " \-\-notruncate"
+Do not truncate text in columns.  The default is to not truncate the
+.BR TARGET ,
+.BR SOURCE ,
+.BR UUID ,
+.BR LABEL ,
+.BR PARTUUID ,
+.B PARTLABEL
+columns.  This option disables text truncation also in all other columns.
+.TP
+.BR \-v , " \-\-nofsroot"
+Do not print a [/dir] in the SOURCE column for bind mounts or btrfs subvolumes.
+.TP
+.BR \-w , " \-\-timeout \fImilliseconds\fP"
+Specify an upper limit on the time for which \fB\-\-poll\fR will block, in milliseconds.
+.TP
+.BR \-x , " \-\-verify"
+Check mount table content. The default is to verify
+.I /etc/fstab
+parsability and usability. It's possible to use this option also with \fB\-\-tab\-file\fP.
+It's possible to specify source (device) or target (mountpoint) to filter mount table. The option
+\fB\-\-verbose\fP forces findmnt to print more details.
+.TP
+.B \-\-verbose
+Force findmnt to print more information (\fB\-\-verify\fP only for now).
+.SH EXAMPLES
+.IP "\fBfindmnt \-\-fstab \-t nfs\fP"
+Prints all NFS filesystems defined in
+.IR /etc/fstab .
+.IP "\fBfindmnt \-\-fstab /mnt/foo\fP"
+Prints all
+.I /etc/fstab
+filesystems where the mountpoint directory is /mnt/foo.  It also prints bind mounts where /mnt/foo
+is a source.
+.IP "\fBfindmnt \-\-fstab \-\-target /mnt/foo\fP"
+Prints all
+.I /etc/fstab
+filesystems where the mountpoint directory is /mnt/foo.
+.IP "\fBfindmnt \-\-fstab \-\-evaluate\fP"
+Prints all
+.I /etc/fstab
+filesystems and converts LABEL= and UUID= tags to the real device names.
+.IP "\fBfindmnt \-n \-\-raw \-\-evaluate \-\-output=target LABEL=/boot\fP"
+Prints only the mountpoint where the filesystem with label "/boot" is mounted.
+.IP "\fBfindmnt \-\-poll \-\-mountpoint /mnt/foo\fP"
+Monitors mount, unmount, remount and move on /mnt/foo.
+.IP "\fBfindmnt \-\-poll=umount \-\-first-only \-\-mountpoint /mnt/foo\fP"
+Waits for /mnt/foo unmount.
+.IP "\fBfindmnt \-\-poll=remount \-t ext3 \-O ro\fP"
+Monitors remounts to read-only mode on all ext3 filesystems.
+.SH ENVIRONMENT
+.IP LIBMOUNT_FSTAB=<path>
+overrides the default location of the fstab file
+.IP LIBMOUNT_MTAB=<path>
+overrides the default location of the mtab file
+.IP LIBMOUNT_DEBUG=all
+enables libmount debug output
+.IP LIBSMARTCOLS_DEBUG=all
+enables libsmartcols debug output
+.IP LIBSMARTCOLS_DEBUG_PADDING=on
+use visible padding characters. Requires enabled LIBSMARTCOLS_DEBUG.
+.SH AUTHORS
+.nf
+Karel Zak <kzak@redhat.com>
+.fi
+.SH SEE ALSO
+.BR fstab (5),
+.BR mount (8)
+.SH AVAILABILITY
+The findmnt command is part of the util-linux package and is available from
+https://www.kernel.org/pub/linux/utils/util-linux/.
