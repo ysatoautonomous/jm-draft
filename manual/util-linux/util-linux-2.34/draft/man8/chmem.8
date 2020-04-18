@@ -1,0 +1,165 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Apr 18 20:44:08 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH CHMEM 8 "October 2016" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O chmem \- configure memory
+chmem \- メモリを設定する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B chmem
+.RB [ \-h "] [" \-V "] [" \-v "] [" \-e | \-d "]"
+[\fISIZE\fP|\fIRANGE\fP|\fB\-b\fP \fIBLOCKRANGE\fP]
+[-z ZONE]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The chmem command sets a particular size or range of memory online or offline.
+chmem コマンドは、指定されたサイズまたは範囲のメモリを、オンラインまたは
+オフラインに設定する。
+.
+.IP "\(hy" 2
+.\"O Specify \fISIZE\fP as <size>[m|M|g|G]. With m or M, <size> specifies the memory
+.\"O size in MiB (1024 x 1024 bytes). With g or G, <size> specifies the memory size
+.\"O in GiB (1024 x 1024 x 1024 bytes). The default unit is MiB.
+\fISIZE\fP を <size>[m|M|g|G] で指定する。
+m または M を付けると、<size> はメモリサイズを MiB (1024 x 1024 バイト) で指定する。
+g または G を付けると、<size> はメモリサイズを
+GiB (1024 x 1024 x 1024 バイト) で指定する。
+デフォルトの単位は MiB である。
+.
+.IP "\(hy" 2
+.\"O Specify \fIRANGE\fP in the form 0x<start>-0x<end> as shown in the output of the
+.\"O \fBlsmem\fP command. <start> is the hexadecimal address of the first byte and <end>
+.\"O is the hexadecimal address of the last byte in the memory range.
+\fIRANGE\fP を 0x<start>-0x<end> の形式で指定する。
+これは \fBlsmem\fP コマンドの出力と同じである。
+<start> はメモリ範囲の最初のバイトの 16 進数アドレスであり、
+<end> は最後のバイトの 16 進数アドレスである。
+.
+.IP "\(hy" 2
+.\"O Specify \fIBLOCKRANGE\fP in the form <first>-<last> or <block> as shown in the
+.\"O output of the \fBlsmem\fP command. <first> is the number of the first memory block
+.\"O and <last> is the number of the last memory block in the memory
+.\"O range. Alternatively a single block can be specified. \fIBLOCKRANGE\fP requires
+.\"O the \fB--blocks\fP option.
+\fIBLOCKRANGE\fP を <first>-<last> の形式、または <block> の形式で指定する。
+これは \fBlsmem\fP コマンドの出力と同じである。
+<first> はメモリ範囲の最初のメモリブロック番号であり、
+<last> は最後のメモリブロック番号である。
+もしくは、1 つのブロックを指定することもできる。
+\fIBLOCKRANGE\fP は、\fB--blocks\fP オプションが必要である。
+.
+.IP "\(hy" 2
+.\"O Specify \fIZONE\fP as the name of a memory zone, as shown in the output of the
+.\"O \fBlsmem -o +ZONES\fP command. The output shows one or more valid memory zones
+.\"O for each memory range. If multiple zones are shown, then the memory range
+.\"O currently belongs to the first zone. By default, chmem will set memory online
+.\"O to the zone Movable, if this is among the valid zones. This default can be
+.\"O changed by specifying the \fB--zone\fP option with another valid zone.
+\fIZONE\fP をメモリゾーンの名前として指定する。
+これは \fBlsmem -o +ZONES\fP コマンドの出力と同じである。
+この出力では、各メモリ範囲の 1 つ以上の有効なメモリゾーンを表示する。
+複数のゾーンが表示された場合、メモリ範囲は現在の最初のゾーンに紐づく。
+デフォルトでは、chmem は、メモリが有効なゾーンにある場合、
+オンラインのメモリを移動可能ゾーン (zone Movable) にする。
+デフォルトは、\fB--zone\fP オプションで他の有効なゾーンを指定して、変更できる。
+.\"O For memory ballooning, it is recommended to select the zone Movable for memory
+.\"O online and offline, if possible. Memory in this zone is much more likely to be
+.\"O able to be offlined again, but it cannot be used for arbitrary kernel
+.\"O allocations, only for migratable pages (e.g. anonymous and page cache pages).
+.\"O Use the \fB\-\-help\fR option to see all available zones.
+メモリバルーンニングでは、可能であれば、オンラインのメモリと
+オフラインのメモリに、移動可能ゾーンを選択することが推奨される。
+このゾーンにあるメモリは、再度オフラインにされやすいが、
+任意のカーネル割り当てでは使われず、移動可能な (migratable) ページ
+(例えば、匿名 (anonymous) ページまたはページキャッシュのページ) に使われず。
+全ての利用可能なゾーンを見るには、\fB\-\-help\fR オプションを使うこと。
+.
+.PP
+.\"O \fISIZE\fP and \fIRANGE\fP must be aligned to the Linux memory block size, as
+.\"O shown in the output of the \fBlsmem\fP command.
+\fISIZE\fP と \fIRANGE\fP は Linux メモリブロックサイズに調整される。
+これは \fBlsmem\fP コマンドの出力で表示されるものである。
+
+.\"O Setting memory online can fail for various reasons. On virtualized systems it
+.\"O can fail if the hypervisor does not have enough memory left, for example
+.\"O because memory was overcommitted. Setting memory offline can fail if Linux
+.\"O cannot free the memory. If only part of the requested memory can be set online
+.\"O or offline, a message tells you how much memory was set online or offline
+.\"O instead of the requested amount.
+メモリをオンラインする設定は、様々な理由で失敗する。
+仮想化システムでは、例えばメモリがオーバーコミットされていて、
+ハイパーバイザーに十分なメモリが残っていない場合に失敗する。
+メモリをオフラインにする設定は、Linux がメモリを解放できない場合に失敗する。
+要求したメモリの一部しかオンラインまたはオフラインに設定できなかった場合、
+要求された総量ではなく、オフラインまたはオンラインに設定できたメモリ量を
+メッセージで返す。
+
+.\"O When setting memory online \fBchmem\fP starts with the lowest memory block
+.\"O numbers. When setting memory offline \fBchmem\fP starts with the highest memory
+.\"O block numbers.
+メモリをオンラインに設定する場合、\fBchmem\fP は最下位のメモリブロックから開始する。
+メモリをオフラインに設定する場合、\fBchmem\fP は最上位のメモリブロックから開始する。
+.SH OPTIONS
+.TP
+.BR \-b ", " \-\-blocks
+Use a \fIBLOCKRANGE\fP parameter instead of \fIRANGE\fP or \fISIZE\fP for the
+\fB--enable\fP and \fB--disable\fP options.
+.TP
+.BR \-d ", " \-\-disable
+Set the specified \fIRANGE\fP, \fISIZE\fP, or \fIBLOCKRANGE\fP of memory offline.
+.TP
+.BR \-e ", " \-\-enable
+Set the specified \fIRANGE\fP, \fISIZE\fP, or \fIBLOCKRANGE\fP of memory online.
+.TP
+.BR \-z ", " \-\-zone
+Select the memory \fIZONE\fP where to set the specified \fIRANGE\fP, \fISIZE\fP,
+or \fIBLOCKRANGE\fP of memory online or offline. By default, memory will be set
+online to the zone Movable, if possible.
+.TP
+.BR \-h ", " \-\-help
+Print a short help text, then exit.
+.TP
+.BR \-v ", " \-\-verbose
+Verbose mode. Causes \fBchmem\fP to print debugging messages about it's
+progress.
+.TP
+.BR \-V ", " \-\-version
+Print the version number, then exit.
+.SH RETURN CODES
+.B chmem
+has the following return codes:
+.TP
+.B 0
+success
+.TP
+.B 1
+failure
+.TP
+.B 64
+partial success
+.SH EXAMPLES
+.TP
+.B chmem --enable 1024
+This command requests 1024 MiB of memory to be set online.
+.TP
+.B chmem -e 2g
+This command requests 2 GiB of memory to be set online.
+.TP
+.B chmem --disable 0x00000000e4000000-0x00000000f3ffffff
+This command requests the memory range starting with 0x00000000e4000000
+and ending with 0x00000000f3ffffff to be set offline.
+.TP
+.B chmem -b -d 10
+This command requests the memory block number 10 to be set offline.
+.SH SEE ALSO
+.BR lsmem (1)
+.SH AVAILABILITY
+The \fBchmem\fP command is part of the util-linux package and is available from
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE .
