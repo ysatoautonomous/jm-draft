@@ -1,7 +1,7 @@
 .\"
 .\" Japanese Version Copyright (c) 2020 Yuichi SATO
 .\"         all rights reserved.
-.\" Translated Sat Apr 18 20:44:08 JST 2020
+.\" Translated Sat Apr 18 23:00:00 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH CHMEM 8 "October 2016" "util-linux" "System Administration"
@@ -104,62 +104,92 @@ GiB (1024 x 1024 x 1024 バイト) で指定する。
 .\"O block numbers.
 メモリをオンラインに設定する場合、\fBchmem\fP は最下位のメモリブロックから開始する。
 メモリをオフラインに設定する場合、\fBchmem\fP は最上位のメモリブロックから開始する。
-.SH OPTIONS
+.\"O .SH OPTIONS
+.SH オプション
 .TP
 .BR \-b ", " \-\-blocks
-Use a \fIBLOCKRANGE\fP parameter instead of \fIRANGE\fP or \fISIZE\fP for the
-\fB--enable\fP and \fB--disable\fP options.
+.\"O Use a \fIBLOCKRANGE\fP parameter instead of \fIRANGE\fP or \fISIZE\fP for the
+.\"O \fB--enable\fP and \fB--disable\fP options.
+\fB--enable\fP と \fB--disable\fP オプションで、
+\fIRANGE\fP または \fISIZE\fP の代わりに、\fIBLOCKRANGE\fP 引き数を使う。
 .TP
 .BR \-d ", " \-\-disable
-Set the specified \fIRANGE\fP, \fISIZE\fP, or \fIBLOCKRANGE\fP of memory offline.
+.\"O Set the specified \fIRANGE\fP, \fISIZE\fP, or \fIBLOCKRANGE\fP of memory offline.
+指定した \fIRANGE\fP, \fISIZE\fP, \fIBLOCKRANGE\fP でメモリをオフラインに設定する。
 .TP
 .BR \-e ", " \-\-enable
-Set the specified \fIRANGE\fP, \fISIZE\fP, or \fIBLOCKRANGE\fP of memory online.
+.\"O Set the specified \fIRANGE\fP, \fISIZE\fP, or \fIBLOCKRANGE\fP of memory online.
+指定した \fIRANGE\fP, \fISIZE\fP, \fIBLOCKRANGE\fP でメモリをオンラインに設定する。
 .TP
 .BR \-z ", " \-\-zone
-Select the memory \fIZONE\fP where to set the specified \fIRANGE\fP, \fISIZE\fP,
-or \fIBLOCKRANGE\fP of memory online or offline. By default, memory will be set
-online to the zone Movable, if possible.
+.\"O Select the memory \fIZONE\fP where to set the specified \fIRANGE\fP, \fISIZE\fP,
+.\"O or \fIBLOCKRANGE\fP of memory online or offline. By default, memory will be set
+.\"O online to the zone Movable, if possible.
+指定された \fIRANGE\fP, \fISIZE\fP, \fIBLOCKRANGE\fP で、
+メモリをオンラインまたはオフラインにするメモリ \fIZONE\fP を選択する。
+デフォルトでは、もし可能であれば、移動可能ゾーン (zone Movable) でオンラインに設定される。
 .TP
 .BR \-h ", " \-\-help
-Print a short help text, then exit.
+.\"O Print a short help text, then exit.
+簡単なヘルプを表示して、終了する。
 .TP
 .BR \-v ", " \-\-verbose
-Verbose mode. Causes \fBchmem\fP to print debugging messages about it's
-progress.
+.\"O Verbose mode. Causes \fBchmem\fP to print debugging messages about it's
+.\"O progress.
+詳細モード。\fBchmem\fP に、進捗についてのデバッグメッセージを表示させる。
 .TP
 .BR \-V ", " \-\-version
-Print the version number, then exit.
-.SH RETURN CODES
+.\"O Print the version number, then exit.
+バージョン番号を表示して、終了する。
+.\"O .SH RETURN CODES
+.SH 返り値
+.\"O .B chmem
+.\"O has the following return codes:
 .B chmem
-has the following return codes:
+は以下の返り値を持つ:
 .TP
 .B 0
-success
+.\"O success
+成功
 .TP
 .B 1
-failure
+.\"O failure
+失敗
 .TP
 .B 64
-partial success
-.SH EXAMPLES
+.\"O partial success
+部分的に成功
+.\"O .SH EXAMPLES
+.SH 例
 .TP
 .B chmem --enable 1024
-This command requests 1024 MiB of memory to be set online.
+.\"O This command requests 1024 MiB of memory to be set online.
+このコマンドでは、1024 MiB のメモリをオンラインに設定することを要求する。
 .TP
 .B chmem -e 2g
-This command requests 2 GiB of memory to be set online.
+.\"O This command requests 2 GiB of memory to be set online.
+このコマンドでは、2 GiB のメモリをオンラインに設定することを要求する。
 .TP
 .B chmem --disable 0x00000000e4000000-0x00000000f3ffffff
-This command requests the memory range starting with 0x00000000e4000000
-and ending with 0x00000000f3ffffff to be set offline.
+.\"O This command requests the memory range starting with 0x00000000e4000000
+.\"O and ending with 0x00000000f3ffffff to be set offline.
+このコマンドでは、0x00000000e4000000 で開始して
+0x00000000f3ffffff で終了するメモリ範囲をオフラインに設定することを要求する。
 .TP
 .B chmem -b -d 10
-This command requests the memory block number 10 to be set offline.
-.SH SEE ALSO
+.\"O This command requests the memory block number 10 to be set offline.
+このコマンドでは、メモリブロック番号 10 をオフラインに設定することを要求する。
+.\"O .SH SEE ALSO
+.SH 関連項目
 .BR lsmem (1)
-.SH AVAILABILITY
-The \fBchmem\fP command is part of the util-linux package and is available from
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The \fBchmem\fP command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+\fBchmem\fP コマンドは util-linux パッケージの一部であり、
 .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
 Linux Kernel Archive
-.UE .
+.UE
+から入手できる。
