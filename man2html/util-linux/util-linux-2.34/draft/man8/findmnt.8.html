@@ -1,0 +1,681 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of FINDMNT</TITLE>
+</HEAD><BODY>
+<H1>FINDMNT</H1>
+Section: System Administration (8)<BR>Updated: May 2018<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+findmnt - ファイルシステムを見つける。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>findmnt</B>
+
+[options]
+<P>
+<B>findmnt</B>
+
+[options]
+<I>device</I>|<I>mountpoint</I>
+
+<P>
+<B>findmnt</B>
+
+[options]
+[<B>--source</B>]
+
+<I>device</I>
+
+[<B>--target</B>|<B>--mountpoint</B>]
+
+<I>mountpoint</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+<B>findmnt</B>
+
+は全てのマウントされているファイルシステムをリストするか、
+ファイルシステムを検索する。
+<B>findmnt</B>
+
+コマンドは
+<I>/etc/fstab</I>,
+
+<I>/etc/mtab</I>,
+
+<I>/proc/self/mountinfo</I>
+
+を検索できる。
+
+
+
+
+
+<I>device</I>
+
+または
+<I>mountpoint</I>
+
+が指定されていない場合、全てのファイルシステムが表示される。
+<P>
+
+
+
+
+
+
+
+
+
+デバイスは、デバイス名、メジャー:マイナー番号、
+ファイルシステムのラベルまたは UUID、
+パーティションのラベルまたは UUID で指定できる。
+<B>--target</B>, <B>--mountpoint</B>, <B>--source</B> が指定されていない場合、
+<B>findmnt</B>
+
+は
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+の挙動に従い、デバイス名はマウントポイントとして解釈される (その逆もある)。
+<P>
+
+
+このコマンドは、デフォルトでは全てのマウントされているファイルシステムを
+ツリー状の形式で表示する。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-A</B>,<B> --all</B>
+
+<DD>
+
+全ての組み込みのフィルターを無効化し、全てのファイルシステムを
+表示する。
+<DT><B>-a</B>,<B> --ascii</B>
+
+<DD>
+
+ツリー形式で ascii 文字を使う。
+<DT><B>-b</B>,<B> --bytes</B>
+
+<DD>
+
+SIZE, USED, AVAIL カラムを、人が読みやすい形式ではなく、バイト単位で表示する。
+<DT><B>-C</B>,<B> --nocanonicalize</B>
+
+<DD>
+
+
+パスを正則化 (canonicalize) しない。
+このオプションはパスの比較とタグ (LABEL, UUID など)　の評価に影響する。
+<DT><B>-c</B>,<B> --canonicalize</B>
+
+<DD>
+
+全ての表示されたパスを正則化する。
+<DT><B>-D</B>,<B> --df</B>
+
+<DD>
+
+
+
+
+
+
+<B><A HREF="../man1/df.1.html">df</A></B>(1)
+
+の出力を模倣する。
+このオプションは
+<B>-o&nbsp;SOURCE,FSTYPE,SIZE,USED,AVAIL,USE%,TARGET</B>
+
+と同様であるが、全ての擬似 (pseudo) ファイルシステムは除く。
+全てのファイルシステムを表示するには、<B>--all</B> を使うこと。
+<DT><B>-d</B>,<B> --direction </B><I>word</I>
+
+<DD>
+
+
+
+
+検索方向を
+<B>forward</B>
+
+または
+<B>backward</B>
+
+で指定する。
+<DT><B>-e</B>,<B> --evaluate</B>
+
+<DD>
+
+全てのタグ (LABEL, UUID, PARTUUID, PARTLABEL) を対応するデバイス名に変換する。
+<DT><B>-F</B>,<B> --tab-file </B><I>path</I>
+
+<DD>
+
+
+
+別のファイルを検索する。
+<B>--fstab</B>, <B>--mtab</B>, <B>--kernel</B> と一緒に指定した場合、
+デフォルトのパスを上書きする。
+2 回以上指定された場合、ツリー状の出力は無効化される
+(<B>--list</B> オプションを参照すること)。
+<DT><B>-f</B>,<B> --first-only</B>
+
+<DD>
+
+最初にマッチしたファイルシステムのみを表示する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-i</B>,<B> --invert</B>
+
+<DD>
+
+マッチングの意味を逆にする。
+<DT><B>-J</B>,<B> --json</B>
+
+<DD>
+
+JSON 出力形式を使う。
+<DT><B>-k</B>,<B> --kernel</B>
+
+<DD>
+
+
+
+
+<I>/proc/self/mountinfo</I>
+
+を検索する。
+出力はツリー状の形式である。これがデフォルトである。
+この出力にはカーネルによって管理されているマウントオプションのみが
+含まれる (<B>--mtab</B> を参照すること)。
+<DT><B>-l</B>,<B> --list</B>
+
+<DD>
+
+
+
+
+リスト出力形式を使う。
+出力が <B>-t</B>, <B>-O</B>, <B>-S</B>, <B>-T</B> オプションで制限された場合、
+またはオプション <B>--submounts</B> が指定されなかった場合、
+または 1 つ以上のソースファイル (オプション <B>-F</B>) が指定された場合、
+この出力形式が自動的に有効化される。
+<DT><B>-M</B>,<B> --mountpoint </B><I>path</I>
+
+<DD>
+
+明示的にマウントポイントファイルまたはディレクトリを定義する。
+<B>--target</B> も参照すること。
+<DT><B>-m</B>,<B> --mtab</B>
+
+<DD>
+
+
+
+
+<I>/etc/mtab</I>
+
+を検索する。
+出力は、デフォルトでリスト形式である (<B>--tree</B> を参照すること)。
+出力にはユーザー空間のマウントオプションが含まれる。
+<DT><B>-N</B>,<B> --task </B><I>tid</I>
+
+<DD>
+
+
+
+
+
+デフォルトの名前空間 /proc/self/mountinfo ではなく、
+別の名前空間 /proc/&lt;tid&gt;/mountinfo を使う。
+このオプションを 2 回以上指定すると、ツリー状の出力は無効化される
+(<B>--list</B> オプションを参照すること)。
+<B><A HREF="../man1/unshare.1.html">unshare</A></B>(1)
+
+コマンドも参照すること。
+<DT><B>-n</B>,<B> --noheadings</B>
+
+<DD>
+
+ヘッダ行を表示しない。
+<DT><B>-O</B>,<B> --options </B><I>list</I>
+
+<DD>
+
+
+
+
+
+
+
+
+
+
+
+
+表示されるファイルシステムを制限する。
+2 つ以上のオプションをカンマ区切りのリストで指定できる。
+<B>-t</B>
+
+と
+<B>-O</B>
+
+オプションは組み合わせて使うことができる。
+<B>-t</B>
+
+オプションと異なる点は、各オプションが厳密にマッチすることである。
+先頭に
+<I>no</I>
+
+を付けても全体には適用されない。
+&quot;no&quot; はリストの各アイテムに付けることができる。
+プレフィックス &quot;no&quot; の解釈は、プレフィックス &quot;+&quot; で無効化できる。
+<DT><B>-o</B>,<B> --output </B><I>list</I>
+
+<DD>
+
+
+
+
+
+
+
+
+出力カラムを定義する。
+現在サポートされているカラムのリストを取得するには、
+<B>--help</B> の出力を参照すること。
+<B>--list</B>
+
+または
+<B>--raw</B>
+
+オプションが指定されない場合、
+<B>TARGET</B>
+
+カラムはツリー状の形式になる。
+<P>
+
+
+<I>list</I> を <I>+list</I> の形式で指定することで、
+カラムのデフォルトのリストを拡張できる。
+(例えば <B>findmnt -o +PROPAGATION</B>)。
+<DT><B>--output-all</B>
+
+<DD>
+
+
+
+ほとんど全ての利用可能なカラムを出力する。
+<B>--poll</B>
+
+が必要なカラムは含まれない。
+<DT><B>-P</B>,<B> --pairs</B>
+
+<DD>
+
+key=&quot;value&quot; 出力形式を使う。
+潜在的に安全でない全ての文字は 16 進数でエスケープされる (\x&lt;code&gt;)。
+<DT><B>-p</B>,<B> --poll</B>[<I>=list</I>]
+
+<DD>
+
+
+
+/proc/self/mountinfo ファイルの変更を監視する。
+サポートされるアクションは以下の通り: mount, umount, remount, move.
+2　つ以上のアクションをカンマ区切りのリストで指定できる。
+デフォルトでは全てのアクションが監視される。
+<P>
+
+
+<B>--poll</B> がブロックする時間は、<B>--timeout</B> または
+<B>--first-only</B> オプションで制限できる。
+<P>
+
+
+
+
+標準的なカラムは、mountinfo ファイルから得られる新しい情報を常に使う。
+例外は、umount アクションであり、
+<B><A HREF="../man8/findmnt.8.html">findmnt</A></B>(8)
+
+によってキャッシュされる元々の情報に基づく。
+poll モードでは、以下に示す追加のカラムを使うことができる:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>ACTION</B>
+
+<DD>
+
+mount, umount, move, remount アクション名。
+このカラムはデフォルトで有効化される。
+<DT><B>OLD-TARGET</B>
+
+<DD>
+
+umount と move アクションで利用可能。
+<DT><B>OLD-OPTIONS</B>
+
+<DD>
+
+umount と remount アクションで利用可能。
+</DL>
+</DL>
+
+<DT><B>--pseudo</B>
+
+<DD>
+
+擬似ファイルシステムのみを表示する。
+<DT><B>-R</B>,<B> --submounts</B>
+
+<DD>
+
+
+
+
+
+選択されたファイルシステムに対して、全てのサブマウントを再帰的に
+表示する。
+オプション <B>-t</B>, <B>-O</B>, <B>-S</B>, <B>-T</B>,
+<B>--direction</B> で定義された制限は、サブマウントには適用されない。
+全てのサブマウントはツリー状に表示される。
+このオプションはツリー状の出力形式をデフォルトで有効にする。
+このオプションは <B>--mtab</B> または <B>--fstab</B> に対して、何も影響しない。
+<DT><B>-r</B>,<B> --raw</B>
+
+<DD>
+
+生の出力形式を使う。
+潜在的に安全でない全ての文字は 16 進数でエスケープされる (\x&lt;code&gt;)。
+<DT><B>--real</B>
+
+<DD>
+
+実際のファイルシステムのみを表示する。
+<DT><B>-S</B>,<B> --source </B><I>spec</I>
+
+<DD>
+
+
+
+マウント元を明示的に定義する。
+サポートされる詳細な値は <I>device</I>,
+<I>maj</I><B>:</B><I>min</I>, <B>LABEL=</B><I>label</I>, <B>UUID=</B><I>uuid</I>,
+<B>PARTLABEL=</B><I>label</I>, <B>PARTUUID=</B><I>uuid</I> である。
+<DT><B>-s</B>,<B> --fstab</B>
+
+<DD>
+
+
+
+<I>/etc/fstab</I>
+
+を検索する。
+出力はリスト形式である (<B>--list</B> を参照すること)。
+<DT><B>-T</B>,<B> --target </B><I>path</I>
+
+<DD>
+
+
+
+
+
+
+
+マウント先を定義する。
+<I>path</I> がマウントポイントファイルまたはディレクトリでない場合、
+<B>findmnt</B>
+
+は <I>path</I> 要素を逆順にチェックし、マウントポイントを取得する
+(この機能は、カーネルファイルを検索する場合にのみサポートされ、
+<B>--fstab</B> ではサポートされない)。
+<I>path</I> 要素のチェックをさせたくない場合、
+かつ <I>path</I> が厳密に指定されたマウントポイントである場合、
+<B>--mountpoint</B> オプションを使うべきである。 
+<DT><B>-t</B>,<B> --types </B><I>list</I>
+
+<DD>
+
+
+
+
+
+
+
+表示されるファイルシステムを制限する。
+2 つ以上のオプションをカンマ区切りのリストで指定できる。
+ファイルシステムタイプのリストには、プレフィックス
+<B>no</B>
+
+を付けて、そのファイルシステムタイプに対してアクションを
+とらないようにすることができる。
+より詳細は
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+を参照すること。
+<DT><B>--tree</B>
+
+<DD>
+
+
+可能であれば、ツリー状の出力を有効にする。
+このオプションは親子関係のないテーブルでは黙って無視される (例えば fstab)。
+<DT><B>-U</B>,<B> --uniq</B>
+
+<DD>
+
+
+複製されたマウント先を持つファイルシステムを無視する。
+これにより、オーバーマウントされているマウントポイントを効率的に
+スキップできる。
+<DT><B>-u</B>,<B> --notruncate</B>
+
+<DD>
+
+
+
+
+
+
+
+
+カラムの文字列を切り詰めない。
+デフォルトでは
+<B>TARGET</B>,
+
+<B>SOURCE</B>,
+
+<B>UUID</B>,
+
+<B>LABEL</B>,
+
+<B>PARTUUID</B>,
+
+<B>PARTLABEL</B>
+
+カラムは切り詰めない。
+このオプションを使うと、全てのカラムで文字列の切り詰めを
+行わなくなる。
+<DT><B>-v</B>,<B> --nofsroot</B>
+
+<DD>
+
+bind マウントまたは btrfs サブボリュームについて、
+SOURCE カラムに [/dir] を表示しない。
+<DT><B>-w</B>,<B> --timeout </B><I>milliseconds</I>
+
+<DD>
+
+<B>--poll</B> がブロックする上限時間をミリ秒単位で指定する。
+<DT><B>-x</B>,<B> --verify</B>
+
+<DD>
+
+
+
+
+
+マウントテーブルの内容をチェックする。
+デフォルトでは、解析と利用のために、
+<I>/etc/fstab</I>
+
+を検証する。
+このオプションは <B>--tab-file</B> と一緒に使うことができる。
+マウントテーブルをフィルターするために、マウント元 (デバイス) または
+マウント先 (マウントポイント) を指定することができる。
+オプション <B>--verbose</B> を指定すると、findmnt に詳細を表示させることができる。
+<DT><B>--verbose</B>
+
+<DD>
+
+findmnt により詳細な情報を表示させる
+(現在のところ、<B>--verify</B> にのみ有効である)。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>例</H2>
+
+<DL COMPACT>
+<DT><B>findmnt --fstab -t nfs</B><DD>
+
+
+<I>/etc/fstab</I>
+
+に定義されている全ての NFS ファイルシステムを表示する。
+<DT><B>findmnt --fstab /mnt/foo</B><DD>
+
+
+
+
+マウントポイントディレクトリが /mnt/foo である
+<I>/etc/fstab</I>
+
+にある全てのファイルシステムを表示する。
+また /mnt/foo をマウント元とする bind マウントも表示する。
+<DT><B>findmnt --fstab --target /mnt/foo</B><DD>
+
+
+
+マウントポイントディレクトリが /mnt/foo である
+<I>/etc/fstab</I>
+
+にある全てのファイルシステムを表示する。
+<DT><B>findmnt --fstab --evaluate</B><DD>
+
+
+
+LABEL= と UUID= タグを実際のデバイス名に変換して、
+<I>/etc/fstab</I>
+
+にある全てのファイルシステムを表示する。
+<DT><B>findmnt -n --raw --evaluate --output=target LABEL=/boot</B><DD>
+
+ラベル &quot;/boot&quot; が付いたファイルシステムがマウントされている
+マウントポイントのみを表示する。
+<DT><B>findmnt --poll --mountpoint /mnt/foo</B><DD>
+
+/mnt/foo に対するマウント、アンマウント、再マウント、移動を監視する。
+<DT><B>findmnt --poll=umount --first-only --mountpoint /mnt/foo</B><DD>
+
+/mnt/foo のアンマウントを待つ。
+<DT><B>findmnt --poll=remount -t ext3 -O ro</B><DD>
+
+全ての ext3 ファイルシステムに対して、読み込みのみでの再マウントを監視する。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT>LIBMOUNT_FSTAB=&lt;path&gt;<DD>
+
+fstab ファイルのデフォルトの場所を上書きする。
+<DT>LIBMOUNT_MTAB=&lt;path&gt;<DD>
+
+mtab ファイルのデフォルトの場所を上書きする。
+<DT>LIBMOUNT_DEBUG=all<DD>
+
+libmount デバッグ出力を有効にする。
+<DT>LIBSMARTCOLS_DEBUG=all<DD>
+
+libsmartcols デバッグ出力を有効にする。
+<DT>LIBSMARTCOLS_DEBUG_PADDING=on<DD>
+
+表示される埋め文字を使う。LIBSMARTCOLS_DEBUG を有効にする必要がある。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>著者</H2>
+
+<PRE>
+Karel Zak &lt;<A HREF="mailto:kzak@redhat.com">kzak@redhat.com</A>&gt;
+</PRE>
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man5/fstab.5.html">fstab</A></B>(5),
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+findmnt コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手可能である。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">例</A><DD>
+<DT><A HREF="#lbAG">環境変数</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:33:02 GMT, April 20, 2020
+</BODY>
+</HTML>
