@@ -1,7 +1,7 @@
 .\"
 .\" Japanese Version Copyright (c) 2020 Yuichi SATO
 .\"         all rights reserved.
-.\" Translated Sun Apr 19 00:32:28 JST 2020
+.\" Translated Tue Apr 21 00:30:36 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH FINDMNT 8 "May 2018" "util-linux" "System Administration"
@@ -192,177 +192,311 @@ JSON 出力形式を使う。
 出力にはユーザー空間のマウントオプションが含まれる。
 .TP
 .BR \-N , " \-\-task \fItid\fP"
-Use alternative namespace /proc/<tid>/mountinfo rather than the default
-/proc/self/mountinfo.  If the option is specified more than once, then
-tree-like output is disabled (see the \fB\-\-list\fP option).  See also the
+.\"O Use alternative namespace /proc/<tid>/mountinfo rather than the default
+.\"O /proc/self/mountinfo.  If the option is specified more than once, then
+.\"O tree-like output is disabled (see the \fB\-\-list\fP option).  See also the
+.\"O .BR unshare (1)
+.\"O command.
+デフォルトの名前空間 /proc/self/mountinfo ではなく、
+別の名前空間 /proc/<tid>/mountinfo を使う。
+このオプションを 2 回以上指定すると、ツリー状の出力は無効化される
+(\fB\-\-list\fP オプションを参照すること)。
 .BR unshare (1)
-command.
+コマンドも参照すること。
 .TP
 .BR \-n , " \-\-noheadings"
-Do not print a header line.
+.\"O Do not print a header line.
+ヘッダ行を表示しない。
 .TP
 .BR \-O , " \-\-options \fIlist\fP"
-Limit the set of printed filesystems.  More than one option
-may be specified in a comma-separated list.  The
+.\"O Limit the set of printed filesystems.  More than one option
+.\"O may be specified in a comma-separated list.  The
+.\"O .B \-t
+.\"O and
+.\"O .B \-O
+.\"O options are cumulative in effect.  It is different from
+.\"O .B \-t
+.\"O in that each option is matched exactly; a leading
+.\"O .I no
+.\"O at the beginning does not have global meaning.  The "no" can used for
+.\"O individual items in the list.  The "no" prefix interpretation can be disabled
+.\"O by "+" prefix.
+表示されるファイルシステムを制限する。
+2 つ以上のオプションをカンマ区切りのリストで指定できる。
 .B \-t
-and
+と
 .B \-O
-options are cumulative in effect.  It is different from
+オプションは組み合わせて使うことができる。
 .B \-t
-in that each option is matched exactly; a leading
+オプションと異なる点は、各オプションが厳密にマッチすることである。
+先頭に
 .I no
-at the beginning does not have global meaning.  The "no" can used for
-individual items in the list.  The "no" prefix interpretation can be disabled
-by "+" prefix.
+を付けても全体には適用されない。
+"no" はリストの各アイテムに付けることができる。
+プレフィックス "no" の解釈は、プレフィックス "+" で無効化できる。
 .TP
 .BR \-o , " \-\-output \fIlist\fP"
-Define output columns.  See the \fB\-\-help\fP output to get a list of the
-currently supported columns.  The
-.B TARGET
-column contains tree formatting if the
+.\"O Define output columns.  See the \fB\-\-help\fP output to get a list of the
+.\"O currently supported columns.  The
+.\"O .B TARGET
+.\"O column contains tree formatting if the
+.\"O .B \-\-list
+.\"O or
+.\"O .B \-\-raw
+.\"O options are not specified.
+出力カラムを定義する。
+現在サポートされているカラムのリストを取得するには、
+\fB\-\-help\fP の出力を参照すること。
 .B \-\-list
-or
+または
 .B \-\-raw
-options are not specified.
+オプションが指定されない場合、
+.B TARGET
+カラムはツリー状の形式になる。
 
-The default list of columns may be extended if \fIlist\fP is
-specified in the format \fI+list\fP (e.g. \fBfindmnt \-o +PROPAGATION\fP).
+.\"O The default list of columns may be extended if \fIlist\fP is
+.\"O specified in the format \fI+list\fP (e.g. \fBfindmnt \-o +PROPAGATION\fP).
+\fIlist\fP を \fI+list\fP の形式で指定することで、
+カラムのデフォルトのリストを拡張できる。
+(例えば \fBfindmnt \-o +PROPAGATION\fP)。
 .TP
 .B \-\-output\-all
-Output almost all available columns.  The columns that require
+.\"O Output almost all available columns.  The columns that require
+.\"O .B \-\-poll
+.\"O are not included.
+ほとんど全ての利用可能なカラムを出力する。
 .B \-\-poll
-are not included.
+が必要なカラムは含まれない。
 .TP
 .BR \-P , " \-\-pairs"
-Use key="value" output format.  All potentially unsafe characters are hex-escaped (\\x<code>).
+.\"O Use key="value" output format.  All potentially unsafe characters are hex-escaped (\\x<code>).
+key="value" 出力形式を使う。
+潜在的に安全でない全ての文字は 16 進数でエスケープされる (\\x<code>)。
 .TP
 .BR \-p , " \-\-poll\fR[\fI=list\fR]"
-Monitor changes in the /proc/self/mountinfo file.  Supported actions are: mount,
-umount, remount and move.  More than one action may be specified in a
-comma-separated list.  All actions are monitored by default.
+.\"O Monitor changes in the /proc/self/mountinfo file.  Supported actions are: mount,
+.\"O umount, remount and move.  More than one action may be specified in a
+.\"O comma-separated list.  All actions are monitored by default.
+/proc/self/mountinfo ファイルの変更を監視する。
+サポートされるアクションは以下の通り: mount, umount, remount, move.
+2　つ以上のアクションをカンマ区切りのリストで指定できる。
+デフォルトでは全てのアクションが監視される。
 
-The time for which \fB\-\-poll\fR will block can be restricted with the \fB\-\-timeout\fP
-or \fB\-\-first\-only\fP options.
+.\"O The time for which \fB\-\-poll\fR will block can be restricted with the \fB\-\-timeout\fP
+.\"O or \fB\-\-first\-only\fP options.
+\fB\-\-poll\fR がブロックする時間は、\fB\-\-timeout\fP または
+\fB\-\-first\-only\fP オプションで制限できる。
 
-The standard columns always use the new version of the information from the
-mountinfo file, except the umount action which is based on the original
-information cached by
-.BR findmnt (8).
-The poll mode allows to use extra columns:
+.\"O The standard columns always use the new version of the information from the
+.\"O mountinfo file, except the umount action which is based on the original
+.\"O information cached by
+.\"O .BR findmnt (8).
+標準的なカラムは、mountinfo ファイルから得られる新しい情報を常に使う。
+例外は、umount アクションであり、
+.BR findmnt (8)
+によってキャッシュされる元々の情報に基づく。
+poll モードでは、以下に示す追加のカラムを使うことができる:
 .RS
 .TP
 .B ACTION
-mount, umount, move or remount action name; this column is enabled by default
+.\"O mount, umount, move or remount action name; this column is enabled by default
+mount, umount, move, remount アクション名。
+このカラムはデフォルトで有効化される。
 .TP
 .B OLD-TARGET
-available for umount and move actions
+.\"O available for umount and move actions
+umount と move アクションで利用可能。
 .TP
 .B OLD-OPTIONS
-available for umount and remount actions
+.\"O available for umount and remount actions
+umount と remount アクションで利用可能。
 .RE
 .TP
 .B \-\-pseudo
-Print only pseudo filesystems.
+.\"O Print only pseudo filesystems.
+擬似ファイルシステムのみを表示する。
 .TP
 .BR \-R , " \-\-submounts"
-Print recursively all submounts for the selected filesystems.  The restrictions
-defined by options \fB\-t\fP, \fB\-O\fP, \fB\-S\fP, \fB\-T\fP and
-\fB\%\-\-direction\fP are not applied to submounts.  All submounts are always
-printed in tree-like order.  The option enables the tree-like output format by
-default.  This option has no effect for \fB\-\-mtab\fP or \fB\-\-fstab\fP.
+.\"O Print recursively all submounts for the selected filesystems.  The restrictions
+.\"O defined by options \fB\-t\fP, \fB\-O\fP, \fB\-S\fP, \fB\-T\fP and
+.\"O \fB\%\-\-direction\fP are not applied to submounts.  All submounts are always
+.\"O printed in tree-like order.  The option enables the tree-like output format by
+.\"O default.  This option has no effect for \fB\-\-mtab\fP or \fB\-\-fstab\fP.
+選択されたファイルシステムに対して、全てのサブマウントを再帰的に
+表示する。
+オプション \fB\-t\fP, \fB\-O\fP, \fB\-S\fP, \fB\-T\fP,
+\fB\%\-\-direction\fP で定義された制限は、サブマウントには適用されない。
+全てのサブマウントはツリー状に表示される。
+このオプションはツリー状の出力形式をデフォルトで有効にする。
+このオプションは \fB\-\-mtab\fP または \fB\-\-fstab\fP に対して、何も影響しない。
 .TP
 .BR \-r , " \-\-raw"
-Use raw output format.  All potentially unsafe characters are hex-escaped (\\x<code>).
+.\"O Use raw output format.  All potentially unsafe characters are hex-escaped (\\x<code>).
+生の出力形式を使う。
+潜在的に安全でない全ての文字は 16 進数でエスケープされる (\\x<code>)。
 .TP
 .B \-\-real
-Print only real filesystems.
+.\"O Print only real filesystems.
+実際のファイルシステムのみを表示する。
 .TP
 .BR \-S , " \-\-source \fIspec\fP"
-Explicitly define the mount source.  Supported specifications are \fIdevice\fR,
+.\"O Explicitly define the mount source.  Supported specifications are \fIdevice\fR,
+.\"O \fImaj\fB:\fImin\fR, \fBLABEL=\fIlabel\fR, \fBUUID=\fIuuid\fR,
+.\"O \fBPARTLABEL=\fIlabel\fR and \fBPARTUUID=\fIuuid\fR.
+マウント元を明示的に定義する。
+サポートされる詳細な値は \fIdevice\fR,
 \fImaj\fB:\fImin\fR, \fBLABEL=\fIlabel\fR, \fBUUID=\fIuuid\fR,
-\fBPARTLABEL=\fIlabel\fR and \fBPARTUUID=\fIuuid\fR.
+\fBPARTLABEL=\fIlabel\fR, \fBPARTUUID=\fIuuid\fR である。
 .TP
 .BR \-s , " \-\-fstab"
-Search in
-.IR /etc/fstab .
-The output is in the list format (see \fB\-\-list\fR).
+.\"O Search in
+.\"O .IR /etc/fstab .
+.\"O The output is in the list format (see \fB\-\-list\fR).
+.I /etc/fstab
+を検索する。
+出力はリスト形式である (\fB\-\-list\fR を参照すること)。
 .TP
 .BR \-T , " \-\-target \fIpath\fP"
-Define the mount target.  If \fIpath\fR
-is not a mountpoint file or directory, then
+.\"O Define the mount target.  If \fIpath\fR
+.\"O is not a mountpoint file or directory, then
+.\"O .B findmnt
+.\"O checks the \fIpath\fR elements in reverse order to get the mountpoint (this feature is
+.\"O supported only when searching in kernel files and unsupported for \fB\-\-fstab\fP).  It's
+.\"O recommended to use the option \fB\-\-mountpoint\fR when checks of \fIpath\fR elements are
+.\"O unwanted and \fIpath\fR is a strictly specified mountpoint.
+マウント先を定義する。
+\fIpath\fR がマウントポイントファイルまたはディレクトリでない場合、
 .B findmnt
-checks the \fIpath\fR elements in reverse order to get the mountpoint (this feature is
-supported only when searching in kernel files and unsupported for \fB\-\-fstab\fP).  It's
-recommended to use the option \fB\-\-mountpoint\fR when checks of \fIpath\fR elements are
-unwanted and \fIpath\fR is a strictly specified mountpoint.
+は \fIpath\fR 要素を逆順にチェックし、マウントポイントを取得する
+(この機能は、カーネルファイルを検索する場合にのみサポートされ、
+\fB\-\-fstab\fP ではサポートされない)。
+\fIpath\fR 要素のチェックをさせたくない場合、
+かつ \fIpath\fR が厳密に指定されたマウントポイントである場合、
+\fB\-\-mountpoint\fR オプションを使うべきである。 
 .TP
 .BR \-t , " \-\-types \fIlist\fP"
-Limit the set of printed filesystems.  More than one type may be
-specified in a comma-separated list.  The list of filesystem types can be
-prefixed with
+.\"O Limit the set of printed filesystems.  More than one type may be
+.\"O specified in a comma-separated list.  The list of filesystem types can be
+.\"O prefixed with
+.\"O .B no
+.\"O to specify the filesystem types on which no action should be taken.  For
+.\"O more details see
+.\"O .BR mount (8).
+表示されるファイルシステムを制限する。
+2 つ以上のオプションをカンマ区切りのリストで指定できる。
+ファイルシステムタイプのリストには、プレフィックス
 .B no
-to specify the filesystem types on which no action should be taken.  For
-more details see
-.BR mount (8).
+を付けて、そのファイルシステムタイプに対してアクションを
+とらないようにすることができる。
+より詳細は
+.BR mount (8)
+を参照すること。
 .TP
 .B \-\-tree
-Enable tree-like output if possible.  The options is silently ignored for
-tables where is missing child-parent relation (e.g. fstab).
+.\"O Enable tree-like output if possible.  The options is silently ignored for
+.\"O tables where is missing child-parent relation (e.g. fstab).
+可能であれば、ツリー状の出力を有効にする。
+このオプションは親子関係のないテーブルでは黙って無視される (例えば fstab)。
 .TP
 .BR \-U , " \-\-uniq"
-Ignore filesystems with duplicate mount targets, thus effectively skipping
-over-mounted mount points.
+.\"O Ignore filesystems with duplicate mount targets, thus effectively skipping
+.\"O over-mounted mount points.
+複製されたマウント先を持つファイルシステムを無視する。
+これにより、オーバーマウントされているマウントポイントを効率的に
+スキップできる。
 .TP
 .BR \-u , " \-\-notruncate"
-Do not truncate text in columns.  The default is to not truncate the
+.\"O Do not truncate text in columns.  The default is to not truncate the
+.\"O .BR TARGET ,
+.\"O .BR SOURCE ,
+.\"O .BR UUID ,
+.\"O .BR LABEL ,
+.\"O .BR PARTUUID ,
+.\"O .B PARTLABEL
+.\"O columns.  This option disables text truncation also in all other columns.
+カラムの文字列を切り詰めない。
+デフォルトでは
 .BR TARGET ,
 .BR SOURCE ,
 .BR UUID ,
 .BR LABEL ,
 .BR PARTUUID ,
 .B PARTLABEL
-columns.  This option disables text truncation also in all other columns.
+カラムは切り詰めない。
+このオプションを使うと、全てのカラムで文字列の切り詰めを
+行わなくなる。
 .TP
 .BR \-v , " \-\-nofsroot"
-Do not print a [/dir] in the SOURCE column for bind mounts or btrfs subvolumes.
+.\"O Do not print a [/dir] in the SOURCE column for bind mounts or btrfs subvolumes.
+bind マウントまたは btrfs サブボリュームについて、
+SOURCE カラムに [/dir] を表示しない。
 .TP
 .BR \-w , " \-\-timeout \fImilliseconds\fP"
-Specify an upper limit on the time for which \fB\-\-poll\fR will block, in milliseconds.
+.\"O Specify an upper limit on the time for which \fB\-\-poll\fR will block, in milliseconds.
+\fB\-\-poll\fR がブロックする上限時間をミリ秒単位で指定する。
 .TP
 .BR \-x , " \-\-verify"
-Check mount table content. The default is to verify
+.\"O Check mount table content. The default is to verify
+.\"O .I /etc/fstab
+.\"O parsability and usability. It's possible to use this option also with \fB\-\-tab\-file\fP.
+.\"O It's possible to specify source (device) or target (mountpoint) to filter mount table. The option
+.\"O \fB\-\-verbose\fP forces findmnt to print more details.
+マウントテーブルの内容をチェックする。
+デフォルトでは、解析と利用のために、
 .I /etc/fstab
-parsability and usability. It's possible to use this option also with \fB\-\-tab\-file\fP.
-It's possible to specify source (device) or target (mountpoint) to filter mount table. The option
-\fB\-\-verbose\fP forces findmnt to print more details.
+を検証する。
+このオプションは \fB\-\-tab\-file\fP と一緒に使うことができる。
+マウントテーブルをフィルターするために、マウント元 (デバイス) または
+マウント先 (マウントポイント) を指定することができる。
+オプション \fB\-\-verbose\fP を指定すると、findmnt に詳細を表示させることができる。
 .TP
 .B \-\-verbose
-Force findmnt to print more information (\fB\-\-verify\fP only for now).
-.SH EXAMPLES
+.\"O Force findmnt to print more information (\fB\-\-verify\fP only for now).
+findmnt により詳細な情報を表示させる
+(現在のところ、\fB\-\-verify\fP にのみ有効である)。
+.\"O .SH EXAMPLES
+.SH 例
 .IP "\fBfindmnt \-\-fstab \-t nfs\fP"
-Prints all NFS filesystems defined in
-.IR /etc/fstab .
+.\"O Prints all NFS filesystems defined in
+.\"O .IR /etc/fstab .
+.I /etc/fstab
+に定義されている全ての NFS ファイルシステムを表示する。
 .IP "\fBfindmnt \-\-fstab /mnt/foo\fP"
-Prints all
+.\"O Prints all
+.\"O .I /etc/fstab
+.\"O filesystems where the mountpoint directory is /mnt/foo.  It also prints bind mounts where /mnt/foo
+.\"O is a source.
+マウントポイントディレクトリが /mnt/foo である
 .I /etc/fstab
-filesystems where the mountpoint directory is /mnt/foo.  It also prints bind mounts where /mnt/foo
-is a source.
+にある全てのファイルシステムを表示する。
+また /mnt/foo をマウント元とする bind マウントも表示する。
 .IP "\fBfindmnt \-\-fstab \-\-target /mnt/foo\fP"
-Prints all
+.\"O Prints all
+.\"O .I /etc/fstab
+.\"O filesystems where the mountpoint directory is /mnt/foo.
+マウントポイントディレクトリが /mnt/foo である
 .I /etc/fstab
-filesystems where the mountpoint directory is /mnt/foo.
+にある全てのファイルシステムを表示する。
 .IP "\fBfindmnt \-\-fstab \-\-evaluate\fP"
-Prints all
+.\"O Prints all
+.\"O .I /etc/fstab
+.\"O filesystems and converts LABEL= and UUID= tags to the real device names.
+LABEL= と UUID= タグを実際のデバイス名に変換して、
 .I /etc/fstab
-filesystems and converts LABEL= and UUID= tags to the real device names.
+にある全てのファイルシステムを表示する。
 .IP "\fBfindmnt \-n \-\-raw \-\-evaluate \-\-output=target LABEL=/boot\fP"
-Prints only the mountpoint where the filesystem with label "/boot" is mounted.
+.\"O Prints only the mountpoint where the filesystem with label "/boot" is mounted.
+ラベル "/boot" が付いたファイルシステムがマウントされている
+マウントポイントのみを表示する。
 .IP "\fBfindmnt \-\-poll \-\-mountpoint /mnt/foo\fP"
-Monitors mount, unmount, remount and move on /mnt/foo.
+.\"O Monitors mount, unmount, remount and move on /mnt/foo.
+/mnt/foo に対するマウント、アンマウント、再マウント、移動を監視する。
 .IP "\fBfindmnt \-\-poll=umount \-\-first-only \-\-mountpoint /mnt/foo\fP"
-Waits for /mnt/foo unmount.
+.\"O Waits for /mnt/foo unmount.
+/mnt/foo のアンマウントを待つ。
 .IP "\fBfindmnt \-\-poll=remount \-t ext3 \-O ro\fP"
-Monitors remounts to read-only mode on all ext3 filesystems.
+.\"O Monitors remounts to read-only mode on all ext3 filesystems.
+全ての ext3 ファイルシステムに対して、読み込みのみでの再マウントを監視する。
 .\"O .SH ENVIRONMENT
 .SH 環境変数
 .IP LIBMOUNT_FSTAB=<path>
