@@ -1,0 +1,100 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Tue Apr 21 20:42:46 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH FSCK.CRAMFS 8 "April 2013" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O fsck.cramfs \- fsck compressed ROM file system
+fsck.cramfs \- 圧縮 ROM ファイルシステムを fsck する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B fsck.cramfs
+[options]
+.I file
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .I fsck.cramfs
+.\"O is used to check the cramfs file system.
+.I fsck.cramfs
+は cramfs ファイルシステムをチェックするために使われる。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+.\"O Enable verbose messaging.
+詳細なメッセージ出力を有効にする。
+.TP
+\fB\-b\fR, \fB\-\-blocksize\fR \fIblocksize\fR
+.\"O Use this blocksize, defaults to page size. Must be equal to what was set at
+.\"O creation time. Only used for \-\-extract.
+このブロックサイズを、デフォルトのページサイズとする。
+作成時に設定された値と同じでなければならない。
+\-\-extract のみと一緒に使われる。
+.TP
+\fB\-\-extract\fR[=\fIdirectory\fR]
+.\"O Test to uncompress the whole file system. Optionally extract contents of the
+.\"O .I file
+.\"O to
+.\"O .IR directory .
+ファイルシステム全体の展開をテストする。
+オプションとして
+.I file
+の内容を
+.I directory
+に展開する。
+.TP
+\fB\-a\fR
+.\"O This option is silently ignored.
+このオプションは黙って無視される。
+.TP
+\fB\-y\fR
+.\"O This option is silently ignored.
+このオプションは黙って無視される。
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH "EXIT STATUS"
+.SH 返り値
+.RS
+.PD 0
+.TP
+.B 0
+.\"O success
+成功
+.TP
+.B 4
+.\"O file system was left uncorrected
+ファイルシステムのエラーが修正されないまま残っている
+.TP
+.B 8
+.\"O operation error, such as unable to allocate memory
+メモリの確保の失敗などの操作エラー
+.TP
+.B 16
+.\"O usage information was printed
+利用法が表示された
+.PD
+.RE
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR mount (8),
+.BR mkfs.cramfs (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The example command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+fsck.cramfs コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
