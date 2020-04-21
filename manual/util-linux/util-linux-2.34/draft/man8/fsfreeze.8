@@ -1,0 +1,167 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Tue Apr 21 22:57:14 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH FSFREEZE 8 "July 2014" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O fsfreeze \- suspend access to a filesystem (Ext3/4, ReiserFS, JFS, XFS)
+fsfreeze \- ファイルシステム (Ext3/4, ReiserFS, JFS, XFS) へのアクセスを中断する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B fsfreeze
+.BR \--freeze | \--unfreeze
+.I mountpoint
+
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B fsfreeze
+.\"O suspends or resumes access to a filesystem.
+.B fsfreeze
+はファイルシステムへのアクセスを中断または再開する。
+.PP
+.\"O .B fsfreeze
+.\"O halts any new access to the filesystem and creates a stable image on disk.
+.B fsfreeze
+はファイルシステムへの新しいアクセスを中止し、
+ディスク上に永続的なイメージを作成する。
+.\"O .B fsfreeze
+.\"O is intended to be used with hardware RAID devices that support the creation
+.\"O of snapshots.
+.B fsfreeze
+は、スナップショットの作成をサポートしているハードウェア RAID で使うことを意図している。
+.PP
+.\"O .B fsfreeze
+.\"O is unnecessary for
+.\"O .B device-mapper
+.\"O devices.  The device-mapper (and LVM) automatically freezes a filesystem
+.\"O on the device when a snapshot creation is requested.
+.B fsfreeze
+は
+.B デバイス・マッパー
+デバイスを必要としない。
+デバイス・マッパー (と LVM) は、スナップショットの作成を要求された場合、
+自動的にデバイス上のファイルシステムの凍結 (freeze) を行う。
+.\"O For more details see the
+.\"O .BR dmsetup (8)
+.\"O man page.
+より詳細は
+.BR dmsetup (8)
+の man ページを参照すること。
+.PP
+.\"O The
+.\"O .I mountpoint
+.\"O argument is the pathname of the directory where the filesystem
+.\"O is mounted.
+.I mountpoint
+引き数は、ファイルシステムがマウントされるディレクトリのパス名である。
+.\"O The filesystem must be mounted to be frozen (see
+.\"O .BR mount (8)).
+ファイルシステムは、凍結するためにマウントされなければならない
+.RB ( mount (8)
+を参照すること)。
+.PP
+.\"O Note that access-time updates are also suspended if the filesystem is mounted with
+.\"O the traditional atime behavior (mount option \fBstrictatime\fR, for more details see
+.\"O .BR mount (8)).
+昔からの atime の挙動でファイルシステムがマウントされている場合、
+アクセス時刻の更新も中断される点に注意すること
+(マウントオプション \fBstrictatime\fR の詳細ついては、
+.BR mount (8)
+を参照すること)。
+
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-f , " \-\-freeze"
+.\"O This option requests the specified a filesystem to be frozen from new
+.\"O modifications.  When this is selected, all ongoing transactions in the
+.\"O filesystem are allowed to complete, new write system calls are halted, other
+.\"O calls which modify the filesystem are halted, and all dirty data, metadata, and
+.\"O log information are written to disk.  Any process attempting to write to the
+.\"O frozen filesystem will block waiting for the filesystem to be unfrozen.
+このオプションは、指定されたファイルシステムに対して、新たな変更が
+できないように凍結する。
+このオプションが選択されると、ファイルシステムで実行中の全ての
+トランザクションは完了まで許可される。
+新たな書き込みシステムコールと、
+ファイルシステムを変更するその他のシステムコールは停止される。
+また、全てのダーティなデータ、メタデータ、ログ情報がディスクに
+書き出される。
+凍結されたファイルシステムに書き込みを行おうとするプロセスは、
+ファイルシステムが凍結解除されるまで、ブロックされる。
+.sp
+.\"O Note that even after freezing, the on-disk filesystem can contain
+.\"O information on files that are still in the process of unlinking.
+.\"O These files will not be unlinked until the filesystem is unfrozen
+.\"O or a clean mount of the snapshot is complete.
+凍結後であっても、ディスク上のファイルシステムは、
+アンリンクしている最中のファイルの情報を保持している。
+これらのファイルは、ファイルシステムの凍結が解除されるまで、
+またはスナップショットのクリーンマウントが完了するまで、
+アンリンクされない。
+.TP
+.BR \-u , " \-\-unfreeze"
+.\"O This option is used to un-freeze the filesystem and allow operations to
+.\"O continue.  Any filesystem modifications that were blocked by the freeze are
+.\"O unblocked and allowed to complete.
+このオプションを使うと、ファイルシステムの凍結を解除し、
+操作が継続できるようになる。
+凍結によってブロックされたファイルシステムの変更は、
+ブロックが解除され、完了できるようになる。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH FILESYSTEM SUPPORT
+.SH ファイルシステムのサポート
+.\"O This command will work only if filesystem supports has support for freezing.
+このコマンドは、ファイルシステムが凍結をサポートしている場合にのみ、
+動作する。
+.\"O List of these filesystems include (2016-12-18)
+(2016-12-18 時点で) 以下のファイルシステムがサポートしている:
+.BR btrfs ,
+.BR ext2/3/4 ,
+.BR f2fs ,
+.BR jfs ,
+.BR nilfs2 ,
+.BR reiserfs ,
+.\"O and
+.BR xfs .
+.\"O Previous list may be incomplete, as more filesystems get support.  If in
+.\"O doubt easiest way to know if a filesystem has support is create a small
+.\"O loopback mount and test freezing it.
+以前のリストは不完全で、より多くのファイルシステムがサポートされるように
+なった。
+ファイルシステムが凍結をサポートしているかが不確かな場合、
+簡単に知るには、小さいループバックマウント作成し、凍結をテストして
+みればよい。
+.\"O .SH AUTHOR
+.SH 著者
+.PP
+.\"O Written by Hajime Taira.
+Hajime Taira によって書かれた。
+.\"O .SH NOTES
+.SH 注意
+.PP
+.\"O This man page is based on
+.\"O .BR xfs_freeze (8).
+この man ページは
+.BR xfs_freeze (8)
+に基づいている。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR mount (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The fsfreeze command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+fsfreeze コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
