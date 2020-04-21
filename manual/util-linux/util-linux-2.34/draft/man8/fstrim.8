@@ -1,0 +1,237 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Tue Apr 21 22:57:14 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH FSTRIM 8 "May 2019" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O fstrim \- discard unused blocks on a mounted filesystem
+fstrim \- マウントされているファイルシステムの未使用ブロックを破棄する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B fstrim
+.RB [ \-Aa ]
+.RB [ \-o
+.IR offset ]
+.RB [ \-l
+.IR length ]
+.RB [ \-m
+.IR minimum-size ]
+.RB [ \-v ]
+.I mountpoint
+
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B fstrim
+.\"O is used on a mounted filesystem to discard (or "trim") blocks which are not in
+.\"O use by the filesystem.  This is useful for solid-state drives (SSDs) and
+.\"O thinly-provisioned storage.
+.B fstrim
+はマウントされているファイルシステムに対して使用され、
+ファイルシステムで使われていないブロックを破棄 (または切り詰め "trim") する。
+これは、ソリッドステートドライブ (SSD) とシンプロビジョニングされたストレージで役立つ。
+.PP
+.\"O By default,
+.\"O .B fstrim
+.\"O will discard all unused blocks in the filesystem.  Options may be used to
+.\"O modify this behavior based on range or size, as explained below.
+デフォルトでは、
+.B fstrim
+はファイルシステム上の全ての未使用ブロックを破棄する。
+以下に示すように、この挙動はオプションを使って範囲やサイズに基づくように
+変更できる。
+.PP
+.\"O The
+.\"O .I mountpoint
+.\"O argument is the pathname of the directory where the filesystem
+.\"O is mounted.
+.I mountpoint
+引き数は、ファイルシステムがマウントされるディレクトリのパス名である。
+.PP
+.\"O Running
+.\"O .B fstrim
+.\"O frequently, or even using
+.\"O .BR "mount -o discard" ,
+.\"O might negatively affect the lifetime of poor-quality SSD devices.  For most
+.\"O desktop and server systems a sufficient trimming frequency is once a week.
+.B fstrim
+を頻繁に実行したり、
+.B "mount -o discard"
+を使うことですら、品質の悪い SSD デバイスに対しては、寿命に悪影響を与える可能性がある。
+大部分のデスクトップとサーバーシステムでは、
+切り詰めの頻度は 1 週間に 1 回で充分である。
+.\"O Note that not all
+.\"O devices support a queued trim, so each trim command incurs a performance penalty
+.\"O on whatever else might be trying to use the disk at the time.
+全てのデバイスがキューイングされた切り詰め (queued trim) をサポートしている訳ではないので、
+各切り詰めコマンドで、その時々にディスクを使おうとするので、性能上の
+ペナルティーを招く。
+
+.\"O .SH OPTIONS
+.SH オプション
+.\"O The \fIoffset\fR, \fIlength\fR, and \fIminimum-size\fR arguments may be
+.\"O followed by the multiplicative suffixes KiB (=1024),
+.\"O MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB (the "iB"
+.\"O is optional, e.g., "K" has the same meaning as "KiB") or the suffixes
+.\"O KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+\fIoffset\fR, \fIlength\fR, \fIminimum-size\fR 引き数には、
+倍数のサフィックス KiB (=1024),
+MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB を付けることができる
+("iB" はオプションであり、例えば "K" は "KiB" と同じ意味である)。
+またサフィックス KB (=1000), MB (=1000*1000), GB, TB, PB, EB, ZB, YB を
+付けることもできる。
+
+.IP "\fB\-A, \-\-fstab\fP"
+.\"O Trim all mounted filesystems mentioned in \fI/etc/fstab\fR on devices that support the
+.\"O discard operation.  The root filesystem is determined from kernel command line if missing
+.\"O in the file.
+\fI/etc/fstab\fR にあるマウントされている全てのファイルシステムに対して、
+デバイスが破棄操作をサポートしている場合は、切り詰めを行う。
+このファイルにルートファイルシステムが書かれていない場合は、
+カーネルのコマンドラインで決定する。
+.\"O The other supplied options, like \fB\-\-offset\fR, \fB\-\-length\fR and
+.\"O \fB-\-minimum\fR, are applied to all these devices.
+\fB\-\-offset\fR, \fB\-\-length\fR,
+\fB-\-minimum\fR などの他に指定されたオプションは、全てのデバイスに適用される。
+.\"O Errors from filesystems that do not support the discard operation,
+.\"O read-only devices and read-only filesystems are silently ignored.
+破棄操作をサポートしていないファイルシステム、読み込みのみの
+デバイス、読み込みのみのファイルシステムからのエラーは、
+黙って無視される。
+.IP "\fB\-a, \-\-all\fP"
+.\"O Trim all mounted filesystems on devices that support the discard operation.
+マウントされている全てのファイルシステムに対して、
+デバイスが破棄操作をサポートしている場合は、切り詰めを行う。
+.\"O The other supplied options, like \fB\-\-offset\fR, \fB\-\-length\fR and
+.\"O \fB-\-minimum\fR, are applied to all these devices.
+\fB\-\-offset\fR, \fB\-\-length\fR,
+\fB-\-minimum\fR などの他に指定されたオプションは、全てのデバイスに適用される。
+.\"O Errors from filesystems that do not support the discard operation,
+.\"O read-only devices and read-only filesystems are silently ignored.
+破棄操作をサポートしていないファイルシステム、読み込みのみの
+デバイス、読み込みのみのファイルシステムからのエラーは、
+黙って無視される。
+.IP "\fB\-n, \-\-dry\-run\fP"
+.\"O This option does everything apart from actually call FITRIM ioctl.
+このオプションでは、実際に FITRIM ioctl を呼び出さない以外は、全てを実行する。
+.IP "\fB\-o, \-\-offset\fP \fIoffset\fP"
+.\"O Byte offset in the filesystem from which to begin searching for free blocks
+.\"O to discard.  The default value is zero, starting at the beginning of the
+.\"O filesystem.
+破棄する空きブロックの検索を開始する、ファイルシステムのバイト
+オフセット。
+デフォルト値は 0 であり、ファイルシステムの先頭から開始する。
+.IP "\fB\-l, \-\-length\fP \fIlength\fP"
+.\"O The number of bytes (after the starting point) to search for free blocks
+.\"O to discard.  If the specified value extends past the end of the filesystem,
+.\"O .B fstrim
+.\"O will stop at the filesystem size boundary.  The default value extends to
+.\"O the end of the filesystem.
+破棄する空きブロックの検索を行う (開始点からの) バイト数。
+指定した値がファイルシステムの終端を越した場合、
+.B fstrim
+はファイルシステムサイズの境界で停止する。
+デフォルト値はファイルシステムの終端までである。
+.IP "\fB\-m, \-\-minimum\fP \fIminimum-size\fP"
+.\"O Minimum contiguous free range to discard, in bytes. (This value is internally
+.\"O rounded up to a multiple of the filesystem block size.)  Free ranges smaller
+.\"O than this will be ignored and fstrim will adjust the minimum if it's smaller than
+.\"O the device's minimum, and report that (fstrim_range.minlen) back to userspace.
+破棄する連続した最小の空き範囲 (バイト数)。
+(この値は、内部的には、ファイルシステムブロックサイズの倍数に
+切り上げられる。)
+指定した値より小さい空き範囲は無視される。
+指定した値がデバイスの最小値より小さい場合、fstrim は最小値を調整し、
+ユーザー空間に (fstrim_range.minlen) を返す。
+.\"O By increasing this value, the fstrim operation will complete more quickly for
+.\"O filesystems with badly fragmented freespace, although not all blocks will be
+.\"O discarded.  The default value is zero, discarding every free block.
+ひどく断片化した空きスペースがあるファイルシステムに対して、
+この値を大きくすると、fstrim 操作の完了が速くなるが、
+全てのブロックが破棄される訳ではなくなる。
+デフォルト値は 0 であり、全ての空きブロックを破棄する。
+.IP "\fB\-v, \-\-verbose\fP"
+.\"O Verbose execution.  With this option
+.\"O .B fstrim
+.\"O will output the number of bytes passed from the filesystem
+.\"O down the block stack to the device for potential discard.  This number is a
+.\"O maximum discard amount from the storage device's perspective, because
+.\"O .I FITRIM
+.\"O ioctl called repeated will keep sending the same sectors for discard repeatedly.
+詳細なメッセージを出して実行する。
+With this option
+.B fstrim
+will output the number of bytes passed from the filesystem
+down the block stack to the device for potential discard.  This number is a
+maximum discard amount from the storage device's perspective, because
+.I FITRIM
+ioctl called repeated will keep sending the same sectors for discard repeatedly.
+.sp
+.B fstrim
+will report the same potential discard bytes each time, but only sectors which
+had been written to between the discards would actually be discarded by the
+storage device.  Further, the kernel block layer reserves the right to adjust
+the discard ranges to fit raid stripe geometry, non-trim capable devices in a
+LVM setup, etc.  These reductions would not be reflected in fstrim_range.len
+(the
+.B --length
+option).
+.TP
+.B \-\-quiet
+Suppress error messages.  This option is meant to be used in systemd service
+file or in cron scripts to hide warnings that are result of known problems,
+such as NTFS driver
+reporting
+.I Bad file descriptor
+when device is mounted read-only, or lack of file system support for ioctl
+FITRIM call.
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+
+.\"O .SH RETURN CODES
+.SH 返り値
+.IP 0
+.\"O success
+成功
+.IP 1
+.\"O failure
+失敗
+.IP 32
+.\"O all failed
+全て失敗
+.IP 64
+.\"O some filesystem discards have succeeded, some failed
+一部のファイルシステムでの破棄は成功して、一部では失敗した
+.PP
+.\"O The command
+.\"O .B fstrim --all
+.\"O returns 0 (all succeeded), 32 (all failed) or 64 (some failed, some succeeded).
+コマンド
+.B fstrim --all
+は 0 (全て成功), 32 (全て失敗), 64 (一部失敗、一部成功) を返す。
+
+.\"O .SH AUTHOR
+.SH 著者
+.nf
+Lukas Czerner <lczerner@redhat.com>
+Karel Zak <kzak@redhat.com>
+.fi
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR blkdiscard (8),
+.BR mount (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The fstrim command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+fstrim コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
