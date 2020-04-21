@@ -181,8 +181,8 @@ fsck がユーザ要求によってキャンセルされた
 
 は、実際には Linux で利用できるさまざまなファイルシステムチェッカー
 (<B>fsck</B>.<I>fstype</I>) への単なるフロントエンドにすぎない。
-ファイルシステム固有のチェッカーは、環境変数 PATH 内でサーチされる。
-PATH が定義されていない場合、&quot;/sbin&quot; がサーチされる。
+ファイルシステム固有のチェッカーは、環境変数 PATH 内で探される。
+PATH が定義されていない場合、&quot;/sbin&quot; 内で探す。
 <P>
 
 
@@ -196,33 +196,54 @@ PATH が定義されていない場合、&quot;/sbin&quot; がサーチされる
 <DT><B>-l</B>
 
 <DD>
-Create an exclusive
+
+
+
+ディスクデバイス全体に対して、排他
 <B><A HREF="../man2/flock.2.html">flock</A></B>(2)
 
-lock file (/run/fsck/&lt;diskname&gt;.lock) for whole-disk device.
-This option can be used with one device only (this means that <B>-A</B> and
-<B>-l</B> are mutually exclusive).  This option is recommended when more
+ロックファイル (/run/fsck/&lt;diskname&gt;.lock) を作成する。
+
+
+
+
+
+
+
+このオプションは 1 つのデバイスのみに使える
+(つまり、<B>-A</B> と <B>-l</B> は同時に指定できない)。
+このオプションは、複数の
 <B><A HREF="../man8/fsck.8.html">fsck</A></B>(8)
 
-instances are executed in the same time.  The option is ignored when used for
-multiple devices or for non-rotating disks.  <B>fsck</B> does not lock underlying
-devices when executed to check stacked devices (e.g. MD or DM) - this feature is
-not implemented yet.
+インスタンスが同時に実行される場合に推奨される。
+このオプションは、複合デバイスや非回転ディスクでは無視される。
+<B>fsck</B> はスタックデバイス (例えば MD または DM) のチェックをする場合には、
+下層のデバイスをロックしない - この機能は、まだ実装されていない。
 <DT><B>-r</B>&nbsp;[<B></B><I>fd</I>]
 
 <DD>
-Report certain statistics for each fsck when it completes.  These statistics
-include the exit status, the maximum run set size (in kilobytes), the elapsed
-all-clock time and the user and system CPU time used by the fsck run.  For
-example:
+
+
+
+
+各 fsck が完了した際に、ある程度の統計情報を表示する。
+この統計情報には、返り値、(キロバイト単位の) 最大実行セットサイズ (run set size)、
+fsck の実行に使われた全ての経過クロック時間、ユーザー CPU 時間、システム CPU 時間が含まれる。
+例:
 <P>
 /dev/sda1: status 0, rss 92828, real 4.002804, user 2.677592, sys 0.86186
 <P>
-GUI front-ends may specify a file descriptor
-<I>fd</I>,
 
-in which case the progress bar information will be sent to that file descriptor
-in a machine parsable format.  For example:
+
+
+
+GUI フロントエンドにはファイルディスクリプタ
+<I>fd</I>
+
+指定することができる。
+この場合、棒グラフの情報は、マシンが解析しやすい形式で、ファイル
+ディスクリプタに送られる。
+例:
 <P>
 /dev/sda1 0 92828 4.002804 2.677592 0.86186
 <DT><B>-s</B>
@@ -496,11 +517,15 @@ in a machine parsable format.  For example:
 はそれらを並列してチェックしようとする。
 しかし同じ物理ディスクにあるファイルシステムの同時チェックは避ける。
 <P>
+
+
+
+
 <B>fsck</B>
 
-does not check stacked devices (RAIDs, dm-crypt, ...) in parallel with any other
-device.  See below for FSCK_FORCE_ALL_PARALLEL setting.  The /sys filesystem is
-used to determine dependencies between devices.
+はスタックデバイス (RAID, dm-crypt, ...) を他のデバイスと並列してチェックしない。
+以下の FSCK_FORCE_ALL_PARALLEL の設定を参照すること。
+/sys ファイルシステムを使って、デバイス間の依存関係を決定する。
 <P>
 
 
@@ -537,26 +562,43 @@ used to determine dependencies between devices.
 たとえばマシンのメモリが少なく、余分なページングが問題になる場合
 などがこれにあたる。
 <P>
+
+
+
+
+
+
+
+
+
+
+
 <B>fsck</B>
 
-normally does not check whether the device actually exists before
-calling a filesystem specific checker.  Therefore non-existing
-devices may cause the system to enter filesystem repair mode during
-boot if the filesystem specific checker returns a fatal error.  The
+はファイルシステム固有のチェッカーを呼ぶ前に、デバイスが実際に
+存在するかを確認しない。
+よって、ブート中にファイルシステム固有のチェッカーが致命的な
+エラーを返した場合、
+デバイスが存在しないと、システムがファイルシステムの修復モードに
+入ってしまう。
 <I>/etc/fstab</I>
 
-mount option
+のマウントオプション
 <B>nofail</B>
 
-may be used to have
+は、存在しないデバイスを
 <B>fsck</B>
 
-skip non-existing devices.
+にスキップさせるために使われる。
+
+
+
 <B>fsck</B>
 
-also skips non-existing devices that have the special filesystem type
-<B>auto</B>.
+は、特別なファイルシステムタイプ
+<B>auto</B>
 
+が指定されているデバイスが存在しない場合にも、スキップする。
 <DT><B>-C</B>&nbsp;[<B></B><I>fd</I>]
 
 <DD>
@@ -882,6 +924,6 @@ Linux Kernel Archive
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 18:00:58 GMT, April 20, 2020
+Time: 11:01:08 GMT, April 21, 2020
 </BODY>
 </HTML>
