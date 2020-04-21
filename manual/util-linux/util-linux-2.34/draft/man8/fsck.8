@@ -11,7 +11,7 @@
 .\" Updated & Modified Sat Apr 17 03:04:33 JST 2004
 .\"         by Yuichi SATO <ysato444@yahoo.co.jp>
 .\" Updated & Modified Tue May  3 05:59:27 JST 2005 by Yuichi SATO
-.\" Updated & Modified Tue Apr 21 02:56:38 JST 2020
+.\" Updated & Modified Tue Apr 21 19:57:53 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH FSCK 8 "February 2009" "util-linux" "System Administration"
@@ -142,8 +142,8 @@ fsck がユーザ要求によってキャンセルされた
 .B fsck
 は、実際には Linux で利用できるさまざまなファイルシステムチェッカー
 (\fBfsck\fP.\fIfstype\fP) への単なるフロントエンドにすぎない。
-ファイルシステム固有のチェッカーは、環境変数 PATH 内でサーチされる。
-PATH が定義されていない場合、"/sbin" がサーチされる。
+ファイルシステム固有のチェッカーは、環境変数 PATH 内で探される。
+PATH が定義されていない場合、"/sbin" 内で探す。
 .PP
 .\"O Please see the filesystem-specific checker manual pages for
 .\"O further details.
@@ -152,29 +152,50 @@ PATH が定義されていない場合、"/sbin" がサーチされる。
 .SH オプション
 .TP
 .B \-l
-Create an exclusive
+.\"O Create an exclusive
+.\"O .BR flock (2)
+.\"O lock file (/run/fsck/<diskname>.lock) for whole-disk device.
+ディスクデバイス全体に対して、排他
 .BR flock (2)
-lock file (/run/fsck/<diskname>.lock) for whole-disk device.
-This option can be used with one device only (this means that \fB\-A\fR and
-\fB\-l\fR are mutually exclusive).  This option is recommended when more
+ロックファイル (/run/fsck/<diskname>.lock) を作成する。
+.\"O This option can be used with one device only (this means that \fB\-A\fR and
+.\"O \fB\-l\fR are mutually exclusive).  This option is recommended when more
+.\"O .BR fsck (8)
+.\"O instances are executed in the same time.  The option is ignored when used for
+.\"O multiple devices or for non-rotating disks.  \fBfsck\fR does not lock underlying
+.\"O devices when executed to check stacked devices (e.g.\& MD or DM) \(en this feature is
+.\"O not implemented yet.
+このオプションは 1 つのデバイスのみに使える
+(つまり、\fB\-A\fR と \fB\-l\fR は同時に指定できない)。
+このオプションは、複数の
 .BR fsck (8)
-instances are executed in the same time.  The option is ignored when used for
-multiple devices or for non-rotating disks.  \fBfsck\fR does not lock underlying
-devices when executed to check stacked devices (e.g.\& MD or DM) \(en this feature is
-not implemented yet.
+インスタンスが同時に実行される場合に推奨される。
+このオプションは、複合デバイスや非回転ディスクでは無視される。
+\fBfsck\fR はスタックデバイス (例えば\& MD または DM) のチェックをする場合には、
+下層のデバイスをロックしない \(en この機能は、まだ実装されていない。
 .TP
 .BR \-r \ [ \fIfd\fR ]
-Report certain statistics for each fsck when it completes.  These statistics
-include the exit status, the maximum run set size (in kilobytes), the elapsed
-all-clock time and the user and system CPU time used by the fsck run.  For
-example:
+.\"O Report certain statistics for each fsck when it completes.  These statistics
+.\"O include the exit status, the maximum run set size (in kilobytes), the elapsed
+.\"O all-clock time and the user and system CPU time used by the fsck run.  For
+.\"O example:
+各 fsck が完了した際に、ある程度の統計情報を表示する。
+この統計情報には、返り値、(キロバイト単位の) 最大実行セットサイズ (run set size)、
+fsck の実行に使われた全ての経過クロック時間、ユーザー CPU 時間、システム CPU 時間が含まれる。
+例:
 
 /dev/sda1: status 0, rss 92828, real 4.002804, user 2.677592, sys 0.86186
 
-GUI front-ends may specify a file descriptor
-.IR fd ,
-in which case the progress bar information will be sent to that file descriptor
-in a machine parsable format.  For example:
+.\"O GUI front-ends may specify a file descriptor
+.\"O .IR fd ,
+.\"O in which case the progress bar information will be sent to that file descriptor
+.\"O in a machine parsable format.  For example:
+GUI フロントエンドにはファイルディスクリプタ
+.I fd
+指定することができる。
+この場合、棒グラフの情報は、マシンが解析しやすい形式で、ファイル
+ディスクリプタに送られる。
+例:
 
 /dev/sda1 0 92828 4.002804 2.677592 0.86186
 .TP
@@ -405,10 +426,14 @@ in a machine parsable format.  For example:
 はそれらを並列してチェックしようとする。
 しかし同じ物理ディスクにあるファイルシステムの同時チェックは避ける。
 .sp
+.\"O .B fsck
+.\"O does not check stacked devices (RAIDs, dm-crypt, \&...\&) in parallel with any other
+.\"O device.  See below for FSCK_FORCE_ALL_PARALLEL setting.  The /sys filesystem is
+.\"O used to determine dependencies between devices.
 .B fsck
-does not check stacked devices (RAIDs, dm-crypt, \&...\&) in parallel with any other
-device.  See below for FSCK_FORCE_ALL_PARALLEL setting.  The /sys filesystem is
-used to determine dependencies between devices.
+はスタックデバイス (RAID, dm-crypt, \&...\&) を他のデバイスと並列してチェックしない。
+以下の FSCK_FORCE_ALL_PARALLEL の設定を参照すること。
+/sys ファイルシステムを使って、デバイス間の依存関係を決定する。
 .sp
 .\"O Hence, a very common configuration in
 .\"O .I /etc/fstab
@@ -441,20 +466,37 @@ used to determine dependencies between devices.
 たとえばマシンのメモリが少なく、余分なページングが問題になる場合
 などがこれにあたる。
 .sp
+.\"O .B fsck
+.\"O normally does not check whether the device actually exists before
+.\"O calling a filesystem specific checker.  Therefore non-existing
+.\"O devices may cause the system to enter filesystem repair mode during
+.\"O boot if the filesystem specific checker returns a fatal error.  The
+.\"O .I /etc/fstab
+.\"O mount option
+.\"O .B nofail
+.\"O may be used to have
+.\"O .B fsck
+.\"O skip non-existing devices.
 .B fsck
-normally does not check whether the device actually exists before
-calling a filesystem specific checker.  Therefore non-existing
-devices may cause the system to enter filesystem repair mode during
-boot if the filesystem specific checker returns a fatal error.  The
+はファイルシステム固有のチェッカーを呼ぶ前に、デバイスが実際に
+存在するかを確認しない。
+よって、ブート中にファイルシステム固有のチェッカーが致命的な
+エラーを返した場合、
+デバイスが存在しないと、システムがファイルシステムの修復モードに
+入ってしまう。
 .I /etc/fstab
-mount option
+のマウントオプション
 .B nofail
-may be used to have
+は、存在しないデバイスを
 .B fsck
-skip non-existing devices.
+にスキップさせるために使われる。
+.\"O .B fsck
+.\"O also skips non-existing devices that have the special filesystem type
+.\"O .BR auto .
 .B fsck
-also skips non-existing devices that have the special filesystem type
-.BR auto .
+は、特別なファイルシステムタイプ
+.B auto
+が指定されているデバイスが存在しない場合にも、スキップする。
 .TP
 .BR \-C \ [ \fIfd\fR ]
 .\"O Display completion/progress bars for those filesystem checkers (currently
