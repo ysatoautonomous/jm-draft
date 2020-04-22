@@ -1,0 +1,326 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LDATTACH</TITLE>
+</HEAD><BODY>
+<H1>LDATTACH</H1>
+Section: System Administration (8)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+ldattach - シリアル回線に回線制御 (discipline) を割り当てる。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>ldattach</B>
+
+[<B>-1278denoVh</B>]
+
+[<B>-i</B>
+
+<I>iflag</I>]
+
+[<B>-s</B>
+
+<I>speed</I>]
+
+<I>ldisc device</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+
+<B>ldattach</B>
+
+デーモンは、(シリアルデバイスを参照する) 指定した
+<I>device</I>
+
+ファイルをオープンし、データの送受信を処理するために、回線制御
+<I>ldisc</I>
+
+を付与する。
+
+
+デーモンはバックグラウンドで、デバイスをオープンし続けて、
+回線制御をロードしたままにする。
+<P>
+
+
+
+
+回線制御
+<I>ldisc</I>
+
+は名前または数値で指定できる。
+<P>
+
+
+
+
+
+回線制御を解除するには
+<B>ldattach</B>
+
+プロセスを
+<B><A HREF="../man1/kill.1.html">kill</A></B>(1)
+
+すること。
+<P>
+
+
+
+引き数がない場合、
+<B>ldattach</B>
+
+は使用法を表示する。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>回線制御</H2>
+
+
+カーネルリリースに依存するが、以下の回線制御がサポートされている:
+<DL COMPACT>
+<DT><B>TTY</B>(<B>0</B>)
+
+<DD>
+
+
+
+デフォルトの回線制御。
+透過的な操作 (raw モード) と、編集機能を持ったよく使われる端末回線
+(cooked モード) を提供する。
+<DT><B>SLIP</B>(<B>1</B>)
+
+<DD>
+
+
+TCP/IP パケットをシリアル回線上で転送する
+Serial Line IP (SLIP) プロトコルプロセッサ。
+<DT><B>MOUSE</B>(<B>2</B>)
+
+<DD>
+
+RS232 に接続されたポインティングデバイス (シリアルマウス) のデバイスドライバ。
+<DT><B>PPP</B>(<B>3</B>)
+
+<DD>
+
+
+ネットワークパケットをシリアル回線上で転送する
+Point to Point Protocol (PPP) プロセッサ。
+<DT><B>STRIP</B>(<B>4</B>)
+
+<DD>
+<DT><B>AX25</B>(<B>5</B>)
+
+<DD>
+<DT><B>X25</B>(<B>6</B>)
+
+<DD>
+
+非同期シリアル回線上で X.25 パケットを転送する回線ドライバ。
+<DT><B>6PACK</B>(<B>7</B>)
+
+<DD>
+<DT><B>R3964</B>(<B>9</B>)
+
+<DD>
+
+Simatic R3964 モジュールのドライバ。
+<DT><B>IRDA</B>(<B>11</B>)
+
+<DD>
+
+
+Linux IrDa (infrared data transmission: 赤外線データ転送) ドライバ -
+<A HREF="http://irda.sourceforge.net/">http://irda.sourceforge.net/</A> を参照すること。
+<DT><B>HDLC</B>(<B>13</B>)
+
+<DD>
+
+同期 HDLC ドライバ。
+<DT><B>SYNC_PPP</B>(<B>14</B>)
+
+<DD>
+
+同期 PPP ドライバ。
+<DT><B>HCI</B>(<B>15</B>)
+
+<DD>
+
+Bluetooth HCI UART ドライバ。
+<DT><B>GIGASET_M101</B>(<B>16</B>)
+
+<DD>
+
+Siemens Gigaset M101 シリアル DECT アダプタのドライバ。
+<DT><B>PPS</B>(<B>18</B>)
+
+<DD>
+
+シリアル回線 Pulse Per Second (PPS) ソースのドライバ。
+<DT><B>GSM0710</B>(<B>21</B>)
+
+<DD>
+
+GSM 07.10 マルチプレックスプロトコルモデル (CMUX) のドライバ。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-1</B>,<B> --onestopbit</B>
+
+<DD>
+
+シリアル回線のストップビットを 1 に設定する。
+<DT><B>-2</B>,<B> --twostopbits</B>
+
+<DD>
+
+シリアル回線のストップビットを 2 に設定する。
+<DT><B>-7</B>,<B> --sevenbits</B>
+
+<DD>
+
+シリアル回線のキャラクタサイズを 7 に設定する。
+<DT><B>-8</B>,<B> --eightbits</B>
+
+<DD>
+
+シリアル回線のキャラクタサイズを 8 に設定する。
+<DT><B>-d</B>,<B> --debug</B>
+
+<DD>
+
+
+
+
+<B>ldattach</B>
+
+をフォアグラウンドにして、中断とデバッグを可能にする。
+また、進捗についての詳細なメッセージを標準エラー出力に出力する。
+<DT><B>-e</B>,<B> --evenparity</B>
+
+<DD>
+
+シリアル回線のパリティを、偶数に設定する。
+<DT><B>-i</B>,<B> --iflag </B>[<B>-</B>]<B></B><I>value</I>...
+
+<DD>
+
+
+
+
+
+シリアル回線の c_iflag ワードの指定されたビットを設定する。
+指定される <I>value</I> は数値またはシンボル名である。
+<I>value</I> の前にマイナス記号を付けると、指定されたビットがクリアされる。
+カンマ区切りの複数の値を指定して、複数のビットを設定または
+クリアできる。
+<DT><B>-n</B>,<B> --noparity</B>
+
+<DD>
+
+シリアル回線のパリティを、なしに設定する。
+<DT><B>-o</B>,<B> --oddparity</B>
+
+<DD>
+
+シリアル回線のパリティを、奇数に設定する。
+<DT><B>-s</B>,<B> --speed </B><I>value</I>
+
+<DD>
+
+シリアル回線の速度 (バンドレート) を指定した <I>value</I> に設定する。
+<DT><B>-c</B>,<B> --intro-command </B><I>string</I>
+
+<DD>
+
+
+
+ldattach の呼び出しの前に、シリアル回線に送信される intro コマンドを定義する。
+例えば、回線制御 GSM0710 とともに使う場合、モデムを CMUX モードに切り替えるには、
+コマンド 'AT+CMUX=0\r' が一般には適切である。
+<DT><B>-p</B>,<B> --pause </B><I>value</I>
+
+<DD>
+
+ldattach の呼び出しの前に、<I>value</I> 秒スリープする。
+デフォルトは 1 秒である。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/inputattach.1.html">inputattach</A></B>(1),
+
+<B><A HREF="../man4/ttys.4.html">ttys</A></B>(4)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>著者</H2>
+
+<PRE>
+Tilman Schmidt (<A HREF="mailto:tilman@imap.cc">tilman@imap.cc</A>)
+</PRE>
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+ldattach コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">回線制御</A><DD>
+<DT><A HREF="#lbAF">オプション</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:25:16 GMT, April 22, 2020
+</BODY>
+</HTML>
