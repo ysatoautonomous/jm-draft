@@ -194,38 +194,59 @@ MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB を付けることができる
 
 
 詳細なメッセージを出して実行する。
-With this option
+このオプションを指定すると、
 <B>fstrim</B>
 
-will output the number of bytes passed from the filesystem
-down the block stack to the device for potential discard.  This number is a
-maximum discard amount from the storage device's perspective, because
+は破棄される可能性があるためにファイルシステムから、
+ブロックスタックを介して、デバイスに渡されたバイト数を表示する。
+これはストレージデバイスの観点からみた、破棄される総量の最大値
+である。
+なぜなら、繰り返しの
 <I>FITRIM</I>
 
-ioctl called repeated will keep sending the same sectors for discard repeatedly.
+ioctl 呼び出しでは、繰り返し破棄するために、同じセクタを送り続けるから
+である。
 <P>
+
+
+
+
+
+
+
+
+
 <B>fstrim</B>
 
-will report the same potential discard bytes each time, but only sectors which
-had been written to between the discards would actually be discarded by the
-storage device.  Further, the kernel block layer reserves the right to adjust
-the discard ranges to fit raid stripe geometry, non-trim capable devices in a
-LVM setup, etc.  These reductions would not be reflected in fstrim_range.len
-(the
-<B>--length</B>
+は破棄の可能性のある同じバイトを毎回表示するが、
+破棄の間に書き込まれたセクタのみが、ストレージデバイスによって
+実際に破棄される。
+さらに、カーネルのブロックレイヤには、破棄範囲を調整する機能がある。
+これは、RAID ストライプジオメトリ、または
+LVM 設定で切り詰め不可にされたデバイスに合わせるためである。
+これによるバイト数の減少は、fstrim_range.len
+(<B>--length</B>
 
-option).
+オプション) に反映されない。
 <DT><B>--quiet</B>
 
 <DD>
-Suppress error messages.  This option is meant to be used in systemd service
-file or in cron scripts to hide warnings that are result of known problems,
-such as NTFS driver
-reporting
-<I>Bad file descriptor</I>
 
-when device is mounted read-only, or lack of file system support for ioctl
-FITRIM call.
+
+
+
+
+
+
+エラーメッセージを抑止する。
+このオプションは、systemd サービスファイル、または cron スクリプトで
+既知の問題に起因する警告を隠すために使われる。
+既知の問題とは、デバイスが読み込みのみでマウントされた場合、
+またはファイルシステムが ioctl FITRIM の呼び出しをサポートしていない場合、
+NTFS ドライバが
+<I>不正なファイルディスクリプタ (bad file descriptor)</I>
+
+であることを表示することなどである。
 <DT><B>-V</B>,<B> --version</B>
 
 <DD>
@@ -310,6 +331,6 @@ fstrim コマンドは util-linux パッケージの一部であり、
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 16:52:20 GMT, April 21, 2020
+Time: 14:30:48 GMT, April 22, 2020
 </BODY>
 </HTML>
