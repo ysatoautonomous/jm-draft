@@ -1,0 +1,234 @@
+.\" Copyright 2008 Tilman Schmidt (tilman@imap.cc)
+.\" May be distributed under the GNU General Public License version 2 or later
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Thu Apr 23 01:19:09 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH LDATTACH 8 "July 2014" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O ldattach \- attach a line discipline to a serial line
+ldattach \- シリアル回線に回線制御 (discipline) を割り当てる。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B ldattach
+.RB [ \-1278denoVh ]
+.RB [ \-i
+.IR iflag ]
+.RB [ \-s
+.IR speed ]
+.I ldisc device
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The
+.\"O .B ldattach
+.\"O daemon opens the specified
+.\"O .I device
+.\"O file
+.\"O (which should refer to a serial device)
+.\"O and attaches the line discipline
+.\"O .I ldisc
+.\"O to it for processing of the sent and/or received data.
+.B ldattach
+デーモンは、(シリアルデバイスを参照する) 指定した
+.I device
+ファイルをオープンし、データの送受信を処理するために、回線制御
+.I ldisc
+を付与する。
+.\"O It then goes into the background keeping the device open so that the
+.\"O line discipline stays loaded.
+デーモンはバックグラウンドで、デバイスをオープンし続けて、
+回線制御をロードしたままにする。
+.sp
+.\"O The line discipline
+.\"O .I ldisc
+.\"O may be specified either by name
+.\"O or by number.
+回線制御
+.I ldisc
+は名前または数値で指定できる。
+.sp
+.\"O In order to detach the line discipline,
+.\"O .BR kill (1)
+.\"O the
+.\"O .B ldattach
+.\"O process.
+回線制御を解除するには
+.B ldattach
+プロセスを
+.BR kill (1)
+すること。
+.sp
+.\"O With no arguments,
+.\"O .B ldattach
+.\"O prints usage information.
+引き数がない場合、
+.B ldattach
+は使用法を表示する。
+.\"O .SH LINE DISCIPLINES
+.SH 回線制御
+.\"O Depending on the kernel release, the following line disciplines are supported:
+カーネルリリースに依存するが、以下の回線制御がサポートされている:
+.TP
+.BR TTY ( 0 )
+.\"O The default line discipline,
+.\"O providing transparent operation (raw mode)
+.\"O as well as the habitual terminal line editing capabilities (cooked mode).
+デフォルトの回線制御。
+透過的な操作 (raw モード) と、編集機能を持ったよく使われる端末回線
+(cooked モード) を提供する。
+.TP
+.BR SLIP ( 1 )
+.\"O Serial Line IP (SLIP) protocol processor
+.\"O for transmitting TCP/IP packets over serial lines.
+TCP/IP パケットをシリアル回線上で転送する
+Serial Line IP (SLIP) プロトコルプロセッサ。
+.TP
+.BR MOUSE ( 2 )
+.\"O Device driver for RS232 connected pointing devices (serial mice).
+RS232 に接続されたポインティングデバイス (シリアルマウス) のデバイスドライバ。
+.TP
+.BR PPP ( 3 )
+.\"O Point to Point Protocol (PPP) processor
+.\"O for transmitting network packets over serial lines.
+ネットワークパケットをシリアル回線上で転送する
+Point to Point Protocol (PPP) プロセッサ。
+.TP
+.BR STRIP ( 4 )
+.TP
+.BR AX25 ( 5 )
+.TP
+.BR X25 ( 6 )
+.\"O Line driver for transmitting X.25 packets over asynchronous serial lines.
+非同期シリアル回線上で X.25 パケットを転送する回線ドライバ。
+.TP
+.BR 6PACK ( 7 )
+.TP
+.BR R3964 ( 9 )
+.\"O Driver for Simatic R3964 module.
+Simatic R3964 モジュールのドライバ。
+.TP
+.BR IRDA ( 11 )
+.\"O Linux IrDa (infrared data transmission) driver -
+.\"O see http://irda.sourceforge.net/
+Linux IrDa (infrared data transmission: 赤外線データ転送) ドライバ -
+http://irda.sourceforge.net/ を参照すること。
+.TP
+.BR HDLC ( 13 )
+.\"O Synchronous HDLC driver.
+同期 HDLC ドライバ。
+.TP
+.BR SYNC_PPP ( 14 )
+.\"O Synchronous PPP driver.
+同期 PPP ドライバ。
+.TP
+.BR HCI ( 15 )
+.\"O Bluetooth HCI UART driver.
+Bluetooth HCI UART ドライバ。
+.TP
+.BR GIGASET_M101 ( 16 )
+.\"O Driver for Siemens Gigaset M101 serial DECT adapter.
+Siemens Gigaset M101 シリアル DECT アダプタのドライバ。
+.TP
+.BR PPS ( 18 )
+.\"O Driver for serial line Pulse Per Second (PPS) source.
+シリアル回線 Pulse Per Second (PPS) ソースのドライバ。
+.TP
+.BR GSM0710 ( 21 )
+.\"O Driver for GSM 07.10 multiplexing protocol modem (CMUX).
+GSM 07.10 マルチプレックスプロトコルモデル (CMUX) のドライバ。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-1 , " \-\-onestopbit"
+.\"O Set the number of stop bits of the serial line to one.
+シリアル回線のストップビットを 1 に設定する。
+.TP
+.BR \-2 , " \-\-twostopbits"
+.\"O Set the number of stop bits of the serial line to two.
+シリアル回線のストップビットを 2 に設定する。
+.TP
+.BR \-7 , " \-\-sevenbits"
+.\"O Set the character size of the serial line to 7 bits.
+シリアル回線のキャラクタサイズを 7 に設定する。
+.TP
+.BR \-8 , " \-\-eightbits"
+.\"O Set the character size of the serial line to 8 bits.
+シリアル回線のキャラクタサイズを 8 に設定する。
+.TP
+.BR \-d , " \-\-debug"
+.\"O Keep
+.\"O .B ldattach
+.\"O in the foreground so that it can be interrupted or debugged,
+.\"O and to print verbose messages about its progress to standard error output.
+.B ldattach
+をフォアグラウンドにして、中断とデバッグを可能にする。
+また、進捗についての詳細なメッセージを標準エラー出力に出力する。
+.TP
+.BR \-e , " \-\-evenparity"
+.\"O Set the parity of the serial line to even.
+シリアル回線のパリティを、偶数に設定する。
+.TP
+.BR -i , " --iflag " [ \- ] \fIvalue\fR...
+.\"O Set the specified bits in the c_iflag word of the serial line.
+.\"O The given \fIvalue\fP may be a number or a symbolic name.
+.\"O If \fIvalue\fP is prefixed by a minus sign, the specified bits are cleared
+.\"O instead.  Several comma-separated values may be given in order to
+.\"O set and clear multiple bits.
+シリアル回線の c_iflag ワードの指定されたビットを設定する。
+指定される \fIvalue\fP は数値またはシンボル名である。
+\fIvalue\fP の前にマイナス記号を付けると、指定されたビットがクリアされる。
+カンマ区切りの複数の値を指定して、複数のビットを設定または
+クリアできる。
+.TP
+.BR \-n , " \-\-noparity"
+.\"O Set the parity of the serial line to none.
+シリアル回線のパリティを、なしに設定する。
+.TP
+.BR \-o , " \-\-oddparity"
+.\"O Set the parity of the serial line to odd.
+シリアル回線のパリティを、奇数に設定する。
+.TP
+.BR  \-s , " \-\-speed " \fIvalue
+.\"O Set the speed (the baud rate) of the serial line to the specified \fIvalue\fR.
+シリアル回線の速度 (バンドレート) を指定した \fIvalue\fR に設定する。
+.TP
+.BR \-c , " \-\-intro\-command " \fIstring
+.\"O Define an intro command that is sent through the serial line before the invocation
+.\"O of ldattach. E.g. in conjunction with line discipline GSM0710, the command
+.\"O \'AT+CMUX=0\\r\' is commonly suitable to switch the modem into the CMUX mode.
+ldattach の呼び出しの前に、シリアル回線に送信される intro コマンドを定義する。
+例えば、回線制御 GSM0710 とともに使う場合、モデムを CMUX モードに切り替えるには、
+コマンド \'AT+CMUX=0\\r\' が一般には適切である。
+.TP
+.BR \-p , " \-\-pause "  \fIvalue
+.\"O Sleep for \fIvalue\fR seconds before the invocation of ldattach. Default is one second.
+ldattach の呼び出しの前に、\fIvalue\fR 秒スリープする。
+デフォルトは 1 秒である。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR inputattach (1),
+.BR ttys (4)
+.\"O .SH AUTHOR
+.SH 著者
+.nf
+Tilman Schmidt (tilman@imap.cc)
+.fi
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The ldattach command is part of the util-linux package
+.\"O and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+ldattach コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
