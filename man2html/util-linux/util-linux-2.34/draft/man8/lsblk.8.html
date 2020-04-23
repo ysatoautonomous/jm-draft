@@ -1,0 +1,401 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LSBLK</TITLE>
+</HEAD><BODY>
+<H1>LSBLK</H1>
+Section: System Administration (8)<BR>Updated: February 2013<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+lsblk - ブロックデバイスをリスト表示する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>lsblk</B>
+
+[options]
+[<I>device</I>...]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+
+
+<B>lsblk</B>
+
+は全ての利用可能なブロックデバイス、または指定されたブロックデバイスの
+情報をリスト表示する。
+<B>lsblk</B>
+
+コマンドは
+<B>sysfs</B>
+
+ファイルシステムと
+<B>udev db</B>
+
+を読んで、情報を集める。
+udev db が利用可能出ない場合、または lsblk が udev のサポートなしで
+コンパイルされている場合、ブロックデバイスから LABELs, UUID, フィルシステムタイプを読み込む。
+この場合 root 権限が必要である。
+<P>
+
+
+
+
+
+このコマンドは、デフォルトでは (RAM ディスク以外の) 全てのブロックデバイスを
+ツリー状の形式で表示する。
+全ての利用可能なカラムのリストを取得するには、
+<B>lsblk --help</B>
+
+を使うこと。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+デフォルトの出力や、
+<B>--fs</B>
+
+と
+<B>--topology</B>
+
+のようなオプションによるデフォルトの出力は、変更される可能性がある。
+可能な限り、スクリプト内ではデフォルトの出力を使わないべきである。
+固定した出力が必要な場合、その環境では
+<B>--output</B>
+
+<I>columns-list</I>
+
+と
+<B>--list</B>
+
+を使って、期待する列を常に明示的に定義するべきである。
+<P>
+
+
+
+
+
+
+
+
+
+最近追加または変更されたデバイスについての全ての情報を、
+<B>udev</B>
+
+がまだ持っていない状態で、
+<B>lsblk</B>
+
+が実行される可能性がある点に注意すること。
+この場合、lsblk が udev と同期する前に、
+<B>udevadm settle</B>
+
+を使うことが推奨される。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-a</B>,<B> --all</B>
+
+<DD>
+
+空のデバイスと RAM ディスクデバイスもリスト表示する。
+<DT><B>-b</B>,<B> --bytes</B>
+
+<DD>
+
+SIZE カラムを人が読みやすい形式ではなくバイト単位で表示する。
+<DT><B>-D</B>,<B> --discard</B>
+
+<DD>
+
+各デバイスの破棄ケーパビリティ (discarding capabilities) (TRIM, UNMAP) の情報を表示する。
+<DT><B>-d</B>,<B> --nodeps</B>
+
+<DD>
+
+
+ホルダーデバイスとスレーブを表示しない。
+例えば、<B>lsblk --nodeps /dev/sda</B> は、sda デバイスのみの情報を表示する。
+<DT><B>-E</B>,<B> --dedup </B><I>column</I>
+
+<DD>
+
+
+
+<I>column</I> を重複排除 (de-duplication) のキーとして、
+出力されるツリーを重複排除する。
+キーがデバイスで利用可能でない場合、またはデバイスが
+パーティションの場合、デバイスがいつも表示するキーではなく、
+親のディスクデバイス全体で同じキーを提供する。
+<P>
+
+
+一般的な使い方は、システムのマルチパスデバイスの出力の重複排除
+である。
+例えば、<B>-E WWN</B> を使う。
+<DT><B>-e</B>,<B> --exclude </B><I>list</I>
+
+<DD>
+
+メジャーデバイス番号のカンマ区切りのリスト <I>list</I> で指定されたデバイスを除外する。
+
+<B>--all</B> が指定されない限り、RAM ディスク (メジャー番号=1) は
+除外される点に注意すること。
+
+
+このフィルターはトップレベルのデバイスにのみ適用される。
+これは、デバイスの階層が明確でない <B>--list</B> 出力形式では、戸惑うかもしれない。
+<DT><B>-f</B>,<B> --fs</B>
+
+<DD>
+
+
+ファイルシステムについての情報を出力する。
+このオプションは
+<B>-o&nbsp;NAME,FSTYPE,LABEL,UUID,MOUNTPOINT</B>
+
+と同じである。
+
+
+
+ファイルシステムと RAID についての信頼できる情報は、
+<B><A HREF="../man8/blkid.8.html">blkid</A></B>(8)
+
+コマンドで提供される。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-I</B>,<B> --include </B><I>list</I>
+
+<DD>
+
+メジャーデバイス番号のカンマ区切りのリスト <I>list</I> で指定されたデバイスを含める。
+
+
+このフィルターはトップレベルのデバイスにのみ適用される。
+これは、デバイスの階層が明確でない <B>--list</B> 出力形式では、戸惑うかもしれない。
+<DT><B>-i</B>,<B> --ascii</B>
+
+<DD>
+Use ASCII characters for tree formatting.
+<DT><B>-J</B>,<B> --json</B>
+
+<DD>
+Use JSON output format.  It's strongly recommended to use <B>--output</B> and
+also <B>--tree</B> if necessary.
+<DT><B>-l</B>,<B> --list</B>
+
+<DD>
+Produce output in the form of a list. The output does not provide information
+about relationships between devices and since version 2.34 every device is
+printed only once.
+<DT><B>-M</B>,<B> --merge</B>
+
+<DD>
+Group parents of sub-trees to provide more readable output for RAIDs and
+Multi-path devices. The tree-like output is required.
+<DT><B>-m</B>,<B> --perms</B>
+
+<DD>
+Output info about device owner, group and mode.  This option is equivalent to
+<B>-o&nbsp;NAME,SIZE,OWNER,GROUP,MODE</B>.
+
+<DT><B>-n</B>,<B> --noheadings</B>
+
+<DD>
+Do not print a header line.
+<DT><B>-o</B>,<B> --output </B><I>list</I>
+
+<DD>
+Specify which output columns to print.  Use
+<B>--help</B>
+
+to get a list of all supported columns.  The columns may affect tree-like output.
+The default is to use tree for the column 'NAME' (see also <B>--tree</B>).
+<P>
+The default list of columns may be extended if <I>list</I> is
+specified in the format <I>+list</I> (e.g. <B>lsblk -o +UUID</B>).
+<DT><B>-O</B>,<B> --output-all </B>
+
+<DD>
+Output all available columns.
+<DT><B>-P</B>,<B> --pairs</B>
+
+<DD>
+Produce output in the form of key=&quot;value&quot; pairs.
+All potentially unsafe characters are hex-escaped (\x&lt;code&gt;).
+<DT><B>-p</B>,<B> --paths</B>
+
+<DD>
+Print full device paths.
+<DT><B>-r</B>,<B> --raw</B>
+
+<DD>
+Produce output in raw format.  All potentially unsafe characters are hex-escaped
+(\x&lt;code&gt;) in the NAME, KNAME, LABEL, PARTLABEL and MOUNTPOINT columns.
+<DT><B>-S</B>,<B> --scsi</B>
+
+<DD>
+Output info about SCSI devices only.  All partitions, slaves and holder devices are ignored.
+<DT><B>-s</B>,<B> --inverse</B>
+
+<DD>
+Print dependencies in inverse order. If the <B>--list</B> output is requested then
+the lines are still ordered by dependencies.
+<DT><B>-T</B>,<B> --tree</B>[<B>=</B><I>column</I>]
+
+<DD>
+Force tree-like output format.  If <I>column</I> is specified, then a tree is printed in the column.
+The default is NAME column.
+<DT><B>-t</B>,<B> --topology</B>
+
+<DD>
+Output info about block-device topology.
+This option is equivalent to
+<B>-o&nbsp;NAME,ALIGNMENT,MIN-IO,OPT-IO,PHY-SEC,LOG-SEC,ROTA,SCHED,RQ-SIZE,RA,WSAME</B>.
+
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+Display version information and exit.
+<DT><B>-x</B>,<B> --sort </B><I>column</I>
+
+<DD>
+Sort output lines by <I>column</I>. This option enables <B>--list</B> output format by default.
+It is possible to use the option <I>--tree</I> to force tree-like output and
+than the tree branches are sorted by the <I>column</I>.
+<DT><B>-z</B>,<B> --zoned</B>
+
+<DD>
+Print the zone model for each device.
+<DT><B> --sysroot </B><I>directory</I>
+
+<DD>
+Gather data for a Linux instance other than the instance from which the lsblk
+command is issued.  The specified directory is the system root of the Linux
+instance to be inspected.  This option is designed for the testing purpose.
+<P>
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>NOTES</H2>
+
+For partitions, some information (e.g. queue attributes) is inherited from the
+parent device.
+<P>
+
+The
+<B>lsblk</B>
+
+command needs to be able to look up each block device by major:minor numbers,
+which is done by using
+<I>/sys/dev/block</I>.
+
+This sysfs block directory appeared in kernel 2.6.27 (October 2008).
+In case of problems with a new enough kernel, check that CONFIG_SYSFS
+was enabled at the time of the kernel build.
+<P>
+<A NAME="lbAG">&nbsp;</A>
+<H2>RETURN CODES</H2>
+
+<DL COMPACT>
+<DT>0<DD>
+success
+<DT>1<DD>
+failure
+<DT>32<DD>
+none of specified devices found
+<DT>64<DD>
+some specified devices found, some not found
+<P>
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>AUTHORS</H2>
+
+<PRE>
+Milan Broz &lt;<A HREF="mailto:mbroz@redhat.com">mbroz@redhat.com</A>&gt;
+Karel Zak &lt;<A HREF="mailto:kzak@redhat.com">kzak@redhat.com</A>&gt;
+</PRE>
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>ENVIRONMENT</H2>
+
+<DL COMPACT>
+<DT>LSBLK_DEBUG=all<DD>
+enables lsblk debug output.
+<DT>LIBBLKID_DEBUG=all<DD>
+enables libblkid debug output.
+<DT>LIBMOUNT_DEBUG=all<DD>
+enables libmount debug output.
+<DT>LIBSMARTCOLS_DEBUG=all<DD>
+enables libsmartcols debug output.
+<DT>LIBSMARTCOLS_DEBUG_PADDING=on<DD>
+use visible padding characters. Requires enabled LIBSMARTCOLS_DEBUG.
+</DL>
+<A NAME="lbAJ">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<B><A HREF="../man1/ls.1.html">ls</A></B>(1),
+
+<B><A HREF="../man8/blkid.8.html">blkid</A></B>(8),
+
+<B><A HREF="../man8/findmnt.8.html">findmnt</A></B>(8)
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>AVAILABILITY</H2>
+
+The lsblk command is part of the util-linux package and is available from
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/.">https://www.kernel.org/pub/linux/utils/util-linux/.</A>
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">NOTES</A><DD>
+<DT><A HREF="#lbAG">RETURN CODES</A><DD>
+<DT><A HREF="#lbAH">AUTHORS</A><DD>
+<DT><A HREF="#lbAI">ENVIRONMENT</A><DD>
+<DT><A HREF="#lbAJ">SEE ALSO</A><DD>
+<DT><A HREF="#lbAK">AVAILABILITY</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:43:04 GMT, April 23, 2020
+</BODY>
+</HTML>
