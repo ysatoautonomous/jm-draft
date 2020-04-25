@@ -1,0 +1,239 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LSLOCKS</TITLE>
+</HEAD><BODY>
+<H1>LSLOCKS</H1>
+Section: System Administration (8)<BR>Updated: December 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+lslocks - ローカルシステムのロックをリスト表示する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>lslocks</B>
+
+[options]
+<P>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B>lslocks</B>
+
+は Linux システムで現在保持されている全てのファイルロックの情報をリスト表示する。
+<P>
+
+
+
+
+lslocks は OFD (Open File Description) ロックも表示する。
+これらのロックはどのプロセスにも関連付けられていない (PID は -1)。
+OFD ロックは、ロックを取得したオープンファイルディスクリプションに
+関連付けられる。
+このロックタイプは Linux 3.15 以降で利用可能である。
+詳細は <B><A HREF="../man2/fcntl.2.html">fcntl</A></B>(2) を参照すること。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-b</B>,<B> --bytes</B>
+
+<DD>
+
+SIZE カラムを、人が読みやすい形式ではなく、バイト単位で表示する。
+<DT><B>-i</B>,<B> --noinaccessible</B>
+
+<DD>
+
+カレントユーザーからアクセスできないロックファイルを無視する。
+<DT><B>-J</B>,<B> --json</B>
+
+<DD>
+
+JSON 出力形式を使う。
+<DT><B>-n</B>,<B> --noheadings</B>
+
+<DD>
+
+ヘッダ行を表示しない。
+<DT><B>-o</B>,<B> --output </B><I>list</I>
+
+<DD>
+
+
+
+表示する出力カラムを指定する。
+全てのサポートされるカラムのリストを取得するには、
+<B>--help</B>
+
+を使うこと。
+<P>
+
+
+<I>list</I> を <I>+list</I> の形式にすることで、
+カラムのデフォルトのリストを拡張できる
+(例えば <B>lslocks -o +BLOCKER</B>)。
+<DT><B>--output-all</B>
+
+<DD>
+
+全ての利用可能なカラムを出力する。
+<DT><B>-p</B>,<B> --pid </B><I>pid</I>
+
+<DD>
+
+指定した <I>pid</I> のプロセスが保持するロックのみを表示する。
+<DT><B>-r</B>,<B> --raw</B>
+
+<DD>
+
+生の出力形式を使う。
+<DT><B>-u</B>,<B> --notruncate</B>
+
+<DD>
+
+カラムの文字列を切り詰めない。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>出力</H2>
+
+<DL COMPACT>
+<DT>COMMAND<DD>
+
+ロックを保持するプロセスのコマンド名。
+<DT>PID<DD>
+
+ロックを保持するプロセスのプロセス ID。
+OFDLCK の場合は、-1。
+<DT>TYPE<DD>
+
+
+ロックのタイプ。
+(<B><A HREF="../man2/flock.2.html">flock</A></B>(2) で作成された) FLOCK,
+(<B><A HREF="../man2/fcntl.2.html">fcntl</A></B>(2) と <B><A HREF="../man3/lockf.3.html">lockf</A></B>(3) で作成された) POSIX,
+(<A HREF="../man2/fcntl.2.html">fcntl</A>(2) で作成された) OFDLCK のいずれかである。
+<DT>SIZE<DD>
+
+ロックファイルのサイズ。
+<DT>MODE<DD>
+
+
+ロックのアクセス権限 (読み込み、書き込み)。
+プロセスがブロックされて、ロックを待っている場合、
+モードの後に '*' (アスタリスク) が付く。
+<DT>M<DD>
+
+
+ロックが必須か否か。
+0 は必須でないことを表す (ロックは勧告のみである)。
+1 は必須であることを表す。
+(<B><A HREF="../man2/fcntl.2.html">fcntl</A></B>(2) を参照すること。)
+<DT>START<DD>
+
+ロックの相対パイトオフセット。
+<DT>END<DD>
+
+ロックの終了オフセット。
+<DT>PATH<DD>
+
+
+
+
+ロックの完全なパス。
+パスが見つからない場合、またはパスを読み込む権限がない場合、
+デバイスのマウントポイントになり、パスに &quot;...&quot; が表示される。
+パスは切り詰められる可能性がある。
+完全なパスを取得する場合は、<B>--notruncate</B> を使うこと。
+<DT>BLOCKER<DD>
+
+ロックをブロックしているプロセスの PID。
+<P>
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>注意</H2>
+
+<PRE>
+<B>lslocks</B> コマンドは、<B><A HREF="../man8/lslk.8.html">lslk</A></B>(8) の代替となることを意図している。
+<B><A HREF="../man8/lslk.8.html">lslk</A></B>(8) は、元々 Victor A. Abell &lt;<A HREF="mailto:abe@purdue.edu">abe@purdue.edu</A>&gt; によって書かれて、
+2001 年からメンテナンスされていない。
+</PRE>
+
+<P>
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>著者</H2>
+
+<PRE>
+Davidlohr Bueso &lt;<A HREF="mailto:dave@gnu.org">dave@gnu.org</A>&gt;
+</PRE>
+
+<P>
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/flock.1.html">flock</A></B>(1),
+
+<B><A HREF="../man2/fcntl.2.html">fcntl</A></B>(2),
+
+<B><A HREF="../man3/lockf.3.html">lockf</A></B>(3)
+
+<P>
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+lslocks コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">出力</A><DD>
+<DT><A HREF="#lbAG">注意</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:49:17 GMT, April 25, 2020
+</BODY>
+</HTML>
