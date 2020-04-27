@@ -1,0 +1,301 @@
+.\" partx.8 -- man page for partx
+.\" Copyright 2007 Karel Zak <kzak@redhat.com>
+.\" Copyright 2007 Red Hat, Inc.
+.\" Copyright 2010 Davidlohr Bueso <dave@gnu.org>
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Mon Apr 27 23:39:47 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH PARTX "8" "December 2014" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O partx \- tell the kernel about the presence and numbering of on-disk partitions
+partx \- ディスク上のパーティションの存在と番号付けをカーネルに知らせる。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B partx
+.RB [ \-a | \-d | \-P | \-r | \-s | \-u ]
+.RB [ \-t " \fItype\fR]"
+.RB [ \-n " \fIM" : \fIN\fR]
+.RB [ \- "] " \fIdisk
+.br
+.B partx
+.RB [ \-a | \-d | \-P | \-r | \-s | \-u ]
+.RB [ \-t " \fItype\fR]"
+.IR partition " [" disk ]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O Given a device or disk-image,
+.\"O .B partx
+.\"O tries to parse the partition table and list its contents.  It
+.\"O can also tell the kernel to add or remove partitions from its
+.\"O bookkeeping.
+デバイスまたはディスクイメージが指定されると、
+.B partx
+はパーティションテーブルを解析し、その内容をリスト表示する。
+さらに、カーネルに対してパーティションを簿記 (bookkeeping) に
+追加させたり、削除させたりする。
+.PP
+.\"O The
+.\"O .I disk
+.\"O argument is optional when a
+.\"O .I partition
+.\"O argument is provided.  To force scanning a partition as if it were a whole disk
+.\"O (for example to list nested subpartitions), use the argument "\-" (hyphen-minus).
+.\"O For example:
+.I partition
+引き数が指定されている場合、
+.I disk
+引き数はオプションである。
+(例えば、入れ子になったサブパーティションをリスト表示する場合など)
+1 つのパーティションを、それがディスク全体であるかのように、強制的に
+スキャンさせるには、引き数 "\-" (ハイフン、マイナス) を使うこと。
+例えば:
+
+.RS 7
+.TP
+partx \-\-show \- /dev/sda3
+.RE
+.PP
+.\"O This will see sda3 as a whole-disk rather than as a partition.
+これは、sda3 をパーティションではなく、ディスク全体として扱う。
+.PP
+.\"O .B partx is not an fdisk program
+.\"O \(en adding and removing partitions does not change the disk, it just
+.\"O tells the kernel about the presence and numbering of on-disk
+.\"O partitions.
+.B partx は fdisk プログラムではない。
+\(en パーティションの追加と削除で、ディスクは変更されない。
+単に、ディスク上のパーティションの存在と番号付けをカーネルに知らせる
+だけである。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-a , " \-\-add"
+.\"O Add the specified partitions, or read the disk and add all partitions.
+指定したパーティションを追加する。
+またはディスクを読んで、全てのパーティションを追加する。
+.TP
+.BR \-b , " \-\-bytes"
+.\"O Print the SIZE column in bytes rather than in human-readable format.
+SIZE カラムを、人が読みやすい形式ではなく、バイト単位で表示する。
+.TP
+.BR \-d , " \-\-delete"
+.\"O Delete the specified partitions or all partitions.
+指定したパーティション、または全てのパーティションを削除する。
+.TP
+.BR \-g , " \-\-noheadings"
+.\"O Do not print a header line with \fB\-\-show\fR or \fB\-\-raw\fR.
+\fB\-\-show\fR または \fB\-\-raw\fR でヘッダ行を表示しない。
+.TP
+.BR \-l , " \-\-list"
+.\"O List the partitions.  Note that all numbers are in 512-byte sectors.
+.\"O This output format is DEPRECATED in favour of
+.\"O .BR \-\-show .
+.\"O Do not use it in newly written scripts.
+パーティションをリスト表示する。
+全ての通知は 512 バイトセクタである点に注意すること。
+この出力形式は「推奨されない」ので、
+.B \-\-show
+を使うこと。
+新しく書くスクリプトでは、これを使わないこと。
+.TP
+.BR \-n , " \-\-nr " \fIM : \fIN
+.\"O Specify the range of partitions.  For backward compatibility also the
+.\"O format \fIM\fB\-\fIN\fR is supported.
+.\"O The range may contain negative numbers, for example
+.\"O .B \-\-nr \-1:\-1
+.\"O means the last partition, and
+.\"O .B \-\-nr \-2:\-1
+.\"O means the last two partitions.  Supported range specifications are:
+パーティションの範囲を指定する。
+後方互換のため \fIM\fB\-\fIN\fR という形式もサポートされている。
+範囲には負の数も指定できる。
+例えば、
+.B \-\-nr \-1:\-1
+は最後のパーティションを意味する。
+また、
+.B \-\-nr \-2:\-1
+は最後の 2 つのパーティションを意味する。
+サポートされる範囲指定の方法は以下の通り:
+.RS 14
+.TP
+.I M
+.\"O Specifies just one partition (e.g.\& \fB\-\-nr 3\fR).
+1 つのパーティションのみを指定する (例\& \fB\-\-nr 3\fR)。
+.TP
+.IB M :
+.\"O Specifies the lower limit only (e.g.\& \fB\-\-nr 2:\fR).
+下限値のみを指定する (例\& \fB\-\-nr 2:\fR)。
+.TP
+.BI : N
+.\"O Specifies the upper limit only (e.g.\& \fB\-\-nr :4\fR).
+上限値のみを指定する (例\& \fB\-\-nr :4\fR)。
+.TP
+.IB M : N
+.\"O Specifies the lower and upper limits (e.g.\& \fB\-\-nr 2:4\fR).
+下限値と上限値を指定する (例\& \fB\-\-nr 2:4\fR)。
+.RE
+.TP
+.BR \-o , " \-\-output " \fIlist
+.\"O Define the output columns to use for
+.\"O .BR \-\-show ,
+.\"O .B \-\-pairs
+.\"O and
+.\"O .B \-\-raw
+.\"O output.  If no output arrangement is specified, then a default set is
+.\"O used.  Use
+.\"O .B \-\-help
+.\"O to get
+.\"O .I list
+.\"O of all supported columns.  This option cannot be combined with the
+.\"O .BR \-\-add ,
+.\"O .BR \-\-delete ,
+.\"O .B \-\-update
+.\"O or
+.\"O .B \-\-list
+.\"O options.
+.BR \-\-show ,
+.BR \-\-pairs ,
+.B \-\-raw
+の出力で使う、出力カラムを定義する。
+出力の配置が指定されない場合、デフォルトのセットが使われる。
+全てのサポートされるカラムの
+.I list
+を取得するには
+.B \-\-help
+を使うこと。
+このオプションは、
+.BR \-\-add ,
+.BR \-\-delete ,
+.BR \-\-update ,
+.B \-\-list
+オプションと組み合わせることができない。
+.TP
+.B \-\-output\-all
+.\"O Output all available columns.
+全ての利用可能なカラムを出力する。
+.TP
+.BR \-P , " \-\-pairs"
+.\"O List the partitions using the KEY="value" format.
+パーティションのリスト表示に、KEY="value" 形式を使う。
+.TP
+.BR \-r , " \-\-raw"
+.\"O List the partitions using the raw output format.
+パーティションのリスト表示に、生の形式を使う。
+.TP
+.BR \-s , " \-\-show"
+.\"O List the partitions.
+.\"O The output columns can be selected and rearranged with the
+.\"O \fB\-\-output\fR option.
+.\"O All numbers (except SIZE) are in 512-byte sectors.
+パーティションをリスト表示する。
+出力カラムは \fB\-\-output\fR オプションで選択して再配置できる。
+(SIZE 以外の) 数値は 512 バイトセクタ単位である。
+.TP
+.BR \-t , " \-\-type " \fItype
+.\"O Specify the partition table type.
+パーティションテーブルタイプを指定する。
+.TP
+.B \-\-list\-types
+.\"O List supported partition types and exit.
+サポートされるパーティションタイプをリスト表示して、終了する。
+.TP
+.BR \-u , " \-\-update"
+.\"O Update the specified partitions.
+指定されたパーティションを更新する。
+.TP
+.BR \-S , " \-\-sector\-size " \fIsize
+.\"O Overwrite default sector size.
+デフォルトのセクタサイズを上書きする。
+.TP
+.BR \-v , " \-\-verbose"
+.\"O Verbose mode.
+詳細表示モード。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH EXAMPLES
+.SH 例
+.TP
+partx \-\-show /dev/sdb3
+.TQ
+partx \-\-show \-\-nr 3 /dev/sdb
+.TQ
+partx \-\-show /dev/sdb3 /dev/sdb
+.\"O All three commands list partition 3 of /dev/sdb.
+上記の 3 つのコマンドは、/dev/sdb のパーティション 3 をリスト表示する。
+.TP
+partx \-\-show \- /dev/sdb3
+.\"O Lists all subpartitions on /dev/sdb3 (the device is used as
+.\"O whole-disk).
+/dev/sdb3 の全てのサブパーティションをリスト表示する
+(デバイスがディスク全体として使われる)。
+.TP
+partx \-o START \-g \-\-nr 5 /dev/sdb
+.\"O Prints the start sector of partition 5 on /dev/sdb without header.
+/dev/sdb のパーティション 5 の開始セクタをヘッダなしで表示する。
+.TP
+partx \-o SECTORS,SIZE /dev/sda5 /dev/sda
+.\"O Lists the length in sectors and human-readable size of partition 5 on
+.\"O /dev/sda.
+/dev/sda のパーティション 5 のセクタ数と人が読みやすい形式でのサイズを表示する。
+.TP
+partx \-\-add \-\-nr 3:5 /dev/sdd
+.\"O Adds all available partitions from 3 to 5 (inclusive) on /dev/sdd.
+/dev/sdd のパーティション 3 から 5 (を含む) のうち、
+利用可能な全てのパーティションを追加する。
+.TP
+partx \-d \-\-nr :\-1 /dev/sdd
+.\"O Removes the last partition on /dev/sdd.
+/dev/sdd の全てのパーティションを削除する。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR addpart (8),
+.BR delpart (8),
+.BR fdisk (8),
+.BR parted (8),
+.BR partprobe (8)
+.\"O .SH AUTHORS
+.SH 著者
+.MT dave@gnu.org
+Davidlohr Bueso
+.ME
+.br
+.MT kzak@redhat.com
+Karel Zak
+.ME
+.PP
+.\"O The original version was written by
+.\"O .MT aeb@cwi.nl
+.\"O Andries E.\& Brouwer
+.\"O .ME .
+元々のバージョンは
+.MT aeb@cwi.nl
+Andries E.\& Brouwer
+.ME
+によって書かれた。
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.IP LIBBLKID_DEBUG=all
+.\"O enables libblkid debug output.
+libblkid のデバッグ出力を有効にする。
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The partx command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+partx コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
