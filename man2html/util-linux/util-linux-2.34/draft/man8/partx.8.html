@@ -1,0 +1,404 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of PARTX</TITLE>
+</HEAD><BODY>
+<H1>PARTX</H1>
+Section: System Administration (8)<BR>Updated: December 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+partx - ディスク上のパーティションの存在と番号付けをカーネルに知らせる。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>partx</B>
+
+[<B>-a</B>|<B>-d</B>|<B>-P</B>|<B>-r</B>|<B>-s</B>|<B>-u</B>]
+
+[<B>-t</B> <I>type</I>]
+
+[<B>-n</B> <I>M</I><B>:</B><I>N</I>]
+
+[<B>-</B>] <B></B><I>disk</I>
+
+<BR>
+
+<B>partx</B>
+
+[<B>-a</B>|<B>-d</B>|<B>-P</B>|<B>-r</B>|<B>-s</B>|<B>-u</B>]
+
+[<B>-t</B> <I>type</I>]
+
+<I>partition</I> [<I>disk</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+デバイスまたはディスクイメージが指定されると、
+<B>partx</B>
+
+はパーティションテーブルを解析し、その内容をリスト表示する。
+さらに、カーネルに対してパーティションを簿記 (bookkeeping) に
+追加させたり、削除させたりする。
+<P>
+
+
+
+
+
+
+
+
+<I>partition</I>
+
+引き数が指定されている場合、
+<I>disk</I>
+
+引き数はオプションである。
+(例えば、入れ子になったサブパーティションをリスト表示する場合など)
+1 つのパーティションを、それがディスク全体であるかのように、強制的に
+スキャンさせるには、引き数 &quot;-&quot; (ハイフン、マイナス) を使うこと。
+例えば:
+<P>
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>partx --show - /dev/sda3<DD>
+</DL>
+</DL>
+
+<P>
+
+
+これは、sda3 をパーティションではなく、ディスク全体として扱う。
+<P>
+
+
+
+
+
+<B>partx は fdisk プログラムではない。</B>
+
+- パーティションの追加と削除で、ディスクは変更されない。
+単に、ディスク上のパーティションの存在と番号付けをカーネルに知らせる
+だけである。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-a</B>,<B> --add</B>
+
+<DD>
+
+指定したパーティションを追加する。
+またはディスクを読んで、全てのパーティションを追加する。
+<DT><B>-b</B>,<B> --bytes</B>
+
+<DD>
+
+SIZE カラムを、人が読みやすい形式ではなく、バイト単位で表示する。
+<DT><B>-d</B>,<B> --delete</B>
+
+<DD>
+
+指定したパーティション、または全てのパーティションを削除する。
+<DT><B>-g</B>,<B> --noheadings</B>
+
+<DD>
+
+<B>--show</B> または <B>--raw</B> でヘッダ行を表示しない。
+<DT><B>-l</B>,<B> --list</B>
+
+<DD>
+
+
+
+
+パーティションをリスト表示する。
+全ての通知は 512 バイトセクタである点に注意すること。
+この出力形式は「推奨されない」ので、
+<B>--show</B>
+
+を使うこと。
+新しく書くスクリプトでは、これを使わないこと。
+<DT><B>-n</B>,<B> --nr </B><I>M</I><B>:</B><I>N</I>
+
+<DD>
+
+
+
+
+
+
+
+パーティションの範囲を指定する。
+後方互換のため <I>M</I><B>-</B><I>N</I> という形式もサポートされている。
+範囲には負の数も指定できる。
+例えば、
+<B>--nr -1:-1</B>
+
+は最後のパーティションを意味する。
+また、
+<B>--nr -2:-1</B>
+
+は最後の 2 つのパーティションを意味する。
+サポートされる範囲指定の方法は以下の通り:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><I>M</I>
+
+<DD>
+
+1 つのパーティションのみを指定する (例 <B>--nr 3</B>)。
+<DT><I>M</I><B>:</B>
+
+<DD>
+
+下限値のみを指定する (例 <B>--nr 2:</B>)。
+<DT><B>:</B><I>N</I>
+
+<DD>
+
+上限値のみを指定する (例 <B>--nr :4</B>)。
+<DT><I>M</I><B>:</B><I>N</I>
+
+<DD>
+
+下限値と上限値を指定する (例 <B>--nr 2:4</B>)。
+</DL>
+</DL>
+
+<DT><B>-o</B>,<B> --output </B><I>list</I>
+
+<DD>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B>--show</B>,
+
+<B>--pairs</B>,
+
+<B>--raw</B>
+
+の出力で使う、出力カラムを定義する。
+出力の配置が指定されない場合、デフォルトのセットが使われる。
+全てのサポートされるカラムの
+<I>list</I>
+
+を取得するには
+<B>--help</B>
+
+を使うこと。
+このオプションは、
+<B>--add</B>,
+
+<B>--delete</B>,
+
+<B>--update</B>,
+
+<B>--list</B>
+
+オプションと組み合わせることができない。
+<DT><B>--output-all</B>
+
+<DD>
+
+全ての利用可能なカラムを出力する。
+<DT><B>-P</B>,<B> --pairs</B>
+
+<DD>
+
+パーティションのリスト表示に、KEY=&quot;value&quot; 形式を使う。
+<DT><B>-r</B>,<B> --raw</B>
+
+<DD>
+
+パーティションのリスト表示に、生の形式を使う。
+<DT><B>-s</B>,<B> --show</B>
+
+<DD>
+
+
+
+
+パーティションをリスト表示する。
+出力カラムは <B>--output</B> オプションで選択して再配置できる。
+(SIZE 以外の) 数値は 512 バイトセクタ単位である。
+<DT><B>-t</B>,<B> --type </B><I>type</I>
+
+<DD>
+
+パーティションテーブルタイプを指定する。
+<DT><B>--list-types</B>
+
+<DD>
+
+サポートされるパーティションタイプをリスト表示して、終了する。
+<DT><B>-u</B>,<B> --update</B>
+
+<DD>
+
+指定されたパーティションを更新する。
+<DT><B>-S</B>,<B> --sector-size </B><I>size</I>
+
+<DD>
+
+デフォルトのセクタサイズを上書きする。
+<DT><B>-v</B>,<B> --verbose</B>
+
+<DD>
+
+詳細表示モード。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>例</H2>
+
+<DL COMPACT>
+<DT>partx --show /dev/sdb3<DD>
+
+partx --show --nr 3 /dev/sdb
+
+partx --show /dev/sdb3 /dev/sdb
+
+上記の 3 つのコマンドは、/dev/sdb のパーティション 3 をリスト表示する。
+<DT>partx --show - /dev/sdb3<DD>
+
+
+/dev/sdb3 の全てのサブパーティションをリスト表示する
+(デバイスがディスク全体として使われる)。
+<DT>partx -o START -g --nr 5 /dev/sdb<DD>
+
+/dev/sdb のパーティション 5 の開始セクタをヘッダなしで表示する。
+<DT>partx -o SECTORS,SIZE /dev/sda5 /dev/sda<DD>
+
+
+/dev/sda のパーティション 5 のセクタ数と人が読みやすい形式でのサイズを表示する。
+<DT>partx --add --nr 3:5 /dev/sdd<DD>
+
+/dev/sdd のパーティション 3 から 5 (を含む) のうち、
+利用可能な全てのパーティションを追加する。
+<DT>partx -d --nr :-1 /dev/sdd<DD>
+
+/dev/sdd の全てのパーティションを削除する。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/addpart.8.html">addpart</A></B>(8),
+
+<B><A HREF="../man8/delpart.8.html">delpart</A></B>(8),
+
+<B><A HREF="../man8/fdisk.8.html">fdisk</A></B>(8),
+
+<B><A HREF="../man8/parted.8.html">parted</A></B>(8),
+
+<B><A HREF="../man8/partprobe.8.html">partprobe</A></B>(8)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>著者</H2>
+
+
+Davidlohr Bueso
+
+<BR>
+
+
+Karel Zak
+
+<P>
+
+
+
+
+
+元々のバージョンは
+
+Andries E. Brouwer
+
+によって書かれた。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT>LIBBLKID_DEBUG=all<DD>
+
+libblkid のデバッグ出力を有効にする。
+
+</DL>
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+partx コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">例</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+<DT><A HREF="#lbAI">環境変数</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:44:01 GMT, April 27, 2020
+</BODY>
+</HTML>
