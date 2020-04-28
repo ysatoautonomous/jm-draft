@@ -127,122 +127,181 @@ Linux 2.6.16 では多くのシステムで倍数のサポートをなくした�
 このオプションはプロファイリングバッファのリセットも行い、
 スーパーユーザー権限が必要である。
 <DT><B>-p</B>, <B>--profile</B> <I>pro-file</I><DD>
-Specify a different profiling buffer, which by default is
-<I>/proc/profile</I>.
 
-Using a different pro-file is useful if you want to `freeze' the
-kernel profiling at some time and read it later.  The
+
+
+
+
+
+
+
+
+別のプロファイリングバッファを指定する。
+デフォルトは
 <I>/proc/profile</I>
 
-file can be copied using `cat' or `cp'.  There is no more support for
-compressed profile buffers, like in
-<B>readprofile-1.1,</B>
+である。
+別の pro-file を使うのは、ある時点のカーネルプロファイリングを「凍結して (freeze)」、
+後から読み込むのに役立つ。
+ファイル
+<I>/proc/profile</I>
 
-because the program needs to know the size of the buffer in advance.
+は `cat' や `cp' を使ってコピーできる。
+<B>readprofile-1.1</B>
+
+にあった圧縮したプロファイリングバッファは、このプログラムが
+バッファサイズを前もって知る必要があるため、もはやサポート
+されてない。
 <DT><B>-r</B>, <B>--reset</B><DD>
-Reset the profiling buffer.  This can only be invoked by root,
-because
+
+
+
+
+プロファイリングバッファをリセットする。
 <I>/proc/profile</I>
 
-is readable by everybody but writable only by the superuser.
-However, you can make
+は誰でも読み出し可能であるが、スーパーユーザーのみが書き込み
+可能であるので、このオプションは root によってのみ呼び出し可能である。
+
+
+
+しかし、
 <B>readprofile</B>
 
-set-user-ID 0, in order to reset the buffer without gaining privileges.
+を set-user-ID 0 にすれば、特権を得ずにバッファをリセットできる。
 <DT><B>-s, --counters</B><DD>
-Print individual counters within functions.
+
+関数内の各カウンタを表示する。
 <DT><B>-v</B>, <B>--verbose</B><DD>
-Verbose.  The output is organized in four columns and filled with
-blanks.  The first column is the RAM address of a kernel function,
-the second is the name of the function, the third is the number of
-clock ticks and the last is the normalized load.
+
+
+
+
+詳細な表示を行う。
+出力は 4 つのカラムから構成され、空白で埋められる。
+1 列目はカーネル関数の RAM アドレス、2 列目は関数名、
+3 列目はクロックティック数、4 列目は正規化した負荷である。
 <DT><B>-V</B>, <B>--version</B><DD>
-Display version information and exit.
+
+バージョン番号を表示して、終了する。
 <DT><B>-h</B>, <B>--help</B><DD>
-Display help text and exit.
+
+ヘルプを表示して、終了する。
+
 </DL>
 <A NAME="lbAG">&nbsp;</A>
-<H2>EXAMPLES</H2>
+<H2>例</H2>
 
-Browse the profiling buffer ordering by clock ticks:
+
+プロファイリングバッファをクロックティックの順に並べて見る:
 <PRE>
    readprofile | sort -nr | less
 
 </PRE>
 
-Print the 20 most loaded procedures:
+
+負荷の高い順に 20 個のプロシージャを表示する:
 <PRE>
    readprofile | sort -nr +2 | head -20
 
 </PRE>
 
-Print only filesystem profile:
+
+ファイルシステムプロファイルのみを表示する:
 <PRE>
    readprofile | grep _ext2
 
 </PRE>
 
-Look at all the kernel information, with ram addresses:
+
+全てのカーネル情報を RAM アドレス付きで見る:
 <PRE>
    readprofile -av | less
 
 </PRE>
 
-Browse a `frozen' profile buffer for a non current kernel:
+
+現在のカーネルのものではない「凍結した」プロファイリングバッファを見る:
 <PRE>
    readprofile -p ~/profile.freeze -m /zImage.map.gz
 
 </PRE>
 
-Request profiling at 2kHz per CPU, and reset the profiling buffer:
+
+CPU 毎に 2kHz でプロファイリングを行い、プロファイリングバッファをリセットする:
 <PRE>
    sudo readprofile -M 20
 </PRE>
 
+
 <A NAME="lbAH">&nbsp;</A>
-<H2>BUGS</H2>
+<H2>バグ</H2>
 
 <P>
 
-<B>readprofile</B>
 
-only works with a 1.3.x or newer kernel, because
+
+
+
 <I>/proc/profile</I>
 
-changed in the step from 1.2 to 1.3
+はカーネル 1.2 から 1.3 の段階で変更されたので、
+<B>readprofile</B>
+
+は 1.3.x より新しいカーネルでしか動作しない。
 <P>
 
-This program only works with ELF kernels.  The change for a.out
-kernels is trivial, and left as an exercise to the a.out user.
+
+
+このプログラムは ELF カーネルでしか動作しない。
+a.out カーネルでの変更は取るに足らないものであるので、
+a.out のユーザーへの練習として残してある。
 <P>
 
-To enable profiling, the kernel must be rebooted, because no
-profiling module is available, and it wouldn't be easy to build.  To
-enable profiling, you can specify &quot;profile=2&quot; (or another number) on
-the kernel commandline.  The number you specify is the two-exponent
-used as profiling step.
+
+
+
+
+
+プロファイリングを有効にするには、カーネルを再起動しなければならない。
+なぜなら、プロファイリングモジュールは存在せず、簡単にはビルドできない
+からである。
+プロファイリングを有効にするには、カーネルのコマンドラインで
+&quot;profile=2&quot; (または他の数値) を指定すればよい。
+この数値は 2 のべき乗になり、プロファイリングのステップで使われる。
 <P>
 
-Profiling is disabled when interrupts are inhibited.  This means that
-many profiling ticks happen when interrupts are re-enabled.  Watch
-out for misleading information.
+
+
+
+割り込みが禁止されているときには、プロファイリングは無効化される。
+割り込みが再度有効化されたときに、多くのプロファイリングのティックスが
+発生する。
+誤解を生みやすい情報に注意すること。
+
 <A NAME="lbAI">&nbsp;</A>
-<H2>FILES</H2>
+<H2>ファイル</H2>
 
 <PRE>
-/proc/profile              A binary snapshot of the profiling buffer.
-/usr/src/linux/System.map  The symbol table for the kernel.
-/usr/src/linux/*           The program being profiled :-)
+/proc/profile              プロファイリングバッファのバイナリスナップショット
+/usr/src/linux/System.map  カーネルのシンボルテーブル
+/usr/src/linux/*           プロファイリング対象のプログラム :-)
 </PRE>
 
-<A NAME="lbAJ">&nbsp;</A>
-<H2>AVAILABILITY</H2>
 
-The readprofile command is part of the util-linux package and is
-available from
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+
+readprofile コマンドは util-linux パッケージの一部であり、
 
 Linux Kernel Archive
 
+から入手できる。
 <P>
 
 <HR>
@@ -253,15 +312,15 @@ Linux Kernel Archive
 <DT><A HREF="#lbAD">バージョン</A><DD>
 <DT><A HREF="#lbAE">説明</A><DD>
 <DT><A HREF="#lbAF">オプション</A><DD>
-<DT><A HREF="#lbAG">EXAMPLES</A><DD>
-<DT><A HREF="#lbAH">BUGS</A><DD>
-<DT><A HREF="#lbAI">FILES</A><DD>
-<DT><A HREF="#lbAJ">AVAILABILITY</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">バグ</A><DD>
+<DT><A HREF="#lbAI">ファイル</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
 </DL>
 <HR>
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 17:00:00 GMT, April 27, 2020
+Time: 13:31:37 GMT, April 28, 2020
 </BODY>
 </HTML>
