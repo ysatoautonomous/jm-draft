@@ -1,0 +1,376 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of RTCWAKE</TITLE>
+</HEAD><BODY>
+<H1>RTCWAKE</H1>
+Section: System Administration (8)<BR>Updated: June 2015<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+rtcwake - 指定されたウェイクアップ (wakeup) 時刻までシステムスリープ状態にする。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>rtcwake</B>
+
+[options]
+[<B>-d</B>
+
+<I>device</I>]
+
+[<B>-m</B>
+
+<I>standby_mode</I>]
+
+{<B>-s </B><I>seconds</I>|<B>-t </B><I>time_t</I>}
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+このプログラムは、システムスリープ状態にするのに使われ、指定した時刻に
+自動的にウェイク (起動) される。
+<P>
+
+
+
+
+このプログラムは、システムスリープ状態にして、指定した時刻ちょうどに
+スリープ状態を解除するための、クロスプラットフォームの Linux インタフェースとして使われる。
+これは、ウェイクアップフラグの標準的なドライバーモデルをサポートする、
+RTC フレームワークを使う。
+<P>
+
+
+
+
+これは通常、昔の <B>apmsleep</B> ユーティリティのように使われ、
+ACPI S1 (スタンバイ) または S3 (RAM へのサスペンド) 状態から
+ウェイクさせるのに使われる。
+多くのプラットフォームでは BIOS, APM, ACPI を使わずに実装されている。
+<P>
+
+
+
+
+システムによっては、<B>nvram-wakeup</B> のように使われ、
+ACPI S4 (ディスクへのサスペンド) 状態からウェイクさせるのに使われる。
+全てのシステムに、このようなサスペンドモードに適した永続化メディアが
+あるわけではない。
+<P>
+
+
+
+アラーム機能はハードウェアに依存する点に注意すること。
+全ての RTC で将来 24 時間のアラームが設定できるわけではない。
+<P>
+
+
+
+
+サスペンド設定はアクティブなハードウェアで割り込まれる可能性がある。
+例えば、ワイヤレス入力デバイスは、リターンキーが押された後、
+数秒間に渡ってイベントを送信し続ける。
+
+
+
+<B>rtcwake</B>
+
+は、この問題を避けて、システムスリープに入る前に端末への入力が
+落ち着くのを待つ。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-A</B>,<B> --adjfile </B><I>file</I>
+
+<DD>
+
+調整用のファイルの別のパスを指定する。
+<DT><B>-a</B>,<B> --auto</B>
+
+<DD>
+
+
+
+
+<B><A HREF="../man8/hwclock.8.html">hwclock</A></B>(8)
+
+が情報を格納する <I>adjtime</I> ファイルから
+クロックモード (ハードウェアクロックが UTC またはローカル時刻のどちらに設定されているか)　を
+読み取る。
+これがデフォルトである。
+<DT><B>--date</B> <I>timestamp</I>
+
+<DD>
+
+
+ウェイクアップ時刻を timestamp の値に設定する。
+timestamp の形式は以下のいずれかである:
+<TABLE>
+<TR VALIGN=top><TD>YYYYMMDDhhmmss&nbsp;&nbsp;</TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD>YYYY-MM-DD hh:mm:ss&nbsp;&nbsp;</TD><TD><BR></TD></TR>
+<TR VALIGN=top><TD>YYYY-MM-DD hh:mm&nbsp;&nbsp;</TD><TD>(秒は 00 に設定される)<BR></TD></TR>
+<TR VALIGN=top><TD>YYYY-MM-DD&nbsp;&nbsp;</TD><TD>(時刻は 00:00:00 に設定される)<BR></TD></TR>
+<TR VALIGN=top><TD>hh:mm:ss&nbsp;&nbsp;</TD><TD>(日付は当日に設定される)<BR></TD></TR>
+<TR VALIGN=top><TD>hh:mm&nbsp;&nbsp;</TD><TD>(日付は当日に設定され、秒は 00 に設定される)<BR></TD></TR>
+<TR VALIGN=top><TD>tomorrow&nbsp;&nbsp;</TD><TD>(時刻は 00:00:00 に設定される)<BR></TD></TR>
+<TR VALIGN=top><TD>+5min&nbsp;&nbsp;</TD><TD><BR></TD></TR>
+</TABLE>
+
+<DT><B>-d</B>,<B> --device </B><I>device</I>
+
+<DD>
+
+
+
+リアルタイムクロックとして、<B>rtc0</B> の代わりに指定した <I>device</I> を使う。
+このオプションはシステムに 2 つ以上の RTC がある場合にのみ利用価値がある。
+ここには <B>rtc1</B>, <B>rtc2</B>, ... などを指定できる。
+<DT><B>-l</B>,<B> --local</B>
+
+<DD>
+
+
+<I>adjtime</I> ファイルの内容に関わらず、
+ハードウェアクロックがローカル時刻に設定されていると仮定する。
+<DT><B>--list-modes</B>
+
+<DD>
+
+利用可能な --mode オプションの引き数をリスト表示する。
+<DT><B>-m</B>,<B> --mode </B><I>mode</I>
+
+<DD>
+
+指定したスタンパイ状態にする。指定可能な <I>mode</I> は以下の通り:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>standby</B>
+
+<DD>
+
+
+
+ACPI の状態 S1。
+この状態は最小限であるが、実際にパワーセーブができて、
+稼働中のシステムに戻すのに非常に短い時間でできる。
+これがデフォルトのモードである。
+<DT><B>freeze</B>
+
+<DD>
+
+
+
+
+プロセスが凍結されて、全てのデバイスがサスペンドされて、
+全てのプロセッサがアイドルにされる。
+この状態は、プラットフォーム固有のサポートが必要でない、
+一般的な状態である。
+しかし、システムはまだ実行状態であるため、RAM へのサスペンドよりパワーセーブができない。
+(Linux 3.9 以降で利用可能である。)
+<DT><B>mem</B>
+
+<DD>
+
+
+
+ACPI の状態 S3 (RAM へのサスペンド)。
+この状態では、システムの全てが低パワー状態にされるため、
+特にパワーセーブができる。
+メモリは例外であり、内容を保持するために、自己リフレッシュ
+モードになる。
+<DT><B>disk</B>
+
+<DD>
+
+
+
+
+ACPI の状態 S4 (ディスクへのサスペンド)。
+この状態はもっともパワーセーブできて、電源管理の低レベル
+プラットフォームのサポートがなくても使用できる。
+この状態は RAM へのサスペンドと同様の操作であるが、
+最終ステップではメモリの内容がディスクに書き込まれる。
+<DT><B>off</B>
+
+<DD>
+
+
+ACPI の状態 S5 (パワーオフ)。
+これは単に '/sbin/shutdown' を呼び出す。
+ACPI で正式にサポートされてはいないが、通常は動作する。
+<DT><B>no</B>
+
+<DD>
+
+サスペンドせず、RTC ウェイクアップ時刻の設定のみを行う。
+<DT><B>on</B>
+
+<DD>
+
+
+サスペンドしないが、アラーム時刻が来るまで RTC デバイスを読み込む。
+このモードはデバッグに役立つ。
+<DT><B>disable</B>
+
+<DD>
+
+前に設定したアラームを無効化する。
+<DT><B>show</B>
+
+<DD>
+
+
+アラーム情報を &quot;alarm: off|on  &lt;time&gt;&quot; の形式で表示する。
+時刻は ctime() の出力形式で、&quot;alarm: on  Tue Nov 16 04:48:45 2010&quot; のようになる。
+</DL>
+</DL>
+
+<DT><B>-n</B>,<B> --dry-run</B>
+
+<DD>
+
+
+このオプションは、実際のアラーム設定、システムのサスペンド、
+アラームの待機以外の全てを実行する。
+<DT><B>-s</B>,<B> --seconds </B><I>seconds</I>
+
+<DD>
+
+ウェイクアップ時刻を現時点から <I>seconds</I> 秒後に設定する。
+<DT><B>-t</B>,<B> --time </B><I>time_t</I>
+
+<DD>
+
+
+
+
+ウェイクアップ時刻を絶対時刻 <I>time_t</I> に設定する。
+<I>time_t</I> は 1970-01-01, 00:00 UTC からの秒数である。
+<B><A HREF="../man1/date.1.html">date</A></B>(1)
+
+ツールを使って、人が読みやすい時刻と <I>time_t</I> を変換できる。
+<DT><B>-u</B>,<B> --utc</B>
+
+<DD>
+
+
+<I>adjtime</I> ファイルの内容に関わらず、ハードウェアクロックが
+UTC (Universal Time Coordinated) に設定されていると仮定する。
+<DT><B>-v</B>,<B> --verbose</B>
+
+<DD>
+
+詳細な表示を行う。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+PC システムの中には、このドライバでアクセスされるカーネルコードのみを使う
+<B>mem</B> などでは、現在のところスリープ状態から抜けられないものがある。
+これらのシステムでは、フレームバッファを再度実行できるようにするには、
+ユーザ空間のコードの助けが必要である。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/etc/adjtime</I>
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+このプログラムは、GIT commit 87ac84f42a7a580d0dd72ae31d6a5eb4bfe04c6d で
+Linux 2.6 のカーネルコミットメッセージに現れるまでに、
+LKML や他のメーリングリストに何回か投稿された。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+
+
+このプログラムは David Brownell &lt;<A HREF="mailto:dbrownell@users.sourceforge.net">dbrownell@users.sourceforge.net</A>&gt; によって書かれ、
+Bernhard Walle &lt;<A HREF="mailto:bwalle@suse.de">bwalle@suse.de</A>&gt; に改善された。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>著作権</H2>
+
+This is free software.  You may redistribute copies of it under the terms
+of the GNU General Public License &lt;<A HREF="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</A>&gt;.
+There is NO WARRANTY, to the extent permitted by law.
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/hwclock.8.html">hwclock</A></B>(8),
+
+<B><A HREF="../man1/date.1.html">date</A></B>(1)
+
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+rtcwake コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">注意</A><DD>
+<DT><A HREF="#lbAG">ファイル</A><DD>
+<DT><A HREF="#lbAH">履歴</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">著作権</A><DD>
+<DT><A HREF="#lbAK">関連項目</A><DD>
+<DT><A HREF="#lbAL">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:19:41 GMT, April 29, 2020
+</BODY>
+</HTML>
