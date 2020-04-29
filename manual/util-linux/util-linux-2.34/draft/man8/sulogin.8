@@ -1,0 +1,167 @@
+.\" Copyright (C) 1998-2006 Miquel van Smoorenburg.
+.\" Copyright (C) 2012 Karel Zak <kzak@redhat.com>
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program; if not, write to the Free Software
+.\" Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Thu Apr 30 01:41:27 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH SULOGIN "8" "July 2014" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O sulogin \- single-user login
+sulogin \- シングルユーザーログイン
+.\"O .SH SYNOPSIS
+.SH 書式
+.BR sulogin " [options]"
+.RI [ tty ]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B sulogin
+.\"O is invoked by
+.\"O .B init
+.\"O when the system goes into single-user mode.
+.B sulogin
+は、システムをシングルユーザーモードにする時に、
+.B init
+から呼び出される。
+.PP
+.\"O The user is prompted:
+ユーザーには以下のプロンプトが出される:
+.IP "" .5i
+Give root password for system maintenance
+.br
+(or type Control\-D for normal startup):
+.PP
+.\"O If the root account is locked and --force is specified, no password is required.
+root アカウントがロックされていて、かつ --force が指定されている場合、パスワードは必要ない。
+.PP
+.\"O .B sulogin
+.\"O will be connected to the current terminal, or to the optional \fItty\fR device that
+.\"O can be specified on the command line (typically
+.\"O .IR /dev/console ).
+.B sulogin
+は現在の端末に接続されるか、コマンドラインで指定された場合は
+オプションの \fItty\fR デバイスに接続される
+(典型的には
+.I /dev/console
+に接続される)。
+.PP
+.\"O When the user exits from the single-user shell, or presses control\-D at the
+.\"O prompt, the system will continue to boot.
+ユーザーがシングルユーザーシェルを抜けた場合、またはプロンプトで
+control\-D が入力された場合、システムはブートを続ける。
+.\"O .SH OPTIONS
+.SH オプション
+.IP "\fB\-e\fR, \fB\-\-force\fP"
+.\"O If the default method of obtaining the root password from the system via
+.\"O .BR getpwnam (3)
+.\"O fails, then examine
+.\"O .I /etc/passwd
+.\"O and
+.\"O .I /etc/shadow
+.\"O to get the password.  If these files are damaged or nonexistent, or when
+.\"O root account is locked by '!' or '*' at the begin of the password then
+.\"O .B sulogin
+.\"O will \fBstart a root shell without asking for a password\fP.
+システムから
+.BR getpwnam (3)
+を使って root パスワードを取得するデフォルトの方法が失敗した場合、
+パスワードを取得するために
+.I /etc/passwd
+と
+.I /etc/shadow
+を調べる。
+これらのファイルが破損している場合、または存在しない場合、
+またはパスワードが '!' または '*' から始まっていて root アカウントがロックされている場合、
+.B sulogin
+は\fBパスワードを尋ねずに root シェルを開始する\fP。
+.PP
+.IP
+.\"O Only use the
+.\"O .B \-e
+.\"O option if you are sure the console is physically protected against
+.\"O unauthorized access.
+コンソールが権限のないアクセスに対して物理的に防御されているのが
+確かな場合にのみ、
+.B \-e
+オプションを使うこと。
+.IP "\fB\-p\fR, \fB\-\-login\-shell\fP"
+.\"O Specifying this option causes
+.\"O .B sulogin
+.\"O to start the shell process as a login shell.
+このオプションを指定すると、
+.B sulogin
+はログインシェルとしてシェルプロセスを開始する。
+.IP "\fB\-t\fR, \fB\-\-timeout \fIseconds\fP"
+.\"O Specify the maximum amount of time to wait for user input.  By default,
+.\"O .B sulogin
+.\"O will wait forever.
+ユーザーの入力を待つ最大時間を指定する。
+デフォルトでは、
+.B sulogin
+は永遠に待つ。
+.IP "\fB\-h\fR, \fB\-\-help\fP"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.IP "\fB\-V\fR, \fB\-\-version\fP"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.\"O .SH ENVIRONMENT VARIABLES
+.SH 環境変数
+.\"O .B sulogin
+.\"O looks for the environment variable
+.\"O .B SUSHELL
+.\"O or
+.\"O .B sushell
+.\"O to determine what shell to start.  If the environment variable is not set, it
+.\"O will try to execute root's shell from
+.\"O .IR /etc/passwd .
+.B sulogin
+は環境変数
+.B SUSHELL
+または
+.B sushell
+を調べて、開始するシェルを決定する。
+この環境変数が設定されていない場合、
+.I /etc/passwd
+を見て root のシェルを実行しようとする。
+.\"O If that fails, it
+.\"O will fall back to
+.\"O .IR /bin/sh .
+それが失敗した場合、
+.I /bin/sh
+を実行する。
+.\"O .SH AUTHOR
+.SH 著者
+.\"O .B sulogin
+.\"O was written by Miquel van Smoorenburg for sysvinit and later ported
+.\"O to util-linux by Dave Reisner and Karel Zak.
+.B sulogin
+は Miquel van Smoorenburg によって sysvinit のために書かれた。
+その後、Dave Reisner と Karel Zak によって util-linux に移植された。
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The sulogin command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+sulogin コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
