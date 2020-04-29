@@ -18,7 +18,7 @@
 .\"
 .\" Japanese Version Copyright (c) 2020 Yuichi SATO
 .\"         all rights reserved.
-.\" Translated Wed Apr 29 18:54:09 JST 2020
+.\" Translated Wed Apr 29 22:15:00 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH RTCWAKE 8 "June 2015" "util-linux" "System Administration"
@@ -126,109 +126,178 @@ tomorrow|(時刻は 00:00:00 に設定される)
 .TE
 .TP
 .BR \-d , " \-\-device " \fIdevice
-Use the specified \fIdevice\fP instead of \fBrtc0\fP as realtime clock.
-This option is only relevant if your system has more than one RTC.
-You may specify \fBrtc1\fP, \fBrtc2\fP, ... here.
+.\"O Use the specified \fIdevice\fP instead of \fBrtc0\fP as realtime clock.
+.\"O This option is only relevant if your system has more than one RTC.
+.\"O You may specify \fBrtc1\fP, \fBrtc2\fP, ... here.
+リアルタイムクロックとして、\fBrtc0\fP の代わりに指定した \fIdevice\fP を使う。
+このオプションはシステムに 2 つ以上の RTC がある場合にのみ利用価値がある。
+ここには \fBrtc1\fP, \fBrtc2\fP, ... などを指定できる。
 .TP
 .BR \-l , " \-\-local"
-Assume that the hardware clock is set to local time, regardless of the
-contents of the \fIadjtime\fP file.
+.\"O Assume that the hardware clock is set to local time, regardless of the
+.\"O contents of the \fIadjtime\fP file.
+\fIadjtime\fP ファイルの内容に関わらず、
+ハードウェアクロックがローカル時刻に設定されていると仮定する。
 .TP
 .B \-\-list\-modes
-List available \-\-mode option arguments.
+.\"O List available \-\-mode option arguments.
+利用可能な \-\-mode オプションの引き数をリスト表示する。
 .TP
 .BR \-m , " \-\-mode " \fImode
-Go into the given standby state.  Valid values for \fImode\fP are:
+.\"O Go into the given standby state.  Valid values for \fImode\fP are:
+指定したスタンパイ状態にする。指定可能な \fImode\fP は以下の通り:
 .RS
 .TP
 .B standby
-ACPI state S1.  This state offers minimal, though real, power savings, while
-providing a very low-latency transition back to a working system.  This is the
-default mode.
+.\"O ACPI state S1.  This state offers minimal, though real, power savings, while
+.\"O providing a very low-latency transition back to a working system.  This is the
+.\"O default mode.
+ACPI の状態 S1。
+この状態は最小限であるが、実際にパワーセーブができて、
+稼働中のシステムに戻すのに非常に短い時間でできる。
+これがデフォルトのモードである。
 .TP
 .B freeze
-The processes are frozen, all the devices are suspended and all the processors
-idled.  This state is a general state that does not need any platform-specific
-support, but it saves less power than Suspend-to-RAM, because the system is
-still in a running state.  (Available since Linux 3.9.)
+.\"O The processes are frozen, all the devices are suspended and all the processors
+.\"O idled.  This state is a general state that does not need any platform-specific
+.\"O support, but it saves less power than Suspend-to-RAM, because the system is
+.\"O still in a running state.  (Available since Linux 3.9.)
+プロセスが凍結されて、全てのデバイスがサスペンドされて、
+全てのプロセッサがアイドルにされる。
+この状態は、プラットフォーム固有のサポートが必要でない、
+一般的な状態である。
+しかし、システムはまだ実行状態であるため、RAM へのサスペンドよりパワーセーブができない。
+(Linux 3.9 以降で利用可能である。)
 .TP
 .B mem
-ACPI state S3 (Suspend-to-RAM).  This state offers significant power savings as
-everything in the system is put into a low-power state, except for memory,
-which is placed in self-refresh mode to retain its contents.
+.\"O ACPI state S3 (Suspend-to-RAM).  This state offers significant power savings as
+.\"O everything in the system is put into a low-power state, except for memory,
+.\"O which is placed in self-refresh mode to retain its contents.
+ACPI の状態 S3 (RAM へのサスペンド)。
+この状態では、システムの全てが低パワー状態にされるため、
+特にパワーセーブができる。
+メモリは例外であり、内容を保持するために、自己リフレッシュ
+モードになる。
 .TP
 .B disk
-ACPI state S4 (Suspend-to-disk).  This state offers the greatest power savings,
-and can be used even in the absence of low-level platform support for power
-management.  This state operates similarly to Suspend-to-RAM, but includes a
-final step of writing memory contents to disk.
+.\"O ACPI state S4 (Suspend-to-disk).  This state offers the greatest power savings,
+.\"O and can be used even in the absence of low-level platform support for power
+.\"O management.  This state operates similarly to Suspend-to-RAM, but includes a
+.\"O final step of writing memory contents to disk.
+ACPI の状態 S4 (ディスクへのサスペンド)。
+この状態はもっともパワーセーブできて、電源管理の低レベル
+プラットフォームのサポートがなくても使用できる。
+この状態は RAM へのサスペンドと同様の操作であるが、
+最終ステップではメモリの内容がディスクに書き込まれる。
 .TP
 .B off
-ACPI state S5 (Poweroff).  This is done by calling '/sbin/shutdown'.
-Not officially supported by ACPI, but it usually works.
+.\"O ACPI state S5 (Poweroff).  This is done by calling '/sbin/shutdown'.
+.\"O Not officially supported by ACPI, but it usually works.
+ACPI の状態 S5 (パワーオフ)。
+これは単に '/sbin/shutdown' を呼び出す。
+ACPI で正式にサポートされてはいないが、通常は動作する。
 .TP
 .B no
-Don't suspend, only set the RTC wakeup time.
+.\"O Don't suspend, only set the RTC wakeup time.
+サスペンドせず、RTC ウェイクアップ時刻の設定のみを行う。
 .TP
 .B on
-Don't suspend, but read the RTC device until an alarm time appears.
-This mode is useful for debugging.
+.\"O Don't suspend, but read the RTC device until an alarm time appears.
+.\"O This mode is useful for debugging.
+サスペンドしないが、アラーム時刻が来るまで RTC デバイスを読み込む。
+このモードはデバッグに役立つ。
 .TP
 .B disable
-Disable a previously set alarm.
+.\"O Disable a previously set alarm.
+前に設定したアラームを無効化する。
 .TP
 .B show
-Print alarm information in format: "alarm: off|on  <time>".
-The time is in ctime() output format, e.g. "alarm: on  Tue Nov 16 04:48:45 2010".
+.\"O Print alarm information in format: "alarm: off|on  <time>".
+.\"O The time is in ctime() output format, e.g. "alarm: on  Tue Nov 16 04:48:45 2010".
+アラーム情報を "alarm: off|on  <time>" の形式で表示する。
+時刻は ctime() の出力形式で、"alarm: on  Tue Nov 16 04:48:45 2010" のようになる。
 .RE
 .TP
 .BR \-n , " \-\-dry-run"
-This option does everything apart from actually setting up the alarm,
-suspending the system, or waiting for the alarm.
+.\"O This option does everything apart from actually setting up the alarm,
+.\"O suspending the system, or waiting for the alarm.
+このオプションは、実際のアラーム設定、システムのサスペンド、
+アラームの待機以外の全てを実行する。
 .TP
 .BR \-s , " \-\-seconds " \fIseconds
-Set the wakeup time to \fIseconds\fP in the future from now.
+.\"O Set the wakeup time to \fIseconds\fP in the future from now.
+ウェイクアップ時刻を現時点から \fIseconds\fP 秒後に設定する。
 .TP
 .BR \-t , " \-\-time " \fItime_t
-Set the wakeup time to the absolute time \fItime_t\fP.  \fItime_t\fP
-is the time in seconds since 1970-01-01, 00:00 UTC.  Use the
+.\"O Set the wakeup time to the absolute time \fItime_t\fP.  \fItime_t\fP
+.\"O is the time in seconds since 1970-01-01, 00:00 UTC.  Use the
+.\"O .BR date (1)
+.\"O tool to convert between human-readable time and \fItime_t\fP.
+ウェイクアップ時刻を絶対時刻 \fItime_t\fP に設定する。
+\fItime_t\fP は 1970-01-01, 00:00 UTC からの秒数である。
 .BR date (1)
-tool to convert between human-readable time and \fItime_t\fP.
+ツールを使って、人が読みやすい時刻と \fItime_t\fP を変換できる。
 .TP
 .BR \-u , " \-\-utc"
-Assume that the hardware clock is set to UTC (Universal Time Coordinated),
-regardless of the contents of the \fIadjtime\fP file.
+.\"O Assume that the hardware clock is set to UTC (Universal Time Coordinated),
+.\"O regardless of the contents of the \fIadjtime\fP file.
+\fIadjtime\fP ファイルの内容に関わらず、ハードウェアクロックが
+UTC (Universal Time Coordinated) に設定されていると仮定する。
 .TP
 .BR \-v , " \-\-verbose"
-Be verbose.
+.\"O Be verbose.
+詳細な表示を行う。
 .TP
 .BR \-V , " \-\-version"
-Display version information and exit.
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
 .TP
 .BR \-h , " \-\-help"
-Display help text and exit.
-.SH NOTES
-Some PC systems can't currently exit sleep states such as \fBmem\fP
-using only the kernel code accessed by this driver.
-They need help from userspace code to make the framebuffer work again.
-.SH FILES
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH NOTES
+.SH 注意
+.\"O Some PC systems can't currently exit sleep states such as \fBmem\fP
+.\"O using only the kernel code accessed by this driver.
+.\"O They need help from userspace code to make the framebuffer work again.
+PC システムの中には、このドライバでアクセスされるカーネルコードのみを使う
+\fBmem\fP などでは、現在のところスリープ状態から抜けられないものがある。
+これらのシステムでは、フレームバッファを再度実行できるようにするには、
+ユーザ空間のコードの助けが必要である。
+.\"O .SH FILES
+.SH ファイル
 .I /etc/adjtime
-.SH HISTORY
-The program was posted several times on LKML and other lists
-before appearing in kernel commit message for Linux 2.6 in the GIT
-commit 87ac84f42a7a580d0dd72ae31d6a5eb4bfe04c6d.
-.SH AUTHORS
-The program was written by David Brownell <dbrownell@users.sourceforge.net>
-and improved by Bernhard Walle <bwalle@suse.de>.
-.SH COPYRIGHT
+.\"O .SH HISTORY
+.SH 履歴
+.\"O The program was posted several times on LKML and other lists
+.\"O before appearing in kernel commit message for Linux 2.6 in the GIT
+.\"O commit 87ac84f42a7a580d0dd72ae31d6a5eb4bfe04c6d.
+このプログラムは、GIT commit 87ac84f42a7a580d0dd72ae31d6a5eb4bfe04c6d で
+Linux 2.6 のカーネルコミットメッセージに現れるまでに、
+LKML や他のメーリングリストに何回か投稿された。
+.\"O .SH AUTHORS
+.SH 著者
+.\"O The program was written by David Brownell <dbrownell@users.sourceforge.net>
+.\"O and improved by Bernhard Walle <bwalle@suse.de>.
+このプログラムは David Brownell <dbrownell@users.sourceforge.net> によって書かれ、
+Bernhard Walle <bwalle@suse.de> に改善された。
+.\"O .SH COPYRIGHT
+.SH 著作権
 This is free software.  You may redistribute copies of it under the terms
 of the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
 There is NO WARRANTY, to the extent permitted by law.
-.SH "SEE ALSO"
+.\"O .SH "SEE ALSO"
+.SH 関連項目
 .BR hwclock (8),
 .BR date (1)
-.SH AVAILABILITY
-The rtcwake command is part of the util-linux package and is available from the
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The rtcwake command is part of the util-linux package and is available from the
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+rtcwake コマンドは util-linux パッケージの一部であり、
 .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
 Linux Kernel Archive
-.UE .
+.UE
+から入手できる。
