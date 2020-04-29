@@ -1,0 +1,304 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SETARCH</TITLE>
+</HEAD><BODY>
+<H1>SETARCH</H1>
+Section: System Administration (8)<BR>Updated: December 2017<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+setarch - 新しいプログラム環境で表示されるアーキテクチャを変更し、パーソナリティ (personality) フラグを設定する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>setarch</B>
+
+[<I>arch</I>]
+
+[options]
+[<I>program</I>
+
+[<I>argument</I>...]]
+
+<P>
+<B>setarch</B>
+
+<B>--list</B>|<B>-h</B>|<B>-V</B>
+
+<P>
+<B>arch</B>
+
+[options]
+[<I>program</I>
+
+[<I>argument</I>...]]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B>setarch</B>
+
+は実行ドメインを変更し、パーソナリティフラグを扱う。
+<P>
+
+
+
+
+
+
+実行ドメインは現在のところ <B>uname -m</B> の出力にのみ影響する。
+例えば、AMD64 システムで <B>setarch i386 </B><I>program</I> を実行すると、
+<I>program</I> はマシンタイプとして x86_64 ではなく i686 を参照するようになる。
+これは様々なパーソナリティオプションの設定もできる。
+デフォルトの <I>program</I> は <B>/bin/sh</B> である。
+<P>
+
+
+
+
+
+
+
+バージョン 2.33 以降では
+<I>arch</I>
+
+コマンドライン引き数はオプションであり、
+<B>setarch</B>
+
+は実行ドメインを変更せず、パーソナリティフラグ
+(ADDR_LIMIT_*, SHORT_INODE, etc) を変更することができる。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>--list</B>
+
+<DD>
+
+
+<B>setarch</B> が理解できるアーキテクチャをリスト表示する。
+<B>setarch</B> が各アーキテクチャを実際に設定できるかは、
+実行されているカーネルに依存する。
+<DT><B>--uname-2.6</B>
+
+<DD>
+
+
+<I>program</I> に 2.6 で始まるカーネルバージョン番号を参照させる。
+UNAME26 を有効にする。
+<DT><B>-v</B>,<B> --verbose</B>
+
+<DD>
+
+詳細な表示をさせる。
+<DT><B>-3</B>, <B>--3gb</B><DD>
+
+
+
+
+<I>program</I>
+
+が最大 3GB のアドレスを使えるように指定する。
+x86 でサポートされる。
+ADDR_LIMIT_3GB を有効にする。
+<DT><B>--4gb</B><DD>
+
+
+このオプションは何の効果もない。
+このオプションは後方互換のためにのみ保持されており、将来の
+リリースで削除されるかもしれない。
+<DT><B>-B</B>, <B>--32bit</B><DD>
+
+
+ハードウェアをエミュレートし、アドレス空間を 32 ビットに制限する。
+ARM と Alpha でサポートされる。
+ADDR_LIMIT_32BIT を有効にする。
+<DT><B>-F</B>, <B>--fdpic-funcptrs</B><DD>
+
+
+
+
+シグナルハンドラへのユーザー空間関数ポインタを、アドレス
+ディスクリプタへのポインタとして扱う。
+このオプションは FDPIC ELF バイナリをサポートしていないアーキテクチャには効果がない。
+カーネル v4.14 では、ARM, Blackfin,
+Fujitsu FR-V, SuperH CPU アーキテクチャでのみサポートが制限されている。
+<DT><B>-I</B>, <B>--short-inode</B><DD>
+
+廃れたバグエミュレーションのフラグ。
+SHORT_INODE を有効にする。
+<DT><B>-L</B>, <B>--addr-compat-layout</B><DD>
+
+
+
+
+古い仮想アドレス空間レイアウトを提供する。
+<I>program</I>
+
+バイナリに PT_GNU_STACK ELF ヘッダがない場合に使うこと。
+ADDR_COMPAT_LAYOUT を有効にする。
+<DT><B>-R</B>, <B>--addr-no-randomize</B><DD>
+
+
+仮想アドレス空間のランダム化を無効にする。
+ADDR_NO_RANDOMIZE を有効にする。
+<DT><B>-S</B>, <B>--whole-seconds</B><DD>
+
+廃れたバグエミュレーションのフラグ。
+WHOLE_SECONDS を有効にする。
+<DT><B>-T</B>, <B>--sticky-timeouts</B><DD>
+
+
+
+
+
+
+
+
+
+
+
+このオプションを指定すると、
+<B><A HREF="../man2/select.2.html">select</A></B>(2),
+
+<B><A HREF="../man2/pselect.2.html">pselect</A></B>(2),
+
+<B><A HREF="../man2/ppoll.2.html">ppoll</A></B>(2)
+
+システムコールはタイムアウト値を変更せずに保持する。
+シグナルハンドラで割り込まれた場合、指定された時間スリープしない
+ように反映される。
+<I>program</I>
+
+がこの挙動に依存している場合に使うこと。
+詳細は
+<B><A HREF="../man2/select.2.html">select</A></B>(2)
+
+マニュアルページのタイムアウトの説明を参照すること。
+STICKY_TIMEOUTS を有効にする。
+<DT><B>-X</B>, <B>--read-implies-exec</B><DD>
+
+
+
+
+
+このオプションを設定すると、
+<B><A HREF="../man3/mmap.3.html">mmap</A></B>(3)
+
+PROT_READ で PROT_EXEC ビットも追加する - これは古い x86 バイナリで期待されている。
+ELF ローダーは、古いバイナリに出会った場合、このビットを自動的に設定
+する点に注意すること。
+READ_IMPLIES_EXEC を有効にする。
+<DT><B>-Z</B>, <B>--mmap-page-zero</B><DD>
+
+
+
+
+
+
+SVr4 バグエミュレーションで、
+<B><A HREF="../man3/mmap.3.html">mmap</A></B>(3)
+
+のページ 0 を読み込みのみにする。
+<I>program</I>
+
+がこの挙動に依存していて、修正するためのソースコードが利用可能
+でない場合に使うこと。
+MMAP_PAGE_ZERO を有効にする。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>例</H2>
+
+setarch --addr-no-randomize mytestprog
+<BR>
+
+setarch ppc32 rpmbuild --target=ppc --rebuild foo.src.rpm
+<BR>
+
+setarch ppc32 -v -vL3 rpmbuild --target=ppc --rebuild bar.src.rpm
+<BR>
+
+setarch ppc32 --32bit rpmbuild --target=ppc --rebuild foo.src.rpm
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>著者</H2>
+
+
+Elliot Lee
+
+<BR>
+
+
+Jindrich Novy
+
+<BR>
+
+
+Karel Zak
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/personality.2.html">personality</A></B>(2),
+
+<B><A HREF="../man2/select.2.html">select</A></B>(2)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+setarch コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">例</A><DD>
+<DT><A HREF="#lbAG">著者</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:27:06 GMT, April 29, 2020
+</BODY>
+</HTML>
