@@ -1,0 +1,61 @@
+.\" resizepart.8 -- man page for resizepart
+.\" Copyright 2012 Vivek Goyal <vgoyal@redhat.com>
+.\" Copyright 2012 Red Hat, Inc.
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Wed Apr 29 17:52:33 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH RESIZEPART 8 "January 2015" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O resizepart \- tell the kernel about the new size of a partition
+resizepart \- パーティションの新しいサイズをカーネルに知らせる。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B resizepart
+.I device partition length
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B resizepart
+.\"O tells the Linux kernel about the new size of the specified partition.
+.\"O The command is a simple wrapper around the "resize partition" ioctl.
+.B resizepart
+はパーティションの新しいサイズを Linux カーネルに知らせる。
+このコマンドは「パーティションのサイズ変更」の ioctl の簡単なラッパーである。
+
+.\"O This command doesn't manipulate partitions on a block device.
+このコマンドはブロックデバイス上のパーティションを操作しない。
+
+.\"O .SH PARAMETERS
+.SH 引き数
+.TP
+.I device
+.\"O The disk device.
+ディスクデバイス。
+.TP
+.I partition
+.\"O The partition number.
+パーティション番号。
+.TP
+.I length
+.\"O The new length of the partition (in 512-byte sectors).
+パーティションの新しい長さ (512 バイトセクタ単位)。
+
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR addpart (8),
+.BR delpart (8),
+.BR fdisk (8),
+.BR parted (8),
+.BR partprobe (8),
+.BR partx (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The resizepart command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+resizepart コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
