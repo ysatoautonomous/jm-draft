@@ -1,0 +1,147 @@
+.\" -*- nroff -*-
+.\" Copyright 2007 by Theodore Ts'o.  All Rights Reserved.
+.\" This file may be copied under the terms of the GNU Public License.
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat May  2 03:43:13 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH UUIDD 8 "July 2014" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O uuidd \- UUID generation daemon
+uuidd \- UUID 生成デーモン
+.\"O .SH SYNOPSIS
+.SH 書式
+.B uuidd
+[options]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The
+.\"O .B uuidd
+.\"O daemon is used by the UUID library to generate
+.\"O universally unique identifiers (UUIDs), especially time-based UUIDs,
+.\"O in a secure and guaranteed-unique fashion, even in the face of large
+.\"O numbers of threads running on different CPUs trying to grab UUIDs.
+.B uuidd
+デーモンは UUID ライブラリによって使用され、
+UUID (universally unique identifier: 汎システム的に他とは重ならない識別子)、
+特に時刻ベースの UUID を生成する。
+多くのスレッドが別々の CPU で UUID を取得しようとした場合でも、
+生成はセキュアで一意性が保証されるやり方で行われる。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-d , " \-\-debug "
+.\"O Run uuidd in debugging mode.  This prevents uuidd from running as a daemon.
+uuidd をデバッグモードで実行する。uuidd をデーモンとして実行しないようにする。
+.TP
+.BR \-F , " \-\-no-fork "
+.\"O Do not daemonize using a double-fork.
+二重 fork を使ってデーモン化を行わない。
+.TP
+.BR \-k , " \-\-kill "
+.\"O If currently a uuidd daemon is running, kill it.
+現在 uuidd デーモンが実行中の場合、kill する。
+.TP
+.BR \-n , " \-\-uuids " \fInumber\fR
+.\"O When issuing a test request to a running uuidd, request a bulk response
+.\"O of
+.\"O .I number
+.\"O UUIDs.
+実行中の uuidd にテストリクエストを発行する際に、
+.I number
+個の UUID を一括のレスポンスとして返すようにリクエストする。
+.TP
+.BR \-P , " \-\-no-pid "
+.\"O Do not create a pid file.
+pid ファイルを生成しない。
+.TP
+.BR \-p , " \-\-pid " \fIpath\fR
+.\"O Specify the pathname where the pid file should be written.  By default,
+.\"O the pid file is written to /usr/var/run/uuidd/uuidd.pid.
+pid ファイルが書かれるパス名を指定する。
+デフォルトでは、pid ファイルは /usr/var/run/uuidd/uuidd.pid に書かれる。
+.TP
+.BR \-q , " \-\-quiet "
+.\"O Suppress some failure messages.
+失敗メッセージを抑止する。
+.TP
+.BR \-r , " \-\-random "
+.\"O Test uuidd by trying to connect to a running uuidd daemon and
+.\"O request it to return a random-based UUID.
+実行中の uuidd デーモンへの接続を試みて uuidd をテストする。
+さらに乱数ベースの UUID を返すようにリクエストする。
+.TP
+.BR \-S , " \-\-socket-activation "
+.\"O Do not create a socket but instead expect it to be provided by the calling
+.\"O process.  This implies \fB--no-fork\fR and \fB--no-pid\fR.  This option is
+.\"O intended to be used only with \fBsystemd\fR(1).  It needs to be enabled with
+.\"O a configure option.
+ソケットを作成しないが、それ以外は、呼び出し元プロセスに
+提供される。
+このオプションは \fB--no-fork\fR と \fB--no-pid\fR を暗黙のうちに指定する。
+このオプションは \fBsystemd\fR(1) と一緒に使うことのみを意図している。
+これは設定オプションで有効にする必要がある。
+.TP
+.BR \-s , " \-\-socket " \fIpath\fR
+.\"O Make uuidd use this pathname for the unix-domain socket.  By default, the
+.\"O pathname used is /usr/var/run/uuidd/request.  This option is primarily
+.\"O for debugging purposes, since the pathname is hard-coded in the libuuid
+.\"O library.
+このパス名を unix ドメインソケットとして uuidd に使わせる。
+デフォルトでは、使用されるパス名は /usr/var/run/uuidd/request である。
+このオプションは主としてデバッグ目的であるので、
+パス名は libuuid ライブラリにハードコードされている。
+.TP
+.BR \-T , " \-\-timeout " \fInumber\fR
+.\"O Make uuidd exit after \fInumber\fR seconds of inactivity.
+\fInumber\fR 秒間、無反応である場合、uuidd を終了させる。
+.TP
+.BR \-t , " \-\-time "
+.\"O Test uuidd by trying to connect to a running uuidd daemon and
+.\"O request it to return a time-based UUID.
+実行中の uuidd デーモンへの接続を試みて uuidd をテストする。
+さらに時刻ベースの UUID を返すようにリクエストする。
+.TP
+.BR \-V , " \-\-version "
+.\"O Output version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help "
+.\"O Display help screen and exit.
+ヘルプ画面を表示して、終了する。
+.SH EXAMPLE
+.\"O Start up a daemon, print 42 random keys, and then stop the daemon:
+デーモンを起動して、42 個の乱数キーを表示して、デーモンを終了する。
+.PP
+.RS
+.nf
+uuidd -p /tmp/uuidd.pid -s /tmp/uuidd.socket
+uuidd -d -r -n 42 -s /tmp/uuidd.socket
+uuidd -d -k -s /tmp/uuidd.socket
+.nf
+.RE
+.\"O .SH AUTHOR
+.SH 著者
+.\"O The
+.\"O .B uuidd
+.\"O daemon was written by Theodore Ts'o <tytso@mit.edu>.
+.B uuidd
+デーモンは Theodore Ts'o <tytso@mit.edu> によって書かれた。
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR uuid (3),
+.BR uuidgen (1)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The uuidd daemon is part of the util-linux package and is available from the
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+uuidd デーモンは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
