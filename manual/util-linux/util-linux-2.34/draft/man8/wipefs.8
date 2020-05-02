@@ -1,0 +1,226 @@
+.\" Copyright 2009 by Karel Zak.  All Rights Reserved.
+.\" This file may be copied under the terms of the GNU Public License.
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat May  2 15:18:48 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH WIPEFS 8 "December 2014" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O wipefs \- wipe a signature from a device
+wipefs \- デバイスからシグネチャを消去する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B wipefs
+.RB [ options ]
+.IR device ...
+.sp
+.B wipefs
+.RB [ \-\-backup ]
+.B \-o
+.I offset
+.IR device ...
+.sp
+.B wipefs
+.RB [ \-\-backup ]
+.B \-a
+.IR device ...
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B wipefs
+.\"O can erase filesystem, raid or partition-table signatures (magic strings) from
+.\"O the specified
+.\"O .I device
+.\"O to make the signatures invisible for libblkid.
+.B wipefs
+は、指定した
+.I device
+からファイルシステム、RAID、パーティションテーブルのシグネチャ (マジック文字列) を消去し、
+シグネチャを libblkid から見えなくする。
+.\"O .B wipefs
+.\"O does not erase the filesystem itself nor any other data from the device.
+.B wipefs
+はファイルシステム自体を消去したり、デバイスからシグネチャ以外のデータを
+消去したりはしない。
+
+.\"O When used without any options, wipefs lists all visible filesystems and the
+.\"O offsets of their basic signatures.  The default output is subject to change.
+.\"O So whenever possible, you should avoid using default outputs in your scripts.
+オプションを指定せずに使うと、wipefs は全ての参照可能なファイルシステムと、
+その基本的なシグネチャのオフセットをリスト表示する。
+デフォルトの出力は変更される可能性がある。
+可能な限り、スクリプト内ではデフォルトの出力を使わないべきである。
+.\"O Always explicitly define expected columns by using
+.\"O .B \-\-output
+.\"O .I columns-list
+.\"O in environments where a stable output is required.
+固定した出力が必要な場合、その環境では
+.B \-\-output
+.I columns-list
+を使って、期待する列を常に明示的に定義するべきである。
+
+.\"O .B wipefs
+.\"O calls the BLKRRPART ioctl when it has erased a partition-table signature
+.\"O to inform the kernel about the change. The ioctl is called as the last step
+.\"O and when all specified signatures from all specified devices are already erased.
+.B wipefs
+は、消去されたパーティションテーブルシグネチャがあって、その変更を
+カーネルに知らせる場合、
+BLKRRPART ioctl を呼び出す。
+指定された全てのデバイスの指定された全てのシグネチャが既に消去されている
+場合、最後のステップとして、この ioctl が呼び出される。
+
+.\"O Note that some filesystems and some partition tables store more magic strings on
+.\"O the device (e.g. FAT, ZFS, GPT).  The
+.\"O .B wipefs
+.\"O command (since v2.31) lists all the offset where a magic strings have been
+.\"O detected.
+ファイルシステムとパーティションテーブルの中には、
+デバイス (例えば FAT, ZFS, GPT) 上に複数のマジック文字列を格納するものもある。
+(v2.31 以降の)
+.B wipefs
+コマンドは、マジック文字列が検知された全てのオフセットをリスト表示する。
+
+.\"O When option \fB-a\fR is used, all magic strings that are visible for libblkid are
+.\"O erased. In this case the
+.\"O .B wipefs
+.\"O scans the device again after each modification (erase) until no magic string is found.
+オプション \fB-a\fR を使うと、libblkid から参照できる全てのマジック文字列が消去される。
+この場合、
+.B wipefs
+は、マジック文字列が見つからなくなるまで、各修正 (消去) の後に、デバイスをスキャンする。
+
+.\"O Note that by default
+.\"O .B wipefs
+.\"O does not erase nested partition tables on non-whole disk devices.
+.\"O For this the option \fB\-\-force\fR is required.
+デフォルトでは
+.B wipefs
+はディスクデバイス全体以外にある入れ子のパーティションを消去しない。
+これを行うには、オプション \fB\-\-force\fR が必要である。
+
+.SH OPTIONS
+.TP
+.BR \-a , " \-\-all"
+.\"O Erase all available signatures.  The set of erased signatures can be
+.\"O restricted with the \fB\-t\fR option.
+全ての利用可能なシグネチャを消去する。
+消去されるシグネチャは \fB\-t\fR オプションで制限できる。
+.TP
+.BR \-b , " \-\-backup"
+.\"O Create a signature backup to the file $HOME/wipefs-<devname>-<offset>.bak.
+.\"O For more details see the \fBEXAMPLES\fR section.
+シグネチャのバックアップをファイル $HOME/wipefs-<devname>-<offset>.bak に作成する。
+詳細は「\fB例\fR」のセクションを参照すること。
+.TP
+.BR \-f , " \-\-force"
+.\"O Force erasure, even if the filesystem is mounted.  This is required in
+.\"O order to erase a partition-table signature on a block device.
+ファイルシステムがマウントされている場合でも、強制的に消去する。
+これはブロックデバイス上のパーティションテーブルのシグネチャを
+消去する場合に必要である。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+.BR \-J , " \-\-json"
+.\"O Use JSON output format.
+JSON 出力形式を使う。
+.TP
+.BR \-n , " \-\-noheadings"
+.\"O Do not print a header line.
+ヘッダ行を表示しない。
+.TP
+.BR \-O , " \-\-output " \fIlist\fP
+.\"O Specify which output columns to print.  Use \-\-help to
+.\"O get a list of all supported columns.
+表示する出力カラムを指定する。
+全てのサポートされるカラムのリストを取得するには、
+\-\-help を使うこと。
+.TP
+.BR -n , " \-\-no\-act"
+.\"O Causes everything to be done except for the write() call.
+write() の呼び出し以外は、全てを実行する。
+.TP
+.BR \-o , " \-\-offset " \fIoffset\fP
+.\"O Specify the location (in bytes) of the signature which should be erased from the
+.\"O device.  The \fIoffset\fR number may include a "0x" prefix; then the number will be
+.\"O interpreted as a hex value.  It is possible to specify multiple \fB-o\fR options.
+デバイスから消去を行うシグネチャの位置 (バイト単位) を指定する。
+\fIoffset\fR の数値にはプレフィックス "0x" を付けることができる。
+この場合、数値は 16 進数として解釈される。
+複数の \fB-o\fR オプションを指定することも可能である。
+.sp
+.\"O The \fIoffset\fR argument may be followed by the multiplicative
+.\"O suffixes KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
+.\"O (the "iB" is optional, e.g. "K" has the same meaning as "KiB"), or the suffixes
+.\"O KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+\fIoffset\fR 引き数は倍数のサフィックス
+KiB (=1024), MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB を付けることができる
+("iB" はオプションで、例えば "K" は "KiB" と同じ意味である)。
+また、サフィックス KB (=1000), MB (=1000*1000), GB, TB, PB, EB, ZB, YB を
+付けることもできる。
+.TP
+.BR \-p , " \-\-parsable"
+.\"O Print out in parsable instead of printable format.  Encode all potentially unsafe
+.\"O characters of a string to the corresponding hex value prefixed by '\\x'.
+表示しやすい形式ではなく、解析しやすい形式で表示する。
+文字列に含まれる潜在的に安全でない全ての文字は、プレフィックス '\\x' を付けて
+対応する 16 進数にエンコードされる。
+.TP
+.BR \-q , " \-\-quiet"
+.\"O Suppress any messages after a successful signature wipe.
+シグネチャの消去が成功した後の、全てのメッセージを抑止する。
+.TP
+.BR \-t , " \-\-types " \fIlist\fP
+.\"O Limit the set of printed or erased signatures.  More than one type may
+.\"O be specified in a comma-separated list.  The list or individual types
+.\"O can be prefixed with 'no' to specify the types on which no action should be
+.\"O taken.  For more details see mount(8).
+表示または消去するシグネチャのセットを制限する。
+2 つ以上のタイプをカンマ区切りのリストで指定できる。
+リストまたは各タイプは、プレフィックス 'no' を付けて、
+そのタイプについて何も実行しないことを指定できる。
+詳細は mount(8) を参照すること。
+.TP
+.BR -V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.\"O .SH EXAMPLES
+.SH 例
+.TP
+.B wipefs /dev/sda*
+.\"O Prints information about sda and all partitions on sda.
+sda と sda 上の全てのパーティションの情報を表示する。
+.TP
+.B wipefs --all --backup /dev/sdb
+.\"O Erases all signatures from the device /dev/sdb and creates a signature backup
+.\"O file ~/wipefs-sdb-<offset>.bak for each signature.
+デバイス /dev/sdb から全てのシグネチャを消去し、各シグネチャについて
+シグネチャのバックアップファイル ~/wipefs-sdb-<offset>.bak を作成する。
+.TP
+.B dd if=~/wipefs-sdb-0x00000438.bak of=/dev/sdb seek=$((0x00000438)) bs=1 conv=notrunc
+.\"O Restores an ext2 signature from the backup file  ~/wipefs-sdb-0x00000438.bak.
+バックアップファイル ~/wipefs-sdb-0x00000438.bak から ext2 のシグネチャを復旧する。
+.\"O .SH AUTHOR
+.SH 著者
+Karel Zak <kzak@redhat.com>
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.IP LIBBLKID_DEBUG=all
+.\"O enables libblkid debug output.
+libblkid のデバッグ出力を有効にする。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR blkid (8),
+.BR findfs (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The wipefs command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+wipefs コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
