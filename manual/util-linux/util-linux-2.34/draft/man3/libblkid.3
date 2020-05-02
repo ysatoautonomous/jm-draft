@@ -1,0 +1,143 @@
+.\" Copyright 2001 Andreas Dilger (adilger@turbolinux.com)
+.\"
+.\" This man page was created for libblkid.so.1.0 from e2fsprogs-1.24.
+.\"
+.\" This file may be copied under the terms of the GNU Lesser General Public
+.\" License.
+.\"
+.\" Created  Wed Sep 14 12:02:12 2001, Andreas Dilger
+.\"
+.\" Japanese Version Copyright (c) 2004-2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun Mar  7 02:13:15 JST 2004
+.\"         by Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated & Modified Mon Jul  1 00:00:00 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Sat May  2 19:23:06 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH LIBBLKID 3 "May 2009" "util-linux" "Programmer's Manual"
+.\"O .SH NAME
+.SH 名前
+.\"O libblkid \- block device identification library
+libblkid \- ブロックデバイスの識別ライブラリ
+.\"O .SH SYNOPSIS
+.SH 書式
+.B #include <blkid.h>
+.sp
+.B cc
+.I file.c
+.B \-lblkid
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The
+.\"O .B libblkid
+.\"O library is used to identify block devices (disks) as to their content (e.g.
+.\"O filesystem type) as well as extracting additional information such as
+.\"O filesystem labels/volume names, unique identifiers/serial numbers.
+.\"O A common use is to allow use of LABEL= and UUID= tags instead of hard-coding
+.\"O specific block device names into configuration files.
+.B libblkid
+ライブラリは、ブロックデバイスのコンテンツ (たとえばファイルシステムタイプ) や
+ファイルシステムのラベル名・ボリューム名、ユニークな識別番号・シリアル
+番号などの付加的な情報を使って、ブロックデバイス (ディスク) を識別するのに使われる。
+一般的な使い方として、特定のブロックデバイス名を設定ファイルに
+ハードコードする代わりに、LABEL= と UUID= タグを使うことができる。
+.P
+.\"O The low-level part of the library also allows to extract information about
+.\"O partitions and block device topology.
+このライブラリの低レベルの部分では、パーティションとブロックデバイス
+トポロジーの情報も抽出できる。
+.P
+.\"O The high-level part of the library keeps information about block devices in a
+.\"O cache file and is verified to still be valid before being returned to the user
+.\"O (if the user has read permission on the raw block device, otherwise not).
+.\"O The cache file also allows unprivileged users (normally anyone other
+.\"O than root, or those not in the "disk" group) to locate devices by label/id.
+.\"O The standard location of the cache file can be overridden by the
+.\"O environment variable BLKID_FILE.
+このライブラリの高レベルの部分では、ブロックデバイスの情報を、
+通常キャッシュファイルに保存し、ユーザに返される前に現在も有効であるかを
+検証する
+(ユーザに raw ブロックデバイスの読み込み権限がある場合は検証されるが、
+ない場合は検証されない)。
+また、キャッシュファイルにより、非特権ユーザもラベルや ID でデバイスを
+見つけることができる (通常は非特権ユーザは root 以外の全ユーザや
+"disk" グループに所属しないユーザが該当する)。
+キャッシュファイルの標準の場所は環境変数 BLKID_FILE で上書きすることができる。
+.P
+.\"O In situations where one is getting information about a single known device, it
+.\"O does not impact performance whether the cache is used or not (unless you are
+.\"O not able to read the block device directly).
+ユーザが既知の 1 つのデバイスの情報を取得しようとした場合、
+(ユーザがブロックデバイスを直接読めない限り)
+キャッシュを使うか使わないかはパフォーマンスには影響しない。
+.P
+.\"O The high-level part of the library supports two methods to evaluate LABEL/UUID.
+.\"O It reads information directly from a block device or read information from
+.\"O /dev/disk/by-* udev symlinks.  The udev is preferred method by default.
+このライブラリの高レベルの部分では、LABEL/UUID を評価する 2 つの方法がサポートされている。
+ブロックデバイスから情報を直接読み取るか、
+/dev/disk/by-* udev シンボリックリンクから情報を読み取る。
+udev がデフォルトで優先される方法である。
+.P
+.\"O If you are dealing with
+.\"O multiple devices, use of the cache is highly recommended (even if empty) as
+.\"O devices will be scanned at most one time and the on-disk cache will be
+.\"O updated if possible.
+複数のデバイスを扱う場合、(たとえ空であっても) キャッシュを使うことを特に推奨する。
+これは、複数のデバイスが 1 回でスキャンされ、可能であればディスク上のキャッシュが更新される
+からである。
+.P
+.\"O In some cases (modular kernels), block devices are not even visible until
+.\"O after they are accessed the first time, so it is critical that there is
+.\"O some way to locate these devices without enumerating only visible devices,
+.\"O so the use of the cache file is
+.\"O .B required
+.\"O in this situation.
+(モジュラカーネルなど) いくつかのケースでは、ブロックデバイスにアクセスした後でないと
+見えないことがあるので、見えているデバイスのみを列挙するのではなく、
+見えていないデバイスも探し出す何らかの方法があることが重要になる。
+このような状況ではキャッシュファイルを使用することが\fB必要\fPとされる。
+.\"O .SH CONFIGURATION FILE
+.SH 設定ファイル
+.\"O The standard location of the
+.\"O .I /etc/blkid.conf
+.\"O config file can be overridden by the environment variable BLKID_CONF.  For more
+.\"O details about the config file see
+.\"O .BR blkid (8)
+.\"O man page.
+設定ファイル
+.I /etc/blkid.conf
+の標準の配置場所は、環境変数 BLKID_CONF で上書きできる。
+設定ファイルの詳細は、
+.BR blkid (8)
+の man ページを参照すること。
+.\"O .SH AUTHOR
+.SH 作者
+.\"O .B libblkid
+.\"O was written by Andreas Dilger for the ext2 filesystem utilities, with input
+.\"O from Ted Ts'o.  The library was subsequently heavily modified by Ted Ts'o.
+.B libblkid
+は、Andreas Dilger が Ted Ts'o からの情報提供をうけ、
+ext2 ファイルシステムユーティリティのために書いた。
+このライブラリはその後 Ted Ts'o によってかなり修正された。
+
+.\"O The low-level probing code was rewritten by Karel Zak.
+低レベルの検出のコードは、Karel Zak によって書き直された。
+.\"O .SH COPYING
+.SH 著作権
+.B libblkid
+is available under the terms of the GNU Library General Public License (LGPL),
+version 2 (or at your discretion any later version).
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR blkid (8),
+.BR findfs (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O libblkid is part of the util-linux package since version 2.15 and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+libblkid はバージョン 2.15 から util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
