@@ -1,0 +1,190 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LIBBLKID</TITLE>
+</HEAD><BODY>
+<H1>LIBBLKID</H1>
+Section: Programmer's Manual (3)<BR>Updated: May 2009<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+libblkid - ブロックデバイスの識別ライブラリ
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>#include &lt;<A HREF="file:///usr/include/blkid.h">blkid.h</A>&gt;</B>
+
+<P>
+<B>cc</B>
+
+<I>file.c</I>
+
+<B>-lblkid</B>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+<B>libblkid</B>
+
+ライブラリは、ブロックデバイスのコンテンツ (たとえばファイルシステムタイプ) や
+ファイルシステムのラベル名・ボリューム名、ユニークな識別番号・シリアル
+番号などの付加的な情報を使って、ブロックデバイス (ディスク) を識別するのに使われる。
+一般的な使い方として、特定のブロックデバイス名を設定ファイルに
+ハードコードする代わりに、LABEL= と UUID= タグを使うことができる。
+<P>
+
+
+
+このライブラリの低レベルの部分では、パーティションとブロックデバイス
+トポロジーの情報も抽出できる。
+<P>
+
+
+
+
+
+
+
+
+このライブラリの高レベルの部分では、ブロックデバイスの情報を、
+通常キャッシュファイルに保存し、ユーザに返される前に現在も有効であるかを
+検証する
+(ユーザに raw ブロックデバイスの読み込み権限がある場合は検証されるが、
+ない場合は検証されない)。
+また、キャッシュファイルにより、非特権ユーザもラベルや ID でデバイスを
+見つけることができる (通常は非特権ユーザは root 以外の全ユーザや
+&quot;disk&quot; グループに所属しないユーザが該当する)。
+キャッシュファイルの標準の場所は環境変数 BLKID_FILE で上書きすることができる。
+<P>
+
+
+
+
+ユーザが既知の 1 つのデバイスの情報を取得しようとした場合、
+(ユーザがブロックデバイスを直接読めない限り)
+キャッシュを使うか使わないかはパフォーマンスには影響しない。
+<P>
+
+
+
+
+このライブラリの高レベルの部分では、LABEL/UUID を評価する 2 つの方法がサポートされている。
+ブロックデバイスから情報を直接読み取るか、
+/dev/disk/by-* udev シンボリックリンクから情報を読み取る。
+udev がデフォルトで優先される方法である。
+<P>
+
+
+
+
+
+複数のデバイスを扱う場合、(たとえ空であっても) キャッシュを使うことを特に推奨する。
+これは、複数のデバイスが 1 回でスキャンされ、可能であればディスク上のキャッシュが更新される
+からである。
+<P>
+
+
+
+
+
+
+
+(モジュラカーネルなど) いくつかのケースでは、ブロックデバイスにアクセスした後でないと
+見えないことがあるので、見えているデバイスのみを列挙するのではなく、
+見えていないデバイスも探し出す何らかの方法があることが重要になる。
+このような状況ではキャッシュファイルを使用することが<B>必要</B>とされる。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>設定ファイル</H2>
+
+
+
+
+
+
+
+設定ファイル
+<I>/etc/blkid.conf</I>
+
+の標準の配置場所は、環境変数 BLKID_CONF で上書きできる。
+設定ファイルの詳細は、
+<B><A HREF="../man8/blkid.8.html">blkid</A></B>(8)
+
+の man ページを参照すること。
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>作者</H2>
+
+
+
+
+<B>libblkid</B>
+
+は、Andreas Dilger が Ted Ts'o からの情報提供をうけ、
+ext2 ファイルシステムユーティリティのために書いた。
+このライブラリはその後 Ted Ts'o によってかなり修正された。
+<P>
+
+低レベルの検出のコードは、Karel Zak によって書き直された。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>著作権</H2>
+
+<B>libblkid</B>
+
+is available under the terms of the GNU Library General Public License (LGPL),
+version 2 (or at your discretion any later version).
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/blkid.8.html">blkid</A></B>(8),
+
+<B><A HREF="../man8/findfs.8.html">findfs</A></B>(8)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+libblkid はバージョン 2.15 から util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">設定ファイル</A><DD>
+<DT><A HREF="#lbAF">作者</A><DD>
+<DT><A HREF="#lbAG">著作権</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 10:27:14 GMT, May 02, 2020
+</BODY>
+</HTML>
