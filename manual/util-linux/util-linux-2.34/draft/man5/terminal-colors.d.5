@@ -6,7 +6,7 @@
 .\"
 .\" Japanese Version Copyright (c) 2020 Yuichi SATO
 .\"         all rights reserved.
-.\" Translated Sun May  3 10:37:11 JST 2020
+.\" Translated Sun May  3 15:16:32 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .TH "TERMINAL_COLORS.D" "5" "January 2014" "util-linux" "terminal-colors.d"
@@ -92,21 +92,24 @@ terminal-colors.d \- いろいろなユーティリティの出力の色付け�
 
 .\"O .SH EXAMPLES
 .SH 例
-Disable colors for all compatible utilities:
+.\"O Disable colors for all compatible utilities:
+全ての互換性のあるユーティリティの色付けを無効化する:
 .RS
 .br
 .B "touch /etc/terminal-colors.d/disable"
 .br
 .RE
 
-Disable colors for all compatible utils on a vt100 terminal:
+.\"O Disable colors for all compatible utils on a vt100 terminal:
+vt100 端末上の全ての互換性のあるユーティリティの色付けを無効化する:
 .RS
 .br
 .B "touch /etc/terminal-colors.d/@vt100.disable"
 .br
 .RE
 
-Disable colors for all compatible utils except dmesg(1):
+.\"O Disable colors for all compatible utils except dmesg(1):
+dmesg(1) を除き、全ての互換性のあるユーティリティの色付けを無効化する:
 .RS
 .br
 .B "touch /etc/terminal-colors.d/disable"
@@ -115,8 +118,10 @@ Disable colors for all compatible utils except dmesg(1):
 .br
 .RE
 
-.SH DEFAULT SCHEME FILES FORMAT
-The following statement is recognized:
+.\"O .SH DEFAULT SCHEME FILES FORMAT
+.SH デフォルトのスキーマファイル形式
+.\"O The following statement is recognized:
+以下のステートメントが認識される:
 
 .RS
 .br
@@ -124,80 +129,133 @@ The following statement is recognized:
 .br
 .RE
 
-The
+.\"O The
+.\"O .B name
+.\"O is a logical name of color sequence (for example "error").  The names are
+.\"O specific to the utilities.  For more details always see the COLORS section
+.\"O in the man page for the utility.
 .B name
-is a logical name of color sequence (for example "error").  The names are
-specific to the utilities.  For more details always see the COLORS section
-in the man page for the utility.
+はカラーシーケンスの論理名である (例えば "error")。
+この名前はユーティリティ固有である。
+詳細はユーティリティの man ページの「カラー表示」のセクションを参照すること。
 
-The
+.\"O The
+.\"O .B color-sequence
+.\"O is a color name, ASCII color sequences or escape sequences.
 .B color-sequence
-is a color name, ASCII color sequences or escape sequences.
+は、色名、ASCII カラーシーケンス、エスケープシーケンスのいずれかである。
 
-.SS Color names
+.\"O .SS Color names
+.SS 色名
 black, blink, blue, bold, brown, cyan, darkgray, gray, green, halfbright,
 lightblue, lightcyan, lightgray, lightgreen, lightmagenta, lightred, magenta,
-red, reset, reverse, and yellow.
+.\"O red, reset, reverse, and yellow.
+red, reset, reverse, yellow.
 
-.SS ANSI color sequences
-The color sequences are composed of sequences of numbers
-separated by semicolons.  The most common codes are:
+.\"O .SS ANSI color sequences
+.SS ANSI カラーシーケンス
+.\"O The color sequences are composed of sequences of numbers
+.\"O separated by semicolons.  The most common codes are:
+カラーシーケンスはセミコロンで区切られた数字の並びで構成される。
+もっとも一般的なコードは以下の通り:
 .sp
 .RS
 .TS
 l l.
- 0	to restore default color
- 1	for brighter colors
- 4	for underlined text
- 5	for flashing text
-30	for black foreground
-31	for red foreground
-32	for green foreground
-33	for yellow (or brown) foreground
-34	for blue foreground
-35	for purple foreground
-36	for cyan foreground
-37	for white (or gray) foreground
-40	for black background
-41	for red background
-42	for green background
-43	for yellow (or brown) background
-44	for blue background
-45	for purple background
-46	for cyan background
-47	for white (or gray) background
+.\"O  0	to restore default color
+.\"O  1	for brighter colors
+.\"O  4	for underlined text
+.\"O  5	for flashing text
+ 0	デフォルトの色を復元する
+ 1	明るい色
+ 4	下線のテキスト
+ 5	点滅するテキスト
+.\"O 30	for black foreground
+.\"O 31	for red foreground
+.\"O 32	for green foreground
+.\"O 33	for yellow (or brown) foreground
+.\"O 34	for blue foreground
+.\"O 35	for purple foreground
+.\"O 36	for cyan foreground
+.\"O 37	for white (or gray) foreground
+30	黒の前景色
+31	赤の前景色
+32	緑の前景色
+33	黄 (または茶) の前景色
+34	青の前景色
+35	紫の前景色
+36	シアンの前景色
+37	白 (または灰) の前景色
+.\"O 40	for black background
+.\"O 41	for red background
+.\"O 42	for green background
+.\"O 43	for yellow (or brown) background
+.\"O 44	for blue background
+.\"O 45	for purple background
+.\"O 46	for cyan background
+.\"O 47	for white (or gray) background
+40	黒の背景色
+41	赤の背景色
+42	緑の背景色
+43	黄 (または茶) の背景色
+44	青の背景色
+45	紫の背景色
+46	シアンの背景色
+47	白 (または灰) の背景色
 .TE
 .RE
-.SS Escape sequences
-To specify control or blank characters in the color sequences,
-C-style \e-escaped notation can be used:
+.\"O .SS Escape sequences
+.SS エスケープシーケンス
+.\"O To specify control or blank characters in the color sequences,
+.\"O C-style \e-escaped notation can be used:
+制御文字または空白文字をカラーシーケンスで指定する。
+C 言語形式のエスケープ記法が使われる:
 .sp
 .RS
 .TS
 lb l.
-\ea	Bell (ASCII 7)
-\eb	Backspace (ASCII 8)
-\ee	Escape (ASCII 27)
-\ef	Form feed (ASCII 12)
-\en	Newline (ASCII 10)
-\er	Carriage Return (ASCII 13)
-\et	Tab (ASCII 9)
-\ev	Vertical Tab (ASCII 11)
-\e?	Delete (ASCII 127)
-\e_	Space
-\e\e	Backslash (\e)
-\e^	Caret (^)
-\e#	Hash mark (#)
+.\"O \ea	Bell (ASCII 7)
+.\"O \eb	Backspace (ASCII 8)
+.\"O \ee	Escape (ASCII 27)
+.\"O \ef	Form feed (ASCII 12)
+.\"O \en	Newline (ASCII 10)
+.\"O \er	Carriage Return (ASCII 13)
+.\"O \et	Tab (ASCII 9)
+.\"O \ev	Vertical Tab (ASCII 11)
+.\"O \e?	Delete (ASCII 127)
+.\"O \e_	Space
+.\"O \e\e	Backslash (\e)
+.\"O \e^	Caret (^)
+.\"O \e#	Hash mark (#)
+\ea	ベル (ASCII 7)
+\eb	バックスペース (ASCII 8)
+\ee	エスケープ (ASCII 27)
+\ef	フォームフィード (ASCII 12)
+\en	改行 (ASCII 10)
+\er	キャリッジリターン (ASCII 13)
+\et	タブ (ASCII 9)
+\ev	垂直タブ (ASCII 11)
+\e?	デリート (ASCII 127)
+\e_	スペース
+\e\e	バックスラッシュ (\e)
+\e^	キャレット (^)
+\e#	ハッシュマーク (#)
 .TE
 .RE
 .sp
-Please note that escapes are necessary to enter a space, backslash,
-caret, or any control character anywhere in the string, as well as a
-hash mark as the first character.
+.\"O Please note that escapes are necessary to enter a space, backslash,
+.\"O caret, or any control character anywhere in the string, as well as a
+.\"O hash mark as the first character.
+スペース、バックスラッシュ、キャレット、その他の制御文字は文字列の
+どの場所に入れるにも、エスケープが必要であり、同様にハッシュマークは
+最初の文字にする必要がある点に注意してほしい。
 
-For example, to use a red background for alert messages in the output of
-.BR dmesg (1),
-use:
+.\"O For example, to use a red background for alert messages in the output of
+.\"O .BR dmesg (1),
+.\"O use:
+例えば、
+.BR dmesg (1)
+の出力でアラートメッセージを赤の背景色にするには、以下のようにする:
 
 .RS
 .br
@@ -205,29 +263,46 @@ use:
 .br
 .RE
 
-.SS Comments
-Lines where the first non-blank character is a # (hash) are ignored.
-Any other use of the hash character is not interpreted as introducing
-a comment.
+.\"O .SS Comments
+.SS コメント
+.\"O Lines where the first non-blank character is a # (hash) are ignored.
+.\"O Any other use of the hash character is not interpreted as introducing
+.\"O a comment.
+空白文字以外の最初の文字が # (ハッシュ) である行は無視される。
+ハッシュ文字以外の使われている文字は、コメントを挿入するために解釈
+されない。
 
-.SH FILES
+.\"O .SH FILES
+.SH ファイル
 .I $XDG_CONFIG_HOME/terminal-colors.d
 .br
 .I $HOME/.config/terminal-colors.d
 .br
 .I /etc/terminal-colors.d
 
-.SH ENVIRONMENT
+.\"O .SH ENVIRONMENT
+.SH 環境変数
 .IP TERMINAL_COLORS_DEBUG=all
-enables debug output.
+.\"O enables debug output.
+デバッグ出力を有効にする。
 
-.SH COMPATIBILITY
-The terminal-colors.d functionality is currently supported by all util-linux
-utilities which provides colorized output.  For more details always see the
-COLORS section in the man page for the utility.
+.\"O .SH COMPATIBILITY
+.SH 互換性
+.\"O The terminal-colors.d functionality is currently supported by all util-linux
+.\"O utilities which provides colorized output.  For more details always see the
+.\"O COLORS section in the man page for the utility.
+terminal-colors.d の機能は、現在のところ、出力の色付けを提供する
+全ての util-linux ユーティリティでサポートされている。
+詳細は、各ユーティリティの man ページの「カラー表示」セクションを常に参照すること。
 
-.SH AVAILABILITY
-terminal-colors.d is part of the util-linux package and is available from
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O terminal-colors.d is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+terminal-colors.d は util-linux パッケージの一部であり、
 .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
 Linux Kernel Archive
-.UE .
+.UE
+から入手できる。
