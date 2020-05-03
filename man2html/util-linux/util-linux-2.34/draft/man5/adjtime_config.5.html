@@ -64,7 +64,7 @@ RTC 時刻モードを取得するために読み込まれる。
 ハードウェア・クロックは通常はそれほど正確ではない。
 しかし、その不正確さの大部分は完全に予測可能である - 
 毎日同じ分だけ進んだり遅れたりする。
-これはシステム的なずれと呼ばれる。
+これは規則的なずれ (systematic drift) と呼ばれる。
 ユーティリティ hwclock は、ある種の履歴情報を保持するファイル /etc/adjtime を見る。
 詳細は
 <B><A HREF="../man8/hwckock.8.html">hwckock</A></B>(8)
@@ -89,7 +89,7 @@ adjtime ファイルの形式は、ASCII である。
 <B>ずれ要素</B>
 
 
-1 日あたりに生じるシステム的な時刻ずれを秒で表したもの (浮動小数点型 10 進)
+1 日あたりに生じる規則的な時刻ずれを秒で表したもの (浮動小数点型 10 進)
 <DT>
 <DD>
 <B>最終の補正時刻</B>
@@ -186,6 +186,6 @@ adjtime ファイルの形式は、ASCII である。
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 01:41:57 GMT, May 03, 2020
+Time: 02:27:31 GMT, May 03, 2020
 </BODY>
 </HTML>
