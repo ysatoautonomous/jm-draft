@@ -48,7 +48,7 @@ hwclock \- タイムクロックのユーティリティ
 ハードウェア・クロックの値を、指定した時刻に設定する。
 ハードウェア・クロックの値を、システム・クロックの値に設定する。
 システム・クロックの値を、ハードウェア・クロックの値に設定する。
-ハードウェア・クロックのずれのを補償する。
+ハードウェア・クロックのずれを補償する。
 システム・クロックのタイムスケールを訂正する。
 カーネルのタイムゾーン、NTP タイムスケール、紀元年 (Alpha のみ) を設定する。
 将来のハードウェア・クロックの値を、ずれの値に基づいて、予想する。
@@ -1259,7 +1259,7 @@ adjtime は ASCII ファイルであり、フォーマットは以下の通り:
 .\"O decimal integer; 3) zero (for compatibility with
 .\"O .BR \%clock (8))
 .\"O as a decimal integer.
-一行目は三つの数値からなり、それぞれ空白で区切られる:
+1 行目は 3 つの数値からなり、それぞれ空白で区切られる:
 1) 一日あたりに生じる時刻ずれを秒で表したもの (浮動小数点型 10 進):
 2) 最後に時計合わせあるいは補正を行った時刻を 
 1969 UTC からの経過秒数で表したもの (10 進整数):
@@ -1272,11 +1272,11 @@ adjtime は ASCII ファイルであり、フォーマットは以下の通り:
 .\"O is known that any previous calibration is moot (for example, because
 .\"O the Hardware Clock has been found, since that calibration, not to
 .\"O contain a valid time).  This is a decimal integer.
-二行目: 数値が一つ: 最後に時計を合わせた時刻を
+2 行目: 数値が 1 つ: 最後に時計を合わせた時刻を
 1969 UTC からの経過秒数で表したもの。
 時計合わせが一度もされていなかったり、以前の時計あわせに問題があった
 (例えばその時計あわせ以降にハードウェア・クロックの
-時刻が不正なことがわかったとか) 場合には 0 が入る。
+時刻が不正なことがわかったとかの) 場合には 0 が入る。
 これは 10 進の整数である。
 .PP
 .\"O Line 3: "UTC" or "LOCAL".  Tells whether the Hardware Clock is set to
@@ -1284,8 +1284,8 @@ adjtime は ASCII ファイルであり、フォーマットは以下の通り:
 .\"O value with options on the
 .\"O .B \%hwclock
 .\"O command line.
-三行目: "UTC" または "LOCAL"。ハードウェア・クロックが
-協定世界時かローカルタイム化を示す。
+3 行目: "UTC" または "LOCAL"。ハードウェア・クロックが
+協定世界時かローカルタイムかを示す。
 この値は
 .B \%hwclock
 にコマンドラインを指定すればいつでも上書き可能である。
