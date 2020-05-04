@@ -525,8 +525,8 @@ for details of where these files are stored.
 .\"O If you find that the translations supplied with this package are not
 .\"O available in your native language and you would like to supply them, please
 .\"O contact the maintainer who will be coordinating such activity.
-このパッケージに、あなたのネイティブな言語に対応したマニュアルページがなく、
-これを追加したいと思う人は、メンテナーに連絡して欲しい。
+このパッケージに、あなたのネイティブな言語に対応したマニュアルページが
+なく、これを追加したいと思う人は、メンテナーに連絡して欲しい。
 このような努力をまとめたいと思っている。
 
 Individual manual pages are normally written and maintained by the
@@ -537,8 +537,8 @@ to the maintainers of the package in question.
 
 .\"O For information regarding other features and extensions available with this
 .\"O manual pager, please read the documents supplied with the package.
-このマニュアルページャーで用いることのできる、その他の機能や拡張については、
-このパッケージに付属しているドキュメントを読んで欲しい。
+このマニュアルページャーで用いることのできる、その他の機能や拡張に
+ついては、このパッケージに付属しているドキュメントを読んで欲しい。
 .\"O .SH DEFAULTS
 .SH デフォルト
 The order of sections to search may be overridden by the environment
@@ -740,7 +740,8 @@ To contain a valid preprocessor string, the first line must resemble
 .\"O option is used.
 すべてのマニュアルページのテキストを検索する。
 全数検索を行うため、長い時間がかかる。
-検索するページ数を減らすために、可能であればセクションを指定するべきである。
+検索するページ数を減らすために、可能であればセクションを指定する
+べきである。
 検索する語はデフォルトでは単純な文字列である。
 .B \-\-regex
 オプションを指定した場合は正規表現になる。
@@ -781,8 +782,8 @@ exact match.
 .BR \-w ", " \-\-where ", " \-\-path ", " \-\-location
 .\"O Don't actually display the manual page, but do print the location of the
 .\"O source nroff file that would be formatted.
-実際にはマニュアルページを表示せず、整形・表示されることになるファイル
-の位置を表示する。
+実際にはマニュアルページを表示せず、整形・表示されることになる
+ファイルの位置を表示する。
 If the
 .B \-a
 option is also used, then print the locations of all source files that match
@@ -874,20 +875,20 @@ designed for bulk conversion and so can be much faster.
 文字列を渡せば良い。
 .\"O Note that it will not take effect until the search for pages actually
 .\"O begins.
-このオプションが効力を持つのは、実際のページの検索が始まってからである
-ことに注意すること。
+このオプションが効力を持つのは、実際のページの検索が始まってから
+であることに注意すること。
 .\"O Output such as the help message will always be displayed in the initially
 .\"O determined locale.
-ヘルプメッセージなどの出力は、起動前に定まっていた
-ロケールで出力される。
+ヘルプメッセージなどの出力は、起動前に定まっていたロケールで
+出力される。
 .TP
 \fB\-m\fR \fIsystem\fR\|[\|,.\|.\|.\|]\|, \
 \fB\-\-systems=\fIsystem\fR\|[\|,.\|.\|.\|]
 .\"O If this system has access to other operating system's manual pages, they can
 .\"O be accessed using this option.
-現在のシステムから、他のオペレーティングシステムについてのマニュアルに
-アクセスできる場合には、このオプションをつけるとそれらのマニュアルが
-検索される。
+現在のシステムから、他のオペレーティングシステムについての
+マニュアルにアクセスできる場合には、このオプションをつけると
+それらのマニュアルが検索される。
 .\"O To search for a manual page from NewOS's manual page collection,
 .\"O use the option
 .\"O .B \-m
@@ -901,7 +902,8 @@ NewOS のマニュアルページを検索する場合には、
 .\"O .I system
 .\"O specified can be a combination of comma delimited operating system names.
 .I system
-には複数のオペレーティングシステムをコンマで区切った形式で指定できる。
+には複数のオペレーティングシステムをコンマで区切った形式で
+指定できる。
 .\"O To include a search of the native operating system's manual pages,
 .\"O include the system name
 .\"O .B man
@@ -997,8 +999,8 @@ spelling is for compatibility with System V.)
 .\"O As this is unfortunate, it is now possible to put the pages in the correct
 .\"O section, and to assign a specific "extension" to them, in this case,
 .\"O .BR exit (3tcl).
-これは望ましくないので、ページを正しいセクションに入れ、それらに特定の
-「拡張」を追加することができるようになった。
+これは望ましくないので、ページを正しいセクションに入れ、それらに
+特定の「拡張」を追加することができるようになった。
 .\"O Under normal operation,
 .\"O .B man
 .\"O will display
@@ -1021,8 +1023,8 @@ spelling is for compatibility with System V.)
 .\"O a
 .\"O .I sub-extension
 .\"O string indicating which package the page must belong to.
-この状況を調整し、目的とするページがどのセクションにあるのかをいちいち
-記憶しておかなくてもすむように、
+この状況を調整し、目的とするページがどのセクションにあるのかを
+いちいち記憶しておかなくてもすむように、
 .B man
 に
 .I sub-extension
@@ -1034,7 +1036,8 @@ spelling is for compatibility with System V.)
 .\"O will restrict the search to pages having an extension of
 .\"O .BR *tcl .
 この文字列は、ページが
-所属するパッケージを指定するものである。上記の例なら、オプションとして
+所属するパッケージを指定するものである。上記の例なら、オプション
+として
 .B \-e\ tcl
 を
 .B man
@@ -1100,8 +1103,8 @@ searching for a wildcard, this option implies
 .\"O will exit after displaying the most suitable manual page it finds.
 デフォルトでは
 .B man
-は検索で見つかったページのうち、もっとも適切と判断したものを一つだけ
-表示して終了する。
+は検索で見つかったページのうち、もっとも適切と判断したものを
+一つだけ表示して終了する。
 .\"O Using this option forces
 .\"O .B man
 .\"O to display all the manual pages with names that match the search criteria.
@@ -1176,15 +1179,15 @@ environment variable.
 
 .\"O The value may be a simple command name or a command with arguments, and may
 .\"O use shell quoting (backslashes, single quotes, or double quotes).
-この値は、単純なコマンド名か引数付きのコマンドで、シェルのエスケープ文字 
-(バックスラッシュ、シングルクォート、ダブルクォート)
+この値は、単純なコマンド名か引き数付きのコマンドで、シェルの
+エスケープ文字 (バックスラッシュ、シングルクォート、ダブルクォート)
 を使用している場合がある。
 .\"O It may not use pipes to connect multiple commands; if you need that, use a
 .\"O wrapper script, which may take the file to display either as an argument or
 .\"O on standard input.
 パイプを使用して複数のコマンドをつなげることはできない。
-そのような必要性がある場合、表示するファイルを、
-単一の引数または標準入力として受け取るラッパースクリプトを使用する。
+そのような必要性がある場合、表示するファイルを、単一の引き数
+または標準入力として受け取るラッパースクリプトを使用する。
 .TP
 .BI \-r\  prompt \fR,\ \fB\-\-prompt= prompt
 .\"O If a recent version of
@@ -1318,7 +1321,8 @@ string if none is supplied on the command line.
 .B "GNU nroff"
 の
 .IR latin1 (7)
-デバイス表示を用いると、文字によっては正しく表示されない可能性がある。
+デバイス表示を用いると、文字によっては正しく表示されない可能性が
+ある。
 .\"O This option allows pure
 .\"O .I ascii
 .\"O manual pages to be displayed in
@@ -1410,8 +1414,8 @@ T}@327@\(mu@x
 .\"O column is missing or corrupt, you may need to view manual pages with this
 .\"O option.
 .I latin1
-カラムが空であるか、変な表示になっている場合は、マニュアルページを見る
-場合にはこのオプションを指定する必要がある。
+カラムが空であるか、変な表示になっている場合は、マニュアルページを
+見るためにこのオプションを指定する必要がある。
 
 .\"O This option is ignored when using options
 .\"O .BR \-t ,
@@ -1500,7 +1504,8 @@ T}@327@\(mu@x
 は自動的に左右余白に対してテキストを均等に割り付ける。
 .\"O This option disables full justification, leaving justified only to the left
 .\"O margin, sometimes called "ragged-right" text.
-このオプションは左右余白の均等割り付けを抑止し、左側余白のみ整列する。
+このオプションは左右余白の均等割り付けを抑止し、左側余白のみ
+整列する。
 これは "ragged-right" text と呼ばれる。
 
 .\"O If you are writing a manual page and simply want to prevent
@@ -1610,7 +1615,7 @@ T}@327@\(mu@x
 .\"O .RB $ BROWSER
 .\"O environment variable, or by a compile-time default if that is unset (usually
 .\"O .BR lynx ).
-ブラウザーはオプション引数の
+ブラウザーはオプション引き数の
 .I browser
 (指定されている場合)、
 .RB $ BROWSER
@@ -1653,7 +1658,7 @@ T}@327@\(mu@x
 .I dpi
 このオプションにより
 .B \-T
-オプションと、その引数としてそれぞれ
+オプションと、その引き数としてそれぞれ
 X75, X75-12, X100, X100-12
 デバイス設定が暗黙のうちに指定される。
 .TP
@@ -1666,8 +1671,8 @@ X75, X75-12, X100, X100-12
 .B groff
 は
 .B troff
-を実行し、その後適切なポストプロセッサを用いて選択したデバイスに応じた
-出力を生成する。
+を実行し、その後適切なポストプロセッサを用いて選択したデバイスに
+応じた出力を生成する。
 .\"O If
 .\"O .I groff \-mandoc
 .\"O is
@@ -1721,8 +1726,8 @@ X75, X75-12, X100, X100-12
 .TP
 .B 16
 .\"O At least one of the pages/files/keywords didn't exist or wasn't matched.
-少なくとも、ページ、ファイル、キーワードのどれか一つが存在しないか、
-マッチしなかった。
+少なくとも、ページ、ファイル、キーワードのどれか一つが
+存在しないか、マッチしなかった。
 .\"O .SH ENVIRONMENT
 .SH 環境変数
 .\".TP \w'MANROFFSEQ\ \ 'u
@@ -1765,7 +1770,8 @@ to the formatter's command line.
 .\"O determine which manual sections to search and in what order.
 .RB $ MANSECT
 が設定されている場合には、その値はセクションのリスト (コロン区切り)
-として扱われ、マニュアルのどのセクションを検索するかを決定する際に用いられる。
+として扱われ、マニュアルのどのセクションを検索するかを決定する際に
+用いられる。
 The default is
 "1 1p 8 2 3 3p 3pm 4 5 6 7 9 0p n l p o 1x 2x 3x 4x 5x 6x 7x 8x",
 unless overridden by the
@@ -1785,8 +1791,8 @@ directive in
 .RB $ MANPAGER
 または
 .RB $ PAGER
-が設定されている場合には、その値がマニュアルページを表示するプログラム
-の名前として用いられる
+が設定されている場合には、その値がマニュアルページを表示する
+プログラムの名前として用いられる
 .RB ($ MANPAGER
 が優先して使用される)。
 By default,
@@ -1799,14 +1805,14 @@ is not found or is not executable.
 
 .\"O The value may be a simple command name or a command with arguments, and may
 .\"O use shell quoting (backslashes, single quotes, or double quotes).
-この値は、単純なコマンド名か引数付きのコマンドで、シェルのエスケープ文字
-(バックスラッシュ、シングルクォート、ダブルクォート)
+この値は、単純なコマンド名か引き数付きのコマンドで、シェルの
+エスケープ文字 (バックスラッシュ、シングルクォート、ダブルクォート)
 を使用している場合がある。
 .\"O It may not use pipes to connect multiple commands; if you need that, use a
 .\"O wrapper script, which may take the file to display either as an argument or
 .\"O on standard input.
 パイプを使用して複数のコマンドをつなげることはできない。
-そのような必要性がある場合、表示するファイルを、単一の引数または
+そのような必要性がある場合、表示するファイルを、単一の引き数または
 標準入力として受け取るラッパースクリプトを使用すること。
 .TP
 .B MANLESS
@@ -1933,37 +1939,62 @@ is when the terminal line length is between 66 and 80 characters.
 と併せて使用するラッパーに書式文字を解釈させることができる。
 .TP
 .B MAN_KEEP_STDERR
-Normally, when output is being directed to a terminal (usually to a pager),
-any error output from the command used to produce formatted versions of
-manual pages is discarded to avoid interfering with the pager's display.
-Programs such as
+.\"O Normally, when output is being directed to a terminal (usually to a pager),
+.\"O any error output from the command used to produce formatted versions of
+.\"O manual pages is discarded to avoid interfering with the pager's display.
+通常、端末 (通常はページャー) に出力する時、ページャーの表示と
+干渉するのを避けるため、マニュアルページを整形するコマンドのエラー
+出力は破棄される。
+.\"O Programs such as
+.\"O .B groff
+.\"O often produce relatively minor error messages about typographical problems
+.\"O such as poor alignment, which are unsightly and generally confusing when
+.\"O displayed along with the manual page.
 .B groff
-often produce relatively minor error messages about typographical problems
-such as poor alignment, which are unsightly and generally confusing when
-displayed along with the manual page.
-However, some users want to see them anyway, so, if
+のようなプログラムは、整列がうまくできないなどの、印字問題に関する
+比較的軽微なエラーメッセージをしばしば出力する。
+これは、マニュアルページと併せて表示すると、見苦しく、
+混乱の原因となる。
+.\"O However, some users want to see them anyway, so, if
+.\"O .RB $ MAN_KEEP_STDERR
+.\"O is set to any non-empty value, error output will be displayed as usual.
+しかし、エラーメッセージを見る必要がある場合、
 .RB $ MAN_KEEP_STDERR
-is set to any non-empty value, error output will be displayed as usual.
+を空以外に設定すると、エラー出力は通常通り表示される。
 .TP
 .BR LANG , " LC_MESSAGES"
-Depending on system and implementation, either or both of
+.\"O Depending on system and implementation, either or both of
+.\"O .RB $ LANG
+.\"O and
+.\"O .RB $ LC_MESSAGES
+.\"O will be interrogated for the current message locale.
+システムと実装に依存するが、
 .RB $ LANG
-and
+と
 .RB $ LC_MESSAGES
-will be interrogated for the current message locale.
+のどちらか、あるいは両方は、カレントロケールの指定に用いられる。
+.\"O .B man
+.\"O will display its messages in that locale (if available).
 .B man
-will display its messages in that locale (if available).
-See
+は自分自身のメッセージを、そのロケールで出力する (可能な場合)。
+.\"O See
+.\"O .BR setlocale (3)
+.\"O for precise details.
+正確な内容は
 .BR setlocale (3)
-for precise details.
-.SH FILES
+を見よ。
+.\"O .SH FILES
+.SH ファイル
 .TP
 .I /etc/man_db.conf
-man-db configuration file.
+.\"O man-db configuration file.
+man-db の設定ファイル。
 .TP
 .I /usr/share/man
-A global manual page hierarchy.
-.SH "SEE ALSO"
+.\"O A global manual page hierarchy.
+global なマニュアルページの階層。
+.\"O .SH "SEE ALSO"
+.SH 関連項目
 .BR apropos (1),
 .BR groff (1),
 .BR less (1),
@@ -1980,15 +2011,22 @@ A global manual page hierarchy.
 Documentation for some packages may be available in other formats, such as
 .BR info (1)
 or HTML.
-.SH HISTORY
-1990, 1991 \(en Originally written by John W.\& Eaton (jwe@che.utexas.edu).
+.\"O .SH HISTORY
+.SH 履歴
+.\"O 1990, 1991 \(en Originally written by John W.\& Eaton (jwe@che.utexas.edu).
+1990, 1991 \- オリジナルの著者は John W.\& Eaton (jwe@che.utexas.edu) で
+あった。
 
-Dec 23 1992: Rik Faith (faith@cs.unc.edu) applied bug fixes
-supplied by Willem Kasdorp (wkasdo@nikhefk.nikef.nl).
+.\"O Dec 23 1992: Rik Faith (faith@cs.unc.edu) applied bug fixes
+.\"O supplied by Willem Kasdorp (wkasdo@nikhefk.nikef.nl).
+Dec 23 1992: Rik Faith (faith@cs.unc.edu) が Willem Kasdorp
+(wkasdo@nikhefk.nikef.nl) のバグフィックスを当てた。
 
+.\"O 30th April 1994 \(en 23rd February 2000: Wilf.\& (G.Wilford@ee.surrey.ac.uk)
+.\"O has been developing and maintaining this package
+.\"O with the help of a few dedicated people.
 30th April 1994 \(en 23rd February 2000: Wilf.\& (G.Wilford@ee.surrey.ac.uk)
-has been developing and maintaining this package
-with the help of a few dedicated people.
+が何人かの人々の助力のもと、このパッケージの開発とメンテナンスをしていた。
 
 30th October 1996 \(en 30th March 2001: Fabrizio Polacco <fpolacco@debian.org>
 maintained and enhanced this package for the Debian project, with the
