@@ -392,9 +392,12 @@ shell.)
 .I printf
 を正規表現として、マニュアルページの要約文とページ名を検索し、
 マッチした結果を表示する。
-Print out any matches.
-Equivalent to
-.BI apropos \ printf .
+.\"O Print out any matches.
+マッチしたすべてを表示する。
+.\"O Equivalent to
+.\"O .BI apropos \ printf .
+.BI apropos \ printf
+と同等である。
 .TP
 .BI man\ \-f \ smail
 .\"O Lookup the manual pages referenced by
@@ -403,36 +406,67 @@ Equivalent to
 .I smail
 と言う名前のマニュアルページを探し、
 見つかったものそれぞれに対して要約文を表示する。
-Equivalent to
-.BI whatis \ smail .
-.SH OVERVIEW
-Many options are available to
+.\"O Equivalent to
+.\"O .BI whatis \ smail .
+.BI whatis \ smail
+と同等である。
+.\"O .SH OVERVIEW
+.SH 概要
+.\"O Many options are available to
+.\"O .B man
+.\"O in order to give as much flexibility as possible to the user.
 .B man
-in order to give as much flexibility as possible to the user.
-Changes can be made to the search path, section order, output processor,
-and other behaviours and operations detailed below.
+には多くのオプションが存在し、ユーザーに可能な限りの柔軟性を提供している。
+.\"O Changes can be made to the search path, section order, output processor,
+.\"O and other behaviours and operations detailed below.
+検索パスやセクションの順番、出力プロセッサ、他の振る舞いや動作などが、
+以下に詳細に述べられている。
 
-If set, various environment variables are interrogated to determine
-the operation of
-.BR man .
-It is possible to set the "catch-all" variable
-.RB $ MANOPT
-to any string in command line format, with the exception that any spaces
-used as part of an option's argument must be escaped (preceded by a
-backslash).
+.\"O If set, various environment variables are interrogated to determine
+.\"O the operation of
+.\"O .BR man .
+また
 .B man
-will parse
+の動作に影響を及ぼす環境変数も数多く存在する。
+.\"O It is possible to set the "catch-all" variable
+.\"O .RB $ MANOPT
+.\"O to any string in command line format, with the exception that any spaces
+.\"O used as part of an option's argument must be escaped (preceded by a
+.\"O backslash).
+「万能」な環境変数である
 .RB $ MANOPT
-prior to parsing its own command line.
-Those options requiring an argument will be overridden by the same options
-found on the command line.
-To reset all of the options set in
-.RB $ MANOPT ,
+を用いれば、コマンドラインと同じ形式の文字列を設定することもできる。
+ただしオプションの引き数の一部として用いられるスペースは、
+すべてエスケープする (バックスラッシュを前置する) 必要がある。
+.\"O .B man
+.\"O will parse
+.\"O .RB $ MANOPT
+.\"O prior to parsing its own command line.
+.B man
+は、
+.RB $ MANOPT
+をコマンドラインの前に解釈する。
+.\"O Those options requiring an argument will be overridden by the same options
+.\"O found on the command line.
+引き数を必要とするオプションに関しては、同じものがコマンドラインにも
+存在すれば、コマンドラインの方が優先される。
+.\"O To reset all of the options set in
+.\"O .RB $ MANOPT ,
+.\"O .B \-D
+.\"O can be specified as the initial command line option.
+.RB $ MANOPT
+に設定されたオプションをすべてリセットするには、コマンドラインオプション
+の最初に
 .B \-D
-can be specified as the initial command line option.
-This will allow man to "forget" about the options specified in
-.RB $ MANOPT ,
-although they must still have been valid.
+を指定すればよい。
+.\"O This will allow man to "forget" about the options specified in
+.\"O .RB $ MANOPT ,
+.\"O although they must still have been valid.
+これによって
+.B man
+は一時的に
+.RB $MANOPT
+の内容を「忘れる」が、環境変数の内容自体は有効なまま残る。
 
 Manual pages are normally stored in
 .BR nroff (1)
@@ -445,16 +479,28 @@ See
 .BR manpath (5)
 for details of where these files are stored.
 
-This package supports manual pages in multiple languages, controlled by your
-.IR locale .
-If your system did not set this up for you automatically, then you may need
-to set
+.\"O This package supports manual pages in multiple languages, controlled by your
+.\"O .IR locale .
+このパッケージでは、多言語のマニュアルページをサポートしており、
+.I locale
+で制御できる。
+.\"O If your system did not set this up for you automatically, then you may need
+.\"O to set
+.\"O .RB $ LC_MESSAGES ,
+.\"O .RB $ LANG ,
+.\"O or another system-dependent environment variable to indicate your preferred
+.\"O locale, usually specified in the
+.\"O .B POSIX
+.\"O format:
+使っているシステムがロケールを自動で設定しない場合、この機能を
+有効にするには、
 .RB $ LC_MESSAGES ,
-.RB $ LANG ,
-or another system-dependent environment variable to indicate your preferred
-locale, usually specified in the
+.RB $ LANG
+のいずれかか、他のシステム依存の環境変数を、使用している言語のロケールに
+設定する必要がある。
+通常言語ロケールは
 .B POSIX
-format:
+に基づいたフォーマットで指定する:
 
 .\"
 .\" Need a \c to make sure we don't get a space where we don't want one
@@ -467,14 +513,21 @@ format:
 .B ,\c
 .RI < version >\|]\|]\|]
 
-If the desired page is available in your
-.IR locale ,
-it will be displayed in lieu of the standard
-(usually American English) page.
+.\"O If the desired page is available in your
+.\"O .IR locale ,
+.\"O it will be displayed in lieu of the standard
+.\"O (usually American English) page.
+要求したページに対して、使用している
+.I locale
+のものが存在すれば、そのページが標準のページ (通常はアメリカ英語) の
+代わりに表示される。
 
-If you find that the translations supplied with this package are not
-available in your native language and you would like to supply them, please
-contact the maintainer who will be coordinating such activity.
+.\"O If you find that the translations supplied with this package are not
+.\"O available in your native language and you would like to supply them, please
+.\"O contact the maintainer who will be coordinating such activity.
+このパッケージに、あなたのネイティブな言語に対応したマニュアルページがなく、
+これを追加したいと思う人は、メンテナーに連絡して欲しい。
+このような努力をまとめたいと思っている。
 
 Individual manual pages are normally written and maintained by the
 maintainers of the program, function, or other topic that they document, and
@@ -482,9 +535,12 @@ are not included with this package.
 If you find that a manual page is missing or inadequate, please report that
 to the maintainers of the package in question.
 
-For information regarding other features and extensions available with this
-manual pager, please read the documents supplied with the package.
-.SH DEFAULTS
+.\"O For information regarding other features and extensions available with this
+.\"O manual pager, please read the documents supplied with the package.
+このマニュアルページャーで用いることのできる、その他の機能や拡張については、
+このパッケージに付属しているドキュメントを読んで欲しい。
+.\"O .SH DEFAULTS
+.SH デフォルト
 The order of sections to search may be overridden by the environment
 variable
 .RB $ MANSECT
@@ -520,36 +576,62 @@ To contain a valid preprocessor string, the first line must resemble
 .B '\e"
 .RB < string >
 
-where
+.\"O where
+.\"O .B string
+.\"O can be any combination of letters described by option
+.\"O .B \-p
+.\"O below.
+ここで
 .B string
-can be any combination of letters described by option
+は、以下の
 .B \-p
-below.
+オプションの部分で記述されている文字の任意の組み合わせである。
 
-If none of the above methods provide any filter information, a default set
-is used.
+.\"O If none of the above methods provide any filter information, a default set
+.\"O is used.
+上記のいずれの手法も用いられず、フィルタの情報が与えられなかった場合は、
+デフォルトのセットが用いられる。
 
-A formatting pipeline is formed from the filters and the primary
-formatter
+.\"O A formatting pipeline is formed from the filters and the primary
+.\"O formatter
+.\"O .RB ( nroff
+.\"O or
+.\"O .RB [ tg ] roff
+.\"O with
+.\"O .BR \-t )
+.\"O and executed.
+整形プロセスのパイプラインは、フィルタ群と基本整形プログラム
 .RB ( nroff
-or
+または
 .RB [ tg ] roff
-with
-.BR \-t )
-and executed.
-Alternatively, if an executable program
++ オプション
+.B \-t)
+によって構成され、これが実行される。
+.\"O Alternatively, if an executable program
+.\"O .I mandb_nfmt
+.\"O (or
+.\"O .I mandb_tfmt
+.\"O with
+.\"O .BR \-t )
+.\"O exists in the man tree root, it is executed instead.
+あるいは、実行可能なプログラム
 .I mandb_nfmt
-(or
+(または
 .I mandb_tfmt
-with
-.BR \-t )
-exists in the man tree root, it is executed instead.
-It gets passed the manual source file, the preprocessor string, and
-optionally the device specified with
-.BR \-T " or " \-E
-as arguments.
+と
+.B \-t
+オプション) が man 階層ツリーのルートにある場合は、これが代わりに実行される。
+.\"O It gets passed the manual source file, the preprocessor string, and
+.\"O optionally the device specified with
+.\"O .BR \-T " or " \-E
+.\"O as arguments.
+このプログラムはマニュアルのソースファイルとプリプロセッサ文字列とを
+引き数に取る。省略可能であるが
+.B \-T
+によるデバイス指定を行うこともできる。
 .\" ********************************************************************
-.SH OPTIONS
+.\"O .SH OPTIONS
+.SH オプション
 Non-argument options that are duplicated either on the command line, in
 .RB $ MANOPT ,
 or both, are not harmful.
