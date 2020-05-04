@@ -632,69 +632,118 @@ To contain a valid preprocessor string, the first line must resemble
 .\" ********************************************************************
 .\"O .SH OPTIONS
 .SH オプション
-Non-argument options that are duplicated either on the command line, in
-.RB $ MANOPT ,
-or both, are not harmful.
-For options that require an argument, each duplication will override the
-previous argument value.
-.SS "General options"
+.\"O Non-argument options that are duplicated either on the command line, in
+.\"O .RB $ MANOPT ,
+.\"O or both, are not harmful.
+引き数を取らないオプションは、コマンドラインでも
+.RB $ MANOPT
+環境変数ででも、重ねて指定してかまわない。
+.\"O For options that require an argument, each duplication will override the
+.\"O previous argument value.
+引き数をとるオプションが重なった場合は、
+後から指定されたものが優先される。
+.\"O .SS "General options"
+.SS 一般的なオプション
 .TP
 .BI \-C\  file \fR,\ \fB\-\-config\-file= file
-Use this user configuration file rather than the default of
-.IR ~/.manpath .
+.\"O Use this user configuration file rather than the default of
+.\"O .IR ~/.manpath .
+デフォルトの
+.I ~/.manpath
+ではなく、ユーザ設定ファイルを使用する。
 .TP
 .BR \-d ", " \-\-debug
-Print debugging information.
+.\"O Print debugging information.
+デバッグ情報を表示する。
 .TP
 .BR \-D ", " \-\-default
-This option is normally issued as the very first option and resets
-.B man's
-behaviour to its default.
-Its use is to reset those options that may have been set in
-.RB $ MANOPT .
-Any options that follow
+.\"O This option is normally issued as the very first option and resets
+.\"O .B man's
+.\"O behaviour to its default.
+このオプションは、通常先頭に指定して、
+.B man
+のふるまいをデフォルトにリセットする。
+.\"O Its use is to reset those options that may have been set in
+.\"O .RB $ MANOPT .
+このオプションの目的は、
+.RB $ MANOPT
+で指定されているかもしれないオプションをリセットすることである。
+.\"O Any options that follow
+.\"O .B \-D
+.\"O will have their usual effect.
+この
 .B \-D
-will have their usual effect.
+以降に指定されたオプションは、通常通りの効果を持つ。
 .TP
 \fB\-\-warnings\fP[=\fIwarnings\/\fP]
-Enable warnings from
-.IR groff .
-This may be used to perform sanity checks on the source text of manual
-pages.
+.\"O Enable warnings from
+.\"O .IR groff .
+.I groff
+からの警告を有効にする。
+.\"O This may be used to perform sanity checks on the source text of manual
+.\"O pages.
+このオプションはマニュアルページのソースコードの整合性チェックを
+行うために使用される。
+.\"O .I warnings
+.\"O is a comma-separated list of warning names; if it is not supplied, the
+.\"O default is "mac".
 .I warnings
-is a comma-separated list of warning names; if it is not supplied, the
-default is "mac".
-See the \(lqWarnings\(rq node in
+はコンマ区切りの警告名のリストである。
+指定されてない場合、デフォルトは "mac" である。
+.\"O See the \(lqWarnings\(rq node in
+.\"O .B info groff
+.\"O for a list of available warning names.
+使用可能な警告名は
 .B info groff
-for a list of available warning names.
-.SS "Main modes of operation"
+の \(lqWarnings\(rq ノードを参照すること。
+.\"O .SS "Main modes of operation"
+.SS 操作のメインモード
 .TP
 .BR \-f ", " \-\-whatis
-Equivalent to
-.BR whatis .
-Display a short description from the manual page, if available.
-See
+.\"O Equivalent to
+.\"O .BR whatis .
+.B whatis
+と等価。
+.\"O Display a short description from the manual page, if available.
+可能であれば、マニュアルページの要約を表示する。
+.\"O See
+.\"O .BR whatis (1)
+.\"O for details.
+詳細は
 .BR whatis (1)
-for details.
+を見よ。
 .TP
 .BR \-k ", " \-\-apropos
-Equivalent to
-.BR apropos .
-Search the short manual page descriptions for keywords and display any
-matches.
-See
+.\"O Equivalent to
+.\"O .BR apropos .
+.B apropos
+と等価。
+.\"O Search the short manual page descriptions for keywords and display any
+.\"O matches.
+マニュアルページの要約文からキーワードを検索し、
+マッチしたものをすべて表示する。
+.\"O See
+.\"O .BR apropos (1)
+.\"O for details.
+詳細は
 .BR apropos (1)
-for details.
+を見よ。
 .TP
 .BR \-K ", " \-\-global\-apropos
-Search for text in all manual pages.
-This is a brute-force search, and is likely to take some time; if you can,
-you should specify a section to reduce the number of pages that need to be
-searched.
-Search terms may be simple strings (the default), or regular expressions if
-the
+.\"O Search for text in all manual pages.
+.\"O This is a brute-force search, and is likely to take some time; if you can,
+.\"O you should specify a section to reduce the number of pages that need to be
+.\"O searched.
+.\"O Search terms may be simple strings (the default), or regular expressions if
+.\"O the
+.\"O .B \-\-regex
+.\"O option is used.
+すべてのマニュアルページのテキストを検索する。
+全数検索を行うため、長い時間がかかる。
+検索するページ数を減らすために、可能であればセクションを指定するべきである。
+検索する語はデフォルトでは単純な文字列である。
 .B \-\-regex
-option is used.
+オプションを指定した場合は正規表現になる。
 .IP
 Note that this searches the
 .I sources
@@ -703,24 +752,37 @@ positives due to things like comments in source files.
 Searching the rendered text would be much slower.
 .TP
 .BR \-l ", " \-\-local\-file
-Activate "local" mode.
-Format and display local manual files instead of searching through the
-system's manual collection.
-Each manual page argument will be interpreted as an nroff source file in the
-correct format.
-.\" Compressed nroff source files with a supported compression
-.\" extension will be decompressed by man prior to being displaying via the
-.\" usual filters.
-No cat file is produced.
-If '\-' is listed as one of the arguments, input will be taken from stdin.
+.\"O Activate "local" mode.
+"local" モードを有効にする。
+.\"O Format and display local manual files instead of searching through the
+.\"O system's manual collection.
+システムのマニュアルを検索する代わりに、ローカルなマニュアル
+ファイルを整形して表示する。
+.\"O Each manual page argument will be interpreted as an nroff source file in the
+.\"O correct format.
+マニュアルページの引き数は、正しいフォーマットを持った
+nroff のソースファイルであるとみなされる。
+.\"O .\" Compressed nroff source files with a supported compression
+.\"O .\" extension will be decompressed by man prior to being displaying via the
+.\"O .\" usual filters.
+.\" nroff ソースが圧縮されている場合は、圧縮を示す拡張子が
+.\" .B man
+.\" システムによってサポートされていれば、展開されてから処理・表示される。
+.\"O No cat file is produced.
+.\"O If '\-' is listed as one of the arguments, input will be taken from stdin.
+cat ファイルは生成されない。
+`\-' が引き数に指定された場合は、標準入力から入力が与えられると
+みなされる。
 When this option is not used, and man fails to find the page required,
 before displaying the error message, it attempts to act as if this
 option was supplied, using the name as a filename and looking for an
 exact match.
 .TP
 .BR \-w ", " \-\-where ", " \-\-path ", " \-\-location
-Don't actually display the manual page, but do print the location of the
-source nroff file that would be formatted.
+.\"O Don't actually display the manual page, but do print the location of the
+.\"O source nroff file that would be formatted.
+実際にはマニュアルページを表示せず、整形・表示されることになるファイル
+の位置を表示する。
 If the
 .B \-a
 option is also used, then print the locations of all source files that match
@@ -749,77 +811,136 @@ and
 are used, then do this for each possible match.
 .TP
 .BR \-c ", " \-\-catman
-This option is not for general use and should only be used by the
+.\"O This option is not for general use and should only be used by the
+.\"O .B catman
+.\"O program.
+このオプションは一般的な用途のためのものではなく、
 .B catman
-program.
+プログラムを通してのみ用いるべきである。
 .TP
 .BI \-R\  encoding\fR,\ \fI \-\-recode\fR=\fIencoding
-Instead of formatting the manual page in the usual way, output its source
-converted to the specified
-.IR encoding .
-If you already know the encoding of the source file, you can also use
+.\"O Instead of formatting the manual page in the usual way, output its source
+.\"O converted to the specified
+.\"O .IR encoding .
+マニュアルページを通常の方法で整形する代わりに、
+.I encoding
+で指定したエンコーディングに変換して出力する。
+.\"O If you already know the encoding of the source file, you can also use
+.\"O .BR manconv (1)
+.\"O directly.
+ソースファイルのエンコーディングを知っている場合は、
 .BR manconv (1)
-directly.
-However, this option allows you to convert several manual pages to a single
-encoding without having to explicitly state the encoding of each, provided
-that they were already installed in a structure similar to a manual page
-hierarchy.
+を直接使用することもできる。
+.\"O However, this option allows you to convert several manual pages to a single
+.\"O encoding without having to explicitly state the encoding of each, provided
+.\"O that they were already installed in a structure similar to a manual page
+.\"O hierarchy.
+しかし、このオプションにより、マニュアルページ階層と同様の構造で
+インストールされた形で提供されている、複数のマニュアルページの
+エンコーディングを明示的に意識することなく単一のエンコーディングに
+変換して出力できる。
 .IP
 Consider using
 .BR man-recode (1)
 instead for converting multiple manual pages, since it has an interface
 designed for bulk conversion and so can be much faster.
-.SS "Finding manual pages"
+.\"O .SS "Finding manual pages"
+.SS マニュアルページの検索方法
 .TP
 .BI \-L\  locale \fR,\ \fB\-\-locale= locale
+.\"O .B man
+.\"O will normally determine your current locale by a call to the C function
+.\"O .BR setlocale (3)
+.\"O which interrogates various environment variables, possibly including
+.\"O .RB $ LC_MESSAGES
+.\"O and
+.\"O .RB $ LANG .
 .B man
-will normally determine your current locale by a call to the C function
+は通常、カレント・ロケールを C 関数
 .BR setlocale (3)
-which interrogates various environment variables, possibly including
+を呼ぶことによって決定しようとする。この関数の動作は、例えば
 .RB $ LC_MESSAGES
-and
-.RB $ LANG .
-To temporarily override the determined value, use this option to supply a
+や
+.RB $ LANG
+などのような、様々な環境変数によって影響される。
+.\"O To temporarily override the determined value, use this option to supply a
+.\"O .I locale
+.\"O string directly to
+.\"O .BR man .
+この値を一時的に上書きするには、このオプションを使って
+.B man
+に直接
 .I locale
-string directly to
-.BR man .
-Note that it will not take effect until the search for pages actually
-begins.
-Output such as the help message will always be displayed in the initially
-determined locale.
+文字列を渡せば良い。
+.\"O Note that it will not take effect until the search for pages actually
+.\"O begins.
+このオプションが効力を持つのは、実際のページの検索が始まってからである
+ことに注意すること。
+.\"O Output such as the help message will always be displayed in the initially
+.\"O determined locale.
+ヘルプメッセージなどの出力は、起動前に定まっていた
+ロケールで出力される。
 .TP
 \fB\-m\fR \fIsystem\fR\|[\|,.\|.\|.\|]\|, \
 \fB\-\-systems=\fIsystem\fR\|[\|,.\|.\|.\|]
-If this system has access to other operating system's manual pages, they can
-be accessed using this option.
-To search for a manual page from NewOS's manual page collection,
-use the option
+.\"O If this system has access to other operating system's manual pages, they can
+.\"O be accessed using this option.
+現在のシステムから、他のオペレーティングシステムについてのマニュアルに
+アクセスできる場合には、このオプションをつけるとそれらのマニュアルが
+検索される。
+.\"O To search for a manual page from NewOS's manual page collection,
+.\"O use the option
+.\"O .B \-m
+.\"O .BR NewOS .
+NewOS のマニュアルページを検索する場合には、
 .B \-m
-.BR NewOS .
+.B NewOS
+のようなオプションを指定する。
 
-The
+.\"O The
+.\"O .I system
+.\"O specified can be a combination of comma delimited operating system names.
 .I system
-specified can be a combination of comma delimited operating system names.
-To include a search of the native operating system's manual pages,
-include the system name
+には複数のオペレーティングシステムをコンマで区切った形式で指定できる。
+.\"O To include a search of the native operating system's manual pages,
+.\"O include the system name
+.\"O .B man
+.\"O in the argument string.
+ネイティブのオペレーティングシステムの
+.B whatis
+記述を検索の対象に含めるためには、システム名
 .B man
-in the argument string.
-This option will override the
+を引き数文字列に加える。
+.\"O This option will override the
+.\"O .RB $ SYSTEM
+.\"O environment variable.
+このオプションは
 .RB $ SYSTEM
-environment variable.
+環境変数を上書きする。
 .TP
 .BI \-M\  path \fR,\ \fB\-\-manpath= path
-Specify an alternate manpath to use.
-By default,
+.\"O Specify an alternate manpath to use.
+通常の代わりに用いる manpath を指定する。
+.\"O By default,
+.\"O .B man
+.\"O uses
+.\"O .B manpath
+.\"O derived code to determine the path to search.
+デフォルトでは、
 .B man
-uses
+は検索パスの決定に
 .B manpath
-derived code to determine the path to search.
-This option overrides the
+由来のコードを用いている。
+.\"O This option overrides the
+.\"O .RB $ MANPATH
+.\"O environment variable and causes option
+.\"O .B \-m
+.\"O to be ignored.
+このオプションは、
 .RB $ MANPATH
-environment variable and causes option
+環境変数を上書きする。またこのオプションを指定すると、
 .B \-m
-to be ignored.
+オプションは無視される。
 
 A path specified as a manpath must be the root of a manual page hierarchy
 structured into sections as described in the man-db manual (under "The
@@ -831,57 +952,105 @@ option.
 \fB\-S\fR \fIlist\/\fR, \
 \fB\-s\fR \fIlist\/\fR, \
 \fB\-\-sections=\fIlist\/\fR
-The given
+.\"O The given
+.\"O .I list
+.\"O is a colon- or comma-separated list of sections, used to determine which
+.\"O manual sections to search and in what order.
+引き数
 .I list
-is a colon- or comma-separated list of sections, used to determine which
-manual sections to search and in what order.
-This option overrides the
+には、検索対象とするセクションをコロンまたはコンマ区切りで指定する。
+検索は指定した順序でなされる。
+.\"O This option overrides the
+.\"O .RB $ MANSECT
+.\"O environment variable.
+このオプションは
 .RB $ MANSECT
-environment variable.
+環境変数を上書きする。
 (The
 .B \-s
 spelling is for compatibility with System V.)
 .TP
 .BI \-e\  sub-extension \fR,\ \fB\-\-extension= sub-extension
-Some systems incorporate large packages of manual pages, such as those that
-accompany the
+.\"O Some systems incorporate large packages of manual pages, such as those that
+.\"O accompany the
+.\"O .B Tcl
+.\"O package, into the main manual page hierarchy.
+(例えば
 .B Tcl
-package, into the main manual page hierarchy.
-To get around the problem of having two manual pages with the same name
-such as
-.BR exit (3),
-the
-.B Tcl
-pages were usually all assigned to section
-.BR l .
-As this is unfortunate, it is now possible to put the pages in the correct
-section, and to assign a specific "extension" to them, in this case,
-.BR exit (3tcl).
-Under normal operation,
-.B man
-will display
+などがそうだが)
+システムによっては、大きなマニュアルページのパッケージを、
+メインのマニュアルページ階層にインストールするようなものがある。
+.\"O To get around the problem of having two manual pages with the same name
+.\"O such as
+.\"O .BR exit (3),
+.\"O the
+.\"O .B Tcl
+.\"O pages were usually all assigned to section
+.\"O .BR l .
+同じ名前のページ (例えば
 .BR exit (3)
-in preference to
-.BR exit (3tcl).
-To negotiate this situation and to avoid having to know which section the
-page you require resides in, it is now possible to give
+など) が二つ存在してしまうことを避けるために、通常
+.B Tcl
+のページは
+.B l
+というセクションに割り当てられえいた。
+.\"O As this is unfortunate, it is now possible to put the pages in the correct
+.\"O section, and to assign a specific "extension" to them, in this case,
+.\"O .BR exit (3tcl).
+これは望ましくないので、ページを正しいセクションに入れ、それらに特定の
+「拡張」を追加することができるようになった。
+.\"O Under normal operation,
+.\"O .B man
+.\"O will display
+.\"O .BR exit (3)
+.\"O in preference to
+.\"O .BR exit (3tcl).
+例えばこの場合なら
+.BR exit (3tcl)
+のようになる。
+通常の動作では、
 .B man
-a
+は
+.BR exit (3)
+を
+.BR exit (3tcl)
+より優先して表示する。
+.\"O To negotiate this situation and to avoid having to know which section the
+.\"O page you require resides in, it is now possible to give
+.\"O .B man
+.\"O a
+.\"O .I sub-extension
+.\"O string indicating which package the page must belong to.
+この状況を調整し、目的とするページがどのセクションにあるのかをいちいち
+記憶しておかなくてもすむように、
+.B man
+に
 .I sub-extension
-string indicating which package the page must belong to.
-Using the above example, supplying the option
+文字列を与えることができるようになった。
+.\"O Using the above example, supplying the option
+.\"O .B \-e\ tcl
+.\"O to
+.\"O .B man
+.\"O will restrict the search to pages having an extension of
+.\"O .BR *tcl .
+この文字列は、ページが
+所属するパッケージを指定するものである。上記の例なら、オプションとして
 .B \-e\ tcl
-to
+を
 .B man
-will restrict the search to pages having an extension of
-.BR *tcl .
+に与えれば、検索対象とするページは拡張子が
+.B *tcl
+のものに限られるようになる。
 .TP
 .BR \-i ", " \-\-ignore\-case
-Ignore case when searching for manual pages.
-This is the default.
+.\"O Ignore case when searching for manual pages.
+マニュアルページを検索する時に大文字と小文字の区別をしない。
+.\"O This is the default.
+これはデフォルトの動作である。
 .TP
 .BR \-I ", " \-\-match\-case
-Search for manual pages case-sensitively.
+.\"O Search for manual pages case-sensitively.
+マニュアルページを検索する時に大文字と小文字の区別する。
 .TP
 .B \-\-regex
 Show all pages with any part of either their names or their descriptions
@@ -909,21 +1078,36 @@ searching for a wildcard, this option implies
 .BR \-a .
 .TP
 .B \-\-names\-only
-If the
+.\"O If the
+.\"O .B \-\-regex
+.\"O or
+.\"O .B \-\-wildcard
+.\"O option is used, match only page names, not page descriptions, as with
+.\"O .BR whatis (1).
+.\"O Otherwise, no effect.
 .B \-\-regex
-or
+または
 .B \-\-wildcard
-option is used, match only page names, not page descriptions, as with
-.BR whatis (1).
-Otherwise, no effect.
+オプションと併せて使用した場合、一致処理を要約文に対して行わず、
+ページ名のみに一致処理を行う。
+.BR whatis (1)
+で使用した時も同様である。
+その他の場合は何も効果を及ぼさない。
 .TP
 .BR \-a ", " \-\-all
-By default,
+.\"O By default,
+.\"O .B man
+.\"O will exit after displaying the most suitable manual page it finds.
+デフォルトでは
 .B man
-will exit after displaying the most suitable manual page it finds.
-Using this option forces
+は検索で見つかったページのうち、もっとも適切と判断したものを一つだけ
+表示して終了する。
+.\"O Using this option forces
+.\"O .B man
+.\"O to display all the manual pages with names that match the search criteria.
+このオプションを用いると、
 .B man
-to display all the manual pages with names that match the search criteria.
+は検索でマッチしたすべてのファイルを表示する。
 .TP
 .BR \-u ", " \-\-update
 This option causes
@@ -960,10 +1144,12 @@ option.
 \&  /usr/share/man/man3/Git.3pm.gz
 \&  /usr/share/man/man1/diff.1.gz
 .fi
-.SS "Controlling formatted output"
+.\"O .SS "Controlling formatted output"
+.SS 整形済み出力の制御
 .TP
 .BI \-P\  pager \fR,\ \fB\-\-pager= pager
-Specify which output pager to use.
+.\"O Specify which output pager to use.
+出力に用いるページャーを指定する。
 By default,
 .B man
 uses
@@ -978,56 +1164,102 @@ This option overrides the
 environment variable, which in turn overrides the
 .RB $ PAGER
 environment variable.
-It is not used in conjunction with
+.\"O It is not used in conjunction with
+.\"O .B \-f
+.\"O or
+.\"O .BR \-k .
+このオプションは
 .B \-f
-or
-.BR \-k .
+や
+.B \-k
+と同時に用いることはできない。
 
-The value may be a simple command name or a command with arguments, and may
-use shell quoting (backslashes, single quotes, or double quotes).
-It may not use pipes to connect multiple commands; if you need that, use a
-wrapper script, which may take the file to display either as an argument or
-on standard input.
+.\"O The value may be a simple command name or a command with arguments, and may
+.\"O use shell quoting (backslashes, single quotes, or double quotes).
+この値は、単純なコマンド名か引数付きのコマンドで、シェルのエスケープ文字 
+(バックスラッシュ、シングルクォート、ダブルクォート)
+を使用している場合がある。
+.\"O It may not use pipes to connect multiple commands; if you need that, use a
+.\"O wrapper script, which may take the file to display either as an argument or
+.\"O on standard input.
+パイプを使用して複数のコマンドをつなげることはできない。
+そのような必要性がある場合、表示するファイルを、
+単一の引数または標準入力として受け取るラッパースクリプトを使用する。
 .TP
 .BI \-r\  prompt \fR,\ \fB\-\-prompt= prompt
-If a recent version of
+.\"O If a recent version of
+.\"O .B less
+.\"O is used as the pager,
+.\"O .B man
+.\"O will attempt to set its prompt and some sensible options.
+.\"O The default prompt looks like
+最新版の
 .B less
-is used as the pager,
+がページャーに用いられている場合には、
 .B man
-will attempt to set its prompt and some sensible options.
-The default prompt looks like
+は
+.B less
+のプロンプトやオプションを設定しようとする。
+デフォルトは以下のようなものである。
 
 .B \ Manual page\c
 .IB \ name ( sec )\c
 .BI \ line \ x
 
-where
+.\"O where
+.\"O .I name
+.\"O denotes the manual page name,
+.\"O .I sec
+.\"O denotes the section it was found under and
+.\"O .I x
+.\"O the current line number.
+ここで
 .I name
-denotes the manual page name,
+はマニュアルページの名前、
 .I sec
-denotes the section it was found under and
+はセクション、
 .I x
-the current line number.
-.\"The default options are
-.\".BR \-six8 .
-This is achieved by using the
+は現在の行番号である。
+.\"O .\"The default options are
+.\"O .\".BR \-six8 .
+.\" デフォルトのオプションは
+.\" .B \-six8
+.\" である。
+.\"O This is achieved by using the
+.\"O .RB $ LESS
+.\"O environment variable.
+これは環境変数
 .RB $ LESS
-environment variable.
-.\"The actual default will depend on your chosen
-.\".BR locale .
+を通して設定される。
+.\"O .\"The actual default will depend on your chosen
+.\"O .\".BR locale .
+.\" 実際のデフォルトは
+.\" .B locale
+.\" の選択に依存する。
 
-Supplying
+.\"O Supplying
+.\"O .B \-r
+.\"O with a string will override this default.
 .B \-r
-with a string will override this default.
-.\"You may need to do this if your
-.\"version of
-.\".B less
-.\"rejects the default options or if you prefer a different prompt.
-The string may contain the text
+を文字列とともに指定すると、デフォルトを上書きできる。
+.\"O .\"You may need to do this if your
+.\"O .\"version of
+.\"O .\".B less
+.\"O .\"rejects the default options or if you prefer a different prompt.
+.\" 使用している
+.\" .B less
+.\" がデフォルトのオプションを受け付けなかったり、
+.\" プロンプトを変更したい場合に、このオプションを用いる必要があるだろう。
+.\"O The string may contain the text
+.\"O .B $MAN_PN
+.\"O which will be expanded to the name of the current manual page and its
+.\"O section name surrounded by "(" and ")".
+文字列に
 .B $MAN_PN
-which will be expanded to the name of the current manual page and its
-section name surrounded by "(" and ")".
-The string used to produce the default could be expressed as
+というテキストを入れると、現在のマニュアル名と、セクションを
+"(" と ")" で括ったものとに展開される。
+.\"O The string used to produce the default could be expressed as
+デフォルトの出力となるような文字列は、以下のように表現できる。
 
 .B \e\ Manual\e\ page\e\ \e$MAN_PN\e\ ?ltline\e\ %lt?L/%L.:
 .br
@@ -1035,20 +1267,35 @@ The string used to produce the default could be expressed as
 .br
 .B (press h for help or q to quit)
 
-It is broken into three lines here for the sake of readability only.
-For its meaning see the
+.\"O It is broken into three lines here for the sake of readability only.
+ここで二行に分割されているのは、単に可読性のためである。
+.\"O For its meaning see the
+.\"O .BR less (1)
+.\"O manual page.
+これらの意味に
+関しては
 .BR less (1)
-manual page.
-The prompt string is first evaluated by the shell.
-All double quotes, back-quotes and backslashes in the prompt must be escaped
-by a preceding backslash.
-The prompt string may end in an escaped $ which may be followed by further
-options for less.
-By default
+のマニュアルページを見ること。
+.\"O The prompt string is first evaluated by the shell.
+このプロンプト文字列は、まずシェルによって解釈される。
+.\"O All double quotes, back-quotes and backslashes in the prompt must be escaped
+.\"O by a preceding backslash.
+プロンプト中に存在するダブルクォート、バッククォート、
+バックスラッシュは、すべてバックスラッシュを前置して
+エスケープしなければならない。
+.\"O The prompt string may end in an escaped $ which may be followed by further
+.\"O options for less.
+プロンプト文字列はエスケープされた $ で終わり、これ以降は less に与える追加オプションになる。
+.\"O By default
+.\"O .B man
+.\"O sets the
+.\"O .B \-ix8
+.\"O options.
+デフォルトでは、
 .B man
-sets the
+は
 .B \-ix8
-options.
+をオプションとして指定する。
 
 The
 .RB $ MANLESS
