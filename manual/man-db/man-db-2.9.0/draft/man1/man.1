@@ -1303,30 +1303,55 @@ environment variable described below may be used to set a default prompt
 string if none is supplied on the command line.
 .TP
 .BR \-7 ", " \-\-ascii
-When viewing a pure
+.\"O When viewing a pure
+.\"O .IR ascii (7)
+.\"O manual page on a 7 bit terminal or terminal emulator, some characters may
+.\"O not display correctly when using the
+.\"O .IR latin1 (7)
+.\"O device description with
+.\"O .B GNU
+.\"O .BR nroff .
+純粋な
 .IR ascii (7)
-manual page on a 7 bit terminal or terminal emulator, some characters may
-not display correctly when using the
+コードで記述されたマニュアルページを 7 ビット端末 (や端末エミュレータ)
+で読む場合、
+.B "GNU nroff"
+の
 .IR latin1 (7)
-device description with
-.B GNU
-.BR nroff .
-This option allows pure
+デバイス表示を用いると、文字によっては正しく表示されない可能性がある。
+.\"O This option allows pure
+.\"O .I ascii
+.\"O manual pages to be displayed in
+.\"O .I ascii
+.\"O with the
+.\"O .I latin1
+.\"O device.
+このオプションを用いると、純粋な
 .I ascii
-manual pages to be displayed in
+のマニュアルページを、
+.I latin1
+デバイスでも
 .I ascii
-with the
+で表示することができるようになる。
+.\"O It will not translate any
+.\"O .I latin1
+.\"O text.
+ただしこれは
 .I latin1
-device.
-It will not translate any
-.I latin1
-text.
-The following table shows the translations performed: some parts of it may
-only be displayed properly when using
+テキストを変換するわけではない。
+.\"O The following table shows the translations performed: some parts of it may
+.\"O only be displayed properly when using
+.\"O .B GNU
+.\"O .BR nroff 's
+.\"O .IR latin1 (7)
+.\"O device.
+以下の表は、行われる変換の様子を示すものである。
+これらのうちいくつかは、
 .B GNU
-.BR nroff 's
+.B nroff
+の
 .IR latin1 (7)
-device.
+デバイスを使った場合にのみ正しく表示される。
 
 .ie c \[shc] \
 .  ds softhyphen \[shc]
@@ -1353,198 +1378,362 @@ T}@327@\(mu@x
 .TE
 .ad
 
-If the
+.\"O If the
+.\"O .I latin1
+.\"O column displays correctly, your terminal may be set up for
+.\"O .I latin1
+.\"O characters and this option is not necessary
 .I latin1
-column displays correctly, your terminal may be set up for
+カラムの表示が正しい場合は、あなたが現在使っている端末は
 .I latin1
-characters and this option is not necessary.
-If the
+文字向けに設定されているので、このオプションは必要ない。
+.\"O If the
+.\"O .I latin1
+.\"O and
+.\"O .I ascii
+.\"O columns are identical, you are reading this page using this option or
+.\"O .B man
+.\"O did not format this page using the
+.\"O .I latin1
+.\"O device description.
 .I latin1
-and
+と
 .I ascii
-columns are identical, you are reading this page using this option or
+カラムが同一である場合は、あなたは現在このページをこのオプションで
+見ているか、あるいは
 .B man
-did not format this page using the
+がこのページの整形に
 .I latin1
-device description.
-If the
+デバイスの指定を用いていないことになる。
+.\"O If the
+.\"O .I latin1
+.\"O column is missing or corrupt, you may need to view manual pages with this
+.\"O option.
 .I latin1
-column is missing or corrupt, you may need to view manual pages with this
-option.
+カラムが空であるか、変な表示になっている場合は、マニュアルページを見る
+場合にはこのオプションを指定する必要がある。
 
-This option is ignored when using options
+.\"O This option is ignored when using options
+.\"O .BR \-t ,
+.\"O .BR \-H ,
+.\"O .BR \-T ,
+.\"O or
+.\"O .B \-Z
+.\"O and may be useless for
+.\"O .B nroff
+.\"O other than
+.\"O .BR GNU's .
+このオプションは
 .BR \-t ,
 .BR \-H ,
 .BR \-T ,
-or
 .B \-Z
-and may be useless for
+オプションを用いている場合は無視される。
+また
+.B GNU
+以外の
 .B nroff
-other than
-.BR GNU's .
+を用いている場合も、おそらく指定する意味はない。
 .TP
 .BI \-E\  encoding\fR,\ \fI \-\-encoding\fR=\fIencoding
-Generate output for a character encoding other than the default.
-For backward compatibility,
+.\"O Generate output for a character encoding other than the default.
+デフォルト以外の文字エンコーディングで出力を生成する。
+.\"O For backward compatibility,
+.\"O .I encoding
+.\"O may be an
+.\"O .B nroff
+.\"O device such as
+.\"O .BR ascii ", " latin1 ", or " utf8
+.\"O as well as a true character encoding such as
+.\"O .BR UTF\-8 .
+過去の互換性のために、
 .I encoding
-may be an
+には、
+.B UTF\-8
+のような実際のエンコーディングに加えて 
+.BR ascii ", " latin1 ", " utf8
+のような
 .B nroff
-device such as
-.BR ascii ", " latin1 ", or " utf8
-as well as a true character encoding such as
-.BR UTF\-8 .
+デバイス設定も使用できる。
 .TP
 .BR \-\-no\-hyphenation ", " \-\-nh
-Normally,
+.\"O Normally,
+.\"O .B nroff
+.\"O will automatically hyphenate text at line breaks even in words that do not
+.\"O contain hyphens, if it is necessary to do so to lay out words on a line
+.\"O without excessive spacing.
+通常、
 .B nroff
-will automatically hyphenate text at line breaks even in words that do not
-contain hyphens, if it is necessary to do so to lay out words on a line
-without excessive spacing.
-This option disables automatic hyphenation, so words will only be hyphenated
-if they already contain hyphens.
+は、単語内にハイフンが無かったとしても、改行部分でテキストに
+自動的にハイフンを付加する。
+これにより、行内の単語間に過剰なスペースが配置されることを防ぐ。
+.\"O This option disables automatic hyphenation, so words will only be hyphenated
+.\"O if they already contain hyphens.
+このオプションは自動的なハイフン付加を無効にする。
+よって、ハイフンが含まれている単語のみハイフン区切りが行われる。
 
-If you are writing a manual page and simply want to prevent
+.\"O If you are writing a manual page and simply want to prevent
+.\"O .B nroff
+.\"O from hyphenating a word at an inappropriate point, do not use this option,
+.\"O but consult the
+.\"O .B nroff
+.\"O documentation instead; for instance, you can put "\e%" inside a word to
+.\"O indicate that it may be hyphenated at that point, or put "\e%" at the start
+.\"O of a word to prevent it from being hyphenated.
+マニュアルページを書いていて、
 .B nroff
-from hyphenating a word at an inappropriate point, do not use this option,
-but consult the
+が単語内の誤った場所にハイフンを付加するのを防止したい場合、
+このオプションを使用してはいけない。
+代わりに
 .B nroff
-documentation instead; for instance, you can put "\e%" inside a word to
-indicate that it may be hyphenated at that point, or put "\e%" at the start
-of a word to prevent it from being hyphenated.
+の文書を参照すること。
+例えば、"\e%" を単語内に含めると、その場所にハイフンを付加することが可能である
+ことを示す。
+また、"\e%" を単語の最初に付加すると、その単語にはハイフンは付加されない。
 .TP
 .BR \-\-no\-justification ", " \-\-nj
-Normally,
+.\"O Normally,
+.\"O .B nroff
+.\"O will automatically justify text to both margins.
+通常、
 .B nroff
-will automatically justify text to both margins.
-This option disables full justification, leaving justified only to the left
-margin, sometimes called "ragged-right" text.
+は自動的に左右余白に対してテキストを均等に割り付ける。
+.\"O This option disables full justification, leaving justified only to the left
+.\"O margin, sometimes called "ragged-right" text.
+このオプションは左右余白の均等割り付けを抑止し、左側余白のみ整列する。
+これは "ragged-right" text と呼ばれる。
 
-If you are writing a manual page and simply want to prevent
+.\"O If you are writing a manual page and simply want to prevent
+.\"O .B nroff
+.\"O from justifying certain paragraphs, do not use this option, but consult the
+.\"O .B nroff
+.\"O documentation instead; for instance, you can use the ".na", ".nf", ".fi",
+.\"O and ".ad" requests to temporarily disable adjusting and filling.
+マニュアルページを書いていて、
 .B nroff
-from justifying certain paragraphs, do not use this option, but consult the
+がある段落に対して均等割り付けを行うのを防止したい場合、
+このオプションを使用してはいけない。
+代わりに
 .B nroff
-documentation instead; for instance, you can use the ".na", ".nf", ".fi",
-and ".ad" requests to temporarily disable adjusting and filling.
+の文書を参照すること。
+例えば  ".na", ".nf", ".fi", ".ad" を使用すると、
+一時的に字間調整や字詰めを無効にするように要求できる。
 .TP
 .BI \-p\  string \fR,\ \fB\-\-preprocessor= string
-Specify the sequence of preprocessors to run before
+.\"O Specify the sequence of preprocessors to run before
+.\"O .B nroff
+.\"O or
+.\"O .BR troff / groff .
+.\"O Not all installations will have a full set of preprocessors.
 .B nroff
-or
-.BR troff / groff .
-Not all installations will have a full set of preprocessors.
-Some of the preprocessors and the letters used to designate them are:
+または
+.BR troff / groff
+の前に実行するプリプロセッサのシーケンスを指定する。
+.\"O Some of the preprocessors and the letters used to designate them are:
+.\"O .BR eqn " (" e ),
+.\"O .BR grap " (" g ),
+.\"O .BR pic " (" p ),
+.\"O .BR tbl " (" t ),
+.\"O .BR vgrind " (" v ),
+.\"O .BR refer " (" r ).
+すべてのインストール環境で、以下すべてのプリプロセッサが使える
+わけではない。
+プリプロセッサと、それを指定する文字のいくつかを以下に挙げる。
 .BR eqn " (" e ),
 .BR grap " (" g ),
 .BR pic " (" p ),
 .BR tbl " (" t ),
 .BR vgrind " (" v ),
 .BR refer " (" r ).
-This option overrides the
+.\"O This option overrides the
+.\"O .RB $ MANROFFSEQ
+.\"O environment variable.
+このオプションは
 .RB $ MANROFFSEQ
-environment variable.
+環境変数を上書きする。
+.\"O .B zsoelim
+.\"O is always run as the very first preprocessor.
 .B zsoelim
-is always run as the very first preprocessor.
+は、常に他のプリプロセッサすべてに先立って実行される。
 .TP
 .BR \-t ", " \-\-troff
-Use
+.\"O Use
+.\"O .I groff \-mandoc
+.\"O to format the manual page to stdout.
+マニュアルページの整形と、標準出力への表示に
 .I groff \-mandoc
-to format the manual page to stdout.
-This option is not required in conjunction with
+を用いる。
+.\"O This option is not required in conjunction with
+.\"O .BR \-H ,
+.\"O .BR \-T ,
+.\"O or
+.\"O .BR \-Z .
 .BR \-H ,
 .BR \-T ,
-or
-.BR \-Z .
+.B \-Z
+オプションの指定時に、このオプションを指定する必要はない。
 .TP
 \fB\-T\fP[\fIdevice\/\fP], \fB\-\-troff\-device\fP[=\fIdevice\/\fP]
-This option is used to change
+.\"O This option is used to change
+.\"O .B groff
+.\"O (or possibly
+.\"O .BR troff's )
+.\"O output to be suitable for a device other than the default.
+このオプションは
 .B groff
-(or possibly
-.BR troff's )
-output to be suitable for a device other than the default.
-It implies
-.BR \-t .
-Examples (provided with Groff-1.17) include
+(あるいは他の
+.BR troff )
+の出力を、デフォルトから用いるデバイスにあわせて変更するために
+用いられる。
+.\"O It implies
+.\"O .BR \-t .
+.B \-t
+が暗黙のうちに指定される。
+.\"O Examples (provided with Groff-1.17) include
+.\"O .BR dvi ", " latin1 ", " ps ", " utf8 ,
+.\"O .BR X75 " and " X100 .
+例としては (Groff-1.17 でのもの)、
 .BR dvi ", " latin1 ", " ps ", " utf8 ,
-.BR X75 " and " X100 .
+.BR X75 ", " X100
+などが挙げられる。
 .TP
 \fB\-H\fP[\fIbrowser\/\fP], \fB\-\-html\fP[=\fIbrowser\/\fP]
-This option will cause
+.\"O This option will cause
+.\"O .B groff
+.\"O to produce HTML output, and will display that output in a web browser.
+このオプションを指定した場合、
 .B groff
-to produce HTML output, and will display that output in a web browser.
-The choice of browser is determined by the optional
+は HTML 出力を生成し、その出力をウェブブラウザーで表示する。
+.\"O The choice of browser is determined by the optional
+.\"O .I browser
+.\"O argument if one is provided, by the
+.\"O .RB $ BROWSER
+.\"O environment variable, or by a compile-time default if that is unset (usually
+.\"O .BR lynx ).
+ブラウザーはオプション引数の
 .I browser
-argument if one is provided, by the
+(指定されている場合)、
 .RB $ BROWSER
-environment variable, or by a compile-time default if that is unset (usually
-.BR lynx ).
-This option implies
-.BR \-t ,
-and will only work with
-.B GNU
-.BR troff .
+環境変数が使用される。
+それらが設定されていない場合はコンパイル時のデフォルト (通常は
+.BR lynx )
+が使用される。
+.\"O This option implies
+.\"O .BR \-t ,
+.\"O and will only work with
+.\"O .B GNU
+.\"O .BR troff .
+.B \-t
+が暗黙のうちに指定される。
+そして、
+.B "GNU troff"
+を使用している時のみ有効である。
 .TP
 \fB\-X\fP[\fIdpi\/\fP], \fB\-\-gxditview\fP[=\fIdpi\/\fP]
-This option displays the output of
-.B groff
-in a graphical window using the
+.\"O This option displays the output of
+.\"O .B groff
+.\"O in a graphical window using the
+.\"O .B gxditview
+.\"O program.
+このオプションを指定した場合、
 .B gxditview
-program.
-The
+プログラムを使用して、
+.B groff
+の出力をグラフィカルウィンドウに表示する。
+.\"O The
+.\"O .I dpi
+.\"O (dots per inch) may be 75, 75-12, 100, or 100-12, defaulting to 75;
+.\"O the -12 variants use a 12-point base font.
+(ドット/インチ) は 75, 75-12, 100, 100-12 であり、
+デフォルトは  75 である。
+-12 では 12 ポイントのフォントを使用する。
+.\"O This option implies
+.\"O .B \-T
+.\"O with the X75, X75-12, X100, or X100-12 device respectively.
 .I dpi
-(dots per inch) may be 75, 75-12, 100, or 100-12, defaulting to 75;
-the -12 variants use a 12-point base font.
-This option implies
+このオプションにより
 .B \-T
-with the X75, X75-12, X100, or X100-12 device respectively.
+オプションと、その引数としてそれぞれ
+X75, X75-12, X100, X100-12
+デバイス設定が暗黙のうちに指定される。
 .TP
 .BR \-Z ", " \-\-ditroff
+.\"O .B groff
+.\"O will run
+.\"O .B troff
+.\"O and then use an appropriate post-processor to produce output suitable for
+.\"O the chosen device.
 .B groff
-will run
+は
 .B troff
-and then use an appropriate post-processor to produce output suitable for
-the chosen device.
-If
+を実行し、その後適切なポストプロセッサを用いて選択したデバイスに応じた
+出力を生成する。
+.\"O If
+.\"O .I groff \-mandoc
+.\"O is
+.\"O .BR groff ,
+.\"O this option is passed to
+.\"O .B groff
+.\"O and will suppress the use of a post-processor.
+もし
 .I groff \-mandoc
-is
-.BR groff ,
-this option is passed to
+が
 .B groff
-and will suppress the use of a post-processor.
-It implies
-.BR \-t .
-.SS "Getting help"
+であるならば、このオプションは
+.B groff
+に渡されて、ポストプロセッサの利用を抑制する。
+.\"O It implies
+.\"O .BR \-t .
+.B \-t
+が暗黙のうちに指定される。
+.\"O .SS "Getting help"
+.SS ヘルプの取得
 .TP
 .BR \-? ", " \-\-help
-Print a help message and exit.
+.\"O Print a help message and exit.
+ヘルプメッセージを表示して、終了する。
 .TP
 .B \-\-usage
-Print a short usage message and exit.
+.\"O Print a short usage message and exit.
+簡単な使用法のメッセージを表示して、終了する。
 .TP
 .BR \-V ", " \-\-version
-Display version information.
-.SH "EXIT STATUS"
+.\"O Display version information.
+バージョン情報を表示する。
+.\"O .SH "EXIT STATUS"
+.SH 返り値
 .TP
 .B 0
-Successful program execution.
+.\"O Successful program execution.
+プログラムの実行に成功した。
 .TP
 .B 1
-Usage, syntax or configuration file error.
+.\"O Usage, syntax or configuration file error.
+使用法、文法、設定ファイルのいずれかにエラーがある。
 .TP
 .B 2
-Operational error.
+.\"O Operational error.
+実行時エラー。
 .TP
 .B 3
-A child process returned a non-zero exit status.
+.\"O A child process returned a non-zero exit status.
+子プロセスの返り値が非ゼロだった。
 .TP
 .B 16
-At least one of the pages/files/keywords didn't exist or wasn't matched.
-.SH ENVIRONMENT
+.\"O At least one of the pages/files/keywords didn't exist or wasn't matched.
+少なくとも、ページ、ファイル、キーワードのどれか一つが存在しないか、
+マッチしなかった。
+.\"O .SH ENVIRONMENT
+.SH 環境変数
 .\".TP \w'MANROFFSEQ\ \ 'u
 .TP
 .B MANPATH
-If
+.\"O If
+.\"O .RB $ MANPATH
+.\"O is set, its value is used as the path to search for manual pages.
 .RB $ MANPATH
-is set, its value is used as the path to search for manual pages.
+が設定されている場合には、その値がマニュアルページの検索パスとして
+用いられる。
 .TP
 .B MANROFFOPT
 Every time
@@ -1559,17 +1748,24 @@ it adds the contents of
 to the formatter's command line.
 .TP
 .B MANROFFSEQ
-If
+.\"O If
+.\"O .RB $ MANROFFSEQ
+.\"O is set, its value is used to determine the set of preprocessors to pass
+.\"O each manual page through.
 .RB $ MANROFFSEQ
-is set, its value is used to determine the set of preprocessors to pass
-each manual page through.
-The default preprocessor list is system dependent.
+が設定されている場合には、その値は各々のマニュアルページを処理する
+プリプロセッサのセットを定義する。
+.\"O The default preprocessor list is system dependent.
+デフォルトのプリプロセッサのセットはシステムによって異なる。
 .TP
 .B MANSECT
-If
+.\"O If
+.\"O .RB $ MANSECT
+.\"O is set, its value is a colon-delimited list of sections and it is used to
+.\"O determine which manual sections to search and in what order.
 .RB $ MANSECT
-is set, its value is a colon-delimited list of sections and it is used to
-determine which manual sections to search and in what order.
+が設定されている場合には、その値はセクションのリスト (コロン区切り)
+として扱われ、マニュアルのどのセクションを検索するかを決定する際に用いられる。
 The default is
 "1 1p 8 2 3 3p 3pm 4 5 6 7 9 0p n l p o 1x 2x 3x 4x 5x 6x 7x 8x",
 unless overridden by the
@@ -1578,14 +1774,21 @@ directive in
 .IR /etc/man_db.conf .
 .TP
 .BR MANPAGER , " PAGER"
-If
+.\"O If
+.\"O .RB $ MANPAGER
+.\"O or
+.\"O .RB $ PAGER
+.\"O is set
+.\"O .RB ($ MANPAGER
+.\"O is used in preference), its value is used as the name of the program used to
+.\"O display the manual page.
 .RB $ MANPAGER
-or
+または
 .RB $ PAGER
-is set
+が設定されている場合には、その値がマニュアルページを表示するプログラム
+の名前として用いられる
 .RB ($ MANPAGER
-is used in preference), its value is used as the name of the program used to
-display the manual page.
+が優先して使用される)。
 By default,
 .B less
 is used, falling back to
@@ -1594,11 +1797,17 @@ if
 .B less
 is not found or is not executable.
 
-The value may be a simple command name or a command with arguments, and may
-use shell quoting (backslashes, single quotes, or double quotes).
-It may not use pipes to connect multiple commands; if you need that, use a
-wrapper script, which may take the file to display either as an argument or
-on standard input.
+.\"O The value may be a simple command name or a command with arguments, and may
+.\"O use shell quoting (backslashes, single quotes, or double quotes).
+この値は、単純なコマンド名か引数付きのコマンドで、シェルのエスケープ文字
+(バックスラッシュ、シングルクォート、ダブルクォート)
+を使用している場合がある。
+.\"O It may not use pipes to connect multiple commands; if you need that, use a
+.\"O wrapper script, which may take the file to display either as an argument or
+.\"O on standard input.
+パイプを使用して複数のコマンドをつなげることはできない。
+そのような必要性がある場合、表示するファイルを、単一の引数または
+標準入力として受け取るラッパースクリプトを使用すること。
 .TP
 .B MANLESS
 If
@@ -1620,43 +1829,74 @@ Using the
 option overrides this environment variable.
 .TP
 .B BROWSER
-If
+.\"O If
+.\"O .RB $ BROWSER
+.\"O is set, its value is a colon-delimited list of commands, each of which in
+.\"O turn is used to try to start a web browser for
+.\"O .B man
+.\"O .BR \-\-html .
 .RB $ BROWSER
-is set, its value is a colon-delimited list of commands, each of which in
-turn is used to try to start a web browser for
-.B man
-.BR \-\-html .
-In each command,
+が設定されている場合、この値はコロンで区切られたコマンドのリスト
+として、
+.B "man \-\-html"
+用のウェブブラウザーとして順番に試す。
+.\"O In each command,
+.\"O .I %s
+.\"O is replaced by a filename containing the HTML output from
+.\"O .BR groff ,
+.\"O .I %%
+.\"O is replaced by a single percent sign (%), and
+.\"O .I %c
+.\"O is replaced by a colon (:).
+それぞれのコマンドでは、
 .I %s
-is replaced by a filename containing the HTML output from
-.BR groff ,
+は
+.B groff
+の出力を保存したファイル名に、
 .I %%
-is replaced by a single percent sign (%), and
+は単一のパーセント記号 (%) に、
 .I %c
-is replaced by a colon (:).
+はコロン (:) にそれぞれ置換される。
 .TP
 .B SYSTEM
-If
+.\"O If
+.\"O .RB $ SYSTEM
+.\"O is set, it will have the same effect as if it had been specified as the
+.\"O argument to the
+.\"O .B \-m
+.\"O option.
 .RB $ SYSTEM
-is set, it will have the same effect as if it had been specified as the
-argument to the
+環境変数が設定されている場合には、
 .B \-m
-option.
+オプションに指定された場合と同じ効果を持つ。 
 .TP
 .B MANOPT
-If
+.\"O If
+.\"O .RB $ MANOPT
+.\"O is set, it will be parsed prior to
+.\"O .B man's
+.\"O command line and is expected to be in a similar format.
 .RB $ MANOPT
-is set, it will be parsed prior to
-.B man's
-command line and is expected to be in a similar format.
-As all of the other
+が設定されている場合には、その内容が
 .B man
-specific environment variables can be expressed as command line options, and
-are thus candidates for being included in
+のコマンドラインに先立って解釈される。
+形式はコマンドラインのものと同じである。
+.\"O As all of the other
+.\"O .B man
+.\"O specific environment variables can be expressed as command line options, and
+.\"O are thus candidates for being included in
+.\"O .RB $ MANOPT
+.\"O it is expected that they will become obsolete.
+.B man
+に影響する他のすべての環境変数には、同じ効果を持つコマンドライン
+オプションが存在し、したがって
 .RB $ MANOPT
-it is expected that they will become obsolete.
-N.B.  All spaces that should be interpreted as part of an option's argument
-must be escaped.
+に記述することができるので、これらの環境変数はいずれ使用されなく
+なるだろう。
+.\"O N.B.  All spaces that should be interpreted as part of an option's argument
+.\"O must be escaped.
+オプションの引き数の一部として解釈させたいすべてのスペースは、
+エスケープする必要があることに注意すること。
 .TP
 .B MANWIDTH
 If
@@ -1673,15 +1913,24 @@ Cat pages will only be saved when the default formatting can be used, that
 is when the terminal line length is between 66 and 80 characters.
 .TP
 .B MAN_KEEP_FORMATTING
-Normally, when output is not being directed to a terminal (such as to a file
-or a pipe), formatting characters are discarded to make it easier to read
-the result without special tools.
-However, if
+.\"O Normally, when output is not being directed to a terminal (such as to a file
+.\"O or a pipe), formatting characters are discarded to make it easier to read
+.\"O the result without special tools.
+通常、端末以外 (ファイルやパイプなど) に出力する場合、
+特別なツールが使用しなくても結果を読みやすくするために書式文字は
+破棄される。
+.\"O However, if
+.\"O .RB $ MAN_KEEP_FORMATTING
+.\"O is set to any non-empty value, these formatting characters are retained.
+しかし、
 .RB $ MAN_KEEP_FORMATTING
-is set to any non-empty value, these formatting characters are retained.
-This may be useful for wrappers around
+を空以外に設定した場合、書式文字が残される。
+.\"O This may be useful for wrappers around
+.\"O .B man
+.\"O that can interpret formatting characters.
+これにより
 .B man
-that can interpret formatting characters.
+と併せて使用するラッパーに書式文字を解釈させることができる。
 .TP
 .B MAN_KEEP_STDERR
 Normally, when output is being directed to a terminal (usually to a pager),
