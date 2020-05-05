@@ -14,6 +14,8 @@
 .\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
 .\" Translated Fri 25 Sep 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
 .\" Modified Sun 6 Dec 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Tue May  5 22:21:04 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .\"WORD:        hierarchy       階層
 .\"WORD:        (short) description     要約(文)
@@ -599,7 +601,7 @@ T}
 を参照すること)。
 
 .\"O The filters are deciphered by a number of means.
-フィルターは複数の手段で読み込まれる。
+フィルタは複数の手段で読み込まれる。
 .\"O Firstly, the command line option
 .\"O .B \-p
 .\"O or the environment variable
@@ -618,11 +620,10 @@ T}
 が使用されておらず、環境変数が設定されていない場合、
 nroff ファイルの最初の行を、プリプロセッサ文字列として解釈する。
 .\"O To contain a valid preprocessor string, the first line must resemble
-有効なプリプロセッサ文字列とするには、最初の行は以下のようでなければ
-ならない。
+プリプロセッサ文字列として有効なものであるためには、先頭行は以下のような
+ものでなければならない。
 
-.\"O .B '\e"
-.B '\"
+.B '\e"
 .RB < string >
 
 .\"O where
@@ -689,8 +690,7 @@ nroff ファイルの最初の行を、プリプロセッサ文字列として�
 環境変数ででも、重ねて指定してかまわない。
 .\"O For options that require an argument, each duplication will override the
 .\"O previous argument value.
-引き数をとるオプションが重なった場合は、
-後から指定されたものが優先される。
+引き数をとるオプションが重なった場合は、後から指定されたものが優先される。
 .\"O .SS "General options"
 .SS 一般的なオプション
 .TP
@@ -699,7 +699,7 @@ nroff ファイルの最初の行を、プリプロセッサ文字列として�
 .\"O .IR ~/.manpath .
 デフォルトの
 .I ~/.manpath
-ではなく、ユーザ設定ファイルを使用する。
+ではなく、ユーザー設定ファイルを使用する。
 .TP
 .BR \-d ", " \-\-debug
 .\"O Print debugging information.
@@ -711,7 +711,7 @@ nroff ファイルの最初の行を、プリプロセッサ文字列として�
 .\"O behaviour to its default.
 このオプションは、通常先頭に指定して、
 .B man
-のふるまいをデフォルトにリセットする。
+の振る舞いをデフォルトにリセットする。
 .\"O Its use is to reset those options that may have been set in
 .\"O .RB $ MANOPT .
 このオプションの目的は、
@@ -1024,12 +1024,18 @@ NewOS のマニュアルページを検索する場合には、
 .B \-m
 オプションは無視される。
 
-A path specified as a manpath must be the root of a manual page hierarchy
-structured into sections as described in the man-db manual (under "The
-manual page system").
-To view manual pages outside such hierarchies, see the
+.\"O A path specified as a manpath must be the root of a manual page hierarchy
+.\"O structured into sections as described in the man-db manual (under "The
+.\"O manual page system").
+manpath に指定されるパスは、マニュアルページ階層のルートの必要がある。
+この階層は man-db のマニュアル (の「マニュアルページの体系」) で説明されている
+セクションに構造化される。
+.\"O To view manual pages outside such hierarchies, see the
+.\"O .B \-l
+.\"O option.
+この階層構造の外にあるマニュアルページを見る場合は、
 .B \-l
-option.
+オプションを参照すること。
 .TP
 \fB\-S\fR \fIlist\/\fR, \
 \fB\-s\fR \fIlist\/\fR, \
@@ -1040,7 +1046,7 @@ option.
 .\"O manual sections to search and in what order.
 引き数
 .I list
-には、検索対象とするセクションをコロンまたはコンマ区切りで指定する。
+には、検索対象とするセクションをコロンかコンマ区切りで指定する。
 検索は指定した順序でなされる。
 .\"O This option overrides the
 .\"O .RB $ MANSECT
@@ -1048,9 +1054,11 @@ option.
 このオプションは
 .RB $ MANSECT
 環境変数を上書きする。
-(The
-.B \-s
-spelling is for compatibility with System V.)
+.\"O (The
+.\"O .B \-s
+.\"O spelling is for compatibility with System V.)
+.RB ( \-s
+の綴りは、System V との互換性を表す。)
 .TP
 .BI \-e\  sub-extension \fR,\ \fB\-\-extension= sub-extension
 .\"O Some systems incorporate large packages of manual pages, such as those that
@@ -1136,29 +1144,51 @@ spelling is for compatibility with System V.)
 マニュアルページを検索する時に大文字と小文字の区別する。
 .TP
 .B \-\-regex
-Show all pages with any part of either their names or their descriptions
-matching each
+.\"O Show all pages with any part of either their names or their descriptions
+.\"O matching each
+.\"O .I page
+.\"O argument as a regular expression, as with
+.\"O .BR apropos (1).
+.BR apropos (1)
+と同じように、各
 .I page
-argument as a regular expression, as with
-.BR apropos (1).
-Since there is usually no reasonable way to pick a "best" page when
-searching for a regular expression, this option implies
-.BR \-a .
+引き数を正規表現として、名前または説明の一部にマッチするすべての
+ページを表示する。
+.\"O Since there is usually no reasonable way to pick a "best" page when
+.\"O searching for a regular expression, this option implies
+.\"O .BR \-a .
+正規表現で検索する際に、「最適な」ページを見つける一般的に適切な
+方法はないため、このオプションでは
+.B \-a
+が暗黙のうちに指定される。
 .TP
 .B \-\-wildcard
-Show all pages with any part of either their names or their descriptions
-matching each
-.I page
-argument using shell-style wildcards, as with
+.\"O Show all pages with any part of either their names or their descriptions
+.\"O matching each
+.\"O .I page
+.\"O argument using shell-style wildcards, as with
+.\"O .BR apropos (1)
+.\"O .BR \-\-wildcard .
 .BR apropos (1)
-.BR \-\-wildcard .
-The
+.B \-\-wildcard
+と同じように、各
 .I page
-argument must match the entire name or description, or match on word
-boundaries in the description.
-Since there is usually no reasonable way to pick a "best" page when
-searching for a wildcard, this option implies
-.BR \-a .
+引き数をシェル形式のワイルドカードとして、名前または説明の一部に
+マッチするすべてのページを表示する。
+.\"O The
+.\"O .I page
+.\"O argument must match the entire name or description, or match on word
+.\"O boundaries in the description.
+.I page
+引き数は、名前または説明の全体にマッチするか、
+説明の単語の区切りにマッチしなければならない。
+.\"O Since there is usually no reasonable way to pick a "best" page when
+.\"O searching for a wildcard, this option implies
+.\"O .BR \-a .
+ワイルドカードで検索する際に、「最適な」ページを見つける一般的に
+適切な方法はないため、このオプションでは
+.B \-a
+が暗黙のうちに指定される。
 .TP
 .B \-\-names\-only
 .\"O If the
@@ -1193,33 +1223,52 @@ searching for a wildcard, this option implies
 は検索でマッチしたすべてのファイルを表示する。
 .TP
 .BR \-u ", " \-\-update
-This option causes
+.\"O This option causes
+.\"O .B man
+.\"O to update its database caches of installed manual pages.
+このオプションを用いると、
 .B man
-to update its database caches of installed manual pages.
-This is only needed in rare situations, and it is normally better to run
+はインストールされているマニュアルページのデータベースキャッシュを
+更新する。
+.\"O This is only needed in rare situations, and it is normally better to run
+.\"O .BR mandb (8)
+.\"O instead.
+これが必要なのは稀な状況であり、一般的には
 .BR mandb (8)
-instead.
+を代わりに実行する方がよい。
 .TP
 .B \-\-no\-subpages
-By default,
+.\"O By default,
+.\"O .B man
+.\"O will try to interpret pairs of manual page names given on the command line
+.\"O as equivalent to a single manual page name containing a hyphen or an
+.\"O underscore.
+デフォルトでは、
 .B man
-will try to interpret pairs of manual page names given on the command line
-as equivalent to a single manual page name containing a hyphen or an
-underscore.
-This supports the common pattern of programs that implement a number of
-subcommands, allowing them to provide manual pages for each that can be
-accessed using similar syntax as would be used to invoke the subcommands
-themselves.
-For example:
+は、コマンドラインで指定されたマニュアルページ名のペアを、
+ハイフンまたはアンダースコアを含む 1 つのマニュアルページ名と等しいと解釈する。
+.\"O This supports the common pattern of programs that implement a number of
+.\"O subcommands, allowing them to provide manual pages for each that can be
+.\"O accessed using similar syntax as would be used to invoke the subcommands
+.\"O themselves.
+これにより、複数のサブコマンドを実装しているプログラムでの一般的な
+パターンをサポートし、サブコマンド自体を呼び出しに使われるのと
+同様の書式で、各サブコマンドのマニュアルページにアクセス可能にして
+いる。
+.\"O For example:
+例えば:
 
 .nf
 \&  $ man \-aw git diff
 \&  /usr/share/man/man1/git\-diff.1.gz
 .fi
 
-To disable this behaviour, use the
+.\"O To disable this behaviour, use the
+.\"O .B \-\-no\-subpages
+.\"O option.
+この振る舞いを無効化するには、
 .B \-\-no\-subpages
-option.
+オプションを使うこと。
 
 .nf
 \&  $ man \-aw \-\-no\-subpages git diff
@@ -1233,20 +1282,37 @@ option.
 .BI \-P\  pager \fR,\ \fB\-\-pager= pager
 .\"O Specify which output pager to use.
 出力に用いるページャーを指定する。
-By default,
+.\"O By default,
+.\"O .B man
+.\"O uses
+.\"O .BR "less" ,
+.\"O falling back to
+.\"O .B cat
+.\"O if
+.\"O .B less
+.\"O is not found or is not executable.
+デフォルトでは、
 .B man
-uses
-.BR "less" ,
-falling back to
-.B cat
-if
+は
 .B less
-is not found or is not executable.
-This option overrides the
+を使い、
+.B less
+が見つからない、または実行不能の場合には、
+.B cat
+を使う。
+.\"O This option overrides the
+.\"O .RB $ MANPAGER
+.\"O environment variable, which in turn overrides the
+.\"O .RB $ PAGER
+.\"O environment variable.
+このオプションは、環境変数
 .RB $ MANPAGER
-environment variable, which in turn overrides the
+を上書きする。
+また、
+.RB $ MANPAGER
+は環境変数
 .RB $ PAGER
-environment variable.
+を上書きする。
 .\"O It is not used in conjunction with
 .\"O .B \-f
 .\"O or
@@ -1380,10 +1446,14 @@ environment variable.
 .B \-ix8
 をオプションとして指定する。
 
-The
+.\"O The
+.\"O .RB $ MANLESS
+.\"O environment variable described below may be used to set a default prompt
+.\"O string if none is supplied on the command line.
+上記で説明されている環境変数
 .RB $ MANLESS
-environment variable described below may be used to set a default prompt
-string if none is supplied on the command line.
+は、コマンドラインで何も指定されていないときに、
+デフォルトのプロンプト文字列を設定するために使われる。
 .TP
 .BR \-7 ", " \-\-ascii
 .\"O When viewing a pure
@@ -1821,16 +1891,24 @@ X75, X75-12, X100, X100-12
 用いられる。
 .TP
 .B MANROFFOPT
-Every time
+.\"O Every time
+.\"O .B man
+.\"O invokes the formatter
+.\"O .RB ( nroff ,
+.\"O .BR troff ,
+.\"O or
+.\"O .BR groff ),
+.\"O it adds the contents of
+.\"O .RB $ MANROFFOPT
+.\"O to the formatter's command line.
 .B man
-invokes the formatter
+がフォーマッタ
 .RB ( nroff ,
 .BR troff ,
-or
-.BR groff ),
-it adds the contents of
+.BR groff )
+を呼び出す度に、
 .RB $ MANROFFOPT
-to the formatter's command line.
+の内容をフォーマッタのコマンドラインに追加する。
 .TP
 .B MANROFFSEQ
 .\"O If
@@ -1852,12 +1930,18 @@ to the formatter's command line.
 が設定されている場合には、その値はセクションのリスト (コロン区切り)
 として扱われ、マニュアルのどのセクションを検索するかを決定する際に
 用いられる。
-The default is
-"1 1p 8 2 3 3p 3pm 4 5 6 7 9 0p n l p o 1x 2x 3x 4x 5x 6x 7x 8x",
-unless overridden by the
+.\"O The default is
+.\"O "1 1p 8 2 3 3p 3pm 4 5 6 7 9 0p n l p o 1x 2x 3x 4x 5x 6x 7x 8x",
+.\"O unless overridden by the
+.\"O .B SECTION
+.\"O directive in
+.\"O .IR /etc/man_db.conf .
+.I /etc/man_db.conf
+の
 .B SECTION
-directive in
-.IR /etc/man_db.conf .
+指定で上書きされない限り、デフォルトは
+"1 1p 8 2 3 3p 3pm 4 5 6 7 9 0p n l p o 1x 2x 3x 4x 5x 6x 7x 8x"
+である
 .TP
 .BR MANPAGER , " PAGER"
 .\"O If
@@ -1875,13 +1959,20 @@ directive in
 プログラムの名前として用いられる
 .RB ($ MANPAGER
 が優先して使用される)。
-By default,
+.\"O By default,
+.\"O .B less
+.\"O is used, falling back to
+.\"O .B cat
+.\"O if
+.\"O .B less
+.\"O is not found or is not executable.
+デフォルトでは
 .B less
-is used, falling back to
+が使われ、
+.B less
+が見つからない場合、または実行不能である場合、
 .B cat
-if
-.B less
-is not found or is not executable.
+が使われる。
 
 .\"O The value may be a simple command name or a command with arguments, and may
 .\"O use shell quoting (backslashes, single quotes, or double quotes).
@@ -1896,23 +1987,40 @@ is not found or is not executable.
 標準入力として受け取るラッパースクリプトを使用すること。
 .TP
 .B MANLESS
-If
+.\"O If
+.\"O .RB $ MANLESS
+.\"O is set, its value will be used as the default prompt string for the
+.\"O .B less
+.\"O pager, as if it had been passed using the
+.\"O .B \-r
+.\"O option (so any occurrences of the text
+.\"O .B $MAN_PN
+.\"O will be expanded in the same way).
 .RB $ MANLESS
-is set, its value will be used as the default prompt string for the
+が設定されると、
+.B \-r
+オプションを使って渡されたのと同様に、
 .B less
-pager, as if it had been passed using the
-.B \-r
-option (so any occurrences of the text
+ページャーのデフォルトのプロンプト文字列として使われる
+(よって、文字列
 .B $MAN_PN
-will be expanded in the same way).
-For example, if you want to set the prompt string unconditionally to
-\(lqmy prompt string\(rq, set
+が存在する場合は、同様に展開される)。
+.\"O For example, if you want to set the prompt string unconditionally to
+.\"O \(lqmy prompt string\(rq, set
+.\"O .RB $ MANLESS
+.\"O to
+.\"O .RB \(oq \-Psmy\ prompt\ string \(cq.
+例えば、プロンプト文字列を無条件に
+\(lqmy prompt string\(rq に設定したい場合、
 .RB $ MANLESS
-to
-.RB \(oq \-Psmy\ prompt\ string \(cq.
-Using the
+を
+.RB \(oq \-Psmy\ prompt\ string \(cq
+に設定すること。
+.\"O Using the
+.\"O .B \-r
+.\"O option overrides this environment variable.
 .B \-r
-option overrides this environment variable.
+オプションを指定すると、この環境変数を上書きする。
 .TP
 .B BROWSER
 .\"O If
@@ -1985,18 +2093,29 @@ option overrides this environment variable.
 エスケープする必要があることに注意すること。
 .TP
 .B MANWIDTH
-If
+.\"O If
+.\"O .RB $ MANWIDTH
+.\"O is set, its value is used as the line length for which manual pages should
+.\"O be formatted.
 .RB $ MANWIDTH
-is set, its value is used as the line length for which manual pages should
-be formatted.
-If it is not set, manual pages will be formatted with a line length
-appropriate to the current terminal (using the value of
-.RB $ COLUMNS ,
-and
+が設定されると、マニュアルページを整形する時の行の長さとして
+使われる。
+.\"O If it is not set, manual pages will be formatted with a line length
+.\"O appropriate to the current terminal (using the value of
+.\"O .RB $ COLUMNS ,
+.\"O and
+.\"O .BR ioctl (2)
+.\"O if available, or falling back to 80 characters if neither is available).
+この環境変数が設定されない場合、マニュアルページは、現在の端末に
+適した行の長さで整形される (利用可能であれば、
+.RB $ COLUMNS
+と
 .BR ioctl (2)
-if available, or falling back to 80 characters if neither is available).
-Cat pages will only be saved when the default formatting can be used, that
-is when the terminal line length is between 66 and 80 characters.
+を使い、利用可能でない場合は、80 文字にされる)。
+.\"O Cat pages will only be saved when the default formatting can be used, that
+.\"O is when the terminal line length is between 66 and 80 characters.
+cat ページはデフォルトの整形が使える場合、
+つまり、端末の行の長さが 66 から 80 文字の場合にのみ保存される。
 .TP
 .B MAN_KEEP_FORMATTING
 .\"O Normally, when output is not being directed to a terminal (such as to a file
@@ -2072,7 +2191,7 @@ man-db の設定ファイル。
 .TP
 .I /usr/share/man
 .\"O A global manual page hierarchy.
-global なマニュアルページの階層。
+グローバルなマニュアルページの階層。
 .\"O .SH "SEE ALSO"
 .SH 関連項目
 .BR apropos (1),
@@ -2088,29 +2207,36 @@ global なマニュアルページの階層。
 .BR catman (8),
 .BR mandb (8)
 .PP
-Documentation for some packages may be available in other formats, such as
+.\"O Documentation for some packages may be available in other formats, such as
+.\"O .BR info (1)
+.\"O or HTML.
+パッケージによってはドキュメントが、
 .BR info (1)
-or HTML.
+や HTML といった他の形式で入手可能である。
 .\"O .SH HISTORY
 .SH 履歴
 .\"O 1990, 1991 \(en Originally written by John W.\& Eaton (jwe@che.utexas.edu).
-1990, 1991 \- オリジナルの著者は John W.\& Eaton (jwe@che.utexas.edu) で
-あった。
+1990, 1991 年 \(en オリジナルの著者は John W.\& Eaton (jwe@che.utexas.edu)
+であった。
 
 .\"O Dec 23 1992: Rik Faith (faith@cs.unc.edu) applied bug fixes
 .\"O supplied by Willem Kasdorp (wkasdo@nikhefk.nikef.nl).
-Dec 23 1992: Rik Faith (faith@cs.unc.edu) が Willem Kasdorp
+1992年12月23日: Rik Faith (faith@cs.unc.edu) が Willem Kasdorp
 (wkasdo@nikhefk.nikef.nl) のバグフィックスを当てた。
 
 .\"O 30th April 1994 \(en 23rd February 2000: Wilf.\& (G.Wilford@ee.surrey.ac.uk)
 .\"O has been developing and maintaining this package
 .\"O with the help of a few dedicated people.
-30th April 1994 \(en 23rd February 2000: Wilf.\& (G.Wilford@ee.surrey.ac.uk)
+1994年4月30日 \(en 2000年2月23日: Wilf.\& (G.Wilford@ee.surrey.ac.uk)
 が何人かの人々の助力のもと、このパッケージの開発とメンテナンスをしていた。
 
-30th October 1996 \(en 30th March 2001: Fabrizio Polacco <fpolacco@debian.org>
-maintained and enhanced this package for the Debian project, with the
-help of all the community.
+.\"O 30th October 1996 \(en 30th March 2001: Fabrizio Polacco <fpolacco@debian.org>
+.\"O maintained and enhanced this package for the Debian project, with the
+.\"O help of all the community.
+1996年10月30日 \(en 2001年3月30日: Fabrizio Polacco <fpolacco@debian.org>
+がコミュニティの助力のもと、Debian プロジェクトのために、このパッケージの保守と拡張を行った。
 
-31st March 2001 \(en present day: Colin Watson <cjwatson@debian.org> is now
-developing and maintaining man-db.
+.\"O 31st March 2001 \(en present day: Colin Watson <cjwatson@debian.org> is now
+.\"O developing and maintaining man-db.
+2001年3月31日 \(en 現在: Colin Watson <cjwatson@debian.org> が
+man-db の開発と保守を行っている。
