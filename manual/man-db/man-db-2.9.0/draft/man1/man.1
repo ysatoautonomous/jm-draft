@@ -300,16 +300,25 @@ T}
 (これは "\fBman\fR \fI7 man\fR" の別の表現である。)
 .TP
 \fBman '\fIman\fR(\fI7\fR)'
-Display the manual page for macro package
+.\"O Display the manual page for macro package
+.\"O .I man
+.\"O from section
+.\"O .IR 7 .
+セクション
+.I 7
+からマクロパッケージ
 .I man
-from section
-.IR 7 .
-(This is another alternative spelling of
-"\fBman\fR \fI7 man\fR".
-It may be more convenient when copying and pasting cross-references to
-manual pages.
-Note that the parentheses must normally be quoted to protect them from the
-shell.)
+のマニュアルページを表示する。
+.\"O (This is another alternative spelling of
+.\"O "\fBman\fR \fI7 man\fR".
+.\"O It may be more convenient when copying and pasting cross-references to
+.\"O manual pages.
+.\"O Note that the parentheses must normally be quoted to protect them from the
+.\"O shell.)
+(これは "\fBman\fR \fI7 man\fR" のまた別の表現である。
+マニュアルページの相互参照をコピー・ペーストする際に、便利である。
+シェルでの解釈を防ぐため、括弧は通常はクォートしなければならない点に
+注意すること。)
 .TP
 .BI man\ \-a \ intro
 .\"O Display, in succession, all of the available
@@ -468,16 +477,27 @@ shell.)
 .RB $MANOPT
 の内容を「忘れる」が、環境変数の内容自体は有効なまま残る。
 
-Manual pages are normally stored in
+.\"O Manual pages are normally stored in
+.\"O .BR nroff (1)
+.\"O format under a directory such as
+.\"O .IR /usr/share/man .
+マニュアルページは通常は
 .BR nroff (1)
-format under a directory such as
-.IR /usr/share/man .
-In some installations, there may also be preformatted
-.I cat pages
-to improve performance.
-See
+形式で
+.I /usr/share/man
+といったディレクトリに格納される。
+.\"O In some installations, there may also be preformatted
+.\"O .I cat pages
+.\"O to improve performance.
+インストール状態によっては、性能を改善するため整形済み
+.I cat
+ページが存在することもある。
+.\"O See
+.\"O .BR manpath (5)
+.\"O for details of where these files are stored.
+これらのファイルがどこに格納されるかの詳細は、
 .BR manpath (5)
-for details of where these files are stored.
+を参照すること。
 
 .\"O This package supports manual pages in multiple languages, controlled by your
 .\"O .IR locale .
@@ -529,11 +549,16 @@ for details of where these files are stored.
 なく、これを追加したいと思う人は、メンテナーに連絡して欲しい。
 このような努力をまとめたいと思っている。
 
-Individual manual pages are normally written and maintained by the
-maintainers of the program, function, or other topic that they document, and
-are not included with this package.
-If you find that a manual page is missing or inadequate, please report that
-to the maintainers of the package in question.
+.\"O Individual manual pages are normally written and maintained by the
+.\"O maintainers of the program, function, or other topic that they document, and
+.\"O are not included with this package.
+各マニュアルページは、通常はプログラム、関数、その他のドキュメント化した
+トピックのメンテナーによって書かれて保守されており、このパッケージには
+含まれていない。
+.\"O If you find that a manual page is missing or inadequate, please report that
+.\"O to the maintainers of the package in question.
+マニュアルページが見つからなかったり、不十分であると思った場合には、
+疑問を持ったパッケージのメンテナーに報告して欲しい。
 
 .\"O For information regarding other features and extensions available with this
 .\"O manual pager, please read the documents supplied with the package.
@@ -541,39 +566,63 @@ to the maintainers of the package in question.
 ついては、このパッケージに付属しているドキュメントを読んで欲しい。
 .\"O .SH DEFAULTS
 .SH デフォルト
-The order of sections to search may be overridden by the environment
-variable
+.\"O The order of sections to search may be overridden by the environment
+.\"O variable
+.\"O .RB $ MANSECT
+.\"O or by the
+.\"O .B SECTION
+.\"O directive in
+.\"O .IR /etc/man_db.conf .
+.\"O By default it is as follows:
+セクションの検索の順番は、環境変数
 .RB $ MANSECT
-or by the
+または
+.I /etc/man_db.conf
+の
 .B SECTION
-directive in
-.IR /etc/man_db.conf .
-By default it is as follows:
+の指定で上書きできる。
+デフォルトでは、下記の順番である:
 
 .RS
 1 1p 8 2 3 3p 3pm 4 5 6 7 9 0p n l p o 1x 2x 3x 4x 5x 6x 7x 8x
 .RE
 
-The formatted manual page is displayed using a
-.IR pager .
-This can be specified in a number of ways, or else will fall back to a
-default (see option
+.\"O The formatted manual page is displayed using a
+.\"O .IR pager .
+整形されたマニュアルページは
+.I pager
+を使って表示される。
+これは複数の方法で指定することができて、指定されない場合はデフォルトに
+なる。
+(詳細はオプション
 .B \-P
-for details).
+を参照すること)。
 
-The filters are deciphered by a number of means.
-Firstly, the command line option
+.\"O The filters are deciphered by a number of means.
+フィルターは複数の手段で読み込まれる。
+.\"O Firstly, the command line option
+.\"O .B \-p
+.\"O or the environment variable
+.\"O .RB $ MANROFFSEQ
+.\"O is interrogated.
+最初にコマンドラインオプション
 .B \-p
-or the environment variable
+または環境変数
 .RB $ MANROFFSEQ
-is interrogated.
-If
+を調べる。
+.\"O If
+.\"O .B \-p
+.\"O was not used and the environment variable was not set, the initial line of
+.\"O the nroff file is parsed for a preprocessor string.
 .B \-p
-was not used and the environment variable was not set, the initial line of
-the nroff file is parsed for a preprocessor string.
-To contain a valid preprocessor string, the first line must resemble
+が使用されておらず、環境変数が設定されていない場合、
+nroff ファイルの最初の行を、プリプロセッサ文字列として解釈する。
+.\"O To contain a valid preprocessor string, the first line must resemble
+有効なプリプロセッサ文字列とするには、最初の行は以下のようでなければ
+ならない。
 
-.B '\e"
+.\"O .B '\e"
+.B '\"
 .RB < string >
 
 .\"O where
@@ -746,11 +795,17 @@ To contain a valid preprocessor string, the first line must resemble
 .B \-\-regex
 オプションを指定した場合は正規表現になる。
 .IP
-Note that this searches the
-.I sources
-of the manual pages, not the rendered text, and so may include false
-positives due to things like comments in source files.
-Searching the rendered text would be much slower.
+.\"O Note that this searches the
+.\"O .I sources
+.\"O of the manual pages, not the rendered text, and so may include false
+.\"O positives due to things like comments in source files.
+検索はレンダリングされた文字列ではなく、
+マニュアルページの
+.I ソースファイル
+に対して行われるので、ソースファイル中のコメントなどにより
+誤りを含む可能性がある点に注意すること。
+.\"O Searching the rendered text would be much slower.
+レンダリングされた文字列を検索すると、とても遅くなるだろう。
 .TP
 .BR \-l ", " \-\-local\-file
 .\"O Activate "local" mode.
@@ -774,42 +829,62 @@ nroff のソースファイルであるとみなされる。
 cat ファイルは生成されない。
 `\-' が引き数に指定された場合は、標準入力から入力が与えられると
 みなされる。
-When this option is not used, and man fails to find the page required,
-before displaying the error message, it attempts to act as if this
-option was supplied, using the name as a filename and looking for an
-exact match.
+.\"O When this option is not used, and man fails to find the page required,
+.\"O before displaying the error message, it attempts to act as if this
+.\"O option was supplied, using the name as a filename and looking for an
+.\"O exact match.
+このオプションが指定されず、man が要求されたページを見つけるのに失敗した場合、
+エラーメッセージを表示する前に、このオプションが指定されて、
+名前をファイル名として厳密にマッチングして検索するように動作する。
 .TP
 .BR \-w ", " \-\-where ", " \-\-path ", " \-\-location
 .\"O Don't actually display the manual page, but do print the location of the
 .\"O source nroff file that would be formatted.
 実際にはマニュアルページを表示せず、整形・表示されることになる
 ファイルの位置を表示する。
-If the
+.\"O If the
+.\"O .B \-a
+.\"O option is also used, then print the locations of all source files that match
+.\"O the search criteria.
 .B \-a
-option is also used, then print the locations of all source files that match
-the search criteria.
+オプションも指定された場合、検索条件にマッチするすべてのソース
+ファイルの位置を表示する。
 .TP
 .BR \-W ", " \-\-where\-cat ", " \-\-location\-cat
-Don't actually display the manual page, but do print the location of the
-preformatted cat file that would be displayed.
-If the
+.\"O Don't actually display the manual page, but do print the location of the
+.\"O preformatted cat file that would be displayed.
+実際にはマニュアルページを表示せず、表示されることになる
+整形済み cat ファイルの位置を表示する。
+.\"O If the
+.\"O .B \-a
+.\"O option is also used, then print the locations of all preformatted cat files
+.\"O that match the search criteria.
 .B \-a
-option is also used, then print the locations of all preformatted cat files
-that match the search criteria.
+オプションも指定された場合、検索条件にマッチするすべての整形済み
+cat ファイルの位置を表示する。
 .IP
-If
+.\"O If
+.\"O .B \-w
+.\"O and
+.\"O .B \-W
+.\"O are both used, then print both source file and cat file separated by a
+.\"O space.
 .B \-w
-and
+と
 .B \-W
-are both used, then print both source file and cat file separated by a
-space.
-If
-all of
+の両方が指定された場合、ソースファイルと cat ファイルの両方を
+コンマで区切って表示する。
+.\"O If
+.\"O all of
+.\"O .BR \-w ,
+.\"O .BR \-W ,
+.\"O and
+.\"O .B \-a
+.\"O are used, then do this for each possible match.
 .BR \-w ,
 .BR \-W ,
-and
 .B \-a
-are used, then do this for each possible match.
+のすべてが指定された場合、それぞれにマッチするものが表示される。
 .TP
 .BR \-c ", " \-\-catman
 .\"O This option is not for general use and should only be used by the
@@ -841,10 +916,15 @@ are used, then do this for each possible match.
 エンコーディングを明示的に意識することなく単一のエンコーディングに
 変換して出力できる。
 .IP
-Consider using
+.\"O Consider using
+.\"O .BR man-recode (1)
+.\"O instead for converting multiple manual pages, since it has an interface
+.\"O designed for bulk conversion and so can be much faster.
+複数のマニュアルページを個別に変換するのではなく、
 .BR man-recode (1)
-instead for converting multiple manual pages, since it has an interface
-designed for bulk conversion and so can be much faster.
+を使うのを考慮すること。
+.BR man-recode (1)
+には一括変換のために設計されたインターフェースがあり、とても速い。
 .\"O .SS "Finding manual pages"
 .SS マニュアルページの検索方法
 .TP
