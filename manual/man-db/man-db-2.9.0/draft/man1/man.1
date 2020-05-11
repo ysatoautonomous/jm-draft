@@ -939,11 +939,12 @@ cat ファイルの位置を表示する。
 .B man
 は通常、カレント・ロケールを C 関数
 .BR setlocale (3)
-を呼ぶことによって決定しようとする。この関数の動作は、例えば
+を呼ぶことによって決定しようとする。
+この関数は、
 .RB $ LC_MESSAGES
 や
 .RB $ LANG
-などのような、様々な環境変数によって影響される。
+などを含む様々な環境変数を調べる。
 .\"O To temporarily override the determined value, use this option to supply a
 .\"O .I locale
 .\"O string directly to
@@ -2171,7 +2172,8 @@ cat ページはデフォルトの整形が使える場合、
 .RB $ LANG
 と
 .RB $ LC_MESSAGES
-のどちらか、あるいは両方は、カレントロケールの指定に用いられる。
+のどちらか、あるいは両方が、カレントのメッセージロケールを調べる
+のに用いられる。
 .\"O .B man
 .\"O will display its messages in that locale (if available).
 .B man
