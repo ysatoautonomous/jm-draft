@@ -1,0 +1,430 @@
+.\" Man page for apropos
+.\"
+.\" Copyright (C), 1994, 1995, Graeme W. Wilford. (Wilf.)
+.\"
+.\" You may distribute under the terms of the GNU General Public
+.\" License as specified in the file COPYING that comes with the
+.\" man-db distribution.
+.\"
+.\" Sat Oct 29 13:09:31 GMT 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
+.\"
+.\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
+.\" Translated Fri 25 Sep 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Modified Sun 6 Dec 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Update & Modified Tue May 12 00:34:54 JST 2020
+.\"        by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.\"WORD:        hierarchy       階層
+.\"WORD:        description     要約(文)
+.\"
+.pc
+.TH APROPOS 1 "2019-10-23" "2.9.0" "Manual pager utils"
+.\"O .SH NAME
+.SH 名前
+.\"O apropos \- search the manual page names and descriptions
+apropos \- マニュアルページの名前と要約文を検索する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B apropos
+.RB [\| \-dalv?V  \|]
+.RB [\| \-e \||\| \-w \||\| \-r\c
+\|]
+.RB [\| \-s
+.IR list \|]
+.RB [\| \-m
+.IR system \|[\|,.\|.\|.\|]\|]
+.RB [\| \-M
+.IR path \|]
+.RB [\| \-L
+.IR locale \|]
+.RB [\| \-C
+.IR file \|]
+.I keyword
+\&.\|.\|.
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O Each manual page has a short description available within it.
+.\"O .B apropos
+.\"O searches the descriptions for instances of
+.\"O .IR keyword .
+それぞれのマニュアルページには、内容を説明する要約文が含まれている。
+.B apropos
+は、この要約文を対象にして
+.I keyword
+を検索する。
+
+.\"O .I keyword
+.\"O is usually a regular expression, as if
+.\"O .RB ( \-r )
+.\"O was used, or
+.\"O may contain wildcards
+.\"O .RB ( \-w ),
+.\"O or match the exact keyword
+.\"O .RB ( \-e ).
+.I keyword
+は通常は
+.RB ( \-r )
+が指定された時のように正規表現として扱われるが、
+.RB ( \-w )
+を指定してワイルドカードを含めたり、
+.RB ( \-e )
+を指定してキーワードに厳密に一致させたりもできる。
+.\"O Using these options, it may be necessary to quote the
+.\"O .I keyword
+.\"O or escape (\e) the special characters to stop the shell from interpreting
+.\"O them.
+これらのオプションを用いるときには、シェルによる解釈を防ぐために、
+.I keyword
+を引用符で囲むか、特殊文字をエスケープする (\e) 必要があるかもしれない。
+
+.\"O The standard matching rules allow matches to be made against the page name
+.\"O and word boundaries in the description.
+標準的なマッチングパターンを指定すれば、
+要約文中の単語の境界やページの名前もマッチの対象となる。
+
+.\"O The database searched by
+.\"O .B apropos
+.\"O is updated by the
+.\"O .B mandb
+.\"O program.
+.B apropos
+によって検索されるデータベースは、
+.B mandb
+プログラムによって更新される。
+.\"O Depending on your installation, this may be run by a periodic cron job, or
+.\"O may need to be run manually after new manual pages have been installed.
+インストール方法によるが、
+.B mandb
+が定期的な cron ジョブで実行されているかもしれないし、
+新しいマニュアルページをインストールしたときに
+.B mandb
+を手動で実行する必要があるかもしれない。
+.SH OPTIONS
+.TP
+.BR \-d ", " \-\-debug
+.\"O Print debugging information.
+デバッグ情報を表示する。
+.TP
+.BR \-v ", " \-\-verbose
+.\"O Print verbose warning messages.
+詳細な警告メッセージを表示する。
+.TP
+.BR \-r ", " \-\-regex
+.\"O Interpret each keyword as a regular expression.
+キーワードをそれぞれ正規表現として扱う。
+.\"O This is the default behaviour.
+これがデフォルトの動作である。
+.\"O Each keyword will be matched against the page names and the descriptions
+.\"O independently.
+ページの名前と要約文とが、それぞれ独立にキーワードマッチの対象に
+なる。
+.\"O It can match any part of either.
+キーワードは各々のあらゆる部分にマッチする。
+.\"O The match is not limited to word boundaries.
+マッチは単語の境界に影響されない。
+.TP
+.BR \-w ", " \-\-wildcard
+.\"O Interpret each keyword as a pattern containing shell style wildcards.
+それぞれのキーワードを、シェル形式のワイルドカードを含んだパターン
+として扱う。
+.\"O Each keyword will be matched against the page names and the descriptions
+.\"O independently.
+ページの名前と要約文とが、それぞれ独立にキーワードマッチの対象に
+なる。
+.\"O If
+.\"O .B \-\-exact
+.\"O is also used,
+.\"O a match will only be found if an expanded keyword matches an entire
+.\"O description or page name.
+.B \-\-exact
+も指定された場合、展開されたキーワードが要約文またはページ名の
+全体に一致した場合にのみ、一致したと判断される。
+.\"O Otherwise the keyword is also allowed to match on word boundaries in the
+.\"O description.
+指定されない場合、キーワードは要約文の単語境界に対しても一致処理が
+行われる。
+.TP
+.BR \-e ", " \-\-exact
+.\"O Each keyword will be exactly matched against the page names and the
+.\"O descriptions.
+各キーワードはページ名と要約文に対して厳密に一致処理が行われる。
+.TP
+.BR \-a ", " \-\-and
+.\"O Only display items that match all the supplied keywords.
+指定したキーワードすべてにマッチしたページのみを表示する。
+.\"O The default is to display items that match any keyword.
+デフォルトでは、いずれかのキーワードにマッチしたページを表示する。
+.TP
+.BR \-l ", " \-\-long
+.\"O Do not trim output to the terminal width.
+出力を端末幅で切り詰めない。
+.\"O Normally, output will be truncated to the terminal width to avoid ugly
+.\"O results from poorly-written
+.\"O .B NAME
+.\"O sections.
+通常は、適切に書かれていない
+.B 名前
+セクションの見にくさを避けるため、端末幅で切り詰める。
+.TP
+\fB\-s\fR \fIlist\/\fR, \
+\fB\-\-sections=\fIlist\/\fR, \
+\fB\-\-section=\fIlist\fR
+.\"O Search only the given manual sections.
+指定したマニュアルセクションのみを検索する。
+.\"O .I list
+.\"O is a colon- or comma-separated list of sections.
+.I list
+はコロンまたはコンマ区切りのセクションのリストである。
+.\"O If an entry in
+.\"O .I list
+.\"O is a simple section, for example "3", then the displayed list of
+.\"O descriptions will include pages in sections "3", "3perl", "3x", and so on;
+.I list
+のエントリが単純なセクション、例えば "3" である場合、
+表示される要約文のリストには、"3", "3perl", "3x" などの
+セクションのページが含まれる。
+.\"O while if an entry in
+.\"O .I list
+.\"O has an extension, for example "3perl", then the list will only include
+.\"O pages in that exact part of the manual section.
+一方で
+.I list
+のエントリに拡張部分がある場合、例えば "3perl" の場合、
+表示される要約文のリストには、マニュアルセクションに厳密にマッチ
+したページのみが含まれる。
+.TP
+\fB\-m\fR \fIsystem\fR\|[\|,.\|.\|.\|]\|, \
+\fB\-\-systems=\fIsystem\fR\|[\|,.\|.\|.\|]
+.\"O If this system has access to other operating system's manual page
+.\"O descriptions, they can be searched using this option.
+現在のシステムから、他のオペレーティングシステムについての
+マニュアルにアクセスできる場合には、このオプションをつけると
+それらのマニュアルが検索される。
+.\"O To search NewOS's manual page descriptions, use the option
+.\"O .B \-m
+.\"O .BR NewOS .
+NewOS のマニュアルページを検索する場合には、オプション
+.B \-m
+.B NewOS
+を使うこと。
+
+.\"O The
+.\"O .I system
+.\"O specified can be a combination of comma-delimited operating system names.
+.I system
+には複数のオペレーティングシステム名をコンマで区切った形式で
+指定できる。
+.\"O To include a search of the native operating system's
+.\"O .B whatis
+.\"O descriptions, include the system name
+.\"O .B man
+.\"O in the argument string.
+ネイティブのオペレーティングシステムの
+.B whatis
+要約文を検索の対象に含めるためには、システム名
+.B man
+を引き数文字列に加える。
+.\"O This option will override the
+.\"O .RB $ SYSTEM
+.\"O environment variable.
+このオプションは
+.RB $ SYSTEM
+環境変数を上書きする。
+.TP
+.BI \-M\  path \fR,\ \fB\-\-manpath= path
+.\"O Specify an alternate set of colon-delimited manual page hierarchies to
+.\"O search.
+検索対象にするマニュアルページの階層 (hierarchy) を変えたい場合、
+それらをコロンで区切った形式で指定する。
+.\"O By default,
+.\"O .B apropos
+.\"O uses the
+.\"O .RB $ MANPATH
+.\"O environment variable, unless it is empty or unset, in which case it will
+.\"O determine an appropriate manpath based on your
+.\"O .RB $ PATH
+.\"O environment variable.
+デフォルトでは、
+.B apropos
+は環境変数
+.RB $ MANPATH
+を用いる。
+これが空だったり設定されていなかった場合には、
+.RB $ PATH
+環境変数に基づいて、適切な manpath を決めようと試みる。
+.\"O This option overrides the contents of
+.\"O .RB $ MANPATH .
+このオプションは
+.RB $ MANPATH
+の内容を上書きする。
+.TP
+.BI \-L\  locale \fR,\ \fB\-\-locale= locale
+.\"O .B apropos
+.\"O will normally determine your current locale by a call to the C function
+.\"O .BR setlocale (3)
+.\"O which interrogates various environment variables, possibly including
+.\"O .RB $ LC_MESSAGES
+.\"O and
+.\"O .RB $ LANG .
+.B apropos
+は通常、カレント・ロケールを C 関数
+.BR setlocale (3)
+を呼ぶことによって決定しようとする。
+この関数は
+.RB $ LC_MESSAGES
+や
+.RB $ LANG
+などを含む様々な環境変数を調べる。
+.\"O To temporarily override the determined value, use this option to supply a
+.\"O .I locale
+.\"O string directly to
+.\"O .BR apropos .
+この値を一時的に上書きするには、このオプションを使って
+.B apropos
+に直接
+.I locale
+文字列を渡せば良い。
+.\"O Note that it will not take effect until the search for pages actually
+.\"O begins.
+このオプションが効力を持つのは、実際のページの検索が始まってから
+であることに注意すること。
+.\"O Output such as the help message will always be displayed in the initially
+.\"O determined locale.
+ヘルプメッセージなどの出力は、起動前に定まっていたロケールで
+出力される。
+.TP
+.BI \-C\  file \fR,\ \fB\-\-config\-file= file
+.\"O Use this user configuration file rather than the default of
+.\"O .IR ~/.manpath .
+デフォルトの
+.I ~/.manpath
+ではなく、ユーザー設定ファイルを使用する。
+.TP
+.BR \-? ", " \-\-help
+.\"O Print a help message and exit.
+ヘルプメッセージを表示して、終了する。
+.TP
+.B \-\-usage
+.\"O Print a short usage message and exit.
+簡単な使用法のメッセージを表示して、終了する。
+.TP
+.BR \-V ", " \-\-version
+.\"O Display version information.
+バージョン情報を表示する。
+.\"O .SH "EXIT STATUS"
+.SH 返り値
+.TP
+.B 0
+.\"O Successful program execution.
+プログラムの実行に成功した。
+.TP
+.B 1
+.\"O Usage, syntax or configuration file error.
+使用法、文法、設定ファイルのいずれかにエラーがある。
+.TP
+.B 2
+.\"O Operational error.
+実行時エラー。
+.TP
+.B 16
+.\"O Nothing was found that matched the criteria specified.
+指定した検索条件にマッチするものが見つからなかった。
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.TP
+.B SYSTEM
+.\"O If
+.\"O .RB $ SYSTEM
+.\"O is set, it will have the same effect as if it had been specified as the
+.\"O argument to the
+.\"O .B \-m
+.\"O option.
+.RB $ SYSTEM
+環境変数が設定されている場合には、その内容が
+.B \-m
+オプションの引き数として指定された場合と同じ効力を持つ。
+.TP
+.B MANPATH
+.\"O If
+.\"O .RB $ MANPATH
+.\"O is set, its value is interpreted as the colon-delimited manual page
+.\"O hierarchy search path to use.
+.RB $ MANPATH
+が設定されている場合には、その内容は検索対象とするマニュアルの
+階層をコロンで区切ったリストとみなされる。
+.TP
+.B MANWIDTH
+.\"O If
+.\"O .RB $ MANWIDTH
+.\"O is set, its value is used as the terminal width (see the
+.\"O .B \-\-long
+.\"O option).
+.RB $ MANWIDTH
+が設定されると、端末幅として使われる
+.RB ( \-\-long
+オプションを参照)。
+.\"O If it is not set, the terminal width will be calculated using the value of
+.\"O .RB $ COLUMNS ,
+.\"O and
+.\"O .BR ioctl (2)
+.\"O if available, or falling back to 80 characters if all else fails.
+この環境変数が設定されない場合、端末幅は、利用可能であれば、
+.RB $ COLUMNS
+の値と
+.BR ioctl (2)
+を使って計算され、利用可能でない場合は、80 文字にされる。
+.TP
+.B POSIXLY_CORRECT
+.\"O If
+.\"O .RB $ POSIXLY_CORRECT
+.\"O is set, even to a null value, the default
+.\"O .B apropos
+.\"O search will be as an extended regex
+.\"O .RB ( \-r ).
+.RB $ POSIXLY_CORRECT
+が設定されていると (内容が空であっても)、デフォルトの
+.B apropos
+の検索は拡張正規表現形式
+.RB ( \-r )
+で行われる。
+.\"O Nowadays, this is the default behaviour anyway.
+現在では、これがデフォルトの動作である。
+.\"O .SH FILES
+.SH ファイル
+.TP
+.I /usr/share/man/index.(bt\^|\^db\^|\^dir\^|\^pag)
+.\"O A traditional global
+.\"O .I index
+.\"O database cache.
+従来形式のグローバルな
+.I index
+データベースキャッシュ。
+.TP
+.I /var/cache/man/index.(bt\^|\^db\^|\^dir\^|\^pag)
+.\"O An FHS
+.\"O compliant global
+.\"O .I index
+.\"O database cache.
+FHS 互換ののグローバルな
+.I index
+データベースキャッシュ。
+.TP
+.I /usr/share/man/\|.\|.\|.\|/whatis
+.\"O A traditional
+.\"O .B whatis
+.\"O text database.
+従来形式の
+.B whatis
+テキストデータベース。
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR man (1),
+.BR whatis (1),
+.BR mandb (8)
+.\"O .SH AUTHOR
+.SH 著者
+.nf
+Wilf.\& (G.Wilford@ee.surrey.ac.uk).
+Fabrizio Polacco (fpolacco@debian.org).
+Colin Watson (cjwatson@debian.org).
+.fi
