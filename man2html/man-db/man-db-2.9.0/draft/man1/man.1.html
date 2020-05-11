@@ -1108,13 +1108,14 @@ cat ファイルの位置を表示する。
 は通常、カレント・ロケールを C 関数
 <B><A HREF="../man3/setlocale.3.html">setlocale</A></B>(3)
 
-を呼ぶことによって決定しようとする。この関数の動作は、例えば
+を呼ぶことによって決定しようとする。
+この関数は、
 $<B>LC_MESSAGES</B>
 
 や
 $<B>LANG</B>
 
-などのような、様々な環境変数によって影響される。
+などを含む様々な環境変数を調べる。
 
 
 
@@ -2574,7 +2575,8 @@ $<B>LANG</B>
 と
 $<B>LC_MESSAGES</B>
 
-のどちらか、あるいは両方は、カレントロケールの指定に用いられる。
+のどちらか、あるいは両方が、カレントのメッセージロケールを調べる
+のに用いられる。
 
 
 <B>man</B>
@@ -2699,6 +2701,6 @@ man-db の開発と保守を行っている。
 This document was created by
 <A HREF="/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 13:39:27 GMT, May 05, 2020
+Time: 15:38:21 GMT, May 11, 2020
 </BODY>
 </HTML>
