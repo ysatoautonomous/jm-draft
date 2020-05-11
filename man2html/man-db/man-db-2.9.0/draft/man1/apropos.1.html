@@ -1,0 +1,550 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of APROPOS</TITLE>
+</HEAD><BODY>
+<H1>APROPOS</H1>
+Section: Manual pager utils (1)<BR>Updated: 2019-10-23<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+apropos - マニュアルページの名前と要約文を検索する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>apropos</B>
+
+[<B>-dalv?V</B>]
+
+[<B>-e</B>|<B>-w</B>|<B>-r</B>]
+[<B>-s</B>
+
+<I>list</I>]
+
+[<B>-m</B>
+
+<I>system</I>[,...]]
+
+[<B>-M</B>
+
+<I>path</I>]
+
+[<B>-L</B>
+
+<I>locale</I>]
+
+[<B>-C</B>
+
+<I>file</I>]
+
+<I>keyword</I>
+
+...
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+それぞれのマニュアルページには、内容を説明する要約文が含まれている。
+<B>apropos</B>
+
+は、この要約文を対象にして
+<I>keyword</I>
+
+を検索する。
+<P>
+
+
+
+
+
+
+
+
+<I>keyword</I>
+
+は通常は
+(<B>-r</B>)
+
+が指定された時のように正規表現として扱われるが、
+(<B>-w</B>)
+
+を指定してワイルドカードを含めたり、
+(<B>-e</B>)
+
+を指定してキーワードに厳密に一致させたりもできる。
+
+
+
+
+これらのオプションを用いるときには、シェルによる解釈を防ぐために、
+<I>keyword</I>
+
+を引用符で囲むか、特殊文字をエスケープする (\) 必要があるかもしれない。
+<P>
+
+
+標準的なマッチングパターンを指定すれば、
+要約文中の単語の境界やページの名前もマッチの対象となる。
+<P>
+
+
+
+
+
+<B>apropos</B>
+
+によって検索されるデータベースは、
+<B>mandb</B>
+
+プログラムによって更新される。
+
+
+インストール方法によるが、
+<B>mandb</B>
+
+が定期的な cron ジョブで実行されているかもしれないし、
+新しいマニュアルページをインストールしたときに
+<B>mandb</B>
+
+を手動で実行する必要があるかもしれない。
+<A NAME="lbAE">&nbsp;</A>
+<H2>OPTIONS</H2>
+
+<DL COMPACT>
+<DT><B>-d</B>, <B>--debug</B>
+
+<DD>
+
+デバッグ情報を表示する。
+<DT><B>-v</B>, <B>--verbose</B>
+
+<DD>
+
+詳細な警告メッセージを表示する。
+<DT><B>-r</B>, <B>--regex</B>
+
+<DD>
+
+キーワードをそれぞれ正規表現として扱う。
+
+これがデフォルトの動作である。
+
+
+ページの名前と要約文とが、それぞれ独立にキーワードマッチの対象に
+なる。
+
+キーワードは各々のあらゆる部分にマッチする。
+
+マッチは単語の境界に影響されない。
+<DT><B>-w</B>, <B>--wildcard</B>
+
+<DD>
+
+それぞれのキーワードを、シェル形式のワイルドカードを含んだパターン
+として扱う。
+
+
+ページの名前と要約文とが、それぞれ独立にキーワードマッチの対象に
+なる。
+
+
+
+
+
+<B>--exact</B>
+
+も指定された場合、展開されたキーワードが要約文またはページ名の
+全体に一致した場合にのみ、一致したと判断される。
+
+
+指定されない場合、キーワードは要約文の単語境界に対しても一致処理が
+行われる。
+<DT><B>-e</B>, <B>--exact</B>
+
+<DD>
+
+
+各キーワードはページ名と要約文に対して厳密に一致処理が行われる。
+<DT><B>-a</B>, <B>--and</B>
+
+<DD>
+
+指定したキーワードすべてにマッチしたページのみを表示する。
+
+デフォルトでは、いずれかのキーワードにマッチしたページを表示する。
+<DT><B>-l</B>, <B>--long</B>
+
+<DD>
+
+出力を端末幅で切り詰めない。
+
+
+
+
+通常は、適切に書かれていない
+<B>名前</B>
+
+セクションの見にくさを避けるため、端末幅で切り詰める。
+<DT><B>-s</B> <I>list/</I>, <B>--sections=</B><I>list/</I>, <B>--section=</B><I>list</I><DD>
+
+指定したマニュアルセクションのみを検索する。
+
+
+<I>list</I>
+
+はコロンまたはコンマ区切りのセクションのリストである。
+
+
+
+
+<I>list</I>
+
+のエントリが単純なセクション、例えば &quot;3&quot; である場合、
+表示される要約文のリストには、&quot;3&quot;, &quot;3perl&quot;, &quot;3x&quot; などの
+セクションのページが含まれる。
+
+
+
+
+一方で
+<I>list</I>
+
+のエントリに拡張部分がある場合、例えば &quot;3perl&quot; の場合、
+表示される要約文のリストには、マニュアルセクションに厳密にマッチ
+したページのみが含まれる。
+<DT><B>-m</B> <I>system</I>[,...], <B>--systems=</B><I>system</I>[,...]<DD>
+
+
+現在のシステムから、他のオペレーティングシステムについての
+マニュアルにアクセスできる場合には、このオプションをつけると
+それらのマニュアルが検索される。
+
+
+
+NewOS のマニュアルページを検索する場合には、オプション
+<B>-m</B>
+
+<B>NewOS</B>
+
+を使うこと。
+<P>
+
+
+
+<I>system</I>
+
+には複数のオペレーティングシステム名をコンマで区切った形式で
+指定できる。
+
+
+
+
+
+ネイティブのオペレーティングシステムの
+<B>whatis</B>
+
+要約文を検索の対象に含めるためには、システム名
+<B>man</B>
+
+を引き数文字列に加える。
+
+
+
+このオプションは
+$<B>SYSTEM</B>
+
+環境変数を上書きする。
+<DT><B>-M&nbsp;</B><I>path</I><B></B>,&nbsp;<B>--manpath=</B><I>path</I>
+
+<DD>
+
+
+検索対象にするマニュアルページの階層 (hierarchy) を変えたい場合、
+それらをコロンで区切った形式で指定する。
+
+
+
+
+
+
+
+
+デフォルトでは、
+<B>apropos</B>
+
+は環境変数
+$<B>MANPATH</B>
+
+を用いる。
+これが空だったり設定されていなかった場合には、
+$<B>PATH</B>
+
+環境変数に基づいて、適切な manpath を決めようと試みる。
+
+
+このオプションは
+$<B>MANPATH</B>
+
+の内容を上書きする。
+<DT><B>-L&nbsp;</B><I>locale</I><B></B>,&nbsp;<B>--locale=</B><I>locale</I>
+
+<DD>
+
+
+
+
+
+
+
+<B>apropos</B>
+
+は通常、カレント・ロケールを C 関数
+<B><A HREF="../man3/setlocale.3.html">setlocale</A></B>(3)
+
+を呼ぶことによって決定しようとする。
+この関数は
+$<B>LC_MESSAGES</B>
+
+や
+$<B>LANG</B>
+
+などを含む様々な環境変数を調べる。
+
+
+
+
+この値を一時的に上書きするには、このオプションを使って
+<B>apropos</B>
+
+に直接
+<I>locale</I>
+
+文字列を渡せば良い。
+
+
+このオプションが効力を持つのは、実際のページの検索が始まってから
+であることに注意すること。
+
+
+ヘルプメッセージなどの出力は、起動前に定まっていたロケールで
+出力される。
+<DT><B>-C&nbsp;</B><I>file</I><B></B>,&nbsp;<B>--config-file=</B><I>file</I>
+
+<DD>
+
+
+デフォルトの
+<I>~/.manpath</I>
+
+ではなく、ユーザー設定ファイルを使用する。
+<DT><B>-?</B>, <B>--help</B>
+
+<DD>
+
+ヘルプメッセージを表示して、終了する。
+<DT><B>--usage</B>
+
+<DD>
+
+簡単な使用法のメッセージを表示して、終了する。
+<DT><B>-V</B>, <B>--version</B>
+
+<DD>
+
+バージョン情報を表示する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+<DL COMPACT>
+<DT><B>0</B>
+
+<DD>
+
+プログラムの実行に成功した。
+<DT><B>1</B>
+
+<DD>
+
+使用法、文法、設定ファイルのいずれかにエラーがある。
+<DT><B>2</B>
+
+<DD>
+
+実行時エラー。
+<DT><B>16</B>
+
+<DD>
+
+指定した検索条件にマッチするものが見つからなかった。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT><B>SYSTEM</B>
+
+<DD>
+
+
+
+
+
+
+$<B>SYSTEM</B>
+
+環境変数が設定されている場合には、その内容が
+<B>-m</B>
+
+オプションの引き数として指定された場合と同じ効力を持つ。
+<DT><B>MANPATH</B>
+
+<DD>
+
+
+
+
+$<B>MANPATH</B>
+
+が設定されている場合には、その内容は検索対象とするマニュアルの
+階層をコロンで区切ったリストとみなされる。
+<DT><B>MANWIDTH</B>
+
+<DD>
+
+
+
+
+
+$<B>MANWIDTH</B>
+
+が設定されると、端末幅として使われる
+(<B>--long</B>
+
+オプションを参照)。
+
+
+
+
+
+この環境変数が設定されない場合、端末幅は、利用可能であれば、
+$<B>COLUMNS</B>
+
+の値と
+<B><A HREF="../man2/ioctl.2.html">ioctl</A></B>(2)
+
+を使って計算され、利用可能でない場合は、80 文字にされる。
+<DT><B>POSIXLY_CORRECT</B>
+
+<DD>
+
+
+
+
+
+
+$<B>POSIXLY_CORRECT</B>
+
+が設定されていると (内容が空であっても)、デフォルトの
+<B>apropos</B>
+
+の検索は拡張正規表現形式
+(<B>-r</B>)
+
+で行われる。
+
+現在では、これがデフォルトの動作である。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>ファイル</H2>
+
+<DL COMPACT>
+<DT><I>/usr/share/man/index.(bt|db|dir|pag)</I>
+
+<DD>
+
+
+
+従来形式のグローバルな
+<I>index</I>
+
+データベースキャッシュ。
+<DT><I>/var/cache/man/index.(bt|db|dir|pag)</I>
+
+<DD>
+
+
+
+
+FHS 互換ののグローバルな
+<I>index</I>
+
+データベースキャッシュ。
+<DT><I>/usr/share/man/.../whatis</I>
+
+<DD>
+
+
+
+従来形式の
+<B>whatis</B>
+
+テキストデータベース。
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/man.1.html">man</A></B>(1),
+
+<B><A HREF="../man1/whatis.1.html">whatis</A></B>(1),
+
+<B><A HREF="../man8/mandb.8.html">mandb</A></B>(8)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>著者</H2>
+
+<PRE>
+Wilf. (<A HREF="mailto:G.Wilford@ee.surrey.ac.uk">G.Wilford@ee.surrey.ac.uk</A>).
+Fabrizio Polacco (<A HREF="mailto:fpolacco@debian.org">fpolacco@debian.org</A>).
+Colin Watson (<A HREF="mailto:cjwatson@debian.org">cjwatson@debian.org</A>).
+</PRE>
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">OPTIONS</A><DD>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">環境変数</A><DD>
+<DT><A HREF="#lbAH">ファイル</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">著者</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:39:47 GMT, May 11, 2020
+</BODY>
+</HTML>
