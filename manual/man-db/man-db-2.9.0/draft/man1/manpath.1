@@ -1,0 +1,202 @@
+.\" Man page for manpath
+.\"
+.\" Copyright (C) 1995, Graeme W. Wilford. (Wilf.)
+.\" Copyright (C) 2001-2019 Colin Watson.
+.\"
+.\" You may distribute under the terms of the GNU General Public
+.\" License as specified in the COPYING file that comes with the
+.\" man-db distribution.
+.\"
+.\" Sun Jan 22 22:15:17 GMT 1995 Wilf. (G.Wilford@ee.surrey.ac.uk)
+.\"
+.\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
+.\" Translated Fri 25 Sep 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Modified Sun 6 Dec 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Wed Jul  1 20:56:04 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.\"WORD:        hierarchy       階層
+.\"
+.pc
+.TH MANPATH 1 "2019-10-23" "2.9.0" "Manual pager utils"
+.\"O .SH NAME
+.SH 名前
+.\"O manpath \- determine search path for manual pages
+manpath \- マニュアルページの検索パスを決定する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B manpath
+.RB [\| \-qgdc?V \|]
+.RB [\| \-m
+.IR system \|[\|,.\|.\|.\|]\|]
+.RB [\| \-C
+.IR file \|]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O If
+.\"O .RB $ MANPATH
+.\"O is set,
+.\"O .B manpath
+.\"O will simply display its contents and issue a warning.
+環境変数
+.RB $ MANPATH
+が設定されている場合、
+.B manpath
+はその内容を表示して警告を出す。
+.\"O If not,
+.\"O .B manpath
+.\"O will determine a suitable manual page hierarchy search path and display the
+.\"O results.
+それ以外の場合には、マニュアルページ階層 (hierarchy) 
+の検索パスを適切に決定して、その結果を表示する。
+
+.\"O The colon-delimited path is determined using information gained from the
+.\"O man-db configuration file \(en
+.\"O .RI ( "/etc/man_db.conf" )
+.\"O and the user's environment.
+コロンで区切られたパスのリストが、
+man_db の設定ファイル \(en
+.RI ( "/etc/man_db.conf" )
+と、ユーザーの環境変数とから決定される。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-q ", " \-\-quiet
+.\"O Do not issue warnings.
+警告を表示しない。
+.TP
+.BR \-d ", " \-\-debug
+.\"O Print debugging information.
+デバッグ情報を生成する。
+.TP
+.BR \-c ", " \-\-catpath
+.\"O Produce a catpath as opposed to a manpath.
+.\"O Once the manpath is determined,
+.\"O each path element is converted to its relative catpath.
+manpath に対して catpath を生成する。
+まず manpath を決定して、それに含まれるパス要素を、
+それぞれ対応する catpath に変換する。
+.TP
+.BR \-g ", " \-\-global
+.\"O Produce a manpath consisting of all paths named as "global" within the
+.\"O man-db configuration file.
+man_db の設定ファイル中で、"global" という名前がついているものを
+すべて含んだ manpath を生成する。
+.TP
+\fB\-m\fR \fIsystem\fR\|[\|,.\|.\|.\|]\|, \
+\fB\-\-systems=\fIsystem\fR\|[\|,.\|.\|.\|]
+.\"O If this system has access to other operating system's manual hierarchies,
+.\"O this option can be used to include them in the output of
+.\"O .BR manpath .
+現在のシステムから、他のオペレーティングシステムについてのマニュアル
+階層にアクセスできる場合には、このオプションをつければそれらが
+.B manpath
+の出力に含まれる。
+.\"O To include NewOS's manual page hierarchies use the option
+.\"O .B \-m
+.\"O .BR NewOS .
+例えば NewOS のマニュアルページ階層を検索する場合には、
+.B \-m
+.B NewOS
+のようなオプションを指定すればよい。
+
+.\"O The
+.\"O .I system
+.\"O specified can be a combination of comma delimited operating system names.
+.I system
+には複数のオペレーティングシステムをコンマで区切った形式で指定できる。
+.\"O To include the native operating system's manual page hierarchies,
+.\"O the system name
+.\"O .B man
+.\"O must be included in the argument string.
+ネイティブのオペレーティングシステムのマニュアルページ階層を
+含ませる場合は、システム名として
+.B man
+を引き数文字列に加える必要がある。
+.\"O This option will override the
+.\"O .RB $ SYSTEM
+.\"O environment variable.
+このオプションは
+.BR $ SYSTEM
+環境変数を上書きする。
+.TP
+.BI \-C\  file \fR,\ \fB\-\-config\-file= file
+.\"O Use this user configuration file rather than the default of
+.\"O .IR ~/.manpath .
+デフォルトの
+.I ~/.manpath
+ではなく、ユーザーの設定ファイルを使う。
+.TP
+.BR \-? ", " \-\-help
+.\"O Print a help message and exit.
+ヘルプメッセージを表示して、終了する。
+.TP
+.B \-\-usage
+.\"O Print a short usage message and exit.
+簡単な使用方法のメッセージを表示して、終了する。
+.TP
+.BR \-V ", " \-\-version
+.\"O Display version information.
+バージョン情報を表示して、終了する。
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.TP
+.B MANPATH
+.\"O If
+.\"O .RB $ MANPATH
+.\"O is set,
+.\"O .B manpath
+.\"O displays its value rather than determining it on the fly.
+.RB $ MANPATH
+が設定されていると、
+.B manpath
+はその値を表示し、検索パスをその場で決定することはしない。
+.\"O If
+.\"O .RB $ MANPATH
+.\"O is prefixed by a colon, then the value of the variable is appended
+.\"O to the list determined from the content of the configuration files.
+.RB $ MANPATH
+の先頭にコロンがあると、設定ファイルの内容で決定されるリストの
+後に、この変数の値が追加される。
+.\"O If the colon comes at the end of the value in the variable, then the
+.\"O determined list is appended to the content of the variable.
+この変数の末尾にコロンがあると、この変数の後に、
+設定ファイルの内容で決定されるリストが追加される。
+.\"O If the value of the variable contains a double colon
+.\"O .RB ( :: ),
+.\"O then the determined list is inserted in the middle of the value, between
+.\"O the two colons.
+この変数が 2 つのコロン
+.RB ( :: )
+を含んでいると、2 つのコロンの間に、
+設定ファイルの内容で決定されるリストが挿入される。
+.TP
+.B SYSTEM
+.\"O If
+.\"O .RB $ SYSTEM
+.\"O is set, it will have the same effect as if it had been specified as the
+.\"O argument to the
+.\"O .B \-m
+.\"O option.
+.RB $ SYSTEM
+環境変数が設定されている場合には、その内容が
+.B \-m
+オプションの引き数として指定された場合と同じ効力を持つ。
+.\"O .SH FILES
+.SH ファイル
+.TP \w'/etc/man_db.conf'u+2n
+.I /etc/man_db.conf
+.\"O man-db configuration file.
+man-db の設定ファイル。
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR apropos (1),
+.BR man (1),
+.BR whatis (1)
+.\"O .SH AUTHOR
+.SH 著者
+.nf
+Wilf.\& (G.Wilford@ee.surrey.ac.uk).
+Fabrizio Polacco (fpolacco@debian.org).
+Colin Watson (cjwatson@debian.org).
+.fi
