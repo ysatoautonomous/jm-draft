@@ -1,0 +1,265 @@
+.\" Man page for format of the manpath.config data file
+.\"
+.\" Copyright (C) 1994, 1995 Graeme W. Wilford. (Wilf.)
+.\" Copyright (C) 2001-2019 Colin Watson.
+.\"
+.\" You may distribute under the terms of the GNU General Public
+.\" License as specified in the file COPYING that comes with the
+.\" man-db distribution.
+.\"
+.\" Sat Oct 29 13:09:31 GMT 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
+.\"
+.\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
+.\" Translated Fri 25 Sep 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\"
+.\"WORD:        hierarchy       系列
+.\"
+.pc
+.TH MANPATH 5 "2019-10-23" "2.9.0" "/etc/man_db.conf"
+.\"O .SH NAME
+.SH 名前
+.\"O manpath \- format of the /etc/man_db.conf file
+manpath \- /etc/man_db.conf ファイルのフォーマット
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The manpath configuration file is used by the manual page utilities
+.\"O to assess users' manpaths at run time, to indicate which manual page
+.\"O hierarchies (manpaths) are to be treated as system hierarchies and to
+.\"O assign them directories to be used for storing cat files.
+manpath 設定ファイルは、マニュアルページのユーティリティによって用いられる。
+ユーザーの manpath を実行時に評価したり、どのマニュアルページ系列
+(hierarchy) すなわち manpath をシステムの系列として扱うかを判断したり、
+どのディレクトリを cat ファイルを保管するディレクトリとして用いるかを
+決定するために用いられる。
+
+.\"O If the environment variable
+.\"O .RB $ MANPATH
+.\"O is already set, the information contained within /etc/man_db.conf will
+.\"O not override it.
+環境変数
+.RB $ MANPATH
+がすでに設定されている場合には、/etc/man_db.conf に含まれている
+情報はそれを上書きしない。
+.\"O .SH FORMAT
+.SH フォーマット
+.\"O The following field types are currently recognised:
+現在のところ、以下のフィールドタイプが認識される。
+.TP
+.BI # \ comment
+.\"O Blank lines or those beginning with a
+.\"O .B #
+.\"O will be treated as comments and ignored.
+空行や
+.B #
+で始まる行はコメントとみなされ、無視される。
+.TP
+.BI MANDATORY_MANPATH \ manpath_element
+.\"O Lines of this form indicate manpaths that every automatically generated
+.\"O .RB $ MANPATH
+.\"O should contain.
+この形式の行は、自動的に生成される
+.RB $ MANPATH
+には必ず含まれているべき manpath を示す。
+.\"O This will typically include
+.\"O .IR /usr/man .
+.I /usr/man
+などが典型である。
+.TP
+.BI MANPATH_MAP \ path_element\ manpath_element
+.\"O Lines of this form set up
+.\"O .RB $ PATH
+.\"O to
+.\"O .RB $ MANPATH
+.\"O mappings.
+この形式の行は
+.RB PATH
+から
+.RB $ MANPATH
+へのマッピングを設定する。
+.\"O For each
+.\"O .I path_element
+.\"O found in the user's
+.\"O .RB $ PATH ,
+.\"O .I manpath_element
+.\"O will be added to the
+.\"O .RB $ MANPATH .
+それぞれの
+.I path_element
+がユーザーの
+.RB $ PATH
+に含まれていると、
+.I manpath_element
+が
+.RB $ MANPATH
+に追加される。
+.TP
+\fBMANDB_MAP \fImanpath_element \fR\|[\| \fIcatpath_element\fR \|]
+.\"O Lines of this form indicate which manpaths are to be treated as system
+.\"O manpaths, and optionally where their cat files should be stored.
+この形式の行は、どの manpath をシステムの manpath として扱い、またそれらの cat 
+ページをどこに保存するかを指定する (後半は省略可)。
+.\"O This field type is particularly important if
+.\"O .B man
+.\"O is a setuid program, as (when in the system configuration file
+.\"O /etc/man_db.conf rather than the per-user configuration file .manpath)
+.\"O it indicates which manual page hierarchies to access as the setuid user and
+.\"O which as the invoking user.
+この形式のフィールドは、
+.B man
+が setuid されたプログラムである場合に特に重要である。
+なぜなら、(ユーザー毎の設定ファイル .manpath ではなく、
+システムの設定ファイル /etc/man_db.conf において)
+これはどの系列を setuid されたユーザー権限でアクセスし、
+どれを起動ユーザーの権限でアクセスするかを指定することになるから
+である。
+
+.\"O The system manual page hierarchies are usually those stored under
+.\"O .I /usr
+.\"O such as
+.\"O .IR /usr/man ,
+.\"O .I /usr/local/man
+.\"O and
+.\"O .IR /usr/X11R6/man .
+システムのマニュアルページの系列は、通常
+.I /usr
+以下に保管されている。例えば
+.IR /usr/man ,
+.IR /usr/local/man ,
+.I /usr/X11R6/man
+などがこれにあたる。
+
+.\"O If cat pages from a particular
+.\"O .I manpath_element
+.\"O are not to be stored or are to be stored in the traditional location,
+.\"O .I catpath_element
+.\"O may be omitted.
+特定の
+.I manpath_element
+からの cat ページは保管したくない場合や、伝統的な位置に保管したい場合には、
+.I catpath_element
+は省略する。
+
+.\"O Traditional cat placement would be impossible for read only mounted manual
+.\"O page hierarchies and because of this it is possible to specify any valid
+.\"O directory hierarchy for their storage.
+伝統的な cat の場所は、リードオンリーでマウントされているマニュアルページの
+系列下にすることはできない。この理由から、これらの保管場所としては、
+任意のディレクトリ系列を指定することが可能になっている (もちろん指定した
+ディレクトリは有効なものでなければならない)。
+.\"O To observe the
+.\"O .B Linux FSSTND
+.\"O the keyword
+.\"O .B FSSTND
+.\"O can be used in place of an actual directory.
+.B Linux FSSTND
+に従う場合には、
+キーワード
+.B FSSTND
+を実際のディレクトリ名の代わりに用いることができる。
+
+.\"O Unfortunately, it is necessary to specify
+.\"O .B all
+.\"O system man tree paths, including alternate operating system paths such as
+.\"O .I /usr/man/sun
+.\"O and any
+.\"O .B NLS locale
+.\"O paths such as
+.\"O .IR /usr/man/de_DE.88591 .
+残念ながら、システムの man のツリーパスは\fBすべて\fR指定しなければならない。
+他のシステムパス
+.RI ( /usr/man/sun
+のようなもの) やすべての
+.B NLS ロケール
+パス
+.RI ( /usr/man/de_DE.88591
+のようなもの) も、それぞれすべて指定する必要がある。
+
+.\"O As the information is parsed line by line in the order written, it is
+.\"O necessary for any manpath that is a sub-hierarchy of another hierarchy to be
+.\"O listed first, otherwise an incorrect match will be made.
+情報は書かれた順に一行ずつ評価されるので、他の系列のサブツリーと
+なっているような manpath は先に書かなければならない。
+さもないと、マッチが正しく行われない可能性がある。
+.\"O An example is that
+.\"O .I /usr/man/de_DE.88591
+.\"O must come before
+.\"O .IR /usr/man .
+例えば
+.I /usr/man/de_DE.88591
+は
+.I /usr/man
+より先に来なければならない。
+.TP
+.BI DEFINE \ key\ value
+Lines of this form define miscellaneous configuration variables; see the
+default configuration file for those variables used by the manual pager
+utilities.
+They include default paths to various programs (such as
+.I grep
+and
+.IR tbl ),
+and default sets of arguments to those programs.
+.TP
+\fBSECTION\fR \fIsection\fR .\|.\|.
+.RS
+Lines of this form define the order in which manual sections should be
+searched.
+If there are no
+.B SECTION
+directives in the configuration file, the default is:
+.PP
+.RS
+.nf
+SECTION 1 n l 8 3 0 2 5 4 9 6 7
+.fi
+.RE
+.PP
+If multiple
+.B SECTION
+directives are given, their section lists will be concatenated.
+.PP
+If a particular extension is not in this list (say, 1mh) it will be
+displayed with the rest of the section it belongs to.
+The effect of this is that you only need to explicitly list extensions if
+you want to force a particular order.
+Sections with extensions should usually be adjacent to their main section
+(e.g. "1 1mh 8 ...").
+.PP
+.B SECTIONS
+is accepted as an alternative name for this directive.
+.RE
+.TP
+.BI MINCATWIDTH \ width
+If the terminal width is less than
+.IR width ,
+cat pages will not be created (if missing) or displayed.
+The default is 80.
+.TP
+.BI MAXCATWIDTH \ width
+If the terminal width is greater than
+.IR width ,
+cat pages will not be created (if missing) or displayed.
+The default is 80.
+.TP
+.BI CATWIDTH \ width
+If
+.I width
+is non-zero, cat pages will always be formatted for a terminal of the given
+width, regardless of the width of the terminal actually being used.
+This should generally be within the range set by
+.B MINCATWIDTH
+and
+.BR MAXCATWIDTH .
+.TP
+.B NOCACHE
+This flag prevents
+.BR man (1)
+from creating cat pages automatically.
+.\"O .SH BUGS
+.SH バグ
+.\"O Unless the rules above are followed and observed precisely, the manual pager
+.\"O utilities will not function as desired.
+上記のルールが正しく守られない場合には、マニュアルページャーの機能は
+正しく動作しない。
+.\"O The rules are overly complicated.
+これらのルールは不必要に難しい。
