@@ -1,0 +1,125 @@
+.\" Man page for zsoelim
+.\"
+.\" Copyright (C), 1994, 1995, Graeme W. Wilford. (Wilf.)
+.\"
+.\" You may distribute under the terms of the GNU General Public
+.\" License as specified in the file COPYING that comes with the
+.\" man-db distribution.
+.\"
+.\" Sat Dec 10 19:33:32 GMT 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
+.\"
+.\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
+.\" Translated Fri 25 Sep 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Modified Sun 6 Dec 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Wed Jul  1 23:57:20 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.pc
+.TH ZSOELIM 1 "2019-10-23" "2.9.0" "Manual pager utils"
+.\"O .SH NAME
+.SH 名前
+.\"O zsoelim \- satisfy .so requests in roff input
+zsoelim \- roff の入力における .so 命令を実行する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B zsoelim
+.RB [\| \-CVh \|]
+.RI [\| file
+\&.\|.\|.\|]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B zsoelim
+.\"O parses
+.\"O .I file
+.\"O arguments, or if none are specified, its standard input for lines of the
+.\"O form:
+.B zsoelim
+は
+.I file
+引き数で与えられたファイル (何も与えられなかった場合は標準入力) を
+読み込み、以下のような形式の行を展開する。
+
+.B .so
+.RI <\| filename \|>
+
+.\"O These requests are replaced by the contents of the
+.\"O .I filename
+.\"O specified.
+.\"O If the request cannot be met,
+.\"O .B zsoelim
+.\"O looks for
+.\"O .I filename.ext
+.\"O where
+.\"O .I .ext
+.\"O can be one of
+.\"O .BR .gz ,
+.\"O .BR .Z
+.\"O or
+.\"O .BR .z .
+このような命令行は、指定された
+.I filename
+の内容で置き代えられる。指定されたファイルが見つからない場合には、
+.B zsoelim
+は
+.I filename.ext
+という形式のファイルを探す。ここで
+.I .ext
+は
+.BR .gz ", " .Z ", " .z
+のどれかである。
+.\"O Other extension types may be supported depending upon compile time options.
+他の形式の拡張子がサポートされていることもある。
+これはコンパイル時の指定による。
+.\"O If the request can be met by a compressed file, this file is decompressed
+.\"O using an appropriate decompressor and its output is used to satisfy
+.\"O the request.
+命令によって見つかったファイルが圧縮形式だった場合には、
+このファイルは適切なプログラムで展開され、その出力が用いられる。
+
+.\"O Traditionally,
+.\"O .B soelim
+.\"O programs were used to allow roff preprocessors to be able to preprocess the
+.\"O files referred to by the requests.
+.\"O This particular version was written to circumvent problems created by
+.\"O support for compressed manual pages.
+このような命令で参照されたファイルを roff プリプロセッサに渡して
+前処理を行わせる作業には、従来は
+.B soelim
+というプログラムが用いられた。この特殊なバージョンは、
+圧縮マニュアルページをサポートしたことで生じる問題を回避するために書かれた。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-C ", " \-\-compatible
+.\"O This flag is available for compatibility with other
+.\"O .B soelim
+.\"O programs.
+.\"O Its use is to enable .so requests followed by something other than
+.\"O whitespace.
+.\"O As this is already the default behaviour, it is ignored.
+このフラグは、他の
+.B zsoelim
+プログラムとの互換性のために用意されている。このフラグの目的は、.so に
+空白以外の文字が続いた命令を有効にすることであるが、
+このプログラムではそもそもデフォルトの動作なので、単に無視される。
+.TP
+.BR \-h ", " \-\-help
+.\"O Print a help message and exit.
+ヘルプメッセージを表示して、終了する。
+.TP
+.BR \-V ", " \-\-version
+.\"O Display version information.
+バージョン情報を表示する。
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR groff (1),
+.BR man (1),
+.BR nroff (1),
+.BR troff (1)
+.\"O .SH AUTHOR
+.SH 著者
+.nf
+Wilf.\& (G.Wilford@ee.surrey.ac.uk).
+Fabrizio Polacco (fpolacco@debian.org).
+Colin Watson (cjwatson@debian.org).
+.fi
