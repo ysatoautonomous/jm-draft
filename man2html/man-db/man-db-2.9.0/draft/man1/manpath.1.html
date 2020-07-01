@@ -1,0 +1,271 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MANPATH</TITLE>
+</HEAD><BODY>
+<H1>MANPATH</H1>
+Section: Manual pager utils (1)<BR>Updated: 2019-10-23<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+manpath - マニュアルページの検索パスを決定する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>manpath</B>
+
+[<B>-qgdc?V</B>]
+
+[<B>-m</B>
+
+<I>system</I>[,...]]
+
+[<B>-C</B>
+
+<I>file</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+環境変数
+$<B>MANPATH</B>
+
+が設定されている場合、
+<B>manpath</B>
+
+はその内容を表示して警告を出す。
+
+
+
+
+それ以外の場合には、マニュアルページ階層 (hierarchy) 
+の検索パスを適切に決定して、その結果を表示する。
+<P>
+
+
+
+
+コロンで区切られたパスのリストが、
+man_db の設定ファイル -
+(<I>/etc/man_db.conf</I>)
+
+と、ユーザーの環境変数とから決定される。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-q</B>, <B>--quiet</B>
+
+<DD>
+
+警告を表示しない。
+<DT><B>-d</B>, <B>--debug</B>
+
+<DD>
+
+デバッグ情報を生成する。
+<DT><B>-c</B>, <B>--catpath</B>
+
+<DD>
+
+
+
+manpath に対して catpath を生成する。
+まず manpath を決定して、それに含まれるパス要素を、
+それぞれ対応する catpath に変換する。
+<DT><B>-g</B>, <B>--global</B>
+
+<DD>
+
+
+man_db の設定ファイル中で、&quot;global&quot; という名前がついているものを
+すべて含んだ manpath を生成する。
+<DT><B>-m</B> <I>system</I>[,...], <B>--systems=</B><I>system</I>[,...]<DD>
+
+
+
+現在のシステムから、他のオペレーティングシステムについてのマニュアル
+階層にアクセスできる場合には、このオプションをつければそれらが
+<B>manpath</B>
+
+の出力に含まれる。
+
+
+
+例えば NewOS のマニュアルページ階層を検索する場合には、
+<B>-m</B>
+
+<B>NewOS</B>
+
+のようなオプションを指定すればよい。
+<P>
+
+
+
+<I>system</I>
+
+には複数のオペレーティングシステムをコンマで区切った形式で指定できる。
+
+
+
+
+ネイティブのオペレーティングシステムのマニュアルページ階層を
+含ませる場合は、システム名として
+<B>man</B>
+
+を引き数文字列に加える必要がある。
+
+
+
+このオプションは
+<B>$</B>SYSTEM
+
+環境変数を上書きする。
+<DT><B>-C&nbsp;</B><I>file</I><B></B>,&nbsp;<B>--config-file=</B><I>file</I>
+
+<DD>
+
+
+デフォルトの
+<I>~/.manpath</I>
+
+ではなく、ユーザーの設定ファイルを使う。
+<DT><B>-?</B>, <B>--help</B>
+
+<DD>
+
+ヘルプメッセージを表示して、終了する。
+<DT><B>--usage</B>
+
+<DD>
+
+簡単な使用方法のメッセージを表示して、終了する。
+<DT><B>-V</B>, <B>--version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT><B>MANPATH</B>
+
+<DD>
+
+
+
+
+
+$<B>MANPATH</B>
+
+が設定されていると、
+<B>manpath</B>
+
+はその値を表示し、検索パスをその場で決定することはしない。
+
+
+
+
+$<B>MANPATH</B>
+
+の先頭にコロンがあると、設定ファイルの内容で決定されるリストの
+後に、この変数の値が追加される。
+
+
+この変数の末尾にコロンがあると、この変数の後に、
+設定ファイルの内容で決定されるリストが追加される。
+
+
+
+
+この変数が 2 つのコロン
+(<B>::</B>)
+
+を含んでいると、2 つのコロンの間に、
+設定ファイルの内容で決定されるリストが挿入される。
+<DT><B>SYSTEM</B>
+
+<DD>
+
+
+
+
+
+
+$<B>SYSTEM</B>
+
+環境変数が設定されている場合には、その内容が
+<B>-m</B>
+
+オプションの引き数として指定された場合と同じ効力を持つ。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>ファイル</H2>
+
+<DL COMPACT>
+<DT><I>/etc/man_db.conf</I>
+
+<DD>
+
+man-db の設定ファイル。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/apropos.1.html">apropos</A></B>(1),
+
+<B><A HREF="../man1/man.1.html">man</A></B>(1),
+
+<B><A HREF="../man1/whatis.1.html">whatis</A></B>(1)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+<PRE>
+Wilf. (<A HREF="mailto:G.Wilford@ee.surrey.ac.uk">G.Wilford@ee.surrey.ac.uk</A>).
+Fabrizio Polacco (<A HREF="mailto:fpolacco@debian.org">fpolacco@debian.org</A>).
+Colin Watson (<A HREF="mailto:cjwatson@debian.org">cjwatson@debian.org</A>).
+</PRE>
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">環境変数</A><DD>
+<DT><A HREF="#lbAG">ファイル</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 12:08:54 GMT, July 01, 2020
+</BODY>
+</HTML>
