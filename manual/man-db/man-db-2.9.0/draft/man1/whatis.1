@@ -1,0 +1,365 @@
+.\" Man page for whatis
+.\"
+.\" Copyright (C), 1994, 1995, Graeme W. Wilford. (Wilf.)
+.\"
+.\" You may distribute under the terms of the GNU General Public
+.\" License as specified in the file COPYING that comes with the
+.\" man-db distribution.
+.\"
+.\" Sat Oct 29 13:09:31 GMT 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
+.\"
+.\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
+.\" Translated Fri 25 Sep 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Modified Sun 6 Dec 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\"
+.\"WORD:        hierarchy       階層
+.\"WORD:        description     要約(文)
+.\"
+.pc
+.TH WHATIS 1 "2019-10-23" "2.9.0" "Manual pager utils"
+.\"O .SH NAME
+.SH 名前
+.\"O whatis \- display one-line manual page descriptions
+whatis \- マニュアルページの要約を表示する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B whatis
+.RB [\| \-dlv?V \|]
+.RB [\| \-r \||\| \-w\c
+\|]
+.RB [\| \-s
+.IR list \|]
+.RB [\| \-m
+.IR system \|[\|,.\|.\|.\|]\|]
+.RB [\| \-M
+.IR path \|]
+.RB [\| \-L
+.IR locale \|]
+.RB [\| \-C
+.IR file \|]
+.I name
+\&.\|.\|.
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O Each manual page has a short description available within it.
+それぞれのマニュアルページには、先頭に短い要約文が書かれている。
+.\"O .B whatis
+.\"O searches the manual page names and displays the manual page descriptions
+.\"O of any
+.\"O .I name
+.\"O matched.
+.B whatis
+はマニュアルページの名前を検索し、
+.I name
+にマッチしたすべてのマニュアルから、この要約文を取り出して表示する。
+
+.\"O .I name
+.\"O may contain wildcards
+.\"O .RB ( \-w )
+.\"O or be a regular expression
+.\"O .RB ( \-r ).
+.I name
+にはワイルドカード
+.RB ( \-w )
+や正規表現
+.RB ( \-r )
+を用いることができる。
+.\"O Using these options, it may be necessary to quote the
+.\"O .I name
+.\"O or escape (\\) the special characters to stop the shell from interpreting
+.\"O them.
+これらのオプションを用いた際には、
+.I name
+をクォートするか、特殊キャラクタをエスケープ (\\) して、
+シェルによって解釈されないようにする必要があるかもしれない。
+
+.\"O .B index
+.\"O databases are used during the search, and are updated by the
+.\"O .B mandb
+.\"O program.
+.B index
+データベースが検索の際に用いられ、これは
+.B mandb
+プログラムで更新される。
+Depending on your installation, this may be run by a periodic cron job, or
+may need to be run manually after new manual pages have been installed.
+.\"O To produce an old style text
+.\"O .B whatis
+.\"O database from the relative
+.\"O .B index
+.\"O database, issue the command:
+古いスタイルの
+.B whatis
+テキストデータベースを、対応する
+.B index
+データベースから作りたい場合には、以下のようなコマンドを実行すればよい。
+
+.B whatis \-M
+.I manpath
+.B \-w  '*' | sort >
+.I manpath/whatis
+
+.\"O where
+.\"O .I manpath
+.\"O is a manual page hierarchy such as
+.\"O .IR /usr/man .
+ここで
+.I manpath
+には
+.I /usr/man
+のような、マニュアルページの階層 (hierarchy) を指定する。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-d ", " \-\-debug
+.\"O Print debugging information.
+デバッグ情報を表示する。
+.TP
+.BR \-v ", " \-\-verbose
+Print verbose warning messages.
+.TP
+.BR \-r ", " \-\-regex
+.\"O Interpret each
+.\"O .I name
+.\"O as a regular expression.
+.I name
+を正規表現として解釈する。
+.\"O If a
+.\"O .I name
+.\"O matches any part of a page name, a match will be made.
+.I name
+がページ名の一部分にマッチすれば、マッチしたとみなされる。
+.\"O This option causes
+.\"O .B whatis
+.\"O to be somewhat slower due to the nature of database searches.
+このオプションを指定すると、データベース検索の性質上、
+.B whatis
+の動作が多少遅くなる。
+.TP
+.BR \-w ", " \-\-wildcard
+.\"O Interpret each
+.\"O .I name
+.\"O as a pattern containing shell style wildcards.
+.I name
+をシェル形式のワイルドカードを含むパターンとして解釈する。
+.\"O For a match to be made, an expanded
+.\"O .I name
+.\"O must match the entire page name.
+マッチするためには、展開された
+.I name
+がページ名の全体にマッチしなければならない。
+.\"O This option causes
+.\"O .B whatis
+.\"O to be somewhat slower due to the nature of database searches.
+このオプションを指定すると、データベース検索の性質上、
+.B whatis
+の動作が多少遅くなる。
+.TP
+.BR \-l ", " \-\-long
+Do not trim output to the terminal width.
+Normally, output will be truncated to the terminal width to avoid ugly
+results from poorly-written
+.B NAME
+sections.
+.TP
+\fB\-s\fR \fIlist\/\fR, \
+\fB\-\-sections=\fIlist\/\fR, \
+\fB\-\-section=\fIlist\fR
+Search only the given manual sections.
+.I list
+is a colon- or comma-separated list of sections.
+If an entry in
+.I list
+is a simple section, for example "3", then the displayed list of
+descriptions will include pages in sections "3", "3perl", "3x", and so on;
+while if an entry in
+.I list
+has an extension, for example "3perl", then the list will only include
+pages in that exact part of the manual section.
+.TP
+\fB\-m\fR \fIsystem\fR\|[\|,.\|.\|.\|]\|, \
+\fB\-\-systems=\fIsystem\fR\|[\|,.\|.\|.\|]
+.\"O If this system has access to other operating system's manual page names,
+.\"O they can be accessed using this option.
+現在のシステムから、他のオペレーティングシステムについてのマニュアルに
+アクセスできる場合には、このオプションをつけるとそれらのマニュアルが
+検索される。
+.\"O To search NewOS's manual page names,
+.\"O use the option
+.\"O .B \-m
+.\"O .BR NewOS .
+NewOS のマニュアルページを検索する場合には、
+.B \-m
+.B NewOS
+のようなオプションを指定する。
+
+.\"O The
+.\"O .I system
+.\"O specified can be a combination of comma delimited operating system names.
+.I system
+には複数のオペレーティングシステムをコンマで区切った形式で指定できる。
+.\"O To include a search of the native operating system's
+.\"O manual page names, include the system name
+.\"O .B man
+.\"O in the argument string.
+ネイティブのオペレーティングシステムの
+マニュアルページ名を検索の対象に含めるためには、システム名
+.B man
+を引き数文字列に加える。
+.\"O This option will override the
+.\"O .RB $ SYSTEM
+.\"O environment variable.
+このオプションは
+.RB $ SYSTEM
+環境変数を上書きする。
+.TP
+.BI \-M\  path \fR,\ \fB\-\-manpath= path
+.\"O Specify an alternate set of colon-delimited manual page hierarchies to
+.\"O search.
+検索対象にするマニュアルページの階層を変えたい場合、それらをコロンで
+区切った形式で指定する。
+.\"O By default,
+.\"O .B whatis
+.\"O uses the
+.\"O .RB $ MANPATH
+.\"O environment variable, unless it is empty or unset, in which case it will
+.\"O determine an appropriate manpath based on your
+.\"O .RB $ PATH
+.\"O environment variable.
+デフォルトでは、
+.B whatis
+は環境変数
+.RB $ MANPATH
+を用いる。これが空だったり設定されていなかった場合には、
+.RB $ PATH
+環境変数に基づいて、適切な manpath を決めようと試みる。
+.\"O This option overrides the contents of
+.\"O .RB $ MANPATH .
+このオプションは
+.RB $ MANPATH
+の内容を上書きする。
+.TP
+.BI \-L\  locale \fR,\ \fB\-\-locale= locale
+.B whatis
+will normally determine your current locale by a call to the C function
+.BR setlocale (3)
+which interrogates various environment variables, possibly including
+.RB $ LC_MESSAGES
+and
+.RB $ LANG .
+To temporarily override the determined value, use this option to supply a
+.I locale
+string directly to
+.BR whatis .
+Note that it will not take effect until the search for pages actually
+begins.
+Output such as the help message will always be displayed in the initially
+determined locale.
+.TP
+.BI \-C\  file \fR,\ \fB\-\-config\-file= file
+Use this user configuration file rather than the default of
+.IR ~/.manpath .
+.TP
+.BR \-? ", " \-\-help
+.\"O Print a help message and exit.
+ヘルプメッセージを表示して、終了する。
+.TP
+.BR \-\-usage
+.\"O Print a short usage message and exit.
+簡単な使用法のメッセージを表示して、終了する。
+.TP
+.BR \-V ", " \-\-version
+.\"O Display version information.
+バージョン情報を表示する。
+.\"O .SH "EXIT STATUS"
+.SH 返り値
+.TP
+.B 0
+.\"O Successful program execution.
+プログラムの実行に成功した。
+.TP
+.B 1
+.\"O Usage, syntax or configuration file error.
+使用法、文法、設定ファイルのいずれかにエラーがある。
+.TP
+.B 2
+.\"O Operational error.
+実行時エラー。
+.TP
+.B 16
+.\"O Nothing was found that matched the criteria specified.
+指定したキーワードにマッチするものが見つからなかった。
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.TP
+.B SYSTEM
+.\"O If
+.\"O .RB $ SYSTEM
+.\"O is set, it will have the same effect as if it had been specified as the
+.\"O argument to the
+.\"O .B \-m
+.\"O option.
+.RB $ SYSTEM
+環境変数が設定されている場合には、その内容が
+.B \-m
+オプションの引き数として指定された場合と同じ効力を持つ。
+.TP
+.B MANPATH
+.\"O If
+.\"O .RB $ MANPATH
+.\"O is set, its value is interpreted as the colon-delimited manual page
+.\"O hierarchy search path to use.
+.RB $ MANPATH
+が設定されていると、その内容は、検索対象とするマニュアルの階層を
+コロンで区切ったリストとみなされる。
+.TP
+.B MANWIDTH
+If
+.RB $ MANWIDTH
+is set, its value is used as the terminal width (see the
+.B \-\-long
+option).
+If it is not set, the terminal width will be calculated using the value of
+.RB $ COLUMNS ,
+and
+.BR ioctl (2)
+if available, or falling back to 80 characters if all else fails.
+.\"O .SH FILES
+.SH ファイル
+.TP
+.I /usr/share/man/index.(bt|db|dir|pag)
+.\"O A traditional global
+.\"O .I index
+.\"O database cache.
+従来形式のグローバルな
+.I index
+データベースキャッシュ。
+.TP
+.I /var/cache/man/index.(bt|db|dir|pag)
+.\"O An FHS
+.\"O compliant global
+.\"O .I index
+.\"O database cache.
+FHS 互換のグローバルな
+.I index
+データベースキャッシュ。
+.TP
+.I /usr/share/man/\|.\|.\|.\|/whatis
+.\"O A traditional
+.\"O .B whatis
+.\"O text database.
+従来形式の
+.B whatis
+テキストデータベース。
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR apropos (1),
+.BR man (1),
+.BR mandb (8)
+.\"O .SH AUTHOR
+.SH 著者
+.nf
+Wilf.\& (G.Wilford@ee.surrey.ac.uk).
+Fabrizio Polacco (fpolacco@debian.org).
+Colin Watson (cjwatson@debian.org).
+.fi
