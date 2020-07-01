@@ -11,6 +11,8 @@
 .\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
 .\" Translated Fri 25 Sep 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
 .\" Modified Sun 6 Dec 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Wed Jul  1 23:23:12 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .\"WORD:        hierarchy       階層
 .\"WORD:        description     要約(文)
@@ -81,8 +83,14 @@ whatis \- マニュアルページの要約を表示する
 データベースが検索の際に用いられ、これは
 .B mandb
 プログラムで更新される。
-Depending on your installation, this may be run by a periodic cron job, or
-may need to be run manually after new manual pages have been installed.
+.\"O Depending on your installation, this may be run by a periodic cron job, or
+.\"O may need to be run manually after new manual pages have been installed.
+インストール方法によるが、
+.B mandb
+が定期的な cron ジョブで実行されているかもしれないし、
+新しいマニュアルページをインストールしたときに
+.B mandb
+を手動で実行する必要があるかもしれない。
 .\"O To produce an old style text
 .\"O .B whatis
 .\"O database from the relative
@@ -116,7 +124,8 @@ may need to be run manually after new manual pages have been installed.
 デバッグ情報を表示する。
 .TP
 .BR \-v ", " \-\-verbose
-Print verbose warning messages.
+.\"O Print verbose warning messages.
+詳細な警告メッセージを表示する。
 .TP
 .BR \-r ", " \-\-regex
 .\"O Interpret each
@@ -156,26 +165,42 @@ Print verbose warning messages.
 の動作が多少遅くなる。
 .TP
 .BR \-l ", " \-\-long
-Do not trim output to the terminal width.
-Normally, output will be truncated to the terminal width to avoid ugly
-results from poorly-written
-.B NAME
-sections.
+.\"O Do not trim output to the terminal width.
+出力を端末幅で切り詰めない。
+.\"O Normally, output will be truncated to the terminal width to avoid ugly
+.\"O results from poorly-written
+.\"O .B NAME
+.\"O sections.
+通常は、適切に書かれていない
+.B 名前
+セクションの見にくさを避けるため、端末幅で切り詰める。
 .TP
 \fB\-s\fR \fIlist\/\fR, \
 \fB\-\-sections=\fIlist\/\fR, \
 \fB\-\-section=\fIlist\fR
-Search only the given manual sections.
+.\"O Search only the given manual sections.
+指定したマニュアルセクションのみを検索する。
+.\"O .I list
+.\"O is a colon- or comma-separated list of sections.
 .I list
-is a colon- or comma-separated list of sections.
-If an entry in
+はコロンまたはコンマ区切りのセクションのリストである。
+.\"O If an entry in
+.\"O .I list
+.\"O is a simple section, for example "3", then the displayed list of
+.\"O descriptions will include pages in sections "3", "3perl", "3x", and so on;
 .I list
-is a simple section, for example "3", then the displayed list of
-descriptions will include pages in sections "3", "3perl", "3x", and so on;
-while if an entry in
+のエントリが単純なセクション、例えば "3" である場合、
+表示される要約文のリストには、"3", "3perl", "3x" などの
+セクションのページが含まれる。
+.\"O while if an entry in
+.\"O .I list
+.\"O has an extension, for example "3perl", then the list will only include
+.\"O pages in that exact part of the manual section.
+一方で
 .I list
-has an extension, for example "3perl", then the list will only include
-pages in that exact part of the manual section.
+のエントリに拡張部分がある場合、例えば "3perl" の場合、
+表示される要約文のリストには、マニュアルセクションに厳密にマッチ
+したページのみが含まれる。
 .TP
 \fB\-m\fR \fIsystem\fR\|[\|,.\|.\|.\|]\|, \
 \fB\-\-systems=\fIsystem\fR\|[\|,.\|.\|.\|]
@@ -240,25 +265,46 @@ NewOS のマニュアルページを検索する場合には、
 の内容を上書きする。
 .TP
 .BI \-L\  locale \fR,\ \fB\-\-locale= locale
+.\"O .B whatis
+.\"O will normally determine your current locale by a call to the C function
+.\"O .BR setlocale (3)
+.\"O which interrogates various environment variables, possibly including
+.\"O .RB $ LC_MESSAGES
+.\"O and
+.\"O .RB $ LANG .
 .B whatis
-will normally determine your current locale by a call to the C function
+は通常、カレント・ロケールを C 関数
 .BR setlocale (3)
-which interrogates various environment variables, possibly including
+を呼ぶことによって決定しようとする。
+この関数は
 .RB $ LC_MESSAGES
-and
-.RB $ LANG .
-To temporarily override the determined value, use this option to supply a
+や
+.RB $ LANG
+などを含む様々な環境変数を調べる。
+.\"O To temporarily override the determined value, use this option to supply a
+.\"O .I locale
+.\"O string directly to
+.\"O .BR whatis .
+この値を一時的に上書きするには、このオプションを使って
+.B whatis
+に直接
 .I locale
-string directly to
-.BR whatis .
-Note that it will not take effect until the search for pages actually
-begins.
-Output such as the help message will always be displayed in the initially
-determined locale.
+文字列を渡せば良い。
+.\"O Note that it will not take effect until the search for pages actually
+.\"O begins.
+このオプションが効力を持つのは、実際のページの検索が始まってから
+であることに注意すること。
+.\"O Output such as the help message will always be displayed in the initially
+.\"O determined locale.
+ヘルプメッセージなどの出力は、起動前に定まっていたロケールで
+出力される。
 .TP
 .BI \-C\  file \fR,\ \fB\-\-config\-file= file
-Use this user configuration file rather than the default of
-.IR ~/.manpath .
+.\"O Use this user configuration file rather than the default of
+.\"O .IR ~/.manpath .
+デフォルトの
+.I ~/.manpath
+ではなく、ユーザー設定ファイルを使用する。
 .TP
 .BR \-? ", " \-\-help
 .\"O Print a help message and exit.
@@ -314,16 +360,25 @@ Use this user configuration file rather than the default of
 コロンで区切ったリストとみなされる。
 .TP
 .B MANWIDTH
-If
+.\"O If
+.\"O .RB $ MANWIDTH
+.\"O is set, its value is used as the terminal width (see the
+.\"O .B \-\-long
+.\"O option).
 .RB $ MANWIDTH
-is set, its value is used as the terminal width (see the
-.B \-\-long
-option).
-If it is not set, the terminal width will be calculated using the value of
-.RB $ COLUMNS ,
-and
+が設定されると、端末幅として使われる
+.RB ( \-\-long
+オプションを参照)。
+.\"O If it is not set, the terminal width will be calculated using the value of
+.\"O .RB $ COLUMNS ,
+.\"O and
+.\"O .BR ioctl (2)
+.\"O if available, or falling back to 80 characters if all else fails.
+この環境変数が設定されない場合、端末幅は、利用可能であれば、
+.RB $ COLUMNS
+の値と
 .BR ioctl (2)
-if available, or falling back to 80 characters if all else fails.
+を使って計算され、利用可能でない場合は、80 文字にされる。
 .\"O .SH FILES
 .SH ファイル
 .TP
