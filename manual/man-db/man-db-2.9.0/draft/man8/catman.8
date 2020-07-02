@@ -1,0 +1,192 @@
+.\" Man page for catman
+.\"
+.\" Copyright (C), 1994, 1995, Graeme W. Wilford. (Wilf.)
+.\"
+.\" You may distribute under the terms of the GNU General Public
+.\" License as specified in the file COPYING that comes with the
+.\" man-db distribution.
+.\"
+.\" Sat Dec 10 14:17:29 GMT 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
+.\"
+.\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
+.\" Translated Fri 25 Sep 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Modified Sun 6 Dec 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Thu Jul  2 17:35:58 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.\"WORD:        hierarchy       階層
+.\"
+.pc
+.TH CATMAN 8 "2019-10-23" "2.9.0" "Manual pager utils"
+.\"O .SH NAME
+.SH 名前
+.\"O catman \- create or update the pre-formatted manual pages
+catman \- フォーマットされたマニュアルページを生成・更新する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B catman
+.RB [\| \-d?V \|]
+.RB [\| \-M
+.IR path \|]
+.RB [\| \-C
+.IR file \|]
+.RI [\| section \|]
+\&.\|.\|.
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B catman
+.\"O is used to create an up to date set of pre-formatted manual pages known as
+.\"O cat pages.
+.B catman
+は、フォーマット済みマニュアルページ (cat ページと呼ばれる) の最新の
+セットを生成するために用いられる。
+.\"O Cat pages are generally much faster to display than the original
+.\"O manual pages, but require extra storage space.
+通常 cat ページはオリジナルの man ページよりもずっと速く表示できるが、
+余分な保存領域が必要とされる。
+.\"O The decision to support cat pages is that of the local administrator, who
+.\"O must provide suitable directories to contain them.
+cat ページをサポートするかどうかは、
+ローカルな管理者 (cat ページを保存するディレクトリに関する権限を持って
+いる人) の判断による。
+
+.\"O The options available to
+.\"O .B catman
+.\"O are the manual page hierarchies and sections to pre-format.
+.B catman
+に与えることのできるオプションは、フォーマットを行うマニュアルページの
+階層 (hierarchy) とセクションである。
+.\"O The default hierarchies are those specified as system hierarchies in the
+.\"O man-db configuration file, and the default sections are either the
+.\"O colon-delimited contents of the environment variable
+.\"O .RB $ MANSECT
+.\"O or the standard set compiled into
+.\"O .B man
+.\"O if
+.\"O .RB $ MANSECT
+.\"O is undefined.
+デフォルトの階層は、 man_db の設定ファイルで 
+システムのマニュアルページの系列として指定されているものである。
+デフォルトのセクションは、環境変数
+.RB $ MANSECT
+が与えられていれば、その内容をコロン区切りでパースしたものになり、
+与えられていなければ
+.B man
+のコンパイル時に指定されている標準的なセットとなる。
+.\"O Supplying
+.\"O .B catman
+.\"O with a set of whitespace-delimited section names will override both of
+.\"O the above.
+.B catman
+の実行時にセクションの名前をスペースで区切って与えれば、
+これらの両方を上書きする。
+
+.\"O .B catman
+.\"O makes use of the
+.\"O .B index
+.\"O database cache associated with each hierarchy to determine which files
+.\"O need to be formatted.
+.B catman
+はそれぞれの階層における
+.B index
+データベースキャッシュを利用して、どのファイルをフォーマットすべきかを
+決定する。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-d ", " \-\-debug
+.\"O Print debugging information.
+デバッグ情報を表示する。
+.TP
+.BI \-M\  path \fR,\ \fB\-\-manpath= path
+.\"O Specify an alternate colon-delimited manual page hierarchy search path.
+検索対象にするマニュアルページの階層を変えたい場合、
+それらをコロンで区切った形式で指定する。
+.\"O By default, this is all paths indicated as system hierarchies
+.\"O in the man-db configuration file.
+デフォルトでは、man-db 設定ファイルのシステムのマニュアル系列で示されている
+すべてのパスである。
+.TP
+.BI \-C\  file \fR,\ \fB\-\-config\-file= file
+.\"O Use this user configuration file rather than the default of
+.\"O .IR ~/.manpath .
+デフォルトの
+.I ~/.manpath
+ではなく、ユーザー設定ファイルを使用する。
+.TP
+.BR \-? ", " \-\-help
+.\"O Print a help message and exit.
+ヘルプメッセージを表示して、終了する。
+.TP
+.BR \-\-usage
+.\"O Print a short usage message and exit.
+簡単な使用法のメッセージを表示して、終了する。
+.TP
+.BR \-V ", " \-\-version
+.\"O Display version information.
+バージョン情報を表示して、終了する。
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.TP
+.B MANSECT
+.\"O If
+.\"O .RB $ MANSECT
+.\"O is set, its value is a colon-delimited list of sections and it is used to
+.\"O determine which manual sections to search and in what order.
+.RB $ MANSECT
+が設定されていると、その値はセクションのリスト (コロン区切り) として扱われ、
+マニュアルのどのセクションを検索するかを決定する際に用いられる。
+.\"O The default is "1 1p 8 2 3 3p 3pm 4 5 6 7 9 0p n l p o 1x 2x 3x 4x 5x 6x 7x 8x", unless overridden by the
+.\"O .B SECTION
+.\"O directive in
+.\"O .IR /etc/man_db.conf .
+.I /etc/man_db.conf
+の
+.B SECTION
+指定で上書きされていない限り、デフォルトは
+"1 1p 8 2 3 3p 3pm 4 5 6 7 9 0p n l p o 1x 2x 3x 4x 5x 6x 7x 8x"
+である。
+.TP
+.B MANPATH
+.\"O If
+.\"O .RB $ MANPATH
+.\"O is set, its value is interpreted as the colon-delimited manual page
+.\"O hierarchy search path to use.
+.RB $ MANPATH
+が設定されていると、その内容は検索対象とするマニュアルの階層を
+コロンで区切ったリストとみなされる。
+.\"O .SH FILES
+.SH ファイル
+.TP
+.I /etc/man_db.conf
+.\"O man-db configuration file.
+man-db の設定ファイル
+.TP
+.I /usr/man/index.(bt|db|dir|pag)
+.\"O A traditional global
+.\"O .I index
+.\"O database cache.
+従来形式のグローバルな
+.I index
+データベースキャッシュ。
+.TP
+.I /var/catman/index.(bt|db|dir|pag)
+.\"O An alternate or FSSTND
+.\"O compliant global
+.\"O .I index
+.\"O database cache.
+新しい FSSTND 準拠のグローバルな
+.I index
+データベースキャッシュ。
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR man (1),
+.BR manpath (5),
+.BR mandb (8)
+.\"O .SH AUTHOR
+.SH 著者
+.nf
+Wilf.\& (G.Wilford@ee.surrey.ac.uk).
+Fabrizio Polacco (fpolacco@debian.org).
+Colin Watson (cjwatson@debian.org).
+.fi
