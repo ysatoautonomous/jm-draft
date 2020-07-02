@@ -1,0 +1,331 @@
+'\" t
+.\" Man page for mandb
+.\"
+.\" Copyright (C) 1994, 1995, Graeme W. Wilford. (Wilf.)
+.\" Copyright (C) 2001-2019 Colin Watson.
+.\"
+.\" You may distribute under the terms of the GNU General Public
+.\" License as specified in the file COPYING that comes with the
+.\" man-db distribution.
+.\"
+.\" Tue Apr 26 12:56:44 BST 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
+.\"
+.\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
+.\" Translated Fri 25 Sep 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Modified Sun 6 Dec 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\"
+.\"WORD:        hierarchy       階層
+.\"
+.pc
+.TH MANDB 8 "2019-10-23" "2.9.0" "Manual pager utils"
+.\"O .SH NAME
+.SH 名前
+.\"O mandb \- create or update the manual page index caches
+mandb \- マニュアルページのインデックスキャッシュを作成・更新する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B mandb
+.RB [\| \-dqsucpt?V \|]
+.RB [\| \-C
+.IR file \|]
+.RI [\| manpath \|]
+.br
+.B mandb
+.RB [\| \-dqsut \|]
+.RB [\| \-C
+.IR file \|]
+.B \-f
+.IR filename \ .\|.\|.
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B mandb
+.\"O is used to initialise or manually update
+.\"O .B index
+.\"O database caches.
+.B mandb
+はデータベースのキャッシュ
+.B index
+を初期化したり、手動で更新するときに用いる。
+.\"O The caches contain information relevant to the current state of the manual
+.\"O page system and the information stored within them is used by the man-db
+.\"O utilities to enhance their speed and functionality.
+キャッシュには、現在のマニュアルページシステムに関する情報が含まれている。
+この情報は man-db ユーティリティ群によって用いられ、速度と機能の向上に
+貢献している。
+
+.\"O When creating or updating an
+.\"O .BR index ,
+.\"O .B mandb
+.\"O will warn of bad ROFF .so requests, bogus manual page filenames and
+.\"O manual pages from which the
+.\"O .B whatis
+.\"O cannot be parsed.
+.B index
+が生成・更新されるとき、
+.B mandb
+は ROFF の .so 命令の間違いや、マニュアルページのファイル名の重複、
+.B whatis
+によって情報を抽出できないマニュアルページなどに対して警告を発する。
+
+.\"O Supplying
+.\"O .B mandb
+.\"O with an optional colon-delimited path will override the internal system
+.\"O manual page hierarchy search path, determined from information found within
+.\"O the man-db configuration file.
+.B mandb
+に、コロンで区切ったパスのリストを与えることもできる。
+これは man-db 設定ファイルの情報から決定された、
+内部のシステムのマニュアルページ階層検索パスを上書きする。
+.\"O .SH "DATABASE CACHES"
+.SH データベースキャッシュ
+.\"O .B mandb
+.\"O can be compiled with support for any one of the following database types.
+.B mandb
+は以下のデータベース形式のいずれか一つをサポートするように
+コンパイルすることができる。
+
+.TS
+tab (@);
+l lw(20m) l l.
+.\"O Name@Type@Async@Filename
+名前@形式@非同期@ファイル名
+_
+Berkeley db@T{
+.\"O Binary tree
+二分木
+.\"O T}@Yes@\fIindex.bt\fR
+T}@可@\fIindex.bt\fR
+GNU gdbm@T{
+.\"O Hashed
+ハッシュ
+.\"O T}@Yes@\fIindex.db\fR
+T}@可@\fIindex.db\fR
+UNIX ndbm@T{
+.\"O Hashed
+ハッシュ
+.\"O T}@No@\fIindex.(dir|pag)\fR
+T}@不可@\fIindex.(dir|pag)\fR
+.TE
+
+.\"O Those database types that support asynchronous updates provide enhanced
+.\"O speed at the cost of possible corruption in the event of unusual
+.\"O termination.
+これらのデータベース形式のうち非同期な更新ができるものでは、
+速度は向上するが、予期しない中断が起こったときにデータが壊れるかも
+しれない。
+.\"O In an unusual case where this has occurred, it may be necessary to rerun
+.\"O .B mandb
+.\"O with the
+.\"O .B \-c
+.\"O option to re-create the databases from scratch.
+このような破壊が起こったときには、
+.B mandb
+を
+.B \-c
+オプションをつけて実行し、データベースを再構成しなおす必要があるだろう。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-d ", " \-\-debug
+.\"O Print debugging information.
+デバッグ情報を表示する。
+.TP
+.BR \-q ", " \-\-quiet
+.\"O Produce no warnings.
+警告を発しない。
+.TP
+.BR \-s ", " \-\-no-straycats
+.\"O Do not spend time looking for or adding information to the databases
+.\"O regarding stray cats.
+stray cat (訳注: おそらく対応する roff ソースのない cat ページのこと
+でしょう) を探したり、それに関する情報をデータに追加しようとは試みない。
+.TP
+.BR \-p ", " \-\-no-purge
+Do not spend time checking for deleted manual pages and purging them from
+the databases.
+.TP
+.BR \-c ", " \-\-create
+.\"O By default,
+.\"O .B mandb
+.\"O will try to update any previously created databases.
+デフォルトでは、
+.B mandb
+は以前に生成されたデータベースを更新しようとする。
+.\"O If a database does not exist, it will create it.
+データベースが存在しない場合には、始めから生成する。
+.\"O This option forces
+.\"O .B mandb
+.\"O to delete previous databases and re-create them from scratch, and implies
+.\"O .B \-\-no-purge.
+このオプションを指定すると、
+.B mandb
+は以前のデータベースを消去し、データベースをゼロから再構成する。
+これは暗黙のうちに
+.B \-\-no-purge
+を指定する。
+.\"O This may be necessary if a database becomes corrupt or if a new database
+.\"O storage scheme is introduced in the future.
+これはデータベースが壊れた場合や、将来データベースの管理方法が
+新しいものに変わったときなどに必要となろう。
+.TP
+.BR \-u ", " \-\-user-db
+.\"O Create user databases only, even with write permissions necessary to create
+.\"O system databases.
+ユーザーのデータベースしか生成しない。
+システムのデータベースを作成する権限があっても、生成しない。
+.TP
+.BR \-t ", " \-\-test
+Perform correctness checks on manual pages in the hierarchy search path.
+With this option,
+.B mandb
+will not alter existing databases.
+.TP
+.BR \-f ", " \-\-filename
+Update only the entries for the given filename.
+This option is not for general use; it is used internally by
+.B man
+when it has been compiled with the
+.B MAN_DB_UPDATES
+option and finds that a page is out of date.
+It implies
+.B \-p
+and disables
+.B \-c
+and
+.BR \-s .
+.TP
+.BI \-C\  file \fR,\ \fB\-\-config\-file= file
+Use this user configuration file rather than the default of
+.IR ~/.manpath .
+.TP
+.BR \-? ", " \-\-help
+.\"O Show the usage message, then exit.
+使用法のメッセージを表示して、終了する。
+.TP
+.BR \-\-usage
+.\"O Print a short usage message and exit.
+簡単な使用法のメッセージを表示して、終了する。
+.TP
+.BR \-V ", " \-\-version
+.\"O Show the version, then exit.
+バージョン情報を表示して、終了する。
+.\"O .SH "EXIT STATUS"
+.SH 返り値
+.TP
+.B 0
+.\"O Successful program execution.
+プログラムの実行に成功した。
+.TP
+.B 1
+.\"O Usage, syntax, or configuration file error.
+使用法、文法、設定ファイルのいずれかにエラーがある。
+.TP
+.B 2
+.\"O Operational error.
+実行時エラー。
+.TP
+.B 3
+.\"O A child process failed.
+子プロセスが失敗した。
+.\"O .SH DIAGNOSTICS
+.SH 診断メッセージ
+.\"O The following warning messages can be emitted during database building.
+データベースの構築中に、以下のような警告メッセージが出力されることがある。
+.TP
+.B <filename>: whatis parse for page(sec) failed
+.\"O An attempt to extract whatis line(s) from the given <filename> failed.
+.\"O This is usually due to a poorly written manual page, but if many such
+.\"O messages are emitted it is likely that the system contains non-standard
+.\"O manual pages which are incompatible with the man-db whatis parser.
+<filename> から whatis に必要な行を取り出すのに失敗した。
+これは通常マニュアルページの書き方が悪いからであることが多いが、
+このようなメッセージが多く出るようであれば、そのシステムには man-db の
+whatis パーサーと互換性のない、非標準的なマニュアルページが含まれている
+可能性が高い。
+See the
+.B WHATIS PARSING
+section in
+.BR lexgrog (1)
+for more information.
+.TP
+.B <filename>: is a dangling symlink
+.\"O <filename> does not exist but is referenced by a symbolic link.
+.\"O Further diagnostics are usually emitted to identify the <filename> of the
+.\"O offending link.
+<filename> がシンボリックリンクによって参照されているが、存在していない。
+通常、<filename> を間違ってリンク対象としてしまっているリンク元に
+関する診断メッセージが同時に表示される。
+.TP
+.B <filename>: bad symlink or ROFF `.so' request
+.\"O <filename> is either a symbolic link to, or contains a ROFF include
+.\"O request to, a non existent file.
+<filename> はシンボリックリンクであるか、ROFF のインクルード命令を含んでいるが、
+リンク先・読み込み先のファイルが存在していない。
+.TP
+.B <filename>: ignoring bogus filename
+.\"O The <filename> may or may not be a valid manual page but its name is
+.\"O invalid.
+<filename> は正しい (あるいは正しくない) マニュアルページであるが、
+名前が正しくない。
+.\"O This is usually due to a manual page with sectional extension <x> being put
+.\"O in manual page section <y>.
+通常これは、セクション拡張子 <x> のファイルが、
+マニュアルページのセクション <y> に置かれている場合に起こる。
+.TP
+.B <filename_mask>: competing extensions
+.\"O The wildcard <filename_mask> is not unique.
+ワイルドカード <filename_mask> がユニークな名前でない。
+.\"O This is usually caused by the existence of both a compressed and
+.\"O uncompressed version of the same manual page.
+これは通常、同じマニュアルページに対して、圧縮されたバージョンと
+されていないバージョンが共存している場合に起こる。
+.\"O All but the most recent are ignored.
+最新のもの以外は無視される。
+.\"O .SH FILES
+.SH ファイル
+.TP
+.I /etc/man_db.conf
+.\"O man-db configuration file.
+man-db の設定ファイル。
+.TP
+.I /var/cache/man/index.(bt|db|dir|pag)
+An FHS compliant global
+.I index
+database cache.
+.PP
+Older locations for the database cache included:
+.TP
+.I /usr/man/index.(bt|db|dir|pag)
+.\"O A traditional global
+.\"O .I index
+.\"O database cache.
+従来形式のグローバルな
+.I index
+データベースキャッシュ。
+.TP
+.I /var/catman/index.(bt|db|dir|pag)
+.\"O An alternate or FSSTND
+.\"O compliant global
+.\"O .I index
+.\"O database cache.
+新しい FSSTND 準拠の
+.I index
+データベースキャッシュ。
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR lexgrog (1),
+.BR man (1),
+.BR manpath (5),
+.BR catman (8)
+.PP
+The
+.B "WHATIS PARSING"
+section formerly in this manual page is now part of
+.BR lexgrog (1).
+.\"O .SH AUTHOR
+.SH 著者
+.nf
+Wilf.\& (G.Wilford@ee.surrey.ac.uk).
+Fabrizio Polacco (fpolacco@debian.org).
+Colin Watson (cjwatson@debian.org).
+.fi
