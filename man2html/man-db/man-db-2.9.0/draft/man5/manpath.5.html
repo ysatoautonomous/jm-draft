@@ -1,0 +1,377 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MANPATH</TITLE>
+</HEAD><BODY>
+<H1>MANPATH</H1>
+Section: /etc/man_db.conf (5)<BR>Updated: 2019-10-23<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+manpath - /etc/man_db.conf ファイルのフォーマット
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+manpath 設定ファイルは、マニュアルページのユーティリティによって用いられる。
+ユーザーの manpath を実行時に評価したり、どのマニュアルページ系列
+(hierarchy) すなわち manpath をシステムの系列として扱うかを判断したり、
+どのディレクトリを cat ファイルを保管するディレクトリとして用いるかを
+決定するために用いられる。
+<P>
+
+
+
+
+環境変数
+$<B>MANPATH</B>
+
+がすでに設定されている場合には、/etc/man_db.conf に含まれている
+情報はそれを上書きしない。
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>フォーマット</H2>
+
+
+現在のところ、以下のフィールドタイプが認識される。
+<DL COMPACT>
+<DT><B>#</B><I>&nbsp;comment</I>
+
+<DD>
+
+
+
+空行や
+<B>#</B>
+
+で始まる行はコメントとみなされ、無視される。
+<DT><B>MANDATORY_MANPATH</B><I>&nbsp;manpath_element</I>
+
+<DD>
+
+
+
+この形式の行は、自動的に生成される
+$<B>MANPATH</B>
+
+には必ず含まれているべき manpath を示す。
+
+
+<I>/usr/man</I>
+
+などが典型である。
+<DT><B>MANPATH_MAP</B><I>&nbsp;path_element&nbsp;manpath_element</I>
+
+<DD>
+
+
+
+
+
+この形式の行は
+PATH
+
+から
+$<B>MANPATH</B>
+
+へのマッピングを設定する。
+
+
+
+
+
+
+
+それぞれの
+<I>path_element</I>
+
+がユーザーの
+$<B>PATH</B>
+
+に含まれていると、
+<I>manpath_element</I>
+
+が
+$<B>MANPATH</B>
+
+に追加される。
+<DT><B>MANDB_MAP </B><I>manpath_element </I>[ <I>catpath_element</I> ]<DD>
+
+
+この形式の行は、どの manpath をシステムの manpath として扱い、またそれらの cat 
+ページをどこに保存するかを指定する (後半は省略可)。
+
+
+
+
+
+
+この形式のフィールドは、
+<B>man</B>
+
+が setuid されたプログラムである場合に特に重要である。
+なぜなら、(ユーザー毎の設定ファイル .manpath ではなく、
+システムの設定ファイル /etc/man_db.conf において)
+これはどの系列を setuid されたユーザー権限でアクセスし、
+どれを起動ユーザーの権限でアクセスするかを指定することになるから
+である。
+<P>
+
+
+
+
+
+
+
+システムのマニュアルページの系列は、通常
+<I>/usr</I>
+
+以下に保管されている。例えば
+<I>/usr/man</I>,
+
+<I>/usr/local/man</I>,
+
+<I>/usr/X11R6/man</I>
+
+などがこれにあたる。
+<P>
+
+
+
+
+
+特定の
+<I>manpath_element</I>
+
+からの cat ページは保管したくない場合や、伝統的な位置に保管したい場合には、
+<I>catpath_element</I>
+
+は省略する。
+<P>
+
+
+
+伝統的な cat の場所は、リードオンリーでマウントされているマニュアルページの
+系列下にすることはできない。この理由から、これらの保管場所としては、
+任意のディレクトリ系列を指定することが可能になっている (もちろん指定した
+ディレクトリは有効なものでなければならない)。
+
+
+
+
+
+<B>Linux FSSTND</B>
+
+に従う場合には、
+キーワード
+<B>FSSTND</B>
+
+を実際のディレクトリ名の代わりに用いることができる。
+<P>
+
+
+
+
+
+
+
+
+残念ながら、システムの man のツリーパスは<B>すべて</B>指定しなければならない。
+他のシステムパス
+(<I>/usr/man/sun</I>
+
+のようなもの) やすべての
+<B>NLS ロケール</B>
+
+パス
+(<I>/usr/man/de_DE.88591</I>
+
+のようなもの) も、それぞれすべて指定する必要がある。
+<P>
+
+
+
+情報は書かれた順に一行ずつ評価されるので、他の系列のサブツリーと
+なっているような manpath は先に書かなければならない。
+さもないと、マッチが正しく行われない可能性がある。
+
+
+
+
+例えば
+<I>/usr/man/de_DE.88591</I>
+
+は
+<I>/usr/man</I>
+
+より先に来なければならない。
+<DT><B>DEFINE</B><I>&nbsp;key&nbsp;value</I>
+
+<DD>
+
+
+
+この形式の行では、様々な設定値を定義する。
+マニュアルページャーユーティリティで使われるこれらの値については、
+デフォルトの設定ファイルを参照すること。
+
+
+
+
+
+これらの設定値には、
+(<I>grep</I>
+
+や
+<I>tbl</I>
+
+のような) 様々なプログラムのデフォルトのパスや、
+そのプログラムのデフォルトの引き数のセットが含まれる。
+<DT><B>SECTION</B> <I>section</I> ...<DD>
+<DL COMPACT><DT><DD>
+
+
+この形式の行では、マニュアルセクションを検索する順番を定義する。
+
+
+
+設定ファイルに
+<B>SECTION</B>
+
+の指定がない場合、デフォルトは以下の通りである:
+<P>
+
+<DL COMPACT><DT><DD>
+<PRE>
+SECTION 1 n l 8 3 0 2 5 4 9 6 7
+</PRE>
+
+</DL>
+
+<P>
+
+
+
+
+複数の
+<B>SECTION</B>
+
+が指定されている場合、セクションのリストが連結される。
+<P>
+
+
+
+特定の拡張子 (たとえば 1mh) がリストにない場合、
+残りの部分が属するセクションで表示される。
+
+
+この機能により、ユーザーは特定の順番を強制したい場合にのみ、
+明示的に拡張子をリストに定義すればよくなる。
+
+
+拡張付きのセクションは、通常はメインのセクションに隣接して定義
+すべきである (たとえば &quot;1 1mh 8 ...&quot;)。
+<P>
+
+
+
+<B>SECTIONS</B>
+
+は、この指定の別名として受け付けられる。
+</DL>
+
+<DT><B>MINCATWIDTH</B><I>&nbsp;width</I>
+
+<DD>
+
+
+
+
+端末の幅が
+<I>width</I>
+
+より小さい場合、cat ページは (存在しない場合) 生成されず、表示もされない。
+デフォルトは 80 である。
+<DT><B>MAXCATWIDTH</B><I>&nbsp;width</I>
+
+<DD>
+
+
+
+
+端末の幅が
+<I>width</I>
+
+より大きい場合、cat ページは (存在しない場合) 生成されず、表示もされない。
+デフォルトは 80 である。
+<DT><B>CATWIDTH</B><I>&nbsp;width</I>
+
+<DD>
+
+
+
+
+<I>width</I>
+
+が 0 以外の場合、端末の幅が自動的に使われるのではなく、
+指定された端末の幅で cat ページが常にフォーマットされる。
+
+
+
+
+この値は一般に
+<B>MINCATWIDTH</B>
+
+から
+<B>MAXCATWIDTH</B>
+
+の範囲でなければならない。
+<DT><B>NOCACHE</B>
+
+<DD>
+
+
+
+このフラグを指定すると
+<B><A HREF="../man1/man.1.html">man</A></B>(1)
+
+は cat ページを自動的に生成しない。
+
+</DL>
+<A NAME="lbAE">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+上記のルールが正しく守られない場合には、マニュアルページャーの機能は
+正しく動作しない。
+
+これらのルールは不必要に難しい。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">説明</A><DD>
+<DT><A HREF="#lbAD">フォーマット</A><DD>
+<DT><A HREF="#lbAE">バグ</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 06:31:53 GMT, July 02, 2020
+</BODY>
+</HTML>
