@@ -1,0 +1,485 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MANDB</TITLE>
+</HEAD><BODY>
+<H1>MANDB</H1>
+Section: Manual pager utils (8)<BR>Updated: 2019-10-23<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+mandb - マニュアルページのインデックスキャッシュを作成・更新する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>mandb</B>
+
+[<B>-dqsucpt?V</B>]
+
+[<B>-C</B>
+
+<I>file</I>]
+
+[<I>manpath</I>]
+
+<BR>
+
+<B>mandb</B>
+
+[<B>-dqsut</B>]
+
+[<B>-C</B>
+
+<I>file</I>]
+
+<B>-f</B>
+
+<I>filename</I>&nbsp;...
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>mandb</B>
+
+はデータベースのキャッシュ
+<B>index</B>
+
+を初期化したり、手動で更新するときに用いる。
+
+
+
+キャッシュには、現在のマニュアルページシステムに関する情報が含まれている。
+この情報は man-db ユーティリティ群によって用いられ、速度と機能の向上に
+貢献している。
+<P>
+
+
+
+
+
+
+
+<B>index</B>
+
+が生成・更新されるとき、
+<B>mandb</B>
+
+は ROFF の .so 命令の間違いや、マニュアルページのファイル名の重複、
+<B>whatis</B>
+
+によって情報を抽出できないマニュアルページなどに対して警告を発する。
+<P>
+
+
+
+
+
+<B>mandb</B>
+
+に、コロンで区切ったパスのリストを与えることもできる。
+これは man-db 設定ファイルの情報から決定された、
+内部のシステムのマニュアルページ階層検索パスを上書きする。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>データベースキャッシュ</H2>
+
+
+
+<B>mandb</B>
+
+は以下のデータベース形式のいずれか一つをサポートするように
+コンパイルすることができる。
+<P>
+<TABLE>
+<TR VALIGN=top><TD>名前</TD><TD>形式</TD><TD>非同期</TD><TD>ファイル名<BR></TD></TR>
+<TR VALIGN=top><TD COLSPAN=4><HR></TD></TR>
+<TR VALIGN=top><TD>Berkeley db</TD><TD>
+
+二分木
+
+</TD><TD>可</TD><TD><I>index.bt</I><BR></TD></TR>
+<TR VALIGN=top><TD>GNU gdbm</TD><TD>
+
+ハッシュ
+
+</TD><TD>可</TD><TD><I>index.db</I><BR></TD></TR>
+<TR VALIGN=top><TD>UNIX ndbm</TD><TD>
+
+ハッシュ
+
+</TD><TD>不可</TD><TD><I>index.(dir|pag)</I><BR></TD></TR>
+</TABLE>
+
+<P>
+
+
+
+これらのデータベース形式のうち非同期な更新ができるものでは、
+速度は向上するが、予期しない中断が起こったときにデータが壊れるかも
+しれない。
+
+
+
+
+
+このような破壊が起こったときには、
+<B>mandb</B>
+
+を
+<B>-c</B>
+
+オプションをつけて実行し、データベースを再構成しなおす必要があるだろう。
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-d</B>, <B>--debug</B>
+
+<DD>
+
+デバッグ情報を表示する。
+<DT><B>-q</B>, <B>--quiet</B>
+
+<DD>
+
+警告を発しない。
+<DT><B>-s</B>, <B>--no-straycats</B>
+
+<DD>
+
+
+stray cat (訳注: おそらく対応する roff ソースのない cat ページのこと
+でしょう) を探したり、それに関する情報をデータに追加しようとは試みない。
+<DT><B>-p</B>, <B>--no-purge</B>
+
+<DD>
+
+
+削除されたマニュアルページのチェックと、データベースからの削除に
+時間を使わない。
+<DT><B>-c</B>, <B>--create</B>
+
+<DD>
+
+
+
+デフォルトでは、
+<B>mandb</B>
+
+は以前に生成されたデータベースを更新しようとする。
+
+データベースが存在しない場合には、始めから生成する。
+
+
+
+
+このオプションを指定すると、
+<B>mandb</B>
+
+は以前のデータベースを消去し、データベースをゼロから再構成する。
+これは暗黙のうちに
+<B>--no-purge</B>
+
+を指定する。
+
+
+これはデータベースが壊れた場合や、将来データベースの管理方法が
+新しいものに変わったときなどに必要となろう。
+<DT><B>-u</B>, <B>--user-db</B>
+
+<DD>
+
+
+ユーザーのデータベースしか生成しない。
+システムのデータベースを作成する権限があっても、生成しない。
+<DT><B>-t</B>, <B>--test</B>
+
+<DD>
+
+階層の検索パスにあるマニュアルページの整合性チェックを行う。
+
+
+
+このオプションを指定すると、
+<B>mandb</B>
+
+は既存のデータベースを変更しない。
+<DT><B>-f</B>, <B>--filename</B>
+
+<DD>
+
+指定されたファイル名のエントリのみを更新する。
+
+
+
+
+
+このオプションは一般的には使用されない。
+このオプションは、
+<B>man</B>
+
+が
+<B>MAN_DB_UPDATES</B>
+
+オプションを付けてコンパイルされていて、ページの有効期限が切れて
+いるのを見つけた場合、
+<B>man</B>
+
+が内部的に使う。
+
+
+
+
+
+
+このオプションは
+<B>-p</B>
+
+を暗黙のうちに指定し、
+<B>-c</B>
+
+と
+<B>-s</B>
+
+を無効にする。
+<DT><B>-C&nbsp;</B><I>file</I><B></B>,&nbsp;<B>--config-file=</B><I>file</I>
+
+<DD>
+
+
+デフォルトの
+<I>~/.manpath</I>
+
+ではなく、ユーザーの設定ファイルを使う。
+<DT><B>-?</B>, <B>--help</B>
+
+<DD>
+
+使用法のメッセージを表示して、終了する。
+<DT><B>--usage</B>
+
+<DD>
+
+簡単な使用法のメッセージを表示して、終了する。
+<DT><B>-V</B>, <B>--version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>返り値</H2>
+
+<DL COMPACT>
+<DT><B>0</B>
+
+<DD>
+
+プログラムの実行に成功した。
+<DT><B>1</B>
+
+<DD>
+
+使用法、文法、設定ファイルのいずれかにエラーがある。
+<DT><B>2</B>
+
+<DD>
+
+実行時エラー。
+<DT><B>3</B>
+
+<DD>
+
+子プロセスが失敗した。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>診断メッセージ</H2>
+
+
+データベースの構築中に、以下のような警告メッセージが出力されることがある。
+<DL COMPACT>
+<DT><B>&lt;filename&gt;: whatis parse for page(sec) failed</B>
+
+<DD>
+
+
+
+
+&lt;filename&gt; から whatis に必要な行を取り出すのに失敗した。
+これは通常マニュアルページの書き方が悪いからであることが多いが、
+このようなメッセージが多く出るようであれば、そのシステムには man-db の
+whatis パーサーと互換性のない、非標準的なマニュアルページが含まれている
+可能性が高い。
+
+
+
+
+
+詳しい情報は
+<B><A HREF="../man1/lexgrog.1.html">lexgrog</A></B>(1)
+
+の
+<B>WHATIS の解析</B>
+
+のセクションを参照すること。
+<DT><B>&lt;filename&gt;: is a dangling symlink</B>
+
+<DD>
+
+
+
+&lt;filename&gt; がシンボリックリンクによって参照されているが、存在していない。
+通常、&lt;filename&gt; を間違ってリンク対象としてしまっているリンク元に
+関する診断メッセージが同時に表示される。
+<DT><B>&lt;filename&gt;: bad symlink or ROFF `.so' request</B>
+
+<DD>
+
+
+&lt;filename&gt; はシンボリックリンクであるか、ROFF のインクルード命令を含んでいるが、
+リンク先・読み込み先のファイルが存在していない。
+<DT><B>&lt;filename&gt;: ignoring bogus filename</B>
+
+<DD>
+
+
+&lt;filename&gt; は正しい (あるいは正しくない) マニュアルページであるが、
+名前が正しくない。
+
+
+通常これは、セクション拡張子 &lt;x&gt; のファイルが、
+マニュアルページのセクション &lt;y&gt; に置かれている場合に起こる。
+<DT><B>&lt;filename_mask&gt;: competing extensions</B>
+
+<DD>
+
+ワイルドカード &lt;filename_mask&gt; がユニークな名前でない。
+
+
+これは通常、同じマニュアルページに対して、圧縮されたバージョンと
+されていないバージョンが共存している場合に起こる。
+
+最新のもの以外は無視される。
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>ファイル</H2>
+
+<DL COMPACT>
+<DT><I>/etc/man_db.conf</I>
+
+<DD>
+
+man-db の設定ファイル。
+<DT><I>/var/cache/man/index.(bt|db|dir|pag)</I>
+
+<DD>
+
+
+
+FHS 準拠のグローバルな
+<I>index</I>
+
+データベースキャッシュ。
+</DL>
+<P>
+
+
+データベースキャッシュの昔の場所としては以下がある:
+<DL COMPACT>
+<DT><I>/usr/man/index.(bt|db|dir|pag)</I>
+
+<DD>
+
+
+
+従来形式のグローバルな
+<I>index</I>
+
+データベースキャッシュ。
+<DT><I>/var/catman/index.(bt|db|dir|pag)</I>
+
+<DD>
+
+
+
+
+別の FSSTND 準拠のグローバルな
+<I>index</I>
+
+データベースキャッシュ。
+
+</DL>
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/lexgrog.1.html">lexgrog</A></B>(1),
+
+<B><A HREF="../man1/man.1.html">man</A></B>(1),
+
+<B><A HREF="../man5/manpath.5.html">manpath</A></B>(5),
+
+<B><A HREF="../man8/catman.8.html">catman</A></B>(8)
+
+<P>
+
+
+
+
+
+以前このマニュアルページにあった
+<B>WHATIS の解析</B>
+
+のセクションは、現在は
+<B><A HREF="../man1/lexgrog.1.html">lexgrog</A></B>(1)
+
+の一部である。
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>著者</H2>
+
+<PRE>
+Wilf. (<A HREF="mailto:G.Wilford@ee.surrey.ac.uk">G.Wilford@ee.surrey.ac.uk</A>).
+Fabrizio Polacco (<A HREF="mailto:fpolacco@debian.org">fpolacco@debian.org</A>).
+Colin Watson (<A HREF="mailto:cjwatson@debian.org">cjwatson@debian.org</A>).
+</PRE>
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">データベースキャッシュ</A><DD>
+<DT><A HREF="#lbAF">オプション</A><DD>
+<DT><A HREF="#lbAG">返り値</A><DD>
+<DT><A HREF="#lbAH">診断メッセージ</A><DD>
+<DT><A HREF="#lbAI">ファイル</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">著者</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:24:29 GMT, July 02, 2020
+</BODY>
+</HTML>
