@@ -1,0 +1,263 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of CATMAN</TITLE>
+</HEAD><BODY>
+<H1>CATMAN</H1>
+Section: Manual pager utils (8)<BR>Updated: 2019-10-23<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+catman - フォーマットされたマニュアルページを生成・更新する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>catman</B>
+
+[<B>-d?V</B>]
+
+[<B>-M</B>
+
+<I>path</I>]
+
+[<B>-C</B>
+
+<I>file</I>]
+
+[<I>section</I>]
+
+...
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>catman</B>
+
+は、フォーマット済みマニュアルページ (cat ページと呼ばれる) の最新の
+セットを生成するために用いられる。
+
+
+通常 cat ページはオリジナルの man ページよりもずっと速く表示できるが、
+余分な保存領域が必要とされる。
+
+
+cat ページをサポートするかどうかは、
+ローカルな管理者 (cat ページを保存するディレクトリに関する権限を持って
+いる人) の判断による。
+<P>
+
+
+
+<B>catman</B>
+
+に与えることのできるオプションは、フォーマットを行うマニュアルページの
+階層 (hierarchy) とセクションである。
+
+
+
+
+
+
+
+
+
+デフォルトの階層は、 man_db の設定ファイルで 
+システムのマニュアルページの系列として指定されているものである。
+デフォルトのセクションは、環境変数
+$<B>MANSECT</B>
+
+が与えられていれば、その内容をコロン区切りでパースしたものになり、
+与えられていなければ
+<B>man</B>
+
+のコンパイル時に指定されている標準的なセットとなる。
+
+
+
+
+<B>catman</B>
+
+の実行時にセクションの名前をスペースで区切って与えれば、
+これらの両方を上書きする。
+<P>
+
+
+
+
+
+<B>catman</B>
+
+はそれぞれの階層における
+<B>index</B>
+
+データベースキャッシュを利用して、どのファイルをフォーマットすべきかを
+決定する。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-d</B>, <B>--debug</B>
+
+<DD>
+
+デバッグ情報を表示する。
+<DT><B>-M&nbsp;</B><I>path</I><B></B>,&nbsp;<B>--manpath=</B><I>path</I>
+
+<DD>
+
+検索対象にするマニュアルページの階層を変えたい場合、
+それらをコロンで区切った形式で指定する。
+
+
+デフォルトでは、man-db 設定ファイルのシステムのマニュアル系列で示されている
+すべてのパスである。
+<DT><B>-C&nbsp;</B><I>file</I><B></B>,&nbsp;<B>--config-file=</B><I>file</I>
+
+<DD>
+
+
+デフォルトの
+<I>~/.manpath</I>
+
+ではなく、ユーザー設定ファイルを使用する。
+<DT><B>-?</B>, <B>--help</B>
+
+<DD>
+
+ヘルプメッセージを表示して、終了する。
+<DT><B>--usage</B>
+
+<DD>
+
+簡単な使用法のメッセージを表示して、終了する。
+<DT><B>-V</B>, <B>--version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT><B>MANSECT</B>
+
+<DD>
+
+
+
+
+$<B>MANSECT</B>
+
+が設定されていると、その値はセクションのリスト (コロン区切り) として扱われ、
+マニュアルのどのセクションを検索するかを決定する際に用いられる。
+
+
+
+
+<I>/etc/man_db.conf</I>
+
+の
+<B>SECTION</B>
+
+指定で上書きされていない限り、デフォルトは
+&quot;1 1p 8 2 3 3p 3pm 4 5 6 7 9 0p n l p o 1x 2x 3x 4x 5x 6x 7x 8x&quot;
+である。
+<DT><B>MANPATH</B>
+
+<DD>
+
+
+
+
+$<B>MANPATH</B>
+
+が設定されていると、その内容は検索対象とするマニュアルの階層を
+コロンで区切ったリストとみなされる。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>ファイル</H2>
+
+<DL COMPACT>
+<DT><I>/etc/man_db.conf</I>
+
+<DD>
+
+man-db の設定ファイル
+<DT><I>/usr/man/index.(bt|db|dir|pag)</I>
+
+<DD>
+
+
+
+従来形式のグローバルな
+<I>index</I>
+
+データベースキャッシュ。
+<DT><I>/var/catman/index.(bt|db|dir|pag)</I>
+
+<DD>
+
+
+
+
+新しい FSSTND 準拠のグローバルな
+<I>index</I>
+
+データベースキャッシュ。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/man.1.html">man</A></B>(1),
+
+<B><A HREF="../man5/manpath.5.html">manpath</A></B>(5),
+
+<B><A HREF="../man8/mandb.8.html">mandb</A></B>(8)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+<PRE>
+Wilf. (<A HREF="mailto:G.Wilford@ee.surrey.ac.uk">G.Wilford@ee.surrey.ac.uk</A>).
+Fabrizio Polacco (<A HREF="mailto:fpolacco@debian.org">fpolacco@debian.org</A>).
+Colin Watson (<A HREF="mailto:cjwatson@debian.org">cjwatson@debian.org</A>).
+</PRE>
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">環境変数</A><DD>
+<DT><A HREF="#lbAG">ファイル</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 08:39:53 GMT, July 02, 2020
+</BODY>
+</HTML>
