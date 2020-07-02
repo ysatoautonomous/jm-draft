@@ -1,0 +1,69 @@
+.\" Man page for accessdb
+.\"
+.\" Copyright (c) 1998 Fabrizio Polacco <fpolacco@debian.org
+.\"
+.\" You may distribute under the terms of the GNU General Public
+.\" License as specified in the file COPYING that comes with the
+.\" man-db distribution.
+.\"
+.\" Tue, 24 Feb 1998 18:18:36 +0200
+.\"
+.\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
+.\" Translated Fri 25 Sep 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Modified Sun 6 Dec 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Thu Jul  2 16:30:33 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.pc
+.TH ACCESSDB 8 "2019-10-23" "2.9.0" "Manual pager utils"
+.\"O .SH NAME
+.SH 名前
+.\"O accessdb \- dumps the content of a man-db database in a human readable
+.\"O format
+accessdb \- man-db データベースの内容を、人間に可読な形式でダンプする。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B /usr/sbin/accessdb
+.RB [\| \-d?V \|]
+.RI [ <index-file> ]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B accessdb
+.\"O will output the data contained within a man-db database in a
+.\"O human readable form.
+.B accessdb
+は man_db データベースに含まれているデータを人間に可読なかたちで出力する。
+.\"O By default, it will dump the data from
+.\"O .B /var/cache/man/index.<db-type>,
+.\"O where <db-type> is dependent on the database library in use.
+デフォルトでは、
+.B /var/cache/man/index.<db-type>
+のデータをダンプする。
+<db-type> は用いているデータベースライブラリに依存する。
+
+.\"O Supplying an argument to accessdb will override this default.
+accessdb に引き数を渡すと、このデフォルトは上書きされる。
+.SH OPTIONS
+.TP
+.BR \-d ", " \-\-debug
+.\"O Print debugging information.
+デバッグ情報を表示する。
+.TP
+.BR \-? ", " \-\-help
+.\"O Print a help message and exit.
+ヘルプメッセージを表示して、終了する。
+.TP
+.BR \-\-usage
+.\"O Print a short usage message and exit.
+簡単な使用法のメッセージを表示して、終了する。
+.TP
+.BR \-V ", " \-\-version
+.\"O Display version information.
+バージョン情報を表示する。
+.\"O .SH AUTHOR
+.SH 著者
+.nf
+Wilf.\& (G.Wilford@ee.surrey.ac.uk).
+Fabrizio Polacco (fpolacco@debian.org).
+Colin Watson (cjwatson@debian.org).
+.fi
