@@ -11,6 +11,8 @@
 .\"
 .\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
 .\" Translated Fri 25 Sep 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Thu Jul  2 15:28:10 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .\"WORD:        hierarchy       系列
 .\"
@@ -191,22 +193,35 @@ manpath 設定ファイルは、マニュアルページのユーティリティ
 より先に来なければならない。
 .TP
 .BI DEFINE \ key\ value
-Lines of this form define miscellaneous configuration variables; see the
-default configuration file for those variables used by the manual pager
-utilities.
-They include default paths to various programs (such as
-.I grep
-and
-.IR tbl ),
-and default sets of arguments to those programs.
+.\"O Lines of this form define miscellaneous configuration variables; see the
+.\"O default configuration file for those variables used by the manual pager
+.\"O utilities.
+この形式の行では、様々な設定値を定義する。
+マニュアルページャーユーティリティで使われるこれらの値については、
+デフォルトの設定ファイルを参照すること。
+.\"O They include default paths to various programs (such as
+.\"O .I grep
+.\"O and
+.\"O .IR tbl ),
+.\"O and default sets of arguments to those programs.
+これらの設定値には、
+.RI ( grep
+や
+.I tbl
+のような) 様々なプログラムのデフォルトのパスや、
+そのプログラムのデフォルトの引き数のセットが含まれる。
 .TP
 \fBSECTION\fR \fIsection\fR .\|.\|.
 .RS
-Lines of this form define the order in which manual sections should be
-searched.
-If there are no
+.\"O Lines of this form define the order in which manual sections should be
+.\"O searched.
+この形式の行では、マニュアルセクションを検索する順番を定義する。
+.\"O If there are no
+.\"O .B SECTION
+.\"O directives in the configuration file, the default is:
+設定ファイルに
 .B SECTION
-directives in the configuration file, the default is:
+の指定がない場合、デフォルトは以下の通りである:
 .PP
 .RS
 .nf
@@ -214,47 +229,77 @@ SECTION 1 n l 8 3 0 2 5 4 9 6 7
 .fi
 .RE
 .PP
-If multiple
+.\"O If multiple
+.\"O .B SECTION
+.\"O directives are given, their section lists will be concatenated.
+複数の
 .B SECTION
-directives are given, their section lists will be concatenated.
+が指定されている場合、セクションのリストが連結される。
 .PP
-If a particular extension is not in this list (say, 1mh) it will be
-displayed with the rest of the section it belongs to.
-The effect of this is that you only need to explicitly list extensions if
-you want to force a particular order.
-Sections with extensions should usually be adjacent to their main section
-(e.g. "1 1mh 8 ...").
+.\"O If a particular extension is not in this list (say, 1mh) it will be
+.\"O displayed with the rest of the section it belongs to.
+特定の拡張子 (たとえば 1mh) がリストにない場合、
+残りの部分が属するセクションで表示される。
+.\"O The effect of this is that you only need to explicitly list extensions if
+.\"O you want to force a particular order.
+この機能により、ユーザーは特定の順番を強制したい場合にのみ、
+明示的に拡張子をリストに定義すればよくなる。
+.\"O Sections with extensions should usually be adjacent to their main section
+.\"O (e.g. "1 1mh 8 ...").
+拡張付きのセクションは、通常はメインのセクションに隣接して定義
+すべきである (たとえば "1 1mh 8 ...")。
 .PP
+.\"O .B SECTIONS
+.\"O is accepted as an alternative name for this directive.
 .B SECTIONS
-is accepted as an alternative name for this directive.
+は、この指定の別名として受け付けられる。
 .RE
 .TP
 .BI MINCATWIDTH \ width
-If the terminal width is less than
-.IR width ,
-cat pages will not be created (if missing) or displayed.
-The default is 80.
+.\"O If the terminal width is less than
+.\"O .IR width ,
+.\"O cat pages will not be created (if missing) or displayed.
+.\"O The default is 80.
+端末の幅が
+.I width
+より小さい場合、cat ページは (存在しない場合) 生成されず、表示もされない。
+デフォルトは 80 である。
 .TP
 .BI MAXCATWIDTH \ width
-If the terminal width is greater than
-.IR width ,
-cat pages will not be created (if missing) or displayed.
-The default is 80.
+.\"O If the terminal width is greater than
+.\"O .IR width ,
+.\"O cat pages will not be created (if missing) or displayed.
+.\"O The default is 80.
+端末の幅が
+.I width
+より大きい場合、cat ページは (存在しない場合) 生成されず、表示もされない。
+デフォルトは 80 である。
 .TP
 .BI CATWIDTH \ width
-If
+.\"O If
+.\"O .I width
+.\"O is non-zero, cat pages will always be formatted for a terminal of the given
+.\"O width, regardless of the width of the terminal actually being used.
 .I width
-is non-zero, cat pages will always be formatted for a terminal of the given
-width, regardless of the width of the terminal actually being used.
-This should generally be within the range set by
+が 0 以外の場合、端末の幅が自動的に使われるのではなく、
+指定された端末の幅で cat ページが常にフォーマットされる。
+.\"O This should generally be within the range set by
+.\"O .B MINCATWIDTH
+.\"O and
+.\"O .BR MAXCATWIDTH .
+この値は一般に
 .B MINCATWIDTH
-and
-.BR MAXCATWIDTH .
+から
+.B MAXCATWIDTH
+の範囲でなければならない。
 .TP
 .B NOCACHE
-This flag prevents
+.\"O This flag prevents
+.\"O .BR man (1)
+.\"O from creating cat pages automatically.
+このフラグを指定すると
 .BR man (1)
-from creating cat pages automatically.
+は cat ページを自動的に生成しない。
 .\"O .SH BUGS
 .SH バグ
 .\"O Unless the rules above are followed and observed precisely, the manual pager
