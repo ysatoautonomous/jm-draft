@@ -13,6 +13,8 @@
 .\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
 .\" Translated Fri 25 Sep 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
 .\" Modified Sun 6 Dec 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Thu Jul  2 23:20:52 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
 .\"
 .\"WORD:        hierarchy       階層
 .\"
@@ -141,8 +143,10 @@ stray cat (訳注: おそらく対応する roff ソースのない cat ペー�
 でしょう) を探したり、それに関する情報をデータに追加しようとは試みない。
 .TP
 .BR \-p ", " \-\-no-purge
-Do not spend time checking for deleted manual pages and purging them from
-the databases.
+.\"O Do not spend time checking for deleted manual pages and purging them from
+.\"O the databases.
+削除されたマニュアルページのチェックと、データベースからの削除に
+時間を使わない。
 .TP
 .BR \-c ", " \-\-create
 .\"O By default,
@@ -175,28 +179,52 @@ the databases.
 システムのデータベースを作成する権限があっても、生成しない。
 .TP
 .BR \-t ", " \-\-test
-Perform correctness checks on manual pages in the hierarchy search path.
-With this option,
+.\"O Perform correctness checks on manual pages in the hierarchy search path.
+階層の検索パスにあるマニュアルページの整合性チェックを行う。
+.\"O With this option,
+.\"O .B mandb
+.\"O will not alter existing databases.
+このオプションを指定すると、
 .B mandb
-will not alter existing databases.
+は既存のデータベースを変更しない。
 .TP
 .BR \-f ", " \-\-filename
-Update only the entries for the given filename.
-This option is not for general use; it is used internally by
+.\"O Update only the entries for the given filename.
+指定されたファイル名のエントリのみを更新する。
+.\"O This option is not for general use; it is used internally by
+.\"O .B man
+.\"O when it has been compiled with the
+.\"O .B MAN_DB_UPDATES
+.\"O option and finds that a page is out of date.
+このオプションは一般的には使用されない。
+このオプションは、
 .B man
-when it has been compiled with the
+が
 .B MAN_DB_UPDATES
-option and finds that a page is out of date.
-It implies
+オプションを付けてコンパイルされていて、ページの有効期限が切れて
+いるのを見つけた場合、
+.B man
+が内部的に使う。
+.\"O It implies
+.\"O .B \-p
+.\"O and disables
+.\"O .B \-c
+.\"O and
+.\"O .BR \-s .
+このオプションは
 .B \-p
-and disables
+を暗黙のうちに指定し、
 .B \-c
-and
-.BR \-s .
+と
+.B \-s
+を無効にする。
 .TP
 .BI \-C\  file \fR,\ \fB\-\-config\-file= file
-Use this user configuration file rather than the default of
-.IR ~/.manpath .
+.\"O Use this user configuration file rather than the default of
+.\"O .IR ~/.manpath .
+デフォルトの
+.I ~/.manpath
+ではなく、ユーザーの設定ファイルを使う。
 .TP
 .BR \-? ", " \-\-help
 .\"O Show the usage message, then exit.
@@ -242,11 +270,16 @@ Use this user configuration file rather than the default of
 このようなメッセージが多く出るようであれば、そのシステムには man-db の
 whatis パーサーと互換性のない、非標準的なマニュアルページが含まれている
 可能性が高い。
-See the
-.B WHATIS PARSING
-section in
+.\"O See the
+.\"O .B WHATIS PARSING
+.\"O section in
+.\"O .BR lexgrog (1)
+.\"O for more information.
+詳しい情報は
 .BR lexgrog (1)
-for more information.
+の
+.B WHATIS の解析
+のセクションを参照すること。
 .TP
 .B <filename>: is a dangling symlink
 .\"O <filename> does not exist but is referenced by a symbolic link.
@@ -289,11 +322,15 @@ for more information.
 man-db の設定ファイル。
 .TP
 .I /var/cache/man/index.(bt|db|dir|pag)
-An FHS compliant global
+.\"O An FHS compliant global
+.\"O .I index
+.\"O database cache.
+FHS 準拠のグローバルな
 .I index
-database cache.
+データベースキャッシュ。
 .PP
-Older locations for the database cache included:
+.\"O Older locations for the database cache included:
+データベースキャッシュの昔の場所としては以下がある:
 .TP
 .I /usr/man/index.(bt|db|dir|pag)
 .\"O A traditional global
@@ -308,7 +345,7 @@ Older locations for the database cache included:
 .\"O compliant global
 .\"O .I index
 .\"O database cache.
-新しい FSSTND 準拠の
+別の FSSTND 準拠のグローバルな
 .I index
 データベースキャッシュ。
 .\"O .SH "SEE ALSO"
@@ -318,10 +355,15 @@ Older locations for the database cache included:
 .BR manpath (5),
 .BR catman (8)
 .PP
-The
-.B "WHATIS PARSING"
-section formerly in this manual page is now part of
-.BR lexgrog (1).
+.\"O The
+.\"O .B "WHATIS PARSING"
+.\"O section formerly in this manual page is now part of
+.\"O .BR lexgrog (1).
+以前このマニュアルページにあった
+.B "WHATIS の解析"
+のセクションは、現在は
+.BR lexgrog (1)
+の一部である。
 .\"O .SH AUTHOR
 .SH 著者
 .nf
