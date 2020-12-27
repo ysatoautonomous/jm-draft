@@ -1,0 +1,231 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SA1</TITLE>
+</HEAD><BODY>
+<H1>SA1</H1>
+Section: Linux User's Manual (8)<BR>Updated: JULY 2018<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+sa1 - 情報を収集し、バイナリデータをシステム活性度日次データファイルに格納する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>/usr/lib64/sa/sa1 [ --boot |</B>
+
+<I>interval</I>
+
+<I>count</I>
+
+<B>]</B>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+<B>sa1</B>
+
+コマンドは
+<B>sadc</B>
+
+コマンドを使ったシェルプログラムの一種で、
+<B>sadc</B>
+
+の全てのフラグとパラメータを扱う。
+<B>sa1</B>
+
+コマンドはデータを収集し、バイナリデータを現在の
+標準システム活性度日次データファイル
+(standard system activity daily data file) に格納する。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+標準システム活性度日次データファイルは、
+<B>sadc</B>
+
+のオプション
+<B>-D</B>
+
+が指定されない限り、
+<I>saDD</I>
+
+と言う名前である。
+指定された場合、
+<I>saYYYYMMDD</I>
+
+と言う名前である。
+ここで、YYYY は現在の年、MM は月、DD は日である。
+デフォルトでは、このファイルは
+<I>/var/log/sa</I>
+
+に置かれている。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+<I>interval</I>
+
+と
+<I>count</I>
+
+パラメータは、レコードを
+<I>count</I>
+
+回
+<I>interval</I>
+
+秒間隔で書き出すように指定する。
+<B>sa1</B>
+
+に引数を指定しない場合、1 レコードを書き出す。
+<P>
+
+
+
+<B>sa1</B>
+
+コマンドは cron コマンドから自動的に開始するようにデザインされている。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT>--boot<DD>
+
+
+
+
+
+
+
+
+
+
+このオプションを指定すると、
+<B>sa1</B>
+
+は
+<B>sadc</B>
+
+を
+<I>interval</I>
+
+と
+<I>count</I>
+
+パラメータを指定せずに呼び出す。
+これにより、カウンターを 0 にリスタートするときに、
+時刻を記載するダミーのレコードを追加する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>例</H2>
+
+
+
+(ディスクを含む) データを 10 分間隔で集めるには、
+以下のエントリを root の crontab ファイルに追加すること。
+<P>
+<B>0,10,20,30,40,50 * * * * /usr/lib64/sa/sa1 1 1 -S DISK</B>
+
+<P>
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/var/log/sa/saDD</I>
+
+<BR>
+
+<I>/var/log/sa/saYYYYMMDD</I>
+
+<DL COMPACT><DT><DD>
+
+
+
+標準システム活性度日次データファイルとデフォルトの場所。
+YYYY は現在の年、MM は月、DD は日である。
+<P>
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>著者</H2>
+
+Sebastien Godard (sysstat &lt;at&gt; orange.fr)
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/sar.1.html">sar</A></B>(1),
+
+<B><A HREF="../man8/sadc.8.html">sadc</A></B>(8),
+
+<B><A HREF="../man8/sa2.8.html">sa2</A></B>(8),
+
+<B><A HREF="../man1/sadf.1.html">sadf</A></B>(1),
+
+<B><A HREF="../man5/sysstat.5.html">sysstat</A></B>(5)
+
+<P>
+<I><A HREF="https://github.com/sysstat/sysstat">https://github.com/sysstat/sysstat</A></I>
+
+<P>
+<I><A HREF="http://pagesperso-orange.fr/sebastien.godard/">http://pagesperso-orange.fr/sebastien.godard/</A></I>
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">例</A><DD>
+<DT><A HREF="#lbAG">ファイル</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:36:36 GMT, December 27, 2020
+</BODY>
+</HTML>
