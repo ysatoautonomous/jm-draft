@@ -1,0 +1,418 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of INTRO</TITLE>
+</HEAD><BODY>
+<H1>INTRO</H1>
+Section: Linux User's Manual (1)<BR>Updated: 2015-07-23<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+intro - ユーザーコマンドの紹介
+<A NAME="lbAC">&nbsp;</A>
+<H2>説明</H2>
+
+マニュアルの 1 章は、ユーザーコマンドやツールの説明について説明している。 例えば、ファイル操作ツール、シェル、コンパイラ、ウェブブラウザ、
+ファイルやイメージのビューアやエディタ、などである。
+<P>
+<A NAME="lbAD">&nbsp;</A>
+<H2>注意</H2>
+
+Linux は UNIX の一種であり、大雑把にいえば、 UNIX 上のユーザーコマンドはすべて Linux 上でも全く同じ動作をする (FreeBSD
+や他のの多くの UNIX 風のシステムでも同様である)。
+<P>
+
+Linux には GUI (グラフィカルユーザーインターフェース) が用意されており、
+何かをポイントしたり、クリックしたり、ドラッグしたりでき、うまくいけば 最初にたくさんの文書を読まなくても目的の作業ができてしまうこともある。 伝統的な
+UNIX 環境は CLI (コマンドラインインターフェース) であり、 コマンドを打ち込んで、コンピュータに何をすべきか教えてやる。 CLI は GUI
+よりも速く強力だが、どのコマンドが何をするのか知っている必要 がある。CLI を使い始めるために必要最小限のコマンドを以下に述べる。
+<A NAME="lbAE">&nbsp;</A>
+<H3>ログイン</H3>
+
+
+
+作業を開始するためには、ユーザー名とパスワードを入力して、
+まず最初にセッションをオープンしなければならないだろう。
+
+
+
+
+
+<B><A HREF="../man1/login.1.html">login</A></B>(1)
+
+プログラムは (コマンドインタープリターである)  <I>シェル (shell)</I>
+を起動する。グラフィカルログインの場合は、メニューやアイコンがある スクリーンが表示され、マウスをクリックするとウィンドウが開いて
+シェルが起動されることだろう。詳しくは <B><A HREF="../man1/xterm.1.html">xterm</A></B>(1)  を参照のこと。
+<A NAME="lbAF">&nbsp;</A>
+<H3>シェル</H3>
+
+コマンドは、コマンドインタープリターである <I>シェル</I> に対して入力する。
+<I>シェル</I>は、組み込みコマンドではなく普通のプログラムであり、
+好みのものに変更することができる。
+
+各人にはそれぞれ好みのシェルがある。
+
+
+標準のシェルは
+<I>sh</I>
+
+と呼ばれる。
+
+
+
+
+
+
+
+
+<B><A HREF="../man1/ash.1.html">ash</A></B>(1),
+
+<B><A HREF="../man1/bash.1.html">bash</A></B>(1),
+
+<B><A HREF="../man1/chsh.1.html">chsh</A></B>(1),
+
+<B><A HREF="../man1/csh.1.html">csh</A></B>(1),
+
+<B><A HREF="../man1/dash.1.html">dash</A></B>(1),
+
+<B><A HREF="../man1/ksh.1.html">ksh</A></B>(1),
+
+<B><A HREF="../man1/zsh.1.html">zsh</A></B>(1)
+
+を参照すること。
+<P>
+
+
+セッションの例を以下に示す:
+<P>
+
+
+
+knuth login: <B>aeb</B>
+
+Password: <B>********</B>
+
+$ <B>date</B>
+
+Tue Aug  6 23:50:44 CEST 2002
+$ <B>cal</B>
+
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>  August 2002<BR>
+Su Mo Tu We Th Fr Sa
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;2&nbsp;&nbsp;3
+<BR>&nbsp;4&nbsp;&nbsp;5&nbsp;&nbsp;6&nbsp;&nbsp;7&nbsp;&nbsp;8&nbsp;&nbsp;9&nbsp;10
+11 12 13 14 15 16 17
+18 19 20 21 22 23 24
+25 26 27 28 29 30 31
+<P>
+$ <B>ls</B>
+
+bin  tel
+$ <B>ls -l</B>
+
+total 2
+drwxrwxr-x   2 aeb       1024 Aug  6 23:51 bin
+-rw-rw-r--   1 aeb         37 Aug  6 23:52 tel
+$ <B>cat tel</B>
+
+maja    0501-1136285
+peter   0136-7399214
+$ <B>cp tel tel2</B>
+
+$ <B>ls -l</B>
+
+total 3
+drwxr-xr-x   2 aeb       1024 Aug  6 23:51 bin
+-rw-r--r--   1 aeb         37 Aug  6 23:52 tel
+-rw-r--r--   1 aeb         37 Aug  6 23:53 tel2
+$ <B>mv tel tel1</B>
+
+$ <B>ls -l</B>
+
+total 3
+drwxr-xr-x   2 aeb       1024 Aug  6 23:51 bin
+-rw-r--r--   1 aeb         37 Aug  6 23:52 tel1
+-rw-r--r--   1 aeb         37 Aug  6 23:53 tel2
+$ <B>diff tel1 tel2</B>
+
+$ <B>rm tel1</B>
+
+$ <B>grep maja tel2</B>
+
+maja    0501-1136285
+$
+
+
+<P>
+
+
+ここで Control-D を打つとセッションが終了する。
+<P>
+
+ここで、
+<B>$</B>
+
+はコマンドプロンプトである。コマンドプロンプトはシェル独特のやり方で、
+シェルが次のコマンドを受け付けられる状態になっていることを示している。 プロンプトは、柔軟にカスタマイズ
+することができ、ユーザー名、マシン名、カレントディレクトリ、時刻などを プロンプトに含めることができる。 PS1=&quot;What next, master?
+&quot; と設定すると、 プロンプトはそのように変更されるだろう。
+<P>
+
+例にあるように、 <I>date</I> という日付と時刻を表示するコマンドや、 <I>cal</I> というカレンダを表示するコマンドもある。
+<P>
+
+<I>ls</I> コマンドはカレントディレクトリの内容をリスト表示する、つまり ディレクトリ内にどんなファイルがあるかを教えてくれる。 <I>-l</I>
+オプションをつけて実行すると、詳細表示が行われ、 ファイルの所有者、サイズ、日付などが表示される。 上の例では、&quot;tel&quot; ファイルは、サイズが 37
+バイトで、所有者は aeb で、 所有者は読み書きができ、他の人は読み出しだけができることが分かる。 ファイルの所有者と権限 (permission)
+は、それぞれ <I>chown</I> コマンドと <I>chmod</I> コマンドで変更できる。
+<P>
+
+
+
+
+
+
+
+
+
+
+<I>cat</I>
+
+コマンドはファイルの内容を表示する。
+(コマンド名は &quot;concatenate and print&quot; (連結して印字する)
+に由来している。
+引数として与えられた全てのファイルの内容が連結され、「標準出力」
+(<B><A HREF="../man3/stdout.3.html">stdout</A></B>(3)
+
+を参照) に送られる。
+上の例では、標準出力は端末のスクリーンである。)
+<P>
+
+<I>cp</I> コマンドはファイルのコピーを行う (その名前は &quot;copy&quot; に由来する)。
+<P>
+
+
+
+
+一方、
+<I>mv</I>
+
+コマンドは単純にファイル名の変更を行う
+(その名前は &quot;move&quot; に由来する)。
+<P>
+
+<I>diff</I> コマンドは 2 つのファイルの違いを表示する。 上の例では、二つのファイルに違いがないので、何も出力されていない。
+<P>
+
+<I>rm</I> コマンドはファイルを削除する。ファイルはなくなってしまうので 注意して使用すること! ゴミ箱に相当するものはなく、
+削除はそのファイルが完全に失われることを意味する。
+<P>
+
+<I>grep</I> コマンドは、指定された文字列を一つ以上のファイルから探す (コマンド名は &quot;g/re/p&quot; に由来している)。 上の例では、Maja
+の電話番号が見つかっている。
+<A NAME="lbAG">&nbsp;</A>
+<H3>パス名とカレントディレクトリ</H3>
+
+
+ファイルはファイル階層という大きな木の中にある。
+
+
+
+
+
+それぞれのファイルには <I>パス名 (pathname)</I> があり、
+パス名は
+(<I>/</I>
+
+と呼ばれる) 木の根からの経路を示すものである。
+
+
+上の例では、完全なパス名は
+<I>/home/aeb/tel</I>
+
+のようになる。
+
+
+
+いつも完全なパス名を使うのは不便なので、カレントディレクトリにある ファイル名は、ファイル名の最後の部分だけに省略することができる。
+
+
+
+
+
+
+
+したがって、カレントディレクトリが
+<I>/home/aeb</I>
+
+の時は、
+<I>/home/aeb/tel</I>
+
+を
+<I>tel</I>
+
+に省略して書くことができる。
+<P>
+
+<I>pwd</I> コマンドはカレントディレクトリを表示する。
+<P>
+
+
+
+
+<I>cd</I>
+
+コマンドはカレントディレクトリを変更する。
+
+
+
+
+
+
+<I>cd</I>
+
+と
+<I>pwd</I>
+
+コマンドを交互に実行し、
+<I>cd</I>
+
+の挙動をみるとよい。
+
+使用例: &quot;cd&quot;, &quot;cd .&quot;, &quot;cd ..&quot;, &quot;cd /&quot;, &quot;cd ~&quot;.
+<A NAME="lbAH">&nbsp;</A>
+<H3>ディレクトリ</H3>
+
+<I>mkdir</I> コマンドはディレクトリを新規に作成する。
+<P>
+
+<I>rmdir</I> コマンドは空であればディレクトリを削除し、 空でなければエラーメッセージを表示する。
+<P>
+
+<I>find</I> コマンドは、指定された名前やその他の属性を持つファイルを探す (書式はかなり変わっている)。
+
+
+
+
+
+例えば、&quot;find . -name tel&quot;
+を実行すると、
+<I>tel</I>
+
+という名前のファイルの検索をカレントディレクトリから開始する。
+(カレントディレクトリは
+<I>.</I>
+
+で表す)。
+&quot;find / -name tel&quot; としても 同じことを行うが、検索は木の根 (/) から開始される。 数 GB のディスクに対して検索をかけると時間がかかるので、
+そのようなときは <B><A HREF="../man1/locate.1.html">locate</A></B>(1)  を使った方がいいかもしれない。
+<A NAME="lbAI">&nbsp;</A>
+<H3>ディスクとファイルシステム</H3>
+
+<I>mount</I> コマンドは、(フロッピーや CDROM などの) ディスク上のファイルシステムを 大きなファイルシステム階層に接続する。逆に
+<I>umount</I> コマンドは切り離しを行う。 <I>df</I> コマンドを実行すると、ディスクの未使用量がどの程度かを表示する。
+<A NAME="lbAJ">&nbsp;</A>
+<H3>プロセス</H3>
+
+UNIX システムでは、多くのユーザープロセスとシステムプロセスが同時に実行される。 対話的に実行できるプロセスは <I>foreground</I>
+で実行されており、そうでないものは <I>background</I> で実行されている。 コマンド <I>ps</I>
+により、どのプロセスが実行されているかやプロセスが持っている番号 (プロセス番号) を表示できる。 コマンド <I>kill</I>
+を使うことで、プロセスを取り除くことができる。 オプションなしで実行されると、「いなくなって下さい」というやさしい要求 を行う。&quot;kill -9&quot;
+に続けてプロセス番号を指定すると、指定したプロセスを 直ちに削除する。 foreground プロセスは多くの場合 Control-C
+をタイプすることで 殺すことができる。
+<A NAME="lbAK">&nbsp;</A>
+<H3>情報の探し方</H3>
+
+非常にたくさんのコマンドがあり、 それぞれのコマンドにはたくさんのオプションがある。 伝統的には、コマンドの説明は (このドキュメントもそうだが)
+<I>man ページ</I> に書かれている。例えば &quot;man kill&quot; コマンドを実行すると、&quot;kill&quot; コマンドの
+使い方に関する説明が表示される。(同様に &quot;man man&quot; は &quot;man&quot; コマンドに ついての説明を表示する。)  <I>man</I>
+プログラムはテキストを <I>pager</I> に渡して表示を行う。 <I>pager</I> として <I>less</I> が使われることが多い。
+次のページに進むにはスペースキーを、終了するには q を押す。
+<P>
+
+ドキュメントでは、他の man ページへの参照は <B><A HREF="../man1/man.1.html">man</A></B>(1)  のように名前とセクション番号で示すのが一般的である。 man
+ページは簡潔に書かれており、詳細を忘れたときに素早く情報を見つける ことができる。例や説明とともに入門向けの記載もあるので、初めての人にとっても
+役に立つものである。
+<P>
+
+
+
+
+
+多くの GNU/FSF ソフトウェアには info ファイルが付属している。
+&quot;info info&quot; とタイプすると、
+<I>info</I>
+
+プログラムの使い方の紹介が表示される。
+<P>
+
+特集記事については HOWTO で扱われることが多い。 <I>/usr/share/doc/howto/en</I> を見るといいだろう。 HTML
+ファイルがあった場合はブラウザを使って表示すればよい。
+
+
+
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/ash.1.html">ash</A></B>(1),
+
+<B><A HREF="../man1/bash.1.html">bash</A></B>(1),
+
+<B><A HREF="../man1/chsh.1.html">chsh</A></B>(1),
+
+<B><A HREF="../man1/csh.1.html">csh</A></B>(1),
+
+<B><A HREF="../man1/dash.1.html">dash</A></B>(1),
+
+<B><A HREF="../man1/ksh.1.html">ksh</A></B>(1),
+
+<B><A HREF="../man1/locate.1.html">locate</A></B>(1),
+
+<B><A HREF="../man1/login.1.html">login</A></B>(1),
+
+<B><A HREF="../man1/man.1.html">man</A></B>(1),
+
+<B><A HREF="../man1/xterm.1.html">xterm</A></B>(1),
+
+<B><A HREF="../man1/zsh.1.html">zsh</A></B>(1),
+
+<B><A HREF="../man2/wait.2.html">wait</A></B>(2),
+
+<B><A HREF="../man3/stdout.3.html">stdout</A></B>(3),
+
+<B><A HREF="../man7/man-pages.7.html">man-pages</A></B>(7),
+
+<B><A HREF="../man7/standards.7.html">standards</A></B>(7)
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">説明</A><DD>
+<DT><A HREF="#lbAD">注意</A><DD>
+<DL>
+<DT><A HREF="#lbAE">ログイン</A><DD>
+<DT><A HREF="#lbAF">シェル</A><DD>
+<DT><A HREF="#lbAG">パス名とカレントディレクトリ</A><DD>
+<DT><A HREF="#lbAH">ディレクトリ</A><DD>
+<DT><A HREF="#lbAI">ディスクとファイルシステム</A><DD>
+<DT><A HREF="#lbAJ">プロセス</A><DD>
+<DT><A HREF="#lbAK">情報の探し方</A><DD>
+</DL>
+<DT><A HREF="#lbAL">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 22:55:56 GMT, December 27, 2020
+</BODY>
+</HTML>
