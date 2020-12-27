@@ -1,0 +1,348 @@
+.\" Man page for lexgrog
+.\"
+.\" Copyright (c) 2001 Colin Watson <cjwatson@debian.org>
+.\"
+.\" You may distribute under the terms of the GNU General Public
+.\" License as specified in the file COPYING that comes with the
+.\" man-db distribution.
+.\"
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO all rights reserved.
+.\" Translated Sun Dec 27 22:36:27 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.\"WORD:        description     要約(文)
+.\"
+.pc
+.TH LEXGROG 1 "2019-10-23" "2.9.0" "Manual pager utils"
+.\"O .SH NAME
+.SH 名前
+.\"O lexgrog \- parse header information in man pages
+lexgrog \- man ページのヘッダ情報を解析する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B lexgrog
+.RB [\| \-m \||\| -c \|]
+.RB [\| \-dfw?V \|]
+.RB [\| \-E
+.IR encoding \|]
+.I file
+\&.\|.\|.
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B lexgrog
+.\"O is an implementation of the traditional \(lqgroff guess\(rq utility in
+.\"O .BR lex .
+.B lexgrog
+は昔の \(lqgroff guess\(rq ユーティリティを
+.B lex
+で実装したものである。
+.\"O It reads the list of files on its command line as either man page source
+.\"O files or preformatted \(lqcat\(rq pages, and displays their name and
+.\"O description as used by
+.\"O .B apropos
+.\"O and
+.\"O .BR whatis ,
+.\"O the list of preprocessing filters required by the man page before it is
+.\"O passed to
+.\"O .B nroff
+.\"O or
+.\"O .BR troff ,
+.\"O or both.
+このプログラムは、コマンドラインから man ページソースファイルまたは
+整形済みの \(lqcat\(rq ページのファイルのリストを読み込む。
+そして、
+.B apropos
+と
+.B whatis
+で使われる名前と要約文を表示するか、
+.B nroff
+または
+.BR troff
+もしくはその両方に渡される前に
+man ページに必要とされる前処理フィルタのリストを表示する。
+.PP
+.\"O If its input is badly formatted,
+.\"O .B lexgrog
+.\"O will print \(lqparse failed\(rq; this may be useful for external
+.\"O programs that need to check man pages for correctness.
+入力のフォーマットが不正な場合、
+.B lexgrog
+は \(lqparse failed\(rq と表示する。
+これは、他のプログラムが man ページの正しさをチェックする必要がある場合に役立つ。
+.\"O If one of
+.\"O .BR lexgrog 's
+.\"O input files is \(lq\-\(rq, it will read from standard input; if any input
+.\"O file is compressed, a decompressed version will be read automatically.
+.B lexgrog
+の入力ファイルの 1 つが \(lq\-\(rq の場合、標準入力を読み込む。
+入力ファイルが圧縮されている場合、展開されたものが自動的に読み込まれる。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-d ", " \-\-debug
+.\"O Print debugging information.
+デバッグ情報を表示する。
+.TP
+.BR \-m ", " \-\-man
+.\"O Parse input as man page source files.
+.\"O This is the default if neither
+.\"O .B \-\-man
+.\"O nor
+.\"O .B \-\-cat
+.\"O is given.
+入力を man ページソースファイルとして解析する。
+これは、
+.B \-\-man
+も
+.B \-\-cat
+も指定されない場合のデフォルトである。
+.TP
+.BR \-c ", " \-\-cat
+.\"O Parse input as preformatted man pages (\(lqcat pages\(rq).
+.\"O .B \-\-man
+.\"O and
+.\"O .B \-\-cat
+.\"O may not be given simultaneously.
+入力を整形済みの man ページ (\(lqcat ページ\(rq) として解析する。
+.B \-\-man
+と
+.B \-\-cat
+は同時に指定できない。
+.TP
+.BR \-w ", " \-\-whatis
+.\"O Display the name and description from the man page's header, as used by
+.\"O .B apropos
+.\"O and
+.\"O .BR whatis .
+man ページのヘッダから名前と要約文を表示する。
+これは、
+.B apropos
+と
+.B whatis
+で使われる。
+.\"O This is the default if neither
+.\"O .B \-\-whatis
+.\"O nor
+.\"O .B \-\-filters
+.\"O is given.
+これは
+.B \-\-whatis
+も
+.B \-\-filters
+も指定されない場合のデフォルトである。
+.TP
+.BR \-f ", " \-\-filters
+.\"O Display the list of filters needed to preprocess the man page before
+.\"O formatting with
+.\"O .B nroff
+.\"O or
+.\"O .BR troff .
+.B nroff
+または
+.B troff
+で整形する前に、man ページを前処理するのに必要なフィルタのリストを表示する。
+.TP
+\fB\-E\fP \fIencoding\fP, \fB\-\-encoding\fP \fIencoding\fP
+.\"O Override the guessed character set for the page to
+.\"O .IR encoding .
+ページについて推測された文字セットを、
+.I encoding
+で上書きする。
+.TP
+.BR \-? ", " \-\-help
+.\"O Print a help message and exit.
+ヘルプメッセージを表示して、終了する。
+.TP
+.BR \-\-usage
+.\"O Print a short usage message and exit.
+短い使用法のメッセージを表示して、終了する。
+.TP
+.BR \-V ", " \-\-version
+.\"O Display version information.
+バージョン情報を表示する。
+.\"O .SH "EXIT STATUS"
+.SH 返り値
+.TP
+.B 0
+.\"O Successful program execution.
+プログラムの実行に成功した。
+.TP
+.B 1
+.\"O Usage error.
+使用法のエラー。
+.TP
+.B 2
+.\"O .B lexgrog
+.\"O failed to parse one or more of its input files.
+.B lexgrog
+が 1 つ以上の入力ファイルの解析に失敗した。
+.\"O .SH EXAMPLES
+.SH 例
+.nf
+  $ lexgrog man.1
+  man.1: "man \- an interface to the system reference manuals"
+  $ lexgrog \-fw man.1
+  man.1 (t): "man \- an interface to the system reference manuals"
+  $ lexgrog \-c whatis.cat1
+  whatis.cat1: "whatis \- display manual page descriptions"
+  $ lexgrog broken.1
+  broken.1: parse failed
+.fi
+.\"O .SH WHATIS PARSING
+.SH WHATIS の解析
+.\"O .B mandb
+.\"O (which uses the same code as
+.\"O .BR lexgrog )
+.\"O parses the
+.\"O .B NAME
+.\"O section at the top of each manual page looking for names and descriptions
+.\"O of the features documented in each.
+.RB ( lexgrog
+と同じコードを使っている)
+.B mandb
+は、各マニュアルページにドキュメント化された特徴の
+名前と要約文を見つけるために、先頭にある
+.B NAME
+セクションを解析する。
+.\"O While the parser is quite tolerant, as it has to cope with a number of
+.\"O different forms that have historically been used, it may sometimes fail to
+.\"O extract the required information.
+歴史的に使われてきたいろいろな形式に対応しているため、
+パーサーはとても堅牢ではあるが、
+ときどき必要な情報の抽出に失敗すること場合もある。
+.PP
+.\"O When using the traditional
+.\"O .I man
+.\"O macro set, a correct
+.\"O .B NAME
+.\"O section looks something like this:
+伝統的な
+.I man
+マクロセットを使う場合、正しい
+.B NAME
+セクションは以下のようである:
+.PP
+.RS
+.ft CW
+.nf
+\&.SH NAME
+foo \e\- program to do something
+.fi
+.ft P
+.RE
+.PP
+.\"O Some manual pagers require the \(oq\e\-\(cq to be exactly as shown;
+マニュアルページャーによっては、見た目通りに表示するためには、\(oq\e\-\(cq が必要になる。
+.\"O .B mandb
+.\"O is more tolerant, but for compatibility with other systems it is
+.\"O nevertheless a good idea to retain the backslash.
+.B mandb
+はより堅牢であるが、他のシステムとの互換性を保つためには、
+バックスラッシュを使うのは良い考えである。
+.PP
+.\"O On the left-hand side, there may be several names, separated by commas.
+(ハイフンの) 左側には、複数個の名前をカンマで区切って置くことが出来る。
+.\"O Names containing whitespace will be ignored to avoid pathological behaviour
+.\"O on certain ill-formed
+.\"O .B NAME
+.\"O sections.
+不正な形式の
+.B NAME
+セクションに対して、異常な動作を避けるため、空白を含む名前は無視される。
+.\"O The text on the right-hand side is free-form, and may be spread over
+.\"O multiple lines.
+(ハイフンの) 右側のテキストは、自由形式であり、複数行に渡って書くことが出来る。
+.\"O If several features with different descriptions are being documented in the
+.\"O same manual page, the following form is therefore used:
+複数の特徴についての異なる要約文を、同じマニュアルページに
+ドキュメント化する場合、以下の形式が使用される:
+.PP
+.RS
+.ft CW
+.nf
+\&.SH NAME
+foo, bar \e\- programs to do something
+\&.br
+baz \e\- program to do nothing
+.fi
+.ft P
+.RE
+.PP
+.\"O (A macro which starts a new paragraph, like \f(CW.PP\fP, may be used instead
+.\"O of the break macro \f(CW.br\fP.)
+(\f(CW.PP\fP のような新しい段落を開始するマクロが、
+改行 (break) マクロ \f(CW.br\fP の代わりに使える場合もある。)
+.PP
+.\"O When using the BSD-derived
+.\"O .I mdoc
+.\"O macro set, a correct
+.\"O .B NAME
+.\"O section looks something like this:
+BSD 由来の
+.I mdoc
+マクロセットを使う場合、正しい
+.B NAME
+セクションは、以下のようになる:
+.PP
+.RS
+.ft CW
+.nf
+\&.Sh NAME
+\&.Nm foo
+\&.Nd program to do something
+.fi
+.ft P
+.RE
+
+.\"O There are several common reasons why whatis parsing fails.
+whatis の解析が失敗するいくつかの一般的な理由がある。
+.\"O Sometimes authors of manual pages replace \(oq.SH NAME\(cq with
+.\"O \(oq.SH MYPROGRAM\(cq, and then
+.\"O .B mandb
+.\"O cannot find the section from which to extract the information it needs.
+マニュアルページの著者が \(oq.SH NAME\(cq を
+\(oq.SH MYPROGRAM\(cq に置き換えてしまい、
+.B mandb
+が必要な情報を抽出するセクションを見つけられない場合がある。
+.\"O Sometimes authors include a NAME section, but place free-form text there
+.\"O rather than \(oqname \e\- description\(cq.
+また、著者が NAME セクションを書いているが、
+\(oqname \e\- description\(cq ではない、自由形式で書いている場合もある。
+.\"O However, any syntax resembling the above should be accepted.
+しかし、上記のような書式も受け付けるべきである。
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.IR apropos (1),
+.IR man (1),
+.IR whatis (1),
+.IR mandb (8)
+.\"O .SH NOTES
+.SH 注意
+.\"O .B lexgrog
+.\"O attempts to parse files containing .so requests, but will only be able
+.\"O to do so correctly if the files are properly installed in a manual page
+.\"O hierarchy.
+.B lexgrog
+は .so リクエストを含むファイルを解析しようとするが、
+ファイルがマニュアルページ階層に正しくインストールされている場合にのみ、
+正しく解析することが出来る。
+.\"O .SH AUTHOR
+.SH 作者
+.\"O The code used by
+.\"O .B lexgrog
+.\"O to scan man pages was written by:
+man ページをスキャンする
+.B lexgrog
+のコードは、以下の作者によって書かれた:
+.PP
+.nf
+Wilf.\& (G.Wilford@ee.surrey.ac.uk).
+Fabrizio Polacco (fpolacco@debian.org).
+Colin Watson (cjwatson@debian.org).
+.fi
+.PP
+.\"O Colin Watson wrote the current incarnation of the command-line
+.\"O front-end, as well as this man page.
+Colin Watson が、現在のコマンドラインフロントエンドの実装と、
+この man ページを書いた。
