@@ -1,0 +1,461 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LEXGROG</TITLE>
+</HEAD><BODY>
+<H1>LEXGROG</H1>
+Section: Manual pager utils (1)<BR>Updated: 2019-10-23<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+lexgrog - man ページのヘッダ情報を解析する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>lexgrog</B>
+
+[<B>-m</B>|<B>-c</B>]
+
+[<B>-dfw?V</B>]
+
+[<B>-E</B>
+
+<I>encoding</I>]
+
+<I>file</I>
+
+...
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>lexgrog</B>
+
+は昔の "groff guess" ユーティリティを
+<B>lex</B>
+
+で実装したものである。
+
+
+
+
+
+
+
+
+
+
+
+
+このプログラムは、コマンドラインから man ページソースファイルまたは
+整形済みの "cat" ページのファイルのリストを読み込む。
+そして、
+<B>apropos</B>
+
+と
+<B>whatis</B>
+
+で使われる名前と要約文を表示するか、
+<B>nroff</B>
+
+または
+<B>troff</B>
+
+もしくはその両方に渡される前に
+man ページに必要とされる前処理フィルタのリストを表示する。
+<P>
+
+
+
+
+
+入力のフォーマットが不正な場合、
+<B>lexgrog</B>
+
+は "parse failed" と表示する。
+これは、他のプログラムが man ページの正しさをチェックする必要がある場合に役立つ。
+
+
+
+
+<B>lexgrog</B>
+
+の入力ファイルの 1 つが "-" の場合、標準入力を読み込む。
+入力ファイルが圧縮されている場合、展開されたものが自動的に読み込まれる。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-d</B>, <B>--debug</B>
+
+<DD>
+
+デバッグ情報を表示する。
+<DT><B>-m</B>, <B>--man</B>
+
+<DD>
+
+
+
+
+
+
+入力を man ページソースファイルとして解析する。
+これは、
+<B>--man</B>
+
+も
+<B>--cat</B>
+
+も指定されない場合のデフォルトである。
+<DT><B>-c</B>, <B>--cat</B>
+
+<DD>
+
+
+
+
+
+入力を整形済みの man ページ ("cat ページ") として解析する。
+<B>--man</B>
+
+と
+<B>--cat</B>
+
+は同時に指定できない。
+<DT><B>-w</B>, <B>--whatis</B>
+
+<DD>
+
+
+
+
+man ページのヘッダから名前と要約文を表示する。
+これは、
+<B>apropos</B>
+
+と
+<B>whatis</B>
+
+で使われる。
+
+
+
+
+
+これは
+<B>--whatis</B>
+
+も
+<B>--filters</B>
+
+も指定されない場合のデフォルトである。
+<DT><B>-f</B>, <B>--filters</B>
+
+<DD>
+
+
+
+
+
+<B>nroff</B>
+
+または
+<B>troff</B>
+
+で整形する前に、man ページを前処理するのに必要なフィルタのリストを表示する。
+<DT><B>-E</B> <I>encoding</I>, <B>--encoding</B> <I>encoding</I><DD>
+
+
+ページについて推測された文字セットを、
+<I>encoding</I>
+
+で上書きする。
+<DT><B>-?</B>, <B>--help</B>
+
+<DD>
+
+ヘルプメッセージを表示して、終了する。
+<DT><B>--usage</B>
+
+<DD>
+
+短い使用法のメッセージを表示して、終了する。
+<DT><B>-V</B>, <B>--version</B>
+
+<DD>
+
+バージョン情報を表示する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+<DL COMPACT>
+<DT><B>0</B>
+
+<DD>
+
+プログラムの実行に成功した。
+<DT><B>1</B>
+
+<DD>
+
+使用法のエラー。
+<DT><B>2</B>
+
+<DD>
+
+
+<B>lexgrog</B>
+
+が 1 つ以上の入力ファイルの解析に失敗した。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+<PRE>
+  $ lexgrog man.1
+  man.1: &quot;man - an interface to the system reference manuals&quot;
+  $ lexgrog -fw man.1
+  man.1 (t): &quot;man - an interface to the system reference manuals&quot;
+  $ lexgrog -c whatis.cat1
+  whatis.cat1: &quot;whatis - display manual page descriptions&quot;
+  $ lexgrog broken.1
+  broken.1: parse failed
+</PRE>
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>WHATIS の解析</H2>
+
+
+
+
+
+
+
+
+(<B>lexgrog</B>
+
+と同じコードを使っている)
+<B>mandb</B>
+
+は、各マニュアルページにドキュメント化された特徴の
+名前と要約文を見つけるために、先頭にある
+<B>NAME</B>
+
+セクションを解析する。
+
+
+
+歴史的に使われてきたいろいろな形式に対応しているため、
+パーサーはとても堅牢ではあるが、
+ときどき必要な情報の抽出に失敗すること場合もある。
+<P>
+
+
+
+
+
+
+伝統的な
+<I>man</I>
+
+マクロセットを使う場合、正しい
+<B>NAME</B>
+
+セクションは以下のようである:
+<P>
+
+<DL COMPACT><DT><DD>
+
+<PRE>
+.SH NAME
+foo \- program to do something
+</PRE>
+
+
+</DL>
+
+<P>
+
+
+マニュアルページャーによっては、見た目通りに表示するためには、'\-' が必要になる。
+
+
+
+<B>mandb</B>
+
+はより堅牢であるが、他のシステムとの互換性を保つためには、
+バックスラッシュを使うのは良い考えである。
+<P>
+
+
+(ハイフンの) 左側には、複数個の名前をカンマで区切って置くことが出来る。
+
+
+
+
+不正な形式の
+<B>NAME</B>
+
+セクションに対して、異常な動作を避けるため、空白を含む名前は無視される。
+
+
+(ハイフンの) 右側のテキストは、自由形式であり、複数行に渡って書くことが出来る。
+
+
+複数の特徴についての異なる要約文を、同じマニュアルページに
+ドキュメント化する場合、以下の形式が使用される:
+<P>
+
+<DL COMPACT><DT><DD>
+
+<PRE>
+.SH NAME
+foo, bar \- programs to do something
+.br
+baz \- program to do nothing
+</PRE>
+
+
+</DL>
+
+<P>
+
+
+
+(<TT>.PP</TT> のような新しい段落を開始するマクロが、
+改行 (break) マクロ <TT>.br</TT> の代わりに使える場合もある。)
+<P>
+
+
+
+
+
+
+BSD 由来の
+<I>mdoc</I>
+
+マクロセットを使う場合、正しい
+<B>NAME</B>
+
+セクションは、以下のようになる:
+<P>
+
+<DL COMPACT><DT><DD>
+
+<PRE>
+.Sh NAME
+.Nm foo
+.Nd program to do something
+</PRE>
+
+
+</DL>
+
+<P>
+
+whatis の解析が失敗するいくつかの一般的な理由がある。
+
+
+
+
+マニュアルページの著者が '.SH NAME' を
+'.SH MYPROGRAM' に置き換えてしまい、
+<B>mandb</B>
+
+が必要な情報を抽出するセクションを見つけられない場合がある。
+
+
+また、著者が NAME セクションを書いているが、
+'name \- description' ではない、自由形式で書いている場合もある。
+
+しかし、上記のような書式も受け付けるべきである。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<I><A HREF="../man1/apropos.1.html">apropos</A></I>(1),
+
+<I><A HREF="../man1/man.1.html">man</A></I>(1),
+
+<I><A HREF="../man1/whatis.1.html">whatis</A></I>(1),
+
+<I><A HREF="../man8/mandb.8.html">mandb</A></I>(8)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+<B>lexgrog</B>
+
+は .so リクエストを含むファイルを解析しようとするが、
+ファイルがマニュアルページ階層に正しくインストールされている場合にのみ、
+正しく解析することが出来る。
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>作者</H2>
+
+
+
+
+man ページをスキャンする
+<B>lexgrog</B>
+
+のコードは、以下の作者によって書かれた:
+<P>
+
+<PRE>
+Wilf. (<A HREF="mailto:G.Wilford@ee.surrey.ac.uk">G.Wilford@ee.surrey.ac.uk</A>).
+Fabrizio Polacco (<A HREF="mailto:fpolacco@debian.org">fpolacco@debian.org</A>).
+Colin Watson (<A HREF="mailto:cjwatson@debian.org">cjwatson@debian.org</A>).
+</PRE>
+
+<P>
+
+
+
+Colin Watson が、現在のコマンドラインフロントエンドの実装と、
+この man ページを書いた。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">WHATIS の解析</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">注意</A><DD>
+<DT><A HREF="#lbAK">作者</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:41:05 GMT, December 27, 2020
+</BODY>
+</HTML>
