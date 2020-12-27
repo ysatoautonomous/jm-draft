@@ -1,0 +1,320 @@
+.\" Copyright (c) 2002 Andries Brouwer <aeb@cwi.nl>
+.\"
+.\" %%%LICENSE_START(VERBATIM)
+.\" Permission is granted to make and distribute verbatim copies of this
+.\" manual provided the copyright notice and this permission notice are
+.\" preserved on all copies.
+.\"
+.\" Permission is granted to copy and distribute modified versions of this
+.\" manual under the conditions for verbatim copying, provided that the
+.\" entire resulting derived work is distributed under the terms of a
+.\" permission notice identical to this one.
+.\"
+.\" Since the Linux kernel and libraries are constantly changing, this
+.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+.\" responsibility for errors or omissions, or for damages resulting from
+.\" the use of the information contained herein.  The author(s) may not
+.\" have taken the same level of care in the production of this manual,
+.\" which is licensed free of charge, as they might when working
+.\" professionally.
+.\"
+.\" Formatted or processed versions of this manual, if unaccompanied by
+.\" the source, must acknowledge the copyright and authors of this work.
+.\" %%%LICENSE_END
+.\"
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.\" Japanese Version Copyright (c) 2002 Akihiro MOTOKI, all rights reserved.
+.\" Translated Mon Mar  5 2003 by Akihiro MOTOKI <amotoki@dd.iij4u.or.jp>
+.\" Updated & Modified Mon Dec 28 07:49:49 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH INTRO 1 2015-07-23 "Linux" "Linux User's Manual"
+.SH 名前
+intro \- ユーザーコマンドの紹介
+.SH 説明
+マニュアルの 1 章は、ユーザーコマンドやツールの説明について説明している。 例えば、ファイル操作ツール、シェル、コンパイラ、ウェブブラウザ、
+ファイルやイメージのビューアやエディタ、などである。
+
+.SH 注意
+Linux は UNIX の一種であり、大雑把にいえば、 UNIX 上のユーザーコマンドはすべて Linux 上でも全く同じ動作をする (FreeBSD
+や他のの多くの UNIX 風のシステムでも同様である)。
+.PP
+Linux には GUI (グラフィカルユーザーインターフェース) が用意されており、
+何かをポイントしたり、クリックしたり、ドラッグしたりでき、うまくいけば 最初にたくさんの文書を読まなくても目的の作業ができてしまうこともある。 伝統的な
+UNIX 環境は CLI (コマンドラインインターフェース) であり、 コマンドを打ち込んで、コンピュータに何をすべきか教えてやる。 CLI は GUI
+よりも速く強力だが、どのコマンドが何をするのか知っている必要 がある。CLI を使い始めるために必要最小限のコマンドを以下に述べる。
+.SS ログイン
+.\"O In order to start working, you probably first have to open a session by
+.\"O giving your username and password.
+作業を開始するためには、ユーザー名とパスワードを入力して、
+まず最初にセッションをオープンしなければならないだろう。
+.\"O The program
+.\"O .BR login (1)
+.\"O now starts a
+.\"O .I shell
+.\"O (command interpreter) for you.
+.BR login (1)
+プログラムは (コマンドインタープリターである)  \fIシェル (shell)\fP
+を起動する。グラフィカルログインの場合は、メニューやアイコンがある スクリーンが表示され、マウスをクリックするとウィンドウが開いて
+シェルが起動されることだろう。詳しくは \fBxterm\fP(1)  を参照のこと。
+.SS シェル
+コマンドは、コマンドインタープリターである \fIシェル\fP に対して入力する。
+\fIシェル\fPは、組み込みコマンドではなく普通のプログラムであり、
+好みのものに変更することができる。
+.\"O Everybody has their own favorite one.
+各人にはそれぞれ好みのシェルがある。
+.\"O The standard one is called
+.\"O .IR sh .
+標準のシェルは
+.I sh
+と呼ばれる。
+.\"O See also
+.\"O .BR ash (1),
+.\"O .BR bash (1),
+.\"O .BR chsh (1),
+.\"O .BR csh (1),
+.\"O .BR dash (1),
+.\"O .BR ksh (1),
+.\"O .BR zsh (1).
+.BR ash (1),
+.BR bash (1),
+.BR chsh (1),
+.BR csh (1),
+.BR dash (1),
+.BR ksh (1),
+.BR zsh (1)
+を参照すること。
+.PP
+.\"O A session might go like:
+セッションの例を以下に示す:
+.PP
+.in +4n
+.EX
+.RB "knuth login: " aeb
+.RB "Password: " ********
+.RB "$ " date
+Tue Aug  6 23:50:44 CEST 2002
+.RB "$ " cal
+	  August 2002
+Su Mo Tu We Th Fr Sa
+             1  2  3
+ 4  5  6  7  8  9 10
+11 12 13 14 15 16 17
+18 19 20 21 22 23 24
+25 26 27 28 29 30 31
+
+.RB "$ " ls
+bin  tel
+.RB "$ " "ls \-l"
+total 2
+drwxrwxr\-x   2 aeb       1024 Aug  6 23:51 bin
+\-rw\-rw\-r\-\-   1 aeb         37 Aug  6 23:52 tel
+.RB "$ " "cat tel"
+maja    0501\-1136285
+peter   0136\-7399214
+.RB "$ " "cp tel tel2"
+.RB "$ " "ls \-l"
+total 3
+drwxr\-xr\-x   2 aeb       1024 Aug  6 23:51 bin
+\-rw\-r\-\-r\-\-   1 aeb         37 Aug  6 23:52 tel
+\-rw\-r\-\-r\-\-   1 aeb         37 Aug  6 23:53 tel2
+.RB "$ " "mv tel tel1"
+.RB "$ " "ls \-l"
+total 3
+drwxr\-xr\-x   2 aeb       1024 Aug  6 23:51 bin
+\-rw\-r\-\-r\-\-   1 aeb         37 Aug  6 23:52 tel1
+\-rw\-r\-\-r\-\-   1 aeb         37 Aug  6 23:53 tel2
+.RB "$ " "diff tel1 tel2"
+.RB "$ " "rm tel1"
+.RB "$ " "grep maja tel2"
+maja    0501\-1136285
+$
+.EE
+.in
+.PP
+.\"O Here typing Control-D ended the session.
+ここで Control\-D を打つとセッションが終了する。
+.PP
+ここで、
+.B $
+はコマンドプロンプトである。コマンドプロンプトはシェル独特のやり方で、
+シェルが次のコマンドを受け付けられる状態になっていることを示している。 プロンプトは、柔軟にカスタマイズ
+することができ、ユーザー名、マシン名、カレントディレクトリ、時刻などを プロンプトに含めることができる。 PS1="What next, master?
+" と設定すると、 プロンプトはそのように変更されるだろう。
+.PP
+例にあるように、 \fIdate\fP という日付と時刻を表示するコマンドや、 \fIcal\fP というカレンダを表示するコマンドもある。
+.PP
+\fIls\fP コマンドはカレントディレクトリの内容をリスト表示する、つまり ディレクトリ内にどんなファイルがあるかを教えてくれる。 \fI\-l\fP
+オプションをつけて実行すると、詳細表示が行われ、 ファイルの所有者、サイズ、日付などが表示される。 上の例では、"tel" ファイルは、サイズが 37
+バイトで、所有者は aeb で、 所有者は読み書きができ、他の人は読み出しだけができることが分かる。 ファイルの所有者と権限 (permission)
+は、それぞれ \fIchown\fP コマンドと \fIchmod\fP コマンドで変更できる。
+.PP
+.\"O The command
+.\"O .I cat
+.\"O will show the contents of a file.
+.\"O (The name is from "concatenate and print": all files given as
+.\"O parameters are concatenated and sent to "standard output"
+.\"O (see
+.\"O .BR stdout (3)),
+.\"O here
+.\"O the terminal screen.)
+.I cat
+コマンドはファイルの内容を表示する。
+(コマンド名は "concatenate and print" (連結して印字する)
+に由来している。
+引数として与えられた全てのファイルの内容が連結され、「標準出力」
+.RB ( stdout (3)
+を参照) に送られる。
+上の例では、標準出力は端末のスクリーンである。)
+.PP
+\fIcp\fP コマンドはファイルのコピーを行う (その名前は "copy" に由来する)。
+.PP
+.\"O The command
+.\"O .I mv
+.\"O (from "move"), on the other hand, only renames it.
+一方、
+.I mv
+コマンドは単純にファイル名の変更を行う
+(その名前は "move" に由来する)。
+.PP
+\fIdiff\fP コマンドは 2 つのファイルの違いを表示する。 上の例では、二つのファイルに違いがないので、何も出力されていない。
+.PP
+\fIrm\fP コマンドはファイルを削除する。ファイルはなくなってしまうので 注意して使用すること! ゴミ箱に相当するものはなく、
+削除はそのファイルが完全に失われることを意味する。
+.PP
+\fIgrep\fP コマンドは、指定された文字列を一つ以上のファイルから探す (コマンド名は "g/re/p" に由来している)。 上の例では、Maja
+の電話番号が見つかっている。
+.SS パス名とカレントディレクトリ
+.\"O Files live in a large tree, the file hierarchy.
+ファイルはファイル階層という大きな木の中にある。
+.\"O Each has a
+.\"O .I "pathname"
+.\"O describing the path from the root of the tree (which is called
+.\"O .IR / )
+.\"O to the file.
+それぞれのファイルには \fIパス名 (pathname)\fP があり、
+パス名は
+.RI ( /
+と呼ばれる) 木の根からの経路を示すものである。
+.\"O For example, such a full pathname might be
+.\"O .IR /home/aeb/tel .
+上の例では、完全なパス名は
+.I /home/aeb/tel
+のようになる。
+.\"O Always using full pathnames would be inconvenient, and the name
+.\"O of a file in the current directory may be abbreviated by giving
+.\"O only the last component.
+いつも完全なパス名を使うのは不便なので、カレントディレクトリにある ファイル名は、ファイル名の最後の部分だけに省略することができる。
+.\"O That is why
+.\"O .I /home/aeb/tel
+.\"O can be abbreviated
+.\"O to
+.\"O .I tel
+.\"O when the current directory is
+.\"O .IR /home/aeb .
+したがって、カレントディレクトリが
+.I /home/aeb
+の時は、
+.I /home/aeb/tel
+を
+.I tel
+に省略して書くことができる。
+.PP
+\fIpwd\fP コマンドはカレントディレクトリを表示する。
+.PP
+.\"O The command
+.\"O .I cd
+.\"O changes the current directory.
+.I cd
+コマンドはカレントディレクトリを変更する。
+.\"O Try alternatively
+.\"O .I cd
+.\"O and
+.\"O .I pwd
+.\"O commands and explore
+.\"O .I cd
+.I cd
+と
+.I pwd
+コマンドを交互に実行し、
+.I cd
+の挙動をみるとよい。
+.\"O usage: "cd", "cd .", "cd ..", "cd /" and "cd ~".
+使用例: "cd", "cd .", "cd ..", "cd /", "cd ~".
+.SS ディレクトリ
+\fImkdir\fP コマンドはディレクトリを新規に作成する。
+.PP
+\fIrmdir\fP コマンドは空であればディレクトリを削除し、 空でなければエラーメッセージを表示する。
+.PP
+\fIfind\fP コマンドは、指定された名前やその他の属性を持つファイルを探す (書式はかなり変わっている)。
+.\"O For example, "find . \-name tel" would find
+.\"O the file
+.\"O .I tel
+.\"O starting in the present directory (which is called
+.\"O .IR . ).
+例えば、"find . \-name tel"
+を実行すると、
+.I tel
+という名前のファイルの検索をカレントディレクトリから開始する。
+(カレントディレクトリは
+.I .
+で表す)。
+"find / \-name tel" としても 同じことを行うが、検索は木の根 (/) から開始される。 数 GB のディスクに対して検索をかけると時間がかかるので、
+そのようなときは \fBlocate\fP(1)  を使った方がいいかもしれない。
+.SS ディスクとファイルシステム
+\fImount\fP コマンドは、(フロッピーや CDROM などの) ディスク上のファイルシステムを 大きなファイルシステム階層に接続する。逆に
+\fIumount\fP コマンドは切り離しを行う。 \fIdf\fP コマンドを実行すると、ディスクの未使用量がどの程度かを表示する。
+.SS プロセス
+UNIX システムでは、多くのユーザープロセスとシステムプロセスが同時に実行される。 対話的に実行できるプロセスは \fIforeground\fP
+で実行されており、そうでないものは \fIbackground\fP で実行されている。 コマンド \fIps\fP
+により、どのプロセスが実行されているかやプロセスが持っている番号 (プロセス番号) を表示できる。 コマンド \fIkill\fP
+を使うことで、プロセスを取り除くことができる。 オプションなしで実行されると、「いなくなって下さい」というやさしい要求 を行う。"kill \-9"
+に続けてプロセス番号を指定すると、指定したプロセスを 直ちに削除する。 foreground プロセスは多くの場合 Control\-C
+をタイプすることで 殺すことができる。
+.SS 情報の探し方
+非常にたくさんのコマンドがあり、 それぞれのコマンドにはたくさんのオプションがある。 伝統的には、コマンドの説明は (このドキュメントもそうだが)
+\fIman ページ\fP に書かれている。例えば "man kill" コマンドを実行すると、"kill" コマンドの
+使い方に関する説明が表示される。(同様に "man man" は "man" コマンドに ついての説明を表示する。)  \fIman\fP
+プログラムはテキストを \fIpager\fP に渡して表示を行う。 \fIpager\fP として \fIless\fP が使われることが多い。
+次のページに進むにはスペースキーを、終了するには q を押す。
+.PP
+ドキュメントでは、他の man ページへの参照は \fBman\fP(1)  のように名前とセクション番号で示すのが一般的である。 man
+ページは簡潔に書かれており、詳細を忘れたときに素早く情報を見つける ことができる。例や説明とともに入門向けの記載もあるので、初めての人にとっても
+役に立つものである。
+.PP
+.\"O A lot of GNU/FSF software is provided with info files.
+.\"O Type "info info"
+.\"O for an introduction on the use of the program
+.\"O .IR info .
+多くの GNU/FSF ソフトウェアには info ファイルが付属している。
+"info info" とタイプすると、
+.I info
+プログラムの使い方の紹介が表示される。
+.PP
+特集記事については HOWTO で扱われることが多い。 \fI/usr/share/doc/howto/en\fP を見るといいだろう。 HTML
+ファイルがあった場合はブラウザを使って表示すればよい。
+.\"
+.\" Actual examples? Separate section for each of cat, cp, ...?
+.\" gzip, bzip2, tar, rpm
+.\" .SH SEE ALSO
+.SH 関連項目
+.BR ash (1),
+.BR bash (1),
+.BR chsh (1),
+.BR csh (1),
+.BR dash (1),
+.BR ksh (1),
+.BR locate (1),
+.BR login (1),
+.BR man (1),
+.BR xterm (1),
+.BR zsh (1),
+.BR wait (2),
+.BR stdout (3),
+.BR man-pages (7),
+.BR standards (7)
