@@ -2,7 +2,7 @@
 .SH NAME
 sa1 \- Collect and store binary data in the system activity daily data file.
 .SH SYNOPSIS
-.B /usr/local/lib64/sa/sa1 [ --boot |
+.B /usr/lib64/sa/sa1 [ --boot |
 .I interval
 .I count
 .B ]
@@ -62,7 +62,7 @@ restart from 0.
 To collect data (including those from disks) every 10 minutes,
 place the following entry in your root crontab file:
 
-.B 0,10,20,30,40,50 * * * * /usr/local/lib64/sa/sa1 1 1 -S DISK
+.B 0,10,20,30,40,50 * * * * /usr/lib64/sa/sa1 1 1 -S DISK
 
 .SH FILES
 .I /var/log/sa/saDD

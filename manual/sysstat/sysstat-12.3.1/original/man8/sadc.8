@@ -2,7 +2,7 @@
 .SH NAME
 sadc \- System activity data collector.
 .SH SYNOPSIS
-.B /usr/local/lib64/sa/sadc [ -C
+.B /usr/lib64/sa/sadc [ -C
 .I comment
 .B ] [ -D ] [ -F ] [ -f ] [ -L ] [ -V ] [ -S { keyword [,...] | ALL | XALL } ] [
 .I interval
@@ -66,7 +66,7 @@ the time when the counter restarts from 0, will be written.
 For example, one of the system startup script may write the restart mark to
 the daily data file by the command entry:
 
-.B "/usr/local/lib64/sa/sadc -"
+.B "/usr/lib64/sa/sadc -"
 
 The
 .B sadc
@@ -203,12 +203,12 @@ daily data file located in the
 .IR /var/log/sa
 directory.
 .SH EXAMPLES
-.B /usr/local/lib64/sa/sadc 1 10 /tmp/datafile
+.B /usr/lib64/sa/sadc 1 10 /tmp/datafile
 .RS
 Write 10 records of one second intervals to the /tmp/datafile binary file.
 .RE
 
-.B /usr/local/lib64/sa/sadc -C Backup_Start /tmp/datafile
+.B /usr/lib64/sa/sadc -C Backup_Start /tmp/datafile
 .RS
 Insert the comment Backup_Start into the file /tmp/datafile.
 .RE
