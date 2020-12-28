@@ -1,0 +1,79 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MTRACE</TITLE>
+</HEAD><BODY>
+<H1>MTRACE</H1>
+Section: Linux user manual (1)<BR>Updated: 2017-09-15<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+mtrace - malloc のトレースログを解釈する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>mtrace</B> [<I>option</I>]... [<I>binary</I>] <I>mtracedata</I>
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>mtrace</B> は <B><A HREF="../man3/mtrace.3.html">mtrace</A></B>(3) の出力内容が入ったファイル <I>mtracedata</I>
+のトレースログを解釈し人間が読みやすい出力に変換する Perl スクリプトである。 <I>binary</I> が渡されると、 <B>mtrace</B>
+の出力に問題箇所にソースファイル名と行番号も出力される (<I>binary</I> はデバッグ情報付きでコンパイルされているものとする)。
+<P>
+
+<B><A HREF="../man3/mtrace.3.html">mtrace</A></B>(3) 関数と <B>mtrace</B> スクリプトの使用方法の詳細は <B><A HREF="../man3/mtrace.3.html">mtrace</A></B>(3) を参照。
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>--help</B><DD>
+ヘルプを表示し、終了する。
+<DT><B>--version</B><DD>
+バージョン情報を表示して終了する。
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>バグ</H2>
+
+バグ報告の方法については
+
+
+
+を参照。
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/memusage.1.html">memusage</A></B>(1),
+
+<B><A HREF="../man3/mtrace.3.html">mtrace</A></B>(3)
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">バグ</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 12:27:19 GMT, December 28, 2020
+</BODY>
+</HTML>
