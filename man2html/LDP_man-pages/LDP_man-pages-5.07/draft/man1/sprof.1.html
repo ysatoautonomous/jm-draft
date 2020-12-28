@@ -1,0 +1,369 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SPROF</TITLE>
+</HEAD><BODY>
+<H1>SPROF</H1>
+Section: Linux User Manual (1)<BR>Updated: 2020-06-09<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+sprof - 共有オブジェクトのプロファイルデータを読み出して表示する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>sprof</B> [<I>option</I>]... <I>shared-object-path</I> [<I>profile-data-path</I>]
+</PRE>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>sprof</B> コマンドは、 最初のコマンドライン引き数で指定された
+共有オブジェクト (共有ライブラリ) のプロファイルの概要を表示する。
+2 番目のコマンドライン引き数
+(省略可能) で指定された生成済みのプロファイルデータを使って、 プロファイルの概要が生成される。 プロファイルデータのパス名が省略された場合、
+<B>sprof</B> は、 共有オブジェクトの soname を使ってパス名を元に、 カレントディレクトリに
+<I>&lt;soname&gt;.profile</I> という名前のファイルを探して、 プロファイルデータを特定しようとする。
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+以下のコマンドラインオプションは生成されるプロファイリング出力を指定する。
+<DL COMPACT>
+<DT><B>-c</B>, <B>--call-pairs</B><DD>
+共有オブジェクトで公開されているインターフェースに対して呼び出し
+経路のペアのリストを表示する。 各経路が使用された回数も表示される。
+<DT><B>-p</B>, <B>--flat-profile</B><DD>
+監視対象のオブジェクトの全関数の、 回数と tick が入った flat profile を生成する。
+<DT><B>-q</B>, <B>--graph</B><DD>
+コールグラフを生成する。
+</DL>
+<P>
+
+上記のオプションがどれも指定されなかった場合のデフォルトの動作は、 flat profile とコールグラフが表示される。
+<P>
+
+以下のコマンドラインオプションも使用できる。
+<DL COMPACT>
+<DT><B>-?</B>, <B>--help</B><DD>
+コマンドラインオプションと引き数の概要を表示し終了する。
+<DT><B>--usage</B>
+
+<DD>
+使用方法の簡潔な概要を表示し終了する。
+<DT><B>-V</B>, <B>--version</B><DD>
+プログラムのバージョンを表示し終了する。
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>準拠</H2>
+
+<B>sprof</B> コマンドは GNU 拡張であり、 POSIX.1 には存在しない。
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+
+
+以下は <B>sprof</B> の使用例を示したものである。
+
+
+この例では、メインプログラムで共有オブジェクト内の 2 つの関数を呼び出している。
+最初に、メインプログラムのコードは以下の通りである。
+<P>
+
+
+
+$ <B>cat prog.c</B>
+#include &lt;<A HREF="file:///usr/include/stdlib.h">stdlib.h</A>&gt;
+<P>
+void x1(void);
+void x2(void);
+<P>
+int
+main(int argc, char *argv[])
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;x1();
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;x2();
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;exit(EXIT_SUCCESS);
+}
+
+
+<P>
+
+
+
+
+
+
+
+関数
+<I>x1</I>()
+
+と
+<I>x2</I>()
+
+は以下のソースファイルで定義されており、このファイルから
+共有オブジェクトが構成される。
+<P>
+
+
+
+$ <B>cat libdemo.c</B>
+#include &lt;<A HREF="file:///usr/include/unistd.h">unistd.h</A>&gt;
+<P>
+void
+consumeCpu1(int lim)
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;j;
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(j&nbsp;=&nbsp;0;&nbsp;j&nbsp;&lt;&nbsp;lim;&nbsp;j++)
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>getppid();<BR>
+}
+<P>
+void
+x1(void) {
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;j;
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(j&nbsp;=&nbsp;0;&nbsp;j&nbsp;&lt;&nbsp;100;&nbsp;j++)
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>consumeCpu1(200000);<BR>
+}
+<P>
+void
+consumeCpu2(int lim)
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;j;
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(j&nbsp;=&nbsp;0;&nbsp;j&nbsp;&lt;&nbsp;lim;&nbsp;j++)
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>getppid();<BR>
+}
+<P>
+void
+x2(void)
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;j;
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(j&nbsp;=&nbsp;0;&nbsp;j&nbsp;&lt;&nbsp;1000;&nbsp;j++)
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>consumeCpu2(10000);<BR>
+}
+
+
+<P>
+
+
+
+
+
+ここで、実際の名前は <I>libdemo.so.1.0.1</I> で
+soname は <I>libdemo.so.1</I> で共有オブジェクトを構成する。
+<P>
+
+
+
+$ <B>cc -g -fPIC -shared -Wl,-soname,libdemo.so.1 \</B>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>-o&nbsp;libdemo.so.1.0.1&nbsp;libdemo.c</B>
+
+
+<P>
+
+次に、 ライブラリ soname とライブラリのリンカー名へのシンボリックリンクを作成する。
+<P>
+
+
+
+$ <B>ln -sf libdemo.so.1.0.1 libdemo.so.1</B>
+$ <B>ln -sf libdemo.so.1 libdemo.so</B>
+
+
+<P>
+
+
+
+続けて、共有オブジェクトとリンクしてメインプログラムをコンパイルし、
+プログラムが動的依存する共有オブジェクトの一覧を表示する。
+<P>
+
+
+
+$ <B>cc -g -o prog prog.c -L. -ldemo</B>
+$ <B>ldd prog</B>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>linux-vdso.so.1 =&gt;  (0x00007fff86d66000)<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>libdemo.so.1 =&gt; not found<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>libc.so.6 =&gt; /lib64/libc.so.6 (0x00007fd4dc138000)<BR>
+<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>/lib64/ld-linux-x86-64.so.2 (0x00007fd4dc51f000)<BR>
+
+
+<P>
+
+
+
+
+
+共有オブジェクトのプロファイル情報を取得するために、
+環境変数 <B>LD_PROFILE</B> にこのライブラリの soname を設定する。
+<P>
+
+
+
+$ <B>export LD_PROFILE=libdemo.so.1</B>
+
+
+<P>
+
+環境変数 <B>LD_PROFILE_OUTPUT</B> にプロファイル情報を出力するディレクトリのパス名を設定し、
+このディレクトリが存在しない場合は作成する。
+<P>
+
+
+
+$ <B>export LD_PROFILE_OUTPUT=$(pwd)/prof_data</B>
+$ <B>mkdir -p $LD_PROFILE_OUTPUT</B>
+
+
+<P>
+
+<B>LD_PROFILE</B> を設定すると、プロファイルの出力は出力ファイルがすでに存在する場合は
+「追記」されるので、
+既存のプロファイルデータが存在しないようにしておく。
+<P>
+
+
+
+$ <B>rm -f $LD_PROFILE_OUTPUT/$LD_PROFILE.profile</B>
+
+
+<P>
+
+次にプログラムを実行し、 プロファイリング出力を生成させる。 プロファイリング出力は <B>LD_PROFILE_OUTPUT</B>
+で指定されたディレクトリにファイルが書き込まれる。
+<P>
+
+
+
+$ <B>LD_LIBRARY_PATH=. ./prog</B>
+$ <B>ls prof_data</B>
+libdemo.so.1.profile
+
+
+<P>
+
+
+
+
+<B>sprof -p</B>
+
+オプションを使って、呼び出し回数と tick 数が含まれる flat プロファイルを生成する。
+<P>
+
+
+
+$ <B>sprof -p libdemo.so.1 $LD_PROFILE_OUTPUT/libdemo.so.1.profile</B>
+Flat profile:
+<P>
+Each sample counts as 0.01 seconds.
+<BR>&nbsp;&nbsp;%&nbsp;&nbsp;&nbsp;cumulative&nbsp;&nbsp;&nbsp;self&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;total
+<BR>&nbsp;time&nbsp;&nbsp;&nbsp;seconds&nbsp;&nbsp;&nbsp;seconds&nbsp;&nbsp;&nbsp;&nbsp;calls&nbsp;&nbsp;us/call&nbsp;&nbsp;us/call&nbsp;&nbsp;name
+<BR>&nbsp;60.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.06&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.06&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100&nbsp;&nbsp;&nbsp;600.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consumeCpu1
+<BR>&nbsp;40.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.04&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1000&nbsp;&nbsp;&nbsp;&nbsp;40.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consumeCpu2
+<BR>&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1
+<BR>&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2
+
+
+<P>
+
+
+
+
+<B>sprof -q</B>
+
+オプションを使うと、コールグラフが生成される。
+<P>
+
+
+
+$ <B>sprof -q libdemo.so.1 $LD_PROFILE_OUTPUT/libdemo.so.1.profile</B>
+<P>
+index % time    self  children    called     name
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100/100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1&nbsp;[1]
+[0]    100.0    0.00    0.00      100         consumeCpu1 [0]
+-----------------------------------------------
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1/1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;UNKNOWN&gt;
+[1]      0.0    0.00    0.00        1         x1 [1]
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100/100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consumeCpu1&nbsp;[0]
+-----------------------------------------------
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1000/1000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2&nbsp;[3]
+[2]      0.0    0.00    0.00     1000         consumeCpu2 [2]
+-----------------------------------------------
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1/1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;UNKNOWN&gt;
+[3]      0.0    0.00    0.00        1         x2 [3]
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;0.00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1000/1000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consumeCpu2&nbsp;[2]
+-----------------------------------------------
+
+
+<P>
+
+上記や以下の例で、 &quot;&lt;UNKNOWN&gt;&quot; の文字列は、 識別子がプロファイルされたオブジェクトの外部にあることを表している
+(この例では &quot;&lt;UNKNOWN&gt;&quot; になっているのは <I>main()</I> 内のオブジェクトである)。
+<P>
+
+
+
+
+<B>sprof -c</B>
+
+オプションを使うと、呼び出しの組とその発生回数のリストが生成される。
+<P>
+
+
+
+$ <B>sprof -c libdemo.so.1 $LD_PROFILE_OUTPUT/libdemo.so.1.profile</B>
+&lt;UNKNOWN&gt;                  x1                                 1
+x1                         consumeCpu1                      100
+&lt;UNKNOWN&gt;                  x2                                 1
+x2                         consumeCpu2                     1000
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/gprof.1.html">gprof</A></B>(1),
+
+<B><A HREF="../man1/ldd.1.html">ldd</A></B>(1),
+
+<B><A HREF="../man8/ld.so.8.html">ld.so</A></B>(8)
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">準拠</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 17:34:53 GMT, December 28, 2020
+</BODY>
+</HTML>
