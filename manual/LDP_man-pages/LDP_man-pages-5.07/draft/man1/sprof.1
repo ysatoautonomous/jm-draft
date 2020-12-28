@@ -1,0 +1,319 @@
+.\" Copyright (C) 2014 Michael Kerrisk <mtk.manpages@gmail.com>
+.\"
+.\" %%%LICENSE_START(VERBATIM)
+.\" Permission is granted to make and distribute verbatim copies of this
+.\" manual provided the copyright notice and this permission notice are
+.\" preserved on all copies.
+.\"
+.\" Permission is granted to copy and distribute modified versions of this
+.\" manual under the conditions for verbatim copying, provided that the
+.\" entire resulting derived work is distributed under the terms of a
+.\" permission notice identical to this one.
+.\"
+.\" Since the Linux kernel and libraries are constantly changing, this
+.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+.\" responsibility for errors or omissions, or for damages resulting from
+.\" the use of the information contained herein.  The author(s) may not
+.\" have taken the same level of care in the production of this manual,
+.\" which is licensed free of charge, as they might when working
+.\" professionally.
+.\"
+.\" Formatted or processed versions of this manual, if unaccompanied by
+.\" the source, must acknowledge the copyright and authors of this work.
+.\" %%%LICENSE_END
+.\"
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.\" Updated & Modified Tue Dec 29 02:31:48 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH SPROF 1 2020-06-09 "Linux" "Linux User Manual"
+.SH 名前
+sprof \- 共有オブジェクトのプロファイルデータを読み出して表示する
+.SH 書式
+.nf
+\fBsprof\fP [\fIoption\fP]... \fIshared\-object\-path\fP [\fIprofile\-data\-path\fP]
+.fi
+.SH 説明
+.\"O The
+.\"O .B sprof
+.\"O command displays a profiling summary for the
+.\"O shared object (shared library) specified as its first command-line argument.
+\fBsprof\fP コマンドは、 最初のコマンドライン引き数で指定された
+共有オブジェクト (共有ライブラリ) のプロファイルの概要を表示する。
+2 番目のコマンドライン引き数
+(省略可能) で指定された生成済みのプロファイルデータを使って、 プロファイルの概要が生成される。 プロファイルデータのパス名が省略された場合、
+\fBsprof\fP は、 共有オブジェクトの soname を使ってパス名を元に、 カレントディレクトリに
+\fI<soname>.profile\fP という名前のファイルを探して、 プロファイルデータを特定しようとする。
+.SH オプション
+以下のコマンドラインオプションは生成されるプロファイリング出力を指定する。
+.TP 
+\fB\-c\fP, \fB\-\-call\-pairs\fP
+共有オブジェクトで公開されているインターフェースに対して呼び出し
+経路のペアのリストを表示する。 各経路が使用された回数も表示される。
+.TP 
+\fB\-p\fP, \fB\-\-flat\-profile\fP
+監視対象のオブジェクトの全関数の、 回数と tick が入った flat profile を生成する。
+.TP 
+\fB\-q\fP, \fB\-\-graph\fP
+コールグラフを生成する。
+.PP
+上記のオプションがどれも指定されなかった場合のデフォルトの動作は、 flat profile とコールグラフが表示される。
+.PP
+以下のコマンドラインオプションも使用できる。
+.TP 
+\fB\-?\fP, \fB\-\-help\fP
+コマンドラインオプションと引き数の概要を表示し終了する。
+.TP 
+.B \-\-usage
+使用方法の簡潔な概要を表示し終了する。
+.TP 
+\fB\-V\fP, \fB\-\-version\fP
+プログラムのバージョンを表示し終了する。
+.SH 準拠
+\fBsprof\fP コマンドは GNU 拡張であり、 POSIX.1 には存在しない。
+.SH 例
+.\"O The following example demonstrates the use of
+.\"O .BR sprof .
+以下は \fBsprof\fP の使用例を示したものである。
+.\"O The example consists of a main program that calls two functions
+.\"O in a shared object.
+この例では、メインプログラムで共有オブジェクト内の 2 つの関数を呼び出している。
+最初に、メインプログラムのコードは以下の通りである。
+.PP
+.in +4n
+.EX
+$ \fBcat prog.c\fP
+#include <stdlib.h>
+
+void x1(void);
+void x2(void);
+
+int
+main(int argc, char *argv[])
+{
+    x1();
+    x2();
+    exit(EXIT_SUCCESS);
+}
+.EE
+.in
+.PP
+.\"O The functions
+.\"O .IR x1 ()
+.\"O and
+.\"O .IR x2 ()
+.\"O are defined in the following source file that is used to
+.\"O construct the shared object:
+関数
+.IR x1 ()
+と
+.IR x2 ()
+は以下のソースファイルで定義されており、このファイルから
+共有オブジェクトが構成される。
+.PP
+.in +4n
+.EX
+$ \fBcat libdemo.c\fP
+#include <unistd.h>
+
+void
+consumeCpu1(int lim)
+{
+    int j;
+
+    for (j = 0; j < lim; j++)
+	getppid();
+}
+
+void
+x1(void) {
+    int j;
+
+    for (j = 0; j < 100; j++)
+	consumeCpu1(200000);
+}
+
+void
+consumeCpu2(int lim)
+{
+    int j;
+
+    for (j = 0; j < lim; j++)
+	getppid();
+}
+
+void
+x2(void)
+{
+    int j;
+
+    for (j = 0; j < 1000; j++)
+	consumeCpu2(10000);
+}
+.EE
+.in
+.PP
+.\"O Now we construct the shared object with the real name
+.\"O .IR libdemo.so.1.0.1 ,
+.\"O and the soname
+.\"O .IR libdemo.so.1 :
+ここで、実際の名前は \fIlibdemo.so.1.0.1\fP で
+soname は \fIlibdemo.so.1\fP で共有オブジェクトを構成する。
+.PP
+.in +4n
+.EX
+$ \fBcc \-g \-fPIC \-shared \-Wl,\-soname,libdemo.so.1 \e\fP
+        \fB\-o libdemo.so.1.0.1 libdemo.c\fP
+.EE
+.in
+.PP
+次に、 ライブラリ soname とライブラリのリンカー名へのシンボリックリンクを作成する。
+.PP
+.in +4n
+.EX
+$ \fBln \-sf libdemo.so.1.0.1 libdemo.so.1\fP
+$ \fBln \-sf libdemo.so.1 libdemo.so\fP
+.fi
+.EE
+.PP
+.\"O Next, we compile the main program, linking it against the shared object,
+.\"O and then list the dynamic dependencies of the program:
+続けて、共有オブジェクトとリンクしてメインプログラムをコンパイルし、
+プログラムが動的依存する共有オブジェクトの一覧を表示する。
+.PP
+.in +4n
+.EX
+$ \fBcc \-g \-o prog prog.c \-L. \-ldemo\fP
+$ \fBldd prog\fP
+	linux\-vdso.so.1 =>  (0x00007fff86d66000)
+	libdemo.so.1 => not found
+	libc.so.6 => /lib64/libc.so.6 (0x00007fd4dc138000)
+	/lib64/ld\-linux\-x86\-64.so.2 (0x00007fd4dc51f000)
+.EE
+.in
+.PP
+.\"O In order to get profiling information for the shared object,
+.\"O we define the environment variable
+.\"O .B LD_PROFILE
+.\"O with the soname of the library:
+共有オブジェクトのプロファイル情報を取得するために、
+環境変数 \fBLD_PROFILE\fP にこのライブラリの soname を設定する。
+.PP
+.in +4n
+.EX
+$ \fBexport LD_PROFILE=libdemo.so.1\fP
+.EE
+.in
+.PP
+環境変数 \fBLD_PROFILE_OUTPUT\fP にプロファイル情報を出力するディレクトリのパス名を設定し、
+このディレクトリが存在しない場合は作成する。
+.PP
+.in +4n
+.EX
+$ \fBexport LD_PROFILE_OUTPUT=$(pwd)/prof_data\fP
+$ \fBmkdir \-p $LD_PROFILE_OUTPUT\fP
+.EE
+.in
+.PP
+\fBLD_PROFILE\fP を設定すると、プロファイルの出力は出力ファイルがすでに存在する場合は
+「追記」されるので、
+既存のプロファイルデータが存在しないようにしておく。
+.PP
+.in +4n
+.EX
+$ \fBrm \-f $LD_PROFILE_OUTPUT/$LD_PROFILE.profile\fP
+.EE
+.in
+.PP
+次にプログラムを実行し、 プロファイリング出力を生成させる。 プロファイリング出力は \fBLD_PROFILE_OUTPUT\fP
+で指定されたディレクトリにファイルが書き込まれる。
+.PP
+.in +4n
+.EX
+$ \fBLD_LIBRARY_PATH=. ./prog\fP
+$ \fBls prof_data\fP
+libdemo.so.1.profile
+.EE
+.in
+.PP
+.\"O We then use the
+.\"O .B sprof \-p
+.\"O option to generate a flat profile with counts and ticks:
+.B sprof \-p
+オプションを使って、呼び出し回数と tick 数が含まれる flat プロファイルを生成する。
+.PP
+.in +4n
+.EX
+$ \fBsprof \-p libdemo.so.1 $LD_PROFILE_OUTPUT/libdemo.so.1.profile\fP
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total
+ time   seconds   seconds    calls  us/call  us/call  name
+ 60.00      0.06     0.06      100   600.00           consumeCpu1
+ 40.00      0.10     0.04     1000    40.00           consumeCpu2
+  0.00      0.10     0.00        1     0.00           x1
+  0.00      0.10     0.00        1     0.00           x2
+.EE
+.in
+.PP
+.\"O The
+.\"O .B sprof \-q
+.\"O option generates a call graph:
+.B sprof \-q
+オプションを使うと、コールグラフが生成される。
+.PP
+.in +4n
+.EX
+$ \fBsprof \-q libdemo.so.1 $LD_PROFILE_OUTPUT/libdemo.so.1.profile\fP
+
+index % time    self  children    called     name
+
+                0.00    0.00      100/100         x1 [1]
+[0]    100.0    0.00    0.00      100         consumeCpu1 [0]
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+                0.00    0.00        1/1           <UNKNOWN>
+[1]      0.0    0.00    0.00        1         x1 [1]
+                0.00    0.00      100/100         consumeCpu1 [0]
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+                0.00    0.00     1000/1000        x2 [3]
+[2]      0.0    0.00    0.00     1000         consumeCpu2 [2]
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+                0.00    0.00        1/1           <UNKNOWN>
+[3]      0.0    0.00    0.00        1         x2 [3]
+                0.00    0.00     1000/1000        consumeCpu2 [2]
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.EE
+.in
+.PP
+上記や以下の例で、 "<UNKNOWN>" の文字列は、 識別子がプロファイルされたオブジェクトの外部にあることを表している
+(この例では "<UNKNOWN>" になっているのは \fImain()\fP 内のオブジェクトである)。
+.PP
+.\"O The
+.\"O .B sprof \-c
+.\"O option generates a list of call pairs and the number of their occurrences:
+.B sprof \-c
+オプションを使うと、呼び出しの組とその発生回数のリストが生成される。
+.PP
+.in +4n
+.EX
+$ \fBsprof \-c libdemo.so.1 $LD_PROFILE_OUTPUT/libdemo.so.1.profile\fP
+<UNKNOWN>                  x1                                 1
+x1                         consumeCpu1                      100
+<UNKNOWN>                  x2                                 1
+x2                         consumeCpu2                     1000
+.EE
+.in
+.SH 関連項目
+.BR gprof (1),
+.BR ldd (1),
+.BR ld.so (8)
+.SH この文書について
+この man ページは Linux \fIman\-pages\fP プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+http://www.kernel.org/doc/man\-pages/ に書かれている。
