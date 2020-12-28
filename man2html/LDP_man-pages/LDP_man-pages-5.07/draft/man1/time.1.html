@@ -1,0 +1,387 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of TIME</TITLE>
+</HEAD><BODY>
+<H1>TIME</H1>
+Section: Linux User's Manual (1)<BR>Updated: 2019-03-06<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+time - コマンドの時間計測やリソース使用量を表示する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>time [</B><I>options</I><B>] </B><I>command</I><B> [</B><I>arguments...</I><B>] </B>
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>time</B> コマンドは、指定されたプログラム <I>command</I> を渡された引き数で実行する。 <I>command</I> が終了すると、
+<B>time</B> はこのプログラムの実行時間の統計情報についてのメッセージを 標準エラー出力に出力する。 表示される統計情報は以下の三つから構成される:
+(i) 起動から終了までに経過した実時間 (real time)、 (ii) ユーザー CPU 時間 (<B><A HREF="../man2/times.2.html">times</A></B>(2)  が返す
+<I>struct tms</I> の <I>tms_utime</I> と <I>tms_cutime</I> の値の合計)、 (iii) システム CPU 時間
+(<B><A HREF="../man2/times.2.html">times</A></B>(2)  が返す <I>struct tms</I> の <I>tms_stime</I> と <I>tms_cstime</I> の値の合計)。
+<P>
+
+
+
+
+
+
+
+(<B><A HREF="../man1/bash.1.html">bash</A></B>(1)
+
+などの) いくつかのシェルには、組み込みの
+<B>time</B>
+
+コマンドが存在し、ここで説明するコマンドと同様の情報に加え、
+他のリソースの情報も提供する場合もある。
+組み込みではない実際のコマンドを使用するためには、 (<I>/usr/bin/time</I> のような) コマンドのパス名を指定する必要があるかもしれない。
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-p</B><DD>
+POSIX ロケールの場合、伝統的なフォーマットである
+<DT><DD>
+
+
+&quot;real %f\nuser %f\nsys %f\n&quot;
+
+
+<DT><DD>
+が使用される (各数字は秒単位)。 %f の出力での小数点以下の桁数は規定されていないが、 クロックティック (clock tick)
+の精度を表すのに十分な桁数となり、 少なくとも一桁は存在する。
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>終了ステータス</H2>
+
+<I>command</I> が起動された場合は、 <I>command</I> の終了ステータスが終了ステータスとなる。
+
+
+
+
+<I>command</I>
+
+が見つからなかった場合は終了ステータスは 127 で、
+<I>command</I>
+
+が見つかったが起動できなかった場合は 126 となる。
+これ以外で何かエラーがあった場合は、終了ステータスは 0 以外の前記以外の値
+(1-125) の何かになる。
+<A NAME="lbAG">&nbsp;</A>
+<H2>環境変数</H2>
+
+
+
+
+
+
+
+
+
+
+環境変数
+<B>LANG</B>,
+
+<B>LC_ALL</B>,
+
+<B>LC_CTYPE</B>,
+
+<B>LC_MESSAGES</B>,
+
+<B>LC_NUMERIC</B>,
+
+<B>NLSPATH</B>
+
+は出力文字や書式に使われる。
+
+
+
+<B>PATH</B>
+
+は
+<I>command</I>
+
+を探すのに使われる。
+
+それ以外は出力文字や書式に使用される。
+<A NAME="lbAH">&nbsp;</A>
+<H2>GNU バージョン</H2>
+
+以下は GNU 1.7 バージョンの <B>time</B> の説明である。コマンド名とは裏腹に、GNU バージョンでは
+有益な情報がたくさん出力される。使用時間だけでなく、 (取得できる場合には) メモリーや I/O、IPC 呼び出しなどの他のリソース
+に関する情報も出力される。 出力はフォーマット文字列を使って整形され、 フォーマット文字列は -f オプションか環境変数 <B>TIME</B> で指定できる。
+<P>
+
+デフォルトのフォーマット文字列は以下の通り。
+<P>
+
+
+
+%Uuser %Ssystem %Eelapsed %PCPU (%Xtext+%Ddata %Mmax)k
+%Iinputs+%Ooutputs (%Fmajor+%Rminor)pagefaults %Wswaps
+
+
+<P>
+
+
+
+
+<I>-p</I>
+
+オプションが指定された場合には、
+<P>
+
+
+
+real %e
+user %U
+sys %S
+
+
+
+という (他と互換性のある) 出力フォーマットが使用される。
+<A NAME="lbAI">&nbsp;</A>
+<H3>フォーマット文字列</H3>
+
+フォーマットはよくある printf 形式で解釈される。 通常の文字はそのままコピーされ、 タブ、改行 (newline)、バックスラッシュはそれぞれ
+\t, \n, \\ で エスケープされる。 パーセント記号は %% で表現され、それ以外の % は変換を示す。 末尾には必ず改行文字
+(newline) が追加される。 変換は以下の通りである。 <B><A HREF="../man1/tcsh.1.html">tcsh</A></B>(1)  で使用される変換は全てサポートされている。
+<P>
+
+<B>Time</B>
+<DL COMPACT>
+<DT><B>%E</B><DD>
+経過した実時間 ([hours:]minutes:seconds の形式)。
+<DT><B>%e</B><DD>
+
+
+
+(<B><A HREF="../man1/tcsh.1.html">tcsh</A></B>(1)
+
+にはない) 経過した実時間 (秒単位)。
+<DT><B>%S</B><DD>
+そのプロセスがカーネルモードで消費した CPU 時間の合計 (秒単位)。
+<DT><B>%U</B><DD>
+そのプロセスがユーザーモードで消費した CPU 時間の合計 (秒単位)。
+<DT><B>%P</B><DD>
+このジョブが獲得した CPU の割り合い (パーセンテージ)。 (%U + %S) / %E で計算される。
+</DL>
+<P>
+
+<B>Memory</B>
+<DL COMPACT>
+<DT><B>%M</B><DD>
+プロセス生存中のそのプロセスの resident set size の最大値。キロバイト単位。
+<DT><B>%t</B><DD>
+
+
+
+(<B><A HREF="../man1/tcsh.1.html">tcsh</A></B>(1)
+
+にはない) そのプロセスの resident set size の平均値。キロバイト単位。
+<DT><B>%K</B><DD>
+そのプロセスのメモリー使用量の合計 (データ+スタック+テキスト) の平均値。キロバイト単位。
+<DT><B>%D</B><DD>
+そのプロセスの非共有データ領域の平均サイズ。キロバイト単位。
+<DT><B>%p</B><DD>
+
+
+
+(<B><A HREF="../man1/tcsh.1.html">tcsh</A></B>(1)
+
+にはない) そのプロセスの非共有スタック空間の平均サイズ。キロバイト単位。
+<DT><B>%X</B><DD>
+そのプロセスの共有テキスト空間の平均サイズ。キロバイト単位。
+<DT><B>%Z</B><DD>
+
+
+
+(<B><A HREF="../man1/tcsh.1.html">tcsh</A></B>(1)
+
+にはない) システムのページサイズ (バイト単位)。
+
+この値はシステム毎に決まる定数だが、システムにより異なる。
+<DT><B>%F</B><DD>
+プロセスの動作中に発生したメジャーページフォルトの回数。 これは、ディスクからページを読み込む必要があったページフォルトに 関するものである。
+<DT><B>%R</B><DD>
+マイナーページフォールト、つまり回復可能なページフォルトの回数。 これは、そのページは有効でないが、まだ他の仮想ページに奪われて
+いなかったページに対するページフォルトに関するものである。
+<DT><B>%W</B><DD>
+そのプロセスが主記憶からスワップアウトされた回数。
+<DT><B>%c</B><DD>
+そのプロセスが (タイムスライスの経過により) 強制的にコンテキストスイッチ された回数。
+<DT><B>%w</B><DD>
+wait の回数、つまりそのプログラムが自発的にコンテキストスイッチされた回数。 例えば、I/O 操作の完了を待っている間などが該当する。
+</DL>
+<P>
+
+<B>I/O</B>
+<DL COMPACT>
+<DT><B>%I</B><DD>
+そのプロセスによるファイルシステムからの入力の回数。
+<DT><B>%O</B><DD>
+そのプロセスによるファイルシステムへの出力の回数。
+<DT><B>%r</B><DD>
+そのプロセスが受信したソケットメッセージ数。
+<DT><B>%s</B><DD>
+そのプロセスが送信したソケットメッセージ数。
+<DT><B>%k</B><DD>
+そのプロセスに配送されたシグナル数。
+<DT><B>%C</B><DD>
+
+
+
+(<B><A HREF="../man1/tcsh.1.html">tcsh</A></B>(1)
+
+にはない) time の対象となったコマンド名とコマンドライン引き数。
+<DT><B>%x</B><DD>
+
+
+
+(<B><A HREF="../man1/tcsh.1.html">tcsh</A></B>(1)
+
+にはない) コマンドの終了ステータス。
+</DL>
+<A NAME="lbAJ">&nbsp;</A>
+<H3>GNU オプション</H3>
+
+<DL COMPACT>
+<DT><B>-f </B><I>format</I><B>, --format=</B><I>format</I>
+
+<DD>
+出力フォーマットを指定する。 環境変数 <B>TIME</B> で指定されたフォーマットよりも優先される。
+<DT><B>-p, --portability</B><DD>
+他の time と互換性のある出力フォーマットを使用する。
+<DT><B>-o </B><I>file</I><B>, --output=</B><I>file</I>
+
+<DD>
+結果を <I>stderr</I> に送らず、指定されたファイルに書き込む。 ファイルは上書きされる。
+<DT><B>-a, --append</B><DD>
+(-o と一緒に使用する。)  ファイルを上書きせずに、結果をファイル末尾に追加する。
+<DT><B>-v, --verbose</B><DD>
+非常に詳しい出力で、入手できる全ての情報を出力する。
+<DT><B>-q, --quiet</B>
+
+<DD>
+
+
+
+(<I>command</I>
+
+がシグナルで終了させられた) 異常なプログラム終了や
+0 以外の終了ステータスを報告しない。
+
+</DL>
+<A NAME="lbAK">&nbsp;</A>
+<H3>GNU 標準オプション</H3>
+
+<DL COMPACT>
+<DT><B>--help</B><DD>
+使用方法に関するメッセージを標準出力に表示し、正常終了する。
+<DT><B>-V, --version</B><DD>
+バージョン情報を標準出力に表示し、正常終了する。
+<DT><B>--</B><DD>
+オプションリストの末尾を示す。
+</DL>
+<A NAME="lbAL">&nbsp;</A>
+<H2>バグ</H2>
+
+全てのリソースが UNIX の全てのバージョンで計測されているわけではないので、 いくつかの値が 0 と報告される可能性がある。
+現在の出力項目のほとんどは 4.2BSD や 4.3BSD で取得可能なデータに 基づいて選択されている。
+<P>
+
+GNU time バージョン 1.7 はまだローカライズされていない。 そのため、POSIX の要件を実装していないことになる。
+<P>
+
+<B>TIME</B> という環境変数は名前の選択がまずい。 <B><A HREF="../man1/autoconf.1.html">autoconf</A></B>(1)  や <B><A HREF="../man1/make.1.html">make</A></B>(1)
+のようなシステムでは、使用するコマンドを上書きするのにそのコマンドの 名前の環境変数を使うのが珍しくない。 MORE や TIME のような名前を
+(プログラムのパス名の指定ではなく)  プログラムへのオプションを指定するのに使うと、 面倒なことを引き起こす可能性が高い。
+<P>
+
+<I>-o</I>
+
+が追記ではなく上書きになっているのは残念なことだ
+(つまり
+<I>-a</I>
+
+オプションがデフォルトになっているべきだろうということだ)。
+<P>
+
+GNU <B>time</B> に対する提案やバグレポートは
+<I><A HREF="mailto:bug-time@gnu.org">bug-time@gnu.org</A></I>
+
+までメールを送ってほしい。 その場合には <B>time</B> や OS、使用している C コンパイラの バージョンを記載してほしい。 <B>time</B>
+のバージョンは
+<P>
+
+
+
+time --version
+
+
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+で取得できる。
+<A NAME="lbAM">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/bash.1.html">bash</A></B>(1),
+
+<B><A HREF="../man1/tcsh.1.html">tcsh</A></B>(1),
+
+<B><A HREF="../man2/times.2.html">times</A></B>(2),
+
+<B><A HREF="../man2/wait3.2.html">wait3</A></B>(2)
+
+<A NAME="lbAN">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">終了ステータス</A><DD>
+<DT><A HREF="#lbAG">環境変数</A><DD>
+<DT><A HREF="#lbAH">GNU バージョン</A><DD>
+<DL>
+<DT><A HREF="#lbAI">フォーマット文字列</A><DD>
+<DT><A HREF="#lbAJ">GNU オプション</A><DD>
+<DT><A HREF="#lbAK">GNU 標準オプション</A><DD>
+</DL>
+<DT><A HREF="#lbAL">バグ</A><DD>
+<DT><A HREF="#lbAM">関連項目</A><DD>
+<DT><A HREF="#lbAN">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 18:28:44 GMT, December 28, 2020
+</BODY>
+</HTML>
