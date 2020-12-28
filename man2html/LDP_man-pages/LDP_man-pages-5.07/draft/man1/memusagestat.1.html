@@ -1,0 +1,107 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MEMUSAGESTAT</TITLE>
+</HEAD><BODY>
+<H1>MEMUSAGESTAT</H1>
+Section: Linux programmer's manual (1)<BR>Updated: 2020-06-09<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+memusagestat - メモリーのプロファイリングデータからグラフを出力する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>memusagestat</B> [<I>option</I>]... <I>datafile</I> [<I>outfile</I>]
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>memusagestat</B> は、 ファイル <I>datafile</I> に格納されたメモリーのプロファイリングデータをグラフとして表現した PNG
+ファイルを作成する。 <I>datafile</I> は <B><A HREF="../man1/memusage.1.html">memusage</A></B>(1) の <I>-d</I> (<I>--data</I>) オプションで生成される。
+<P>
+
+グラフの赤色の線はヒープ使用量 (割り当てられたメモリー) を示し、 緑色の線はスタック使用量を示す。 X 軸はメモリー処理関数の呼び出し数
+(<I>-t</I> オプションが指定された場合は時間) である。
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-o&nbsp;</B><I>file</I>,&nbsp;<B>--output=</B><I>file</I><DD>
+出力ファイルの名前。
+<DT><B>-s&nbsp;</B><I>string</I>,&nbsp;<B>--string=</B><I>string</I><DD>
+出力グラフに表示するタイトルとして <I>string</I> を使用する。
+<DT><B>-t</B>,&nbsp;<B>--time</B>
+
+<DD>
+X 軸の目盛として (関数呼び出し数ではなく) 時間を使用する。
+<DT><B>-T</B>,&nbsp;<B>--total</B>
+
+<DD>
+全メモリー消費量のグラフも出力する。
+<DT><B>-x&nbsp;</B><I>size</I>,&nbsp;<B>--x-size=</B><I>size</I><DD>
+出力グラフの幅を <I>size</I> ピクセルにする。
+<DT><B>-y&nbsp;</B><I>size</I>,&nbsp;<B>--y-size=</B><I>size</I><DD>
+出力グラフの高さを <I>size</I> ピクセルにする。
+<DT><B>-?</B>,&nbsp;<B>--help</B>
+
+<DD>
+ヘルプメッセージを表示して終了する。
+<DT><B>--usage</B>
+
+<DD>
+簡潔な使用方法を表示して終了する。
+<DT><B>-V</B>,&nbsp;<B>--version</B>
+
+<DD>
+バージョン情報を表示して終了する。
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>バグ</H2>
+
+バグ報告については
+
+
+を参照のこと。
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+<B><A HREF="../man1/memusage.1.html">memusage</A></B>(1) を参照。
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/memusage.1.html">memusage</A></B>(1),
+
+<B><A HREF="../man1/mtrace.1.html">mtrace</A></B>(1)
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">バグ</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:53:04 GMT, December 28, 2020
+</BODY>
+</HTML>
