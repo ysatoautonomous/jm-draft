@@ -1,0 +1,213 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of PLDD</TITLE>
+</HEAD><BODY>
+<H1>PLDD</H1>
+Section: Linux User Manual (1)<BR>Updated: 2020-06-09<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+pldd - プロセスにリンクされている動的共有オブジェクトを表示する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>pldd </B><I>pid</I>
+<B>pldd</B><I> option</I>
+</PRE>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>pldd</B>
+
+コマンドは、 指定されたプロセス ID (PID) のプロセスにリンクされている
+動的共有オブジェクト (DSO) のリストを表示する。
+このリストには
+<B><A HREF="../man3/dlopen.3.html">dlopen</A></B>(3) を使って動的にロードされたライブラリーも含まれる。
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-?</B>, <B>--help</B><DD>
+
+ヘルプメッセージを表示して終了する。
+<DT><B>--usage</B>
+
+<DD>
+
+簡潔な使用方法を表示して終了する。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+プログラムのバージョン情報を表示して終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>終了ステータス</H2>
+
+
+
+
+成功すると
+<B>pldd</B>
+
+はステータス 0 を返す。
+
+
+
+
+
+
+指定されたプロセスが存在しない場合、ユーザーが自身の動的共有
+オブジェクトのリストにアクセスする許可を持っていない場合、
+もしくはコマンドライン引き数が指定されていない場合、
+<B>pldd</B>
+
+はステータス 1 で終了する。
+
+無効なオプションが指定された場合、ステータス 64 で終了する。
+<A NAME="lbAG">&nbsp;</A>
+<H2>バージョン</H2>
+
+<B>pldd</B> は glibc 2.15 以降で利用可能である。
+<A NAME="lbAH">&nbsp;</A>
+<H2>準拠</H2>
+
+
+<B>pldd</B> コマンドは POSIX.1 では規定されていない。 他のいくつかのシステムにも同様のコマンドがある。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>注意</H2>
+
+
+コマンド
+<P>
+
+
+
+lsof -p PID
+
+
+<P>
+
+
+
+は、プロセスにリンクされた動的共有オブジェクトも出力する。
+<P>
+
+
+
+
+
+
+
+
+
+
+<B><A HREF="../man1/gdb.1.html">gdb</A></B>(1)
+
+の
+<I>info shared</I>
+
+コマンドでもプロセスが使用する共有ライブラリを表示できる。
+よって、
+(指定した
+<I>pid</I>
+
+のプロセスをモニターし)
+<B>pldd</B>
+
+と同様の出力を以下のコマンドラインを使って取得できる:
+<P>
+
+
+
+$ <B>gdb -ex &quot;set confirm off&quot; -ex &quot;set height 0&quot; -ex &quot;info shared&quot; \</B>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>-ex&nbsp;&quot;quit&quot;&nbsp;-p&nbsp;$pid&nbsp;|&nbsp;grep&nbsp;'^0x.*0x'</B>
+
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+glibc 2.19 から 2.29 までは、
+<B>pldd</B>
+
+は壊れている。
+実行すると単にハングする。
+
+
+
+この問題は、glibc 2.30 で修正され、いくつかのディストリビューションでは、
+修正が以前の glibc のバージョンにバックポートされている。
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>例</H2>
+
+
+$ <B>echo $$</B>       # シェルの PID を表示する
+1143
+$ <B>pldd $$</B>       # このシェルにリンクされている動的共有オブジェクトを表示
+1143:<TT>&nbsp;&nbsp;&nbsp;</TT>/usr/bin/bash<BR>
+linux-vdso.so.1
+/lib64/libtinfo.so.5
+/lib64/libdl.so.2
+/lib64/libc.so.6
+/lib64/ld-linux-x86-64.so.2
+/lib64/libnss_files.so.2
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/ldd.1.html">ldd</A></B>(1),
+
+<B><A HREF="../man1/lsof.1.html">lsof</A></B>(1),
+
+<B><A HREF="../man3/dlopen.3.html">dlopen</A></B>(3),
+
+<B><A HREF="../man8/ld.so.8.html">ld.so</A></B>(8)
+
+<A NAME="lbAM">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">終了ステータス</A><DD>
+<DT><A HREF="#lbAG">バージョン</A><DD>
+<DT><A HREF="#lbAH">準拠</A><DD>
+<DT><A HREF="#lbAI">注意</A><DD>
+<DT><A HREF="#lbAJ">バグ</A><DD>
+<DT><A HREF="#lbAK">例</A><DD>
+<DT><A HREF="#lbAL">関連項目</A><DD>
+<DT><A HREF="#lbAM">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:03:41 GMT, December 28, 2020
+</BODY>
+</HTML>
