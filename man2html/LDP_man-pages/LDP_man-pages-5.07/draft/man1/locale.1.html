@@ -1,0 +1,205 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LOCALE</TITLE>
+</HEAD><BODY>
+<H1>LOCALE</H1>
+Section: Linux User Manual (1)<BR>Updated: 2020-06-09<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+locale - ロケール固有の情報を取得する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>locale</B> [<I>option</I>]
+<B>locale</B> [<I>option</I>] <B>-a</B>
+<B>locale</B> [<I>option</I>] <B>-m</B>
+<B>locale</B> [<I>option</I>] <I>name</I>...
+</PRE>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>locale</B> コマンドは、 現在のロケールもしくはすべてのロケールに関する情報を、 標準出力に表示する。
+<P>
+
+引き数なしで呼び出された場合、 <B>locale</B> は現在のロケール設定を各ロケールカテゴリー毎 (<B><A HREF="../man5/locale.5.html">locale</A></B>(5) 参照) に表示する。
+ロケールを制御する環境変数の設定 (<B><A HREF="../man7/locale.7.html">locale</A></B>(7) 参照) に基づいて行われる。
+
+
+環境変数の変数セットの値は、ダブルクォートなしで表示されるが、
+暗黙の値はダブルクォートを付けて表示される。
+<P>
+
+オプション <B>-a</B> か <B>-m</B> のどちらか (もしくは同等の長い形式のオプション) が指定された場合、 動作は以下のようになる。
+<DL COMPACT>
+<DT><B>-a</B>, <B>--all-locales</B><DD>
+利用可能なすべてのロケールを表示する。 <B>-v</B> オプションが指定されると、 各ロケールに関する <B>LC_IDENTIFICATION</B>
+メタデータも出力される。
+<DT><B>-m</B>, <B>--charmaps</B><DD>
+利用可能な charmap (文字集合記述ファイル) の一覧を表示する。
+
+
+ロケールの現在の文字集合を表示するには、<B>locale -c charmap</B> を使うこと。
+</DL>
+<P>
+
+<B>locale</B> コマンドには引き数として渡すことができる (複数指定可)。 これらの引き数は、 ロケールのキーワード名 (例えば
+<I>date_fmt</I>, <I>ctype-class-names</I>, <I>yesexpr</I>, <I>decimal_point</I>)
+か、ロケールのカテゴリー名 (例えば <B>LC_CTYPE</B>, <B>LC_TIME</B>) である。 各引き数について以下の情報が表示される。
+<DL COMPACT>
+<DT>*<DD>
+ロケールキーワードについては、 そのキーワードの値が表示される。
+<DT>*<DD>
+ロケールカテゴリーについては、 そのカテゴリーの全キーワードの値が表示される。
+</DL>
+<P>
+
+引き数が指定された場合には、 以下のオプションが意味を持つ。
+<DL COMPACT>
+<DT><B>-c</B>, <B>--category-name</B><DD>
+カテゴリー名が引き数に指定された場合、 そのカテゴリーのキーワード値のリストの前に、 ロケールカテゴリー名を独立した行で表示する。
+<DT><DD>
+キーワード名が引き数に指定された場合、キーワード値の前に
+このキーワードのロケールカテゴリーを独立した行で表示する。
+<DT><DD>
+複数の名前引き数が指定された場合に、このオプションを使うと
+可読性があがる。 <B>-k</B> オプションと組み合わせて使用できる。
+<DT><B>-k</B>, <B>--keyword-name</B><DD>
+キーワード値を表示する際に、 次の形式でそのキーワードの名前も合わせて表示する。
+<DT><DD>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;<I>keyword</I>=&quot;<I>value</I>&quot;
+</DL>
+<P>
+
+<B>locale</B> コマンドでは以下のオプションも使用できる。
+<DL COMPACT>
+<DT><B>-v</B>, <B>--verbose</B><DD>
+いくつかのコマンドラインオプションと引き数の組み合わせで
+追加の情報を表示する。
+<DT><B>-?</B>, <B>--help</B><DD>
+コマンドラインオプションと引き数の概要を表示し、終了する。
+<DT><B>--usage</B>
+
+<DD>
+簡潔な使用方法を表示し、終了する。
+<DT><B>-V</B>, <B>--version</B><DD>
+プログラムのバージョンを表示し、終了する。
+</DL>
+<A NAME="lbAE">&nbsp;</A>
+<H2>ファイル</H2>
+
+<DL COMPACT>
+<DT><I>/usr/lib/locale/locale-archive</I><DD>
+通常のデフォルトのロケールアーカイブファイル
+<DT><I>/usr/share/i18n/locales</I><DD>
+ロケール定義ファイルの通常のデフォルトパス
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>準拠</H2>
+
+POSIX.1-2001, POSIX.1-2008.
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+
+$ <B>locale</B>
+LANG=en_US.UTF-8
+LC_CTYPE=&quot;en_US.UTF-8&quot;
+LC_NUMERIC=&quot;en_US.UTF-8&quot;
+LC_TIME=&quot;en_US.UTF-8&quot;
+LC_COLLATE=&quot;en_US.UTF-8&quot;
+LC_MONETARY=&quot;en_US.UTF-8&quot;
+LC_MESSAGES=&quot;en_US.UTF-8&quot;
+LC_PAPER=&quot;en_US.UTF-8&quot;
+LC_NAME=&quot;en_US.UTF-8&quot;
+LC_ADDRESS=&quot;en_US.UTF-8&quot;
+LC_TELEPHONE=&quot;en_US.UTF-8&quot;
+LC_MEASUREMENT=&quot;en_US.UTF-8&quot;
+LC_IDENTIFICATION=&quot;en_US.UTF-8&quot;
+LC_ALL=
+<P>
+$ <B>locale date_fmt</B>
+%a %b %e %H:%M:%S %Z %Y
+<P>
+$ <B>locale -k date_fmt</B>
+date_fmt=&quot;%a %b %e %H:%M:%S %Z %Y&quot;
+<P>
+$ <B>locale -ck date_fmt</B>
+LC_TIME
+date_fmt=&quot;%a %b %e %H:%M:%S %Z %Y&quot;
+<P>
+$ <B>locale LC_TELEPHONE</B>
++%c (%a) %l
+(%a) %l
+11
+1
+UTF-8
+<P>
+$ <B>locale -k LC_TELEPHONE</B>
+tel_int_fmt=&quot;+%c (%a) %l&quot;
+tel_dom_fmt=&quot;(%a) %l&quot;
+int_select=&quot;11&quot;
+int_prefix=&quot;1&quot;
+telephone-codeset=&quot;UTF-8&quot;
+
+
+<P>
+
+以下の例では、 <I>./wrk</I> ディレクトリにある独自のロケールを <B><A HREF="../man1/localedef.1.html">localedef</A></B>(1) ユーティリティを使って
+<I>$HOME/.locale</I> でコンパイルし、 <B><A HREF="../man1/date.1.html">date</A></B>(1) コマンドでその結果をテストし、 それからシェルの設定ファイルで環境変数
+<B>LOCPATH</B> と <B>LANG</B> を設定し、 それ以降のユーザーセッションで独自のロケールを利用できるようにしている。
+<P>
+<PRE>
+$ <B>mkdir -p $HOME/.locale</B>
+$ <B>I18NPATH=./wrk/ localedef -f UTF-8 -i fi_SE $HOME/.locale/fi_SE.UTF-8</B>
+$ <B>LOCPATH=$HOME/.locale LC_ALL=fi_SE.UTF-8 date</B>
+$ <B>echo &quot;export LOCPATH=\$HOME/.locale&quot; &gt;&gt; $HOME/.bashrc</B>
+$ <B>echo &quot;export LANG=fi_SE.UTF-8&quot; &gt;&gt; $HOME/.bashrc</B>
+</PRE>
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/localedef.1.html">localedef</A></B>(1),
+
+<B><A HREF="../man5/charmap.5.html">charmap</A></B>(5),
+
+<B><A HREF="../man5/locale.5.html">locale</A></B>(5),
+
+<B><A HREF="../man7/locale.7.html">locale</A></B>(7)
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">ファイル</A><DD>
+<DT><A HREF="#lbAF">準拠</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:12:58 GMT, December 28, 2020
+</BODY>
+</HTML>
