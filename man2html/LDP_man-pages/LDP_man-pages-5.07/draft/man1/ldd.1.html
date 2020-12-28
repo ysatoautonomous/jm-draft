@@ -1,0 +1,286 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LDD</TITLE>
+</HEAD><BODY>
+<H1>LDD</H1>
+Section: Linux Programmer's Manual (1)<BR>Updated: 2019-03-06<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+ldd - 共有オブジェクトへの依存関係を表示する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>ldd</B> [<I>option</I>]... <I>file</I>...
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>ldd</B>
+
+はコマンドラインで指定したプログラムや共有オブジェクトについて、
+それぞれで必要とされる共有オブジェクト (共有ライブラリ) を表示する。
+
+使用法と出力の例は、以下の通りである:
+<P>
+
+
+
+$ <B>ldd /bin/ls</B>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;linux-vdso.so.1&nbsp;(0x00007ffcc3563000)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;libselinux.so.1&nbsp;=&gt;&nbsp;/lib64/libselinux.so.1&nbsp;(0x00007f87e5459000)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;libcap.so.2&nbsp;=&gt;&nbsp;/lib64/libcap.so.2&nbsp;(0x00007f87e5254000)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;libc.so.6&nbsp;=&gt;&nbsp;/lib64/libc.so.6&nbsp;(0x00007f87e4e92000)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;libpcre.so.1&nbsp;=&gt;&nbsp;/lib64/libpcre.so.1&nbsp;(0x00007f87e4c22000)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;libdl.so.2&nbsp;=&gt;&nbsp;/lib64/libdl.so.2&nbsp;(0x00007f87e4a1e000)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/lib64/ld-linux-x86-64.so.2&nbsp;(0x00005574bf12e000)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;libattr.so.1&nbsp;=&gt;&nbsp;/lib64/libattr.so.1&nbsp;(0x00007f87e4817000)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;libpthread.so.0&nbsp;=&gt;&nbsp;/lib64/libpthread.so.0&nbsp;(0x00007f87e45fa000)
+
+
+<P>
+
+
+
+
+
+
+
+
+通常の場合、
+<B>ldd</B>
+
+は標準の動的リンカー
+(<B><A HREF="../man8/ld.so.8.html">ld.so</A></B>(8)
+
+参照) を
+<B>LD_TRACE_LOADED_OBJECTS</B>
+
+環境変数に 1 をセットして起動する。
+
+
+
+
+そうすると、動的リンカーはプログラムの動的依存関係を調べて、
+(<B><A HREF="../man8/ld.so.8.html">ld.so</A></B>(8)
+
+に記載されたルールに基づいて) 見つけ、
+依存関係を満すオブジェクトをロードする。
+
+
+
+
+各々の依存関係に対して、
+<B>ldd</B>
+
+はマッチするオブジェクトの配置と、
+それがロードされる (16 進数の) アドレスを表示する。
+
+
+
+
+
+
+
+
+(<I>linux-vdso</I>
+
+と
+<I>ld-linux</I>
+
+の共有の依存関係は特殊である。
+<B><A HREF="../man7/vdso.7.html">vdso</A></B>(7)
+
+と
+<B><A HREF="../man8/ld.so.8.html">ld.so</A></B>(8)
+
+を参照すること。)
+
+
+<A NAME="lbAE">&nbsp;</A>
+<H3>セキュリティ</H3>
+
+
+
+
+特定の条件下 (例えば、プログラムが
+<I>ld-linux.so</I>
+
+以外の ELF インタプリターを指定している場合) では、
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B>ldd</B>
+
+のバージョンによっては、依存関係の情報を取得するために、
+プログラムを直接実行しようとする。
+これにより、プログラムの ELF インタプリターで定義されている
+任意のコードが実行され、プログラム自体が実行される場合もある。
+
+
+
+
+
+
+
+
+
+
+(例えば、glibc のバージョン 2.27 以前では、アップストリームの
+<B>ldd</B>
+
+が、このような動作をしているが、
+大部分のディストリビューションでは、そのような挙動をさせない
+修正版を提供している。)
+<P>
+
+
+
+
+
+
+
+
+したがって、信頼できない実行ファイルに対しては
+<I>「決して」</I>
+
+<B>ldd</B>
+
+を使ってはならない。
+任意のコードを実行することにつながるからである。
+信頼できない実行ファイルを扱う、より安全な別の方法としては
+次のようにするとよい。
+<P>
+
+
+
+$ <B>objdump -p /path/to/program | grep NEEDED</B>
+
+
+<P>
+
+
+
+
+
+<B>ldd</B>
+
+は実行プログラムの完全な依存関係ツリーを表示するが、
+この代替方法では、直接の依存関係しか表示しない点に注意すること。
+<A NAME="lbAF">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>--version</B>
+
+<DD>
+<B>ldd</B> のバージョン番号を表示する。
+<DT><B>-v</B>, <B>--verbose</B>
+
+<DD>
+シンボルのバージョン情報などを含めた全ての情報を表示する。
+<DT><B>-u</B>, <B>--unused</B>
+
+<DD>
+使用されていない直接の依存関係を表示する (glibc 2.3.4 以降)。
+<DT><B>-d</B>, <B>--data-relocs</B>
+
+<DD>
+リロケーションを実行し、足りないオブジェクトについてレポートする (ELF のみ)。
+<DT><B>-r</B>, <B>--function-relocs</B>
+
+<DD>
+足りないオブジェクトや関数についてレポートする (ELF のみ)。
+<DT><B>--help</B>
+
+<DD>
+使用法を表示する。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>バグ</H2>
+
+<B>ldd</B> は a.out 共有ライブラリでは動作しない。
+<P>
+
+
+
+
+<B>ldd</B> は非常に古い a.out プログラム (<B>ldd</B> のサポートがコンパイラに追加される以前にビルドされたようなプログラム)
+では動作しない。 このようなプログラムに対して <B>ldd</B> を用いると、プログラムは <I>argc</I> = 0 で実行される。結果は予想不可能である。
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/pldd.1.html">pldd</A></B>(1),
+
+<B><A HREF="../man1/sprof.1.html">sprof</A></B>(1),
+
+<B><A HREF="../man8/ld.so.8.html">ld.so</A></B>(8),
+
+<B><A HREF="../man8/ldconfig.8.html">ldconfig</A></B>(8)
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DL>
+<DT><A HREF="#lbAE">セキュリティ</A><DD>
+</DL>
+<DT><A HREF="#lbAF">オプション</A><DD>
+<DT><A HREF="#lbAG">バグ</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 10:10:24 GMT, December 28, 2020
+</BODY>
+</HTML>
