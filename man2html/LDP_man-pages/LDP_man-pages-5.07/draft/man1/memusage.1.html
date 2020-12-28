@@ -1,0 +1,266 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MEMUSAGE</TITLE>
+</HEAD><BODY>
+<H1>MEMUSAGE</H1>
+Section: Linux user manual (1)<BR>Updated: 2020-06-09<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+memusage - プログラムのメモリー使用量のプロファイルを行う
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>memusage</B> [<I>option</I>]... <I>program</I> [<I>programoption</I>]...
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>memusage</B> は、 プログラム <I>program</I> のメモリー使用量のプロファイルを行う bash スクリプトである。 呼び出し元の環境に
+(<B>LD_PRELOAD</B> 環境変数を使って) <B>libmemusage.so</B> ライブラリをプレロードする。 <B><A HREF="../man8/ld.so.8.html">ld.so</A></B>(8) を参照。
+<B>libmemusage.so</B> ライブラリは、 <B><A HREF="../man3/malloc.3.html">malloc</A></B>(3), <B><A HREF="../man3/calloc.3.html">calloc</A></B>(3), <B><A HREF="../man3/free.3.html">free</A></B>(3),
+<B><A HREF="../man3/realloc.3.html">realloc</A></B>(3) の呼び出しを横取りし、 メモリー割り当て状況の追跡を行う。 追加で、 <B><A HREF="../man2/mmap.2.html">mmap</A></B>(2), <B><A HREF="../man2/mremap.2.html">mremap</A></B>(2),
+<B><A HREF="../man2/munmap.2.html">munmap</A></B>(2) を追跡することもできる。
+<P>
+
+<B>memusage</B> は収集したデータをテキスト形式で出力することもできるし、 <B><A HREF="../man1/memusagestat.1.html">memusagestat</A></B>(1)
+を使って収集したデータをグラフにした PNG ファイルを作成することもできる (以下の <B>-p</B> オプションを参照)。
+<A NAME="lbAE">&nbsp;</A>
+<H3>メモリー使用量概要</H3>
+
+
+
+
+<B>memusage</B> が出力する &quot;Memory usage summary&quot; (メモリー使用量概要) の行には
+3 つのフィールドが含まれる。
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>heap total</B><DD>
+<B><A HREF="../man3/malloc.3.html">malloc</A></B>(3) のすべての呼び出しの <I>size</I> 引き数の合計、 <B><A HREF="../man3/calloc.3.html">calloc</A></B>(3) のすべての呼び出しの引き数の積
+(<I>nmemb</I>*<I>size</I>)、 <B><A HREF="../man2/mmap.2.html">mmap</A></B>(2) のすべての呼び出しの <I>length</I> 引き数の合計。 <B><A HREF="../man3/realloc.3.html">realloc</A></B>(3) と
+<B><A HREF="../man2/mremap.2.html">mremap</A></B>(2) の場合、 割り当ての新しいサイズが以前のサイズよりも大きい場合、 差分 (新しいサイズから古いサイズを引いた値)
+の合計が加算される。
+<DT><B>heap peak</B><DD>
+<B><A HREF="../man3/malloc.3.html">malloc</A></B>(3) の <I>size</I> 引き数、 <B><A HREF="../man3/calloc.3.html">calloc</A></B>(3) の <I>nmemb</I>*<I>size</I> の積、
+<B><A HREF="../man3/realloc.3.html">realloc</A></B>(3) の <I>size</I> 引き数、 <B><A HREF="../man2/mmap.2.html">mmap</A></B>(2) の <I>length</I> 引き数、 <B><A HREF="../man2/mremap.2.html">mremap</A></B>(2) の
+<I>new_size</I> 引き数、 の中の最大値。
+<DT><B>stack peak</B><DD>
+監視される関数の最初の呼び出しが行われる前に、 スタックポインターアドレス (ベーススタックポインター) が保存される。
+関数のそれぞれの呼び出し後には、 実際のスタックポインターアドレスを読み込み、
+ベースポインターアドレスを元に差分を計算する。
+これらの差分の最大値がスタックのピーク値となる。
+</DL>
+</DL>
+
+<P>
+
+この概要行の直後には、 監視対象の各関数の呼び出し回数、 割り当て・割り当て解除された全メモリー量、 失敗した回数がテーブルで表示される。
+<B><A HREF="../man3/realloc.3.html">realloc</A></B>(3) と <B><A HREF="../man2/mremap.2.html">mremap</A></B>(2) の場合には、 フィールド &quot;nomove&quot; でブロックアドレスを変更した再割り当て数を、
+フィールド &quot;dec&quot; でブロックサイズが減少した再割り当て数が追加で表示される。 <B><A HREF="../man3/realloc.3.html">realloc</A></B>(3) の場合、 フィールド &quot;free&quot;
+でブロックの解放が行われた再割り当て (サイズが 0 の再割り当て) の数も追加で表示される。
+<P>
+
+<B>memusage</B> が出力するテーブルの &quot;realloc/total memory&quot; (再割り当てメモリー/全メモリー) には、
+<B><A HREF="../man3/realloc.3.html">realloc</A></B>(3) を使ってメモリーブロックをその前よりも小さいサイズに再割り当てされた
+場合は含まれない。 このため、 (&quot;free&quot; 以外の)
+すべての「総メモリー」のセルは &quot;free/total memory&quot; セルよりも大きくなることがある。
+<A NAME="lbAF">&nbsp;</A>
+<H3>ブロックサイズのヒストグラム</H3>
+
+&quot;Histogram for block sizes&quot; (ブロックサイズのヒストグラム) は、
+メモリー割り当てをバケットサイズ単位に分割した情報である。
+<A NAME="lbAG">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-n&nbsp;</B><I>name</I>,&nbsp;<B>--progname=</B><I>name</I><DD>
+プロファイル対象のプログラムファイル名。
+<DT><B>-p&nbsp;</B><I>file</I>,&nbsp;<B>--png=</B><I>file</I><DD>
+PNG 画像を生成し、 <I>file</I> に格納する。
+<DT><B>-d&nbsp;</B><I>file</I>,&nbsp;<B>--data=</B><I>file</I><DD>
+バイナリーデータファイルを生成し、 <I>file</I> に格納する。
+<DT><B>-u</B>,&nbsp;<B>--unbuffered</B>
+
+<DD>
+出力バッファーリングを行わない。
+<DT><B>-b&nbsp;</B><I>size</I>,&nbsp;<B>--buffer=</B><I>size</I><DD>
+出力する前に <I>size</I> 個のエントリーの収集を行う。
+<DT><B>--no-timer</B>
+
+<DD>
+スタックポインター値の時間ベースのサンプリング (<B>SIGPROF</B>) を無効にする。
+<DT><B>-m</B>,&nbsp;<B>--mmap</B>
+
+<DD>
+
+
+
+
+
+<B><A HREF="../man2/mmap.2.html">mmap</A></B>(2),
+
+<B><A HREF="../man2/mremap.2.html">mremap</A></B>(2),
+
+<B><A HREF="../man2/munmap.2.html">munmap</A></B>(2)
+
+も追跡対象とする。
+<DT><B>-?</B>,&nbsp;<B>--help</B>
+
+<DD>
+ヘルプを表示し、終了する。
+<DT><B>--usage</B>
+
+<DD>
+簡潔な使用方法を表示して終了する。
+<DT><B>-V</B>,&nbsp;<B>--version</B>
+
+<DD>
+バージョン情報を表示して終了する。
+<DT>以下のオプションは画像出力を行う場合にのみ適用される。<DD>
+<DT><B>-t</B>,&nbsp;<B>--time-based</B>
+
+<DD>
+X 軸の目盛として (関数呼び出し数ではなく) 時間を使用する。
+<DT><B>-T</B>,&nbsp;<B>--total</B>
+
+<DD>
+メモリーの全使用量のグラフも生成する。
+<DT><B>--title=</B><I>name</I><DD>
+グラフのタイトルとして <I>name</I> を使用する。
+<DT><B>-x&nbsp;</B><I>size</I>,&nbsp;<B>--x-size=</B><I>size</I><DD>
+グラフの幅を <I>size</I> ピクセルにする。
+<DT><B>-y&nbsp;</B><I>size</I>,&nbsp;<B>--y-size=</B><I>size</I><DD>
+グラフの高さを <I>size</I> ピクセルにする。
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>終了ステータス</H2>
+
+終了ステータスはプロファイルしたプログラムの終了ステータスと同じになる。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+バグ報告については
+
+
+を参照のこと。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>例</H2>
+
+以下の簡単なプログラムは、 ピークに達するまで繰り返しメモリーブロックの再割り当てを行い、 その後ブロックサイズが 0
+になるまで繰り返し順に小さなブロックに再割り当てを行う。 このプログラムをコンパイルして以下のコマンドを実行すると、
+このプログラムのメモリー使用量がファイル <I>memusage.png</I> に出力される。
+<P>
+
+
+
+$ <B>memusage --data=memusage.dat ./a.out</B>
+...
+Memory usage summary: heap total: 45200, heap peak: 6440, stack peak: 224
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;total&nbsp;calls&nbsp;&nbsp;total&nbsp;memory&nbsp;&nbsp;failed&nbsp;calls
+<BR>&nbsp;malloc|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;400&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0
+realloc|        40         44800             0  (nomove:40, dec:19, free:0)
+<BR>&nbsp;calloc|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0
+<BR>&nbsp;&nbsp;&nbsp;free|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;440
+Histogram for block sizes:
+<BR>&nbsp;&nbsp;192-207&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;2%&nbsp;================
+...
+<BR>&nbsp;2192-2207&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;2%&nbsp;================
+<BR>&nbsp;2240-2255&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;4%&nbsp;=================================
+<BR>&nbsp;2832-2847&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;4%&nbsp;=================================
+<BR>&nbsp;3440-3455&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;4%&nbsp;=================================
+<BR>&nbsp;4032-4047&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;4%&nbsp;=================================
+<BR>&nbsp;4640-4655&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;4%&nbsp;=================================
+<BR>&nbsp;5232-5247&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;4%&nbsp;=================================
+<BR>&nbsp;5840-5855&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;4%&nbsp;=================================
+<BR>&nbsp;6432-6447&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;2%&nbsp;================
+$ <B>memusagestat memusage.dat memusage.png</B>
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H3>プログラムのソース</H3>
+
+
+#include &lt;<A HREF="file:///usr/include/stdio.h">stdio.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/stdlib.h">stdlib.h</A>&gt;
+<P>
+#define CYCLES 20
+<P>
+int
+main(int argc, char *argv[])
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;i,&nbsp;j;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;*p;
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf(&quot;malloc:&nbsp;%zd\n&quot;,&nbsp;sizeof(int)&nbsp;*&nbsp;100);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p&nbsp;=&nbsp;malloc(sizeof(int)&nbsp;*&nbsp;100);
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(i&nbsp;=&nbsp;0;&nbsp;i&nbsp;&lt;&nbsp;CYCLES;&nbsp;i++)&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(i&nbsp;&lt;&nbsp;CYCLES&nbsp;/&nbsp;2)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;j&nbsp;=&nbsp;i;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;j--;
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf(&quot;realloc:&nbsp;%zd\n&quot;,&nbsp;sizeof(int)&nbsp;*&nbsp;(j&nbsp;*&nbsp;50&nbsp;+&nbsp;110));
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p&nbsp;=&nbsp;realloc(p,&nbsp;sizeof(int)&nbsp;*&nbsp;(j&nbsp;*&nbsp;50&nbsp;+&nbsp;100));
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf(&quot;realloc:&nbsp;%zd\n&quot;,&nbsp;sizeof(int)&nbsp;*&nbsp;((j+1)&nbsp;*&nbsp;150&nbsp;+&nbsp;110));
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p&nbsp;=&nbsp;realloc(p,&nbsp;sizeof(int)&nbsp;*&nbsp;((j&nbsp;+&nbsp;1)&nbsp;*&nbsp;150&nbsp;+&nbsp;110));
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;free(p);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exit(EXIT_SUCCESS);
+}
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/memusagestat.1.html">memusagestat</A></B>(1),
+
+<B><A HREF="../man1/mtrace.1.html">mtrace</A></B>(1),
+
+<B><A HREF="../man8/ld.so.8.html">ld.so</A></B>(8)
+
+<A NAME="lbAM">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DL>
+<DT><A HREF="#lbAE">メモリー使用量概要</A><DD>
+<DT><A HREF="#lbAF">ブロックサイズのヒストグラム</A><DD>
+</DL>
+<DT><A HREF="#lbAG">オプション</A><DD>
+<DT><A HREF="#lbAH">終了ステータス</A><DD>
+<DT><A HREF="#lbAI">バグ</A><DD>
+<DT><A HREF="#lbAJ">例</A><DD>
+<DL>
+<DT><A HREF="#lbAK">プログラムのソース</A><DD>
+</DL>
+<DT><A HREF="#lbAL">関連項目</A><DD>
+<DT><A HREF="#lbAM">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:41:01 GMT, December 28, 2020
+</BODY>
+</HTML>
