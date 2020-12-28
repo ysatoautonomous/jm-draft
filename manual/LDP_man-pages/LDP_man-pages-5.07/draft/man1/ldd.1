@@ -1,0 +1,230 @@
+.\" Copyright 1995-2000 David Engel (david@ods.com)
+.\" Copyright 1995 Rickard E. Faith (faith@cs.unc.edu)
+.\" Copyright 2000 Ben Collins (bcollins@debian.org)
+.\"    Redone for GLibc 2.2
+.\" Copyright 2000 Jakub Jelinek (jakub@redhat.com)
+.\"    Corrected.
+.\" and Copyright (C) 2012, 2016, Michael Kerrisk <mtk.manpages@gmail.com>
+.\"
+.\" %%%LICENSE_START(GPL_NOVERSION_ONELINE)
+.\" Do not restrict distribution.
+.\" May be distributed under the GNU General Public License
+.\" %%%LICENSE_END
+.\"
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.\" Japanese Version Copyright (c) 1998 NAKANO Takeo all rights reserved.
+.\" Translated Sat May 23 1998 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Wed Jan 6 1999 by NAKANO Takeo
+.\" Updated & Modified Wed Jan 16 21:05:41 JST 2002
+.\"         by Yuichi SATO <ysato@h4.dion.ne.jp>
+.\" Updated 2013-05-04, Akihiro MOTOKI <amotoki@gmail.com>
+.\" Updated & Modified Mon Dec 28 19:05:51 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH LDD 1 2019-03-06 "" "Linux Programmer's Manual"
+.SH 名前
+.\"O ldd \- print shared object dependencies
+ldd \- 共有オブジェクトへの依存関係を表示する
+.SH 書式
+\fBldd\fP [\fIoption\fP]... \fIfile\fP...
+.SH 説明
+.\"O .B ldd
+.\"O prints the shared objects (shared libraries) required by each program or
+.\"O shared object specified on the command line.
+.B ldd
+はコマンドラインで指定したプログラムや共有オブジェクトについて、
+それぞれで必要とされる共有オブジェクト (共有ライブラリ) を表示する。
+.\"O An example of its use and output is the following:
+使用法と出力の例は、以下の通りである:
+.PP
+.in +2n
+.EX
+$ \fBldd /bin/ls\fP
+        linux-vdso.so.1 (0x00007ffcc3563000)
+        libselinux.so.1 => /lib64/libselinux.so.1 (0x00007f87e5459000)
+        libcap.so.2 => /lib64/libcap.so.2 (0x00007f87e5254000)
+        libc.so.6 => /lib64/libc.so.6 (0x00007f87e4e92000)
+        libpcre.so.1 => /lib64/libpcre.so.1 (0x00007f87e4c22000)
+        libdl.so.2 => /lib64/libdl.so.2 (0x00007f87e4a1e000)
+        /lib64/ld-linux-x86-64.so.2 (0x00005574bf12e000)
+        libattr.so.1 => /lib64/libattr.so.1 (0x00007f87e4817000)
+        libpthread.so.0 => /lib64/libpthread.so.0 (0x00007f87e45fa000)
+.EE
+.in
+.PP
+.\"O In the usual case,
+.\"O .B ldd
+.\"O invokes the standard dynamic linker (see
+.\"O .BR ld.so (8))
+.\"O with the
+.\"O .B LD_TRACE_LOADED_OBJECTS
+.\"O environment variable set to 1.
+通常の場合、
+.B ldd
+は標準の動的リンカー
+.RB ( ld.so (8)
+参照) を
+.B LD_TRACE_LOADED_OBJECTS
+環境変数に 1 をセットして起動する。
+.\"O This causes the dynamic linker to inspect the program's dynamic dependencies,
+.\"O and find (according to the rules described in
+.\"O .BR ld.so (8))
+.\"O and load the objects that satisfy those dependencies.
+そうすると、動的リンカーはプログラムの動的依存関係を調べて、
+.RB ( ld.so (8)
+に記載されたルールに基づいて) 見つけ、
+依存関係を満すオブジェクトをロードする。
+.\"O For each dependency,
+.\"O .B ldd
+.\"O displays the location of the matching object
+.\"O and the (hexadecimal) address at which it is loaded.
+各々の依存関係に対して、
+.B ldd
+はマッチするオブジェクトの配置と、
+それがロードされる (16 進数の) アドレスを表示する。
+.\"O (The
+.\"O .I linux-vdso
+.\"O and
+.\"O .I ld-linux
+.\"O shared dependencies are special; see
+.\"O .BR vdso (7)
+.\"O and
+.\"O .BR ld.so (8).)
+.RI ( linux-vdso
+と
+.I ld-linux
+の共有の依存関係は特殊である。
+.BR vdso (7)
+と
+.BR ld.so (8)
+を参照すること。)
+.\"
+.\"O .SS Security
+.SS セキュリティ
+.\"O Be aware that in some circumstances
+.\"O (e.g., where the program specifies an ELF interpreter other than
+.\"O .IR ld-linux.so ),
+特定の条件下 (例えば、プログラムが
+.I ld-linux.so
+以外の ELF インタプリターを指定している場合) では、
+.\" The circumstances are where the program has an interpreter
+.\" other than ld-linux.so. In this case, ldd tries to execute the
+.\" program directly with LD_TRACE_LOADED_OBJECTS=1, with the
+.\" result that the program interpreter gets control, and can do
+.\" what it likes, or pass control to the program itself.
+.\" Much more detail at
+.\" http://www.catonmat.net/blog/ldd-arbitrary-code-execution/
+.\"O some versions of
+.\"O .B ldd
+.\"O may attempt to obtain the dependency information
+.\"O by attempting to directly execute the program,
+.\"O which may lead to the execution of whatever code is defined
+.\"O in the program's ELF interpreter,
+.\"O and perhaps to execution of the program itself.
+.B ldd
+のバージョンによっては、依存関係の情報を取得するために、
+プログラムを直接実行しようとする。
+これにより、プログラムの ELF インタプリターで定義されている
+任意のコードが実行され、プログラム自体が実行される場合もある。
+.\" Mainline glibc's ldd allows this possibility (the line
+.\"      try_trace "$file"
+.\" in glibc 2.15, for example), but many distro versions of
+.\" ldd seem to remove that code path from the script.
+.\"O (In glibc versions before 2.27,
+.\"O .\" glibc commit eedca9772e99c72ab4c3c34e43cc764250aa3e3c
+.\"O the upstream
+.\"O .B ldd
+.\"O implementation did this for example,
+.\"O although most distributions provided a modified version that did not.)
+(例えば、glibc のバージョン 2.27 以前では、アップストリームの
+.B ldd
+が、このような動作をしているが、
+大部分のディストリビューションでは、そのような挙動をさせない
+修正版を提供している。)
+.PP
+.\"O Thus, you should
+.\"O .I never
+.\"O employ
+.\"O .B ldd
+.\"O on an untrusted executable,
+.\"O since this may result in the execution of arbitrary code.
+.\"O A safer alternative when dealing with untrusted executables is:
+したがって、信頼できない実行ファイルに対しては
+.I 「決して」
+.B ldd
+を使ってはならない。
+任意のコードを実行することにつながるからである。
+信頼できない実行ファイルを扱う、より安全な別の方法としては
+次のようにするとよい。
+.PP
+.in +4n
+.EX
+$ \fBobjdump \-p /path/to/program | grep NEEDED\fP
+.EE
+.in
+.PP
+.\"O Note, however, that this alternative shows only the direct dependencies
+.\"O of the executable, while
+.\"O .B ldd
+.\"O shows the entire dependency tree of the executable.
+.B ldd
+は実行プログラムの完全な依存関係ツリーを表示するが、
+この代替方法では、直接の依存関係しか表示しない点に注意すること。
+.SH オプション
+.TP 
+.B \-\-version
+\fBldd\fP のバージョン番号を表示する。
+.TP 
+.BR \-v ", " \-\-verbose
+シンボルのバージョン情報などを含めた全ての情報を表示する。
+.TP 
+.BR \-u ", " \-\-unused
+使用されていない直接の依存関係を表示する (glibc 2.3.4 以降)。
+.TP 
+.BR \-d ", " \-\-data\-relocs
+リロケーションを実行し、足りないオブジェクトについてレポートする (ELF のみ)。
+.TP 
+.BR \-r ", " \-\-function\-relocs
+足りないオブジェクトや関数についてレポートする (ELF のみ)。
+.TP 
+.B \-\-help
+使用法を表示する。
+.\" .SH NOTES
+.\" The standard version of
+.\" .B ldd
+.\" comes with glibc2.
+.\" Libc5 came with an older version, still present
+.\" on some systems.
+.\" The long options are not supported by the libc5 version.
+.\" On the other hand, the glibc2 version does not support
+.\" .B \-V
+.\" and only has the equivalent
+.\" .BR \-\-version .
+.\" .LP
+.\" The libc5 version of this program will use the name of a library given
+.\" on the command line as-is when it contains a \(aq/\(aq; otherwise it
+.\" searches for the library in the standard locations.
+.\" To run it
+.\" on a shared library in the current directory, prefix the name with "./".
+.SH バグ
+\fBldd\fP は a.out 共有ライブラリでは動作しない。
+.PP
+.\" .SH AUTHOR
+.\" David Engel.
+.\" Roland McGrath and Ulrich Drepper.
+\fBldd\fP は非常に古い a.out プログラム (\fBldd\fP のサポートがコンパイラに追加される以前にビルドされたようなプログラム)
+では動作しない。 このようなプログラムに対して \fBldd\fP を用いると、プログラムは \fIargc\fP = 0 で実行される。結果は予想不可能である。
+.SH 関連項目
+.BR pldd (1),
+.BR sprof (1),
+.BR ld.so (8),
+.BR ldconfig (8)
+.SH この文書について
+この man ページは Linux \fIman\-pages\fP プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+http://www.kernel.org/doc/man\-pages/ に書かれている。
