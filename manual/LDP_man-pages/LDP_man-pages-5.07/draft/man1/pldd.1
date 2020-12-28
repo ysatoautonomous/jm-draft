@@ -1,0 +1,168 @@
+.\" Copyright (C) 2014 Michael Kerrisk <mtk.manpages@gmail.com>
+.\"
+.\" %%%LICENSE_START(VERBATIM)
+.\" Permission is granted to make and distribute verbatim copies of this
+.\" manual provided the copyright notice and this permission notice are
+.\" preserved on all copies.
+.\"
+.\" Permission is granted to copy and distribute modified versions of this
+.\" manual under the conditions for verbatim copying, provided that the
+.\" entire resulting derived work is distributed under the terms of a
+.\" permission notice identical to this one.
+.\"
+.\" Since the Linux kernel and libraries are constantly changing, this
+.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+.\" responsibility for errors or omissions, or for damages resulting from
+.\" the use of the information contained herein.  The author(s) may not
+.\" have taken the same level of care in the production of this manual,
+.\" which is licensed free of charge, as they might when working
+.\" professionally.
+.\"
+.\" Formatted or processed versions of this manual, if unaccompanied by
+.\" the source, must acknowledge the copyright and authors of this work.
+.\" %%%LICENSE_END
+.\"
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.\" Updated & Modified Mon Dec 28 22:01:43 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH PLDD 1 2020-06-09 "GNU" "Linux User Manual"
+.SH 名前
+pldd \- プロセスにリンクされている動的共有オブジェクトを表示する
+.SH 書式
+.nf
+.BI "pldd " "pid"
+.BI pldd " option"
+.fi
+.SH 説明
+.\"O The
+.\"O .B pldd
+.\"O command displays a list of the dynamic shared objects (DSOs) that are
+.\"O linked into the process with the specified process ID (PID).
+.B pldd
+コマンドは、 指定されたプロセス ID (PID) のプロセスにリンクされている
+動的共有オブジェクト (DSO) のリストを表示する。
+このリストには
+\fBdlopen\fP(3) を使って動的にロードされたライブラリーも含まれる。
+.SH オプション
+.TP 
+\fB\-?\fP, \fB\-\-help\fP
+.\"O Display a help message and exit.
+ヘルプメッセージを表示して終了する。
+.TP 
+.B \-\-usage
+.\"O Display a short usage message and exit.
+簡潔な使用方法を表示して終了する。
+.TP 
+\fB\-V\fP, \fB\-\-version\fP
+.\"O Display program version information and exit.
+プログラムのバージョン情報を表示して終了する。
+.\"O .SH EXIT STATUS
+.SH 終了ステータス
+.\"O On success,
+.\"O .B pldd
+.\"O exits with the status 0.
+成功すると
+.B pldd
+はステータス 0 を返す。
+.\"O If the specified process does not exist,
+.\"O the user does not have permission to access
+.\"O its dynamic shared object list,
+.\"O or no command-line arguments are supplied,
+.\"O .B pldd
+.\"O exists with a status of 1.
+指定されたプロセスが存在しない場合、ユーザーが自身の動的共有
+オブジェクトのリストにアクセスする許可を持っていない場合、
+もしくはコマンドライン引き数が指定されていない場合、
+.B pldd
+はステータス 1 で終了する。
+.\"O If given an invalid option, it exits with the status 64.
+無効なオプションが指定された場合、ステータス 64 で終了する。
+.SH バージョン
+\fBpldd\fP は glibc 2.15 以降で利用可能である。
+.SH 準拠
+.\" There are man pages on Solaris and HP-UX.
+\fBpldd\fP コマンドは POSIX.1 では規定されていない。 他のいくつかのシステムにも同様のコマンドがある。
+.\"O .SH NOTES
+.SH 注意
+.\"O The command
+コマンド
+.PP
+.in +4n
+.EX
+lsof \-p PID
+.EE
+.in
+.PP
+.\"O also shows output that includes the dynamic shared objects
+.\"O that are linked into a process.
+は、プロセスにリンクされた動的共有オブジェクトも出力する。
+.PP
+.\"O The
+.\"O .BR gdb (1)
+.\"O .I "info shared"
+.\"O command also shows the shared libraries being used by a process,
+.\"O so that one can obtain similar output to
+.\"O .B pldd
+.\"O using a command such as the following
+.\"O (to monitor the process with the specified
+.\"O .IR pid ):
+.BR gdb (1)
+の
+.I "info shared"
+コマンドでもプロセスが使用する共有ライブラリを表示できる。
+よって、
+(指定した
+.I pid
+のプロセスをモニターし)
+.B pldd
+と同様の出力を以下のコマンドラインを使って取得できる:
+.PP
+.in +4n
+.EX
+$ \fBgdb \-ex "set confirm off" \-ex "set height 0" \-ex "info shared" \e\fP
+        \fB\-ex "quit" \-p $pid | grep '^0x.*0x'\fP
+.EE
+.in
+.\"O .SH BUGS
+.SH バグ
+.\"O From glibc 2.19 to 2.29,
+.\"O .B pldd
+.\"O was broken: it just hung when executed.
+glibc 2.19 から 2.29 までは、
+.B pldd
+は壊れている。
+実行すると単にハングする。
+.\" glibc commit 1a4c27355e146b6d8cc6487b998462c7fdd1048f
+.\"O This problem was fixed in glibc 2.30, and the fix has been backported
+.\"O to earlier glibc versions in some distributions.
+この問題は、glibc 2.30 で修正され、いくつかのディストリビューションでは、
+修正が以前の glibc のバージョンにバックポートされている。
+.\"O .SH EXAMPLES
+.SH 例
+.EX
+$ \fBecho $$\fP       # シェルの PID を表示する
+1143
+$ \fBpldd $$\fP       # このシェルにリンクされている動的共有オブジェクトを表示
+1143:	/usr/bin/bash
+linux\-vdso.so.1
+/lib64/libtinfo.so.5
+/lib64/libdl.so.2
+/lib64/libc.so.6
+/lib64/ld\-linux\-x86\-64.so.2
+/lib64/libnss_files.so.2
+.EE
+.SH 関連項目
+.BR ldd (1),
+.BR lsof (1),
+.BR dlopen (3),
+.BR ld.so (8)
+.SH この文書について
+この man ページは Linux \fIman\-pages\fP プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+http://www.kernel.org/doc/man\-pages/ に書かれている。
