@@ -1,0 +1,146 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of ACCT</TITLE>
+</HEAD><BODY>
+<H1>ACCT</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2016-03-15<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+acct - プロセスアカウントのオンとオフを切り換える
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/unistd.h">unistd.h</A>&gt;</B>
+
+<B>int acct(const char *</B><I>filename</I><B>);</B>
+</PRE>
+
+
+<P>
+
+
+glibc 向けの機能検査マクロの要件 (<B><A HREF="../man7/feature_test_macros.7.html">feature_test_macros</A></B>(7)  参照):
+
+<P>
+
+<B>acct</B>():
+<PRE>
+    glibc 2.21 以降:
+        _DEFAULT_SOURCE
+    glibc 2.19 と 2.20:
+        _DEFAULT_SOURCE || (_XOPEN_SOURCE &amp;&amp; _XOPEN_SOURCE&nbsp;&lt;&nbsp;500)
+    glibc 2.19 以前:
+        _BSD_SOURCE || (_XOPEN_SOURCE &amp;&amp; _XOPEN_SOURCE&nbsp;&lt;&nbsp;500)
+</PRE>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>acct</B>()  システムコールは、プロセスアカウントの有効・無効を切り替える。 既存のファイルの名前を引き数に指定して呼び出されたら、 アカウント
+(account) が有効になり、 終了したプロセスの記録が <I>filename</I> に追記される。 NULL
+を引き数として呼び出されたらアカウントをオフにする。
+<A NAME="lbAE">&nbsp;</A>
+<H2>返り値</H2>
+
+成功した場合は 0 が返される。エラーの場合は -1 が返され、 <I>errno</I> が適切に設定される。
+<A NAME="lbAF">&nbsp;</A>
+<H2>エラー</H2>
+
+<DL COMPACT>
+<DT><B>EACCES</B><DD>
+指定したファイルへの書き込み許可がなく、書き込みが拒否された。 または <I>filename</I>
+のディレクトリ部分の何れかのディレクトリに検索許可がなく拒否された (<B><A HREF="../man7/path_resolution.7.html">path_resolution</A></B>(7)  も参照すること)。 または
+<I>filename</I> が通常 (regular) のファイルでない。
+<DT><B>EFAULT</B><DD>
+アクセスできるアドレス空間の外を <I>filename</I> が指している。
+<DT><B>EIO</B><DD>
+<I>filename</I> への書き込みにエラーが発生した。
+<DT><B>EISDIR</B><DD>
+<I>filename</I> がディレクトリである。
+<DT><B>ELOOP</B><DD>
+<I>filename</I> の実体にたどり着くまでのシンボリックリンクの数が多すぎる。
+<DT><B>ENAMETOOLONG</B><DD>
+<I>filename</I> が長すぎる。
+<DT><B>ENFILE</B><DD>
+
+オープンされたファイルの総数がシステム全体の制限に達した。
+<DT><B>ENOENT</B><DD>
+
+指定されたファイルが存在しない。
+<DT><B>ENOMEM</B><DD>
+メモリー不足。
+<DT><B>ENOSYS</B><DD>
+カーネルをコンパイルした時に BSD プロセスアカウントが有効になっていない。 この機能はカーネルのコンフィグの
+<B>CONFIG_BSD_PROCESS_ACCT</B> パラメーターによって制御される。
+<DT><B>ENOTDIR</B><DD>
+<I>filename</I> の中でディレクトリして扱われている要素が、 実際はディレクトリでない。
+<DT><B>EPERM</B><DD>
+呼び出したプロセスにはプロセスアカウントを有効にするのに十分な
+特権がない。
+Linux では <B>CAP_SYS_PACCT</B> ケーパビリティ
+(capability) が必要である。
+<DT><B>EROFS</B><DD>
+読み込みだけのファイルシステム上のファイルを <I>filename</I> が参照している。
+<DT><B>EUSERS</B><DD>
+使用可能なファイル構造体がないか、メモリーが足りない。
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>準拠</H2>
+
+
+
+
+
+
+SVr4, 4.3BSD (POSIX ではない)。
+<A NAME="lbAH">&nbsp;</A>
+<H2>注意</H2>
+
+システムがクラッシュした時に実行中だったプログラムのアカウントは
+生成されない。
+特に、終了しないプログラムがアカウントされることはない。
+<P>
+
+アカウント用ファイルに書き込まれるレコードの構造体については <B><A HREF="../man5/acct.5.html">acct</A></B>(5)  に説明がある。
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man5/acct.5.html">acct</A></B>(5)
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">返り値</A><DD>
+<DT><A HREF="#lbAF">エラー</A><DD>
+<DT><A HREF="#lbAG">準拠</A><DD>
+<DT><A HREF="#lbAH">注意</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 22:44:22 GMT, December 29, 2020
+</BODY>
+</HTML>
