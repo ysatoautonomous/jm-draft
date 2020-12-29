@@ -1,0 +1,183 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of _SYSCALL</TITLE>
+</HEAD><BODY>
+<H1>_SYSCALL</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2020-06-09<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+_syscall - ライブラリのサポートなしでシステムコールを起動する (昔の方法)
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>#include &lt;<A HREF="file:///usr/include/linux/unistd.h">linux/unistd.h</A>&gt;</B>
+<P>
+
+A _syscall macro
+<P>
+
+desired system call
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+システムコールに関してそのプロトタイプを知ることが重要である。 引き数の個数、それらの型、返り値の型を知る必要がある。
+実際の使用にあたっては、システムコールをシステムに呼び出しやすくするために、 7 個のマクロが用意されている。これらのマクロは以下の形である。
+<P>
+
+
+
+_syscall<I>X</I>(<I>type</I>,<I>name</I>,<I>type1</I>,<I>arg1</I>,<I>type2</I>,<I>arg2</I>,...)
+
+
+
+<P>
+
+ここで
+<DL COMPACT>
+<DT><DD>
+<I>X</I> は 0〜6 で、システムコールが取る引き数の個数である。
+<DT><DD>
+<I>type</I> はシステムコールの返り値の型である。
+<DT><DD>
+<I>name</I> はシステムコールの名前である。
+<DT><DD>
+<I>typeN</I> は N 番目の引き数の型である。
+<DT><DD>
+<I>argN</I> は N 番目の引き数の名前である。
+</DL>
+<P>
+
+これらのマクロは、指定した引き数を持つ <I>name</I> という名前の関数を生成する。 一度ソースファイルの中で _syscall()
+をインクルードしておくと、 そのシステムコールを <I>name</I> という名前で呼ぶことができる。
+<A NAME="lbAE">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/usr/include/linux/unistd.h</I>
+<A NAME="lbAF">&nbsp;</A>
+<H2>準拠</H2>
+
+これらのマクロは Linux 固有であり、その使用は非推奨である。
+<A NAME="lbAG">&nbsp;</A>
+<H2>注意</H2>
+
+カーネル 2.6.18 あたりから、_syscall マクロ群はユーザー空間に対して提供される ヘッダーファイルから削除された。代わりに
+<B><A HREF="../man2/syscall.2.html">syscall</A></B>(2)  を使用すること。 (いくつかのアーキテクチャー、特に ia64、では、これまで _syscall マクロが
+提供されたことはない。このようなアーキテクチャーでは、常に <B><A HREF="../man2/syscall.2.html">syscall</A></B>(2)  が必要であった。)
+<P>
+
+_syscall() マクロはプロトタイプを「生成しない」。 ユーザーはプロトタイプを自分で書かなければならないかもしれない。 とりわけ C++
+ユーザーの場合はそうであろう。
+<P>
+
+システムコールは、正のエラーコードのみ、または負のエラーコードのみを返すように
+定められている訳ではない。そのシステムコールがどのようなエラーコードを返すかを
+確認するには、そのソースコードを読む必要がある。たいていの場合は、標準のエラー コードを負にしたものである (例えば -<I>EPERM</I>)。
+_syscall() マクロは、そのシステムコールの返り値 <I>r</I> が負でない場合、その値 をそのまま返す。一方、<I>r</I> が負の場合には、変数
+<I>errno</I> に -<I>r</I> を設定し、-1 を返す。 エラーコードについては <B><A HREF="../man3/errno.3.html">errno</A></B>(3)  を参照。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+システムコールを定義する際、引き数の型は値渡し (by-value) か、 (構造体のように集合的なデータの場合は) ポインター渡し
+(by-pointer)  でなければならない。
+<A NAME="lbAH">&nbsp;</A>
+<H2>例</H2>
+
+
+#include &lt;<A HREF="file:///usr/include/stdio.h">stdio.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/stdlib.h">stdlib.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/errno.h">errno.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/linux/unistd.h">linux/unistd.h</A>&gt;       /* for _syscallX macros/related stuff */
+#include &lt;<A HREF="file:///usr/include/linux/kernel.h">linux/kernel.h</A>&gt;       /* for struct sysinfo */
+<P>
+_syscall1(int, sysinfo, struct sysinfo *, info);
+<P>
+int
+main(void)
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;struct&nbsp;sysinfo&nbsp;s_info;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;error;
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;error&nbsp;=&nbsp;sysinfo(&amp;s_info);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;printf(&quot;code&nbsp;error&nbsp;=&nbsp;%d\n&quot;,&nbsp;error);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;printf(&quot;Uptime&nbsp;=&nbsp;%lds\nLoad:&nbsp;1&nbsp;min&nbsp;%lu&nbsp;/&nbsp;5&nbsp;min&nbsp;%lu&nbsp;/&nbsp;15&nbsp;min&nbsp;%lu\n&quot;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;RAM:&nbsp;total&nbsp;%lu&nbsp;/&nbsp;free&nbsp;%lu&nbsp;/&nbsp;shared&nbsp;%lu\n&quot;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;Memory&nbsp;in&nbsp;buffers&nbsp;=&nbsp;%lu\nSwap:&nbsp;total&nbsp;%lu&nbsp;/&nbsp;free&nbsp;%lu\n&quot;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;Number&nbsp;of&nbsp;processes&nbsp;=&nbsp;%d\n&quot;,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s_info.uptime,&nbsp;s_info.loads[0],
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s_info.loads[1],&nbsp;s_info.loads[2],
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s_info.totalram,&nbsp;s_info.freeram,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s_info.sharedram,&nbsp;s_info.bufferram,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s_info.totalswap,&nbsp;s_info.freeswap,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s_info.procs);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;exit(EXIT_SUCCESS);
+}
+
+<A NAME="lbAI">&nbsp;</A>
+<H3>出力例</H3>
+
+
+code error = 0
+uptime = 502034s
+Load: 1 min 13376 / 5 min 5504 / 15 min 1152
+RAM: total 15343616 / free 827392 / shared 8237056
+Memory in buffers = 5066752
+Swap: total 27881472 / free 24698880
+Number of processes = 40
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/intro.2.html">intro</A></B>(2),
+
+<B><A HREF="../man2/syscall.2.html">syscall</A></B>(2),
+
+<B><A HREF="../man3/errno.3.html">errno</A></B>(3)
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">ファイル</A><DD>
+<DT><A HREF="#lbAF">準拠</A><DD>
+<DT><A HREF="#lbAG">注意</A><DD>
+<DT><A HREF="#lbAH">例</A><DD>
+<DL>
+<DT><A HREF="#lbAI">出力例</A><DD>
+</DL>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:18:06 GMT, December 29, 2020
+</BODY>
+</HTML>
