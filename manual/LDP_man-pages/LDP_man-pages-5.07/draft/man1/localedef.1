@@ -1,0 +1,636 @@
+.\" Copyright (C) 2001 Richard Braakman
+.\" Copyright (C) 2004 Alastair McKinstry
+.\" Copyright (C) 2005 Lars Wirzenius
+.\" Copyright (C) 2014 Marko Myllynen
+.\"
+.\" %%%LICENSE_START(GPLv2+_DOC_FULL)
+.\" This is free documentation; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License as
+.\" published by the Free Software Foundation; either version 2 of
+.\" the License, or (at your option) any later version.
+.\"
+.\" The GNU General Public License's references to "object code"
+.\" and "executables" are to be interpreted as the output of any
+.\" document formatting or typesetting system, including
+.\" intermediate and printed output.
+.\"
+.\" This manual is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public
+.\" License along with this manual; if not, see
+.\" <http://www.gnu.org/licenses/>.
+.\" %%%LICENSE_END
+.\"
+.\" This manual page was initially written by Richard Braakman
+.\" on behalf of the Debian GNU/Linux Project and anyone else
+.\" who wants it. It was amended by Alastair McKinstry to
+.\" explain new ISO 14652 elements, and amended further by
+.\" Lars Wirzenius to document new functionality (as of GNU
+.\" C library 2.3.5).
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\" Translated Tue Dec 29 22:43:43 JST 2020
+.\"           by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH LOCALEDEF 1 2020-04-11 "Linux" "Linux User Manual"
+.\"O .SH NAME
+.SH 名前
+.\"O localedef \- compile locale definition files
+localedef \- ロケール定義ファイルをコンパイルする
+.\"O .SH SYNOPSIS
+.SH 書式
+.ad l
+.nh
+.B localedef
+.RI [ options ]
+.I outputpath
+.br
+.B "localedef \-\-add\-to\-archive"
+.RI [ options ]
+.I compiledpath
+.br
+.B "localedef \-\-delete\-from\-archive"
+.RI [ options ]
+.IR localename " ..."
+.br
+.B "localedef \-\-list\-archive"
+.RI [ options ]
+.br
+.B "localedef \-\-help"
+.br
+.B "localedef \-\-usage"
+.br
+.B "localedef \-\-version"
+.ad b
+.hy
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The
+.\"O .B localedef
+.\"O program reads the indicated
+.\"O .I charmap
+.\"O and
+.\"O .I input
+.\"O files, compiles them to a binary form quickly usable by the
+.\"O locale functions in the C library
+.\"O .RB ( setlocale (3),
+.\"O .BR localeconv (3),
+.\"O etc.), and places the output in
+.\"O .IR outputpath .
+.B localedef
+プログラムは指定された
+.I charmap
+と
+.I input
+ファイルを読み込み、C ライブラリ
+.RB ( setlocale (3),
+.BR localeconv (3),
+など) のロケール関数を使ってバイナリ形式に変換し、出力を
+.I outputpath
+に書き込む。
+.PP
+.\"O The
+.\"O .I outputpath
+.\"O argument is interpreted as follows:
+.I outputpath
+引数は以下のように解釈される:
+.IP * 3
+.\"O If
+.\"O .I outputpath
+.\"O contains a slash character ('/'), it is interpreted as the name of the
+.\"O directory where the output definitions are to be stored.
+.I outputpath
+がスラッシュ文字 ('/') を含む場合、
+出力定義を格納するディレクトリ名として解釈される。
+.\"O In this case, there is a separate output file for each locale category
+.\"O .RI ( LC_TIME ,
+.\"O .IR LC_NUMERIC ,
+.\"O and so on).
+この場合、各ロケールカテゴリ
+.RI ( LC_TIME ,
+.IR LC_NUMERIC ,
+など) について別々の出力ファイルが作られる。
+.IP *
+.\"O If the
+.\"O .B \-\-no\-archive
+.\"O option is used,
+.\"O .I outputpath
+.\"O is the name of a subdirectory in
+.\"O .I /usr/lib/locale
+.\"O where per-category compiled files are placed.
+.B \-\-no\-archive
+オプションが指定された場合、
+.I outputpath
+は
+.I /usr/lib/locale
+以下のサブディレクトリの名前と解釈される。
+ここにカテゴリ毎のコンパイルされたファイルが置かれる。
+.IP *
+.\"O Otherwise,
+.\"O .I outputpath
+.\"O is the name of a locale and the compiled locale data is added to the
+.\"O archive file
+.\"O .IR /usr/lib/locale/locale-archive .
+その他の場合、
+.I outputpath
+はロケール名として解釈され、コンパイルされたロケールデータは
+アーカイブファイル
+.I /usr/lib/locale/locale-archive
+に追加される。
+.\"O A locale archive is a memory-mapped file which contains all the
+.\"O system-provided locales;
+ロケールアーカイブは、システムが提供するすべてのロケールを含む
+メモリマップファイルである。
+.\"O it is used by all localized programs when the environment variable
+.\"O .B LOCPATH
+.\"O is not set.
+このファイルは、環境変数
+.B LOCPATH
+が設定されていない場合に、すべてのローカライズしたプログラムで使われる。
+.PP
+.\"O In any case,
+.\"O .B localedef
+.\"O aborts if the directory in which it tries to write locale files has
+.\"O not already been created.
+どのケースでも、ロケールファイルを書き込もうとしたディレクトリが
+作成されていない場合、
+.B localedef
+は失敗する。
+.PP
+.\"O If no
+.\"O .I charmapfile
+.\"O is given, the value
+.\"O .I ANSI_X3.4-1968
+.\"O (for ASCII) is used by default.
+.I charmapfile
+が指定されていない場合、値
+.I ANSI_X3.4-1968
+(ASCII) がデフォルトで使われる。
+.\"O If no
+.\"O .I inputfile
+.\"O is given, or if it is given as a dash
+.\"O (\-),
+.\"O .B localedef
+.\"O reads from standard input.
+.I inputfile
+が指定されていない場合、またはダッシュ (\-) が指定された場合、
+.B localedef
+は標準入力を読み込む。
+.\"O .SH OPTIONS
+.SH オプション
+.\"O .SS Operation-selection options
+.SS 操作の選択オプション
+.\"O A few options direct
+.\"O .B localedef
+.\"O to do something other than compile locale definitions.
+.B localedef
+に対して、ロケール定義のコンパイル以外をさせるオプションが幾つかある。
+.\"O Only one of these options should be used at a time.
+これらのオプションは 1 度に 1 つだけ使用できる。
+.TP
+.B \-\-add\-to\-archive
+.\"O Add the
+.\"O .I compiledpath
+.\"O directories to the locale archive file.
+ロケールアーカイブファイルに
+.I compiledpath
+ディレクトリを追加する。
+.\"O The directories should have been created by previous runs of
+.\"O .BR localedef ,
+.\"O using
+.\"O .BR \-\-no\-archive .
+このディレクトリは、前もって
+.B localedef ,
+と
+.B \-\-no\-archive
+を使って作成されていなければならない。
+.TP
+.B \-\-delete\-from\-archive
+.\"O Delete the named locales from the locale archive file.
+ロケールアーカイブファイルから指定されたロケールを削除する。
+.TP
+.B \-\-list\-archive
+.\"O List the locales contained in the locale archive file.
+ロケールアーカイブファイルに含まれるロケールをリスト表示する。
+.\"O .SS Other options
+.SS その他のオプション
+.\"O Some of the following options are sensible only for certain operations;
+以下のオプションのいくつかは、特定の操作にのみ有効である。
+.\"O generally, it should be self-evident which ones.
+一般に、オプションがどの操作に有効かは自明である。
+.\"O Notice that
+.\"O .B \-f
+.\"O and
+.\"O .B \-c
+.\"O are reversed from what you might expect; that is,
+.\"O .B \-f
+.\"O is not the same as
+.\"O .BR \-\-force .
+.B \-f
+と
+.B \-c
+は期待しているのと逆の意味であるので、注意すること。
+つまり、
+.B \-f
+は
+.B \-\-force
+と同じではない。
+.TP
+.BI \-f " charmapfile" "\fR, \fP\-\-charmap=" charmapfile
+.\"O Specify the file that defines the character set
+.\"O that is used by the input file.
+入力ファイルで使われる文字集合を定義したファイルを指定する。
+.\"O If
+.\"O .I charmapfile
+.\"O contains a slash character ('/'),
+.\"O it is interpreted as the name of the character map.
+.I charmapfile
+がスラッシュ文字 ('/') を含む場合、
+文字マップの名前として解釈される。
+.\"O Otherwise, the file is sought in the current directory
+.\"O and the default directory for character maps.
+含まない場合、ファイルをカレントディレクトリで探し、
+文字マップのデフォルトディレクトリとする。
+.\"O If the environment variable
+.\"O .B I18NPATH
+.\"O is set,
+.\"O .I $I18NPATH/charmaps/
+.\"O and
+.\"O .I $I18NPATH/
+.\"O are also searched after the current directory.
+環境変数
+.B I18NPATH
+が設定されている場合、
+.I $I18NPATH/charmaps/
+と
+.I $I18NPATH/
+がカレントディレクトリの後に検索される。
+.\"O The default directory for character maps is printed by
+.\"O .BR "localedef \-\-help" .
+文字マップのデフォルトディレクトリは
+.B "localedef \-\-help"
+で表示される。
+.TP
+.BI \-i " inputfile" "\fR, \fP\-\-inputfile=" inputfile
+.\"O Specify the locale definition file to compile.
+コンパイルするロケール定義ファイルを指定する。
+.\"O The file is sought in the current directory
+.\"O and the default directory for locale definition files.
+ファイルをカレントディレクトリで探し、
+ロケール定義ファイルのデフォルトディレクトリとする。
+.\"O If the environment variable
+.\"O .B I18NPATH
+.\"O is set,
+.\"O .I $I18NPATH/locales/
+.\"O and
+.\"O .I $I18NPATH
+.\"O are also searched after the current directory.
+環境変数
+.B I18NPATH
+が設定されている場合、
+.I $I18NPATH/locales/
+と
+.I $I18NPATH
+がカレントディレクトリの後に検索される。
+.\"O The default directory for locale definition files is printed by
+.\"O .BR "localedef \-\-help" .
+ロケール定義ファイルのデフォルトディレクトリは
+.B "localedef \-\-help"
+で表示される。
+.TP
+.BI \-u " repertoirefile" "\fR, \fP\-\-repertoire-map=" repertoirefile
+.\"O Read mappings from symbolic names to Unicode code points from
+.\"O .IR repertoirefile .
+シンボル名から Unicode コードポイントへのマッピングを、
+.I repertoirefile
+から読み込む。
+.\"O If
+.\"O .I repertoirefile
+.\"O contains a slash character ('/'),
+.\"O it is interpreted as the pathname of the repertoire map.
+.I repertoirefile
+がスラッシュ文字 ('/') を含む場合、
+レパートリーマップのパス名として解釈される。
+.\"O Otherwise, the file is sought in the current directory
+.\"O and the default directory for repertoire maps.
+含まない場合、ファイルをカレントディレクトリで探し、
+レパートリーマップのデフォルトディレクトリとする。
+.\"O If the environment variable
+.\"O .B I18NPATH
+.\"O is set,
+.\"O .I $I18NPATH/repertoiremaps/
+.\"O and
+.\"O .I $I18NPATH
+.\"O are also searched after the current directory.
+環境変数
+.B I18NPATH
+が設定されている場合、
+.I $I18NPATH/repertoiremaps/
+と
+.I $I18NPATH
+がカレントディレクトリの後に検索される。
+.\"O The default directory for repertoire maps is printed by
+.\"O .BR "localedef \-\-help" .
+レパートリーマップのデフォルトディレクトリは
+.B "localedef \-\-help"
+で表示される。
+.TP
+.BI \-A " aliasfile" "\fR, \fP\-\-alias\-file=" aliasfile
+.\"O Use
+.\"O .I aliasfile
+.\"O to look up aliases for locale names.
+ロケール名のエイリアスを探すのに、
+.I aliasfile
+を使う。
+.\"O There is no default aliases file.
+エイリアスファイルのデフォルトはない。
+.TP
+.BR \-c ", " \-\-force
+.\"O Write the output files even if warnings were generated about the input
+.\"O file.
+入力ファイルの警告が出ても、出力ファイルを書き込む。
+.TP
+.BR \-v ", " \-\-verbose
+.\"O Generate extra warnings about errors that are normally ignored.
+通常は無視されるエラーについての追加の警告も出す。
+.TP
+.B \-\-big\-endian
+.\"O Generate big-endian output.
+ビッグエンディアンで出力する。
+.TP
+.B \-\-little\-endian
+.\"O Generate little-endian output.
+リトルエンディアンで出力する。
+.TP
+.B \-\-no\-archive
+.\"O Do not use the locale archive file, instead create
+.\"O .I outputpath
+.\"O as a subdirectory in the same directory as the locale archive file,
+.\"O and create separate output files for locale categories in it.
+ロケールアーカイブファイルを使わず、代わりに
+.I outputpath
+をロケールアーカイブファイルと同じディレクトリのサブディレクトリに
+作成して、その中にロケールカテゴリ毎に分けた出力ファイルを生成する。
+.\"O This is helpful to prevent system locale archive updates from overwriting
+.\"O custom locales created with
+.\"O .BR localedef .
+これは、
+.B localedef
+で作成されたカスタムのロケールが、システムのロケールアーカイブを
+上書きして更新してしまうのを防ぐ。
+.TP
+.B \-\-no\-hard\-links
+.\"O Do not create hard links between installed locales.
+インストールされたロケールにハードリンクを生成しない。
+.TP
+.BI \-\-no\-warnings= warnings
+.\"O Comma-separated list of warnings to disable.
+無効にする警告のリストを、カンマ区切りで指定する。
+.\"O Supported warnings are
+.\"O .I ascii
+.\"O and
+.\"O .IR intcurrsym .
+サポートされる警告は
+.I ascii
+と
+.I intcurrsym
+である。
+.TP
+.B \-\-posix
+.\"O Conform strictly to POSIX.  Implies
+.\"O .BR \-\-verbose .
+POSIX に厳密に準拠する。
+.B \-\-verbose
+を暗黙に指定する。
+.\"O This option currently has no other effect.
+現在のところ、このオプションはその他の効果はない。
+.\"O POSIX conformance is assumed if the environment variable
+.\"O .B POSIXLY_CORRECT
+.\"O is set.
+環境変数
+.B POSIXLY_CORRECT
+が設定されている場合、POSIX 準拠が仮定される。
+.TP
+.BI \-\-prefix= pathname
+.\"O Set the prefix to be prepended to the full archive pathname.
+完全なアーカイブパス名の前にプレフィックスを付ける。
+.\"O By default, the prefix is empty.
+デフォルトでは、プレフィックスは空である。
+.\"O Setting the prefix to
+.\"O .IR foo ,
+.\"O the archive would be placed in
+.\"O .IR foo/usr/lib/locale/locale-archive .
+プレフィックスを
+.I foo
+にした場合、アーカイブは
+.I foo/usr/lib/locale/locale-archive
+に置かれる。
+.TP
+.B \-\-quiet
+.\"O Suppress all notifications and warnings, and report only fatal errors.
+すべての通知と警告を抑制し、致命的なエラーのみを報告する。
+.TP
+.B \-\-replace
+.\"O Replace a locale in the locale archive file.
+ロケールアーカイブファイルのロケールを置き換える。
+.\"O Without this option, if the locale is in the archive file already,
+.\"O an error occurs.
+このオプションを指定しない場合、アーカイブファイルにロケールが
+既に存在する場合、エラーになる。
+.TP
+.BI \-\-warnings= warnings
+.\"O Comma-separated list of warnings to enable.
+有効にする警告のリストを、カンマ区切りで指定する。
+.\"O Supported warnings are
+.\"O .I ascii
+.\"O and
+.\"O .IR intcurrsym .
+サポートされる警告は
+.I ascii
+と
+.I intcurrsym
+である。
+.TP
+.BR \-? ", " \-\-help
+.\"O Print a usage summary and exit.
+使用方法を表示し、終了する。
+.\"O Also prints the default paths used by
+.\"O .BR localedef .
+また、
+.B localedef
+で使われるデフォルトのパスも表示する。
+.TP
+.B "\-\-usage"
+.\"O Print a short usage summary and exit.
+簡潔な使用方法を表示し、終了する。
+.TP
+.BR \-V ", " \-\-version
+.\"O Print the version number, license, and disclaimer of warranty for
+.\"O .BR localedef .
+.B localedef
+のバージョン番号、ライセンス、保障免責を表示する。
+.\"O .SH EXIT STATUS
+.SH 終了ステータス
+.\"O One of the following exit values can be returned by
+.\"O .BR localedef :
+.B localedef
+は以下のいずれかの終了ステータスを返す:
+.RS 3
+.TP
+.B 0
+.\"O Command completed successfully.
+コマンドが正常に完了した。
+.TP
+.B 1
+.\"O Warnings or errors occurred, output files were written.
+警告またはエラーが起きたが、出力ファイルが書き出された。
+.TP
+.B 4
+.\"O Errors encountered, no output created.
+エラーが発生し、出力ファイルが生成されなかった。
+.RE
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.TP
+.B POSIXLY_CORRECT
+.\"O The
+.\"O .B \-\-posix
+.\"O flag is assumed if this environment variable is set.
+この環境変数が設定された場合、
+.B \-\-posix
+フラグを指定することが仮定される。
+.TP
+.B I18NPATH
+.\"O A colon-separated list of search directories for files.
+ファイルを検索するカンマ区切りのディレクトリのリスト。
+.\"O .SH FILES
+.SH ファイル
+.TP
+.I /usr/share/i18n/charmaps
+.\"O Usual default character map path.
+通常のデフォルト文字マップのパス。
+.TP
+.I /usr/share/i18n/locales
+.\"O Usual default path for locale definition files.
+ロケール定義ファイルの通常のデフォルトパス。
+.TP
+.I /usr/share/i18n/repertoiremaps
+.\"O Usual default repertoire map path.
+通常のデフォルトレパートリーマップのパス。
+.TP
+.I /usr/lib/locale/locale-archive
+.\"O Usual default locale archive location.
+通常のデフォルトロケールアーカイブの場所。
+.TP
+.I /usr/lib/locale
+.\"O Usual default path for compiled individual locale data files.
+コンパイルされたロケールデータファイルを置く通常のデフォルトパス。
+.TP
+.I outputpath/LC_ADDRESS
+.\"O An output file that contains information about formatting of
+.\"O addresses and geography-related items.
+住所と地理関連のアイテムのフォーマットについての情報を含む
+出力ファイル。
+.TP
+.I outputpath/LC_COLLATE
+.\"O An output file that contains information about the rules for comparing
+.\"O strings.
+文字列の比較の規則についての情報を含む出力ファイル。
+.TP
+.I outputpath/LC_CTYPE
+.\"O An output file that contains information about character classes.
+文字クラスについての情報を含む出力ファイル。
+.TP
+.I outputpath/LC_IDENTIFICATION
+.\"O An output file that contains metadata about the locale.
+ロケールのメタデータを含む出力ファイル。
+.TP
+.I outputpath/LC_MEASUREMENT
+.\"O An output file that contains information about locale measurements
+.\"O (metric versus US customary).
+ロケールの単位系についての情報を含む出力ファイル
+(メートル法と US で慣習で使われる単位系)。
+.TP
+.I outputpath/LC_MESSAGES/SYS_LC_MESSAGES
+.\"O An output file that contains information about the language messages
+.\"O should be printed in, and what an affirmative or negative answer looks
+.\"O like.
+言語ごとに表示されるメッセージについての情報と、
+肯定と否定の返答を表すメッセージを含む出力ファイル。
+.TP
+.I outputpath/LC_MONETARY
+.\"O An output file that contains information about formatting of monetary
+.\"O values.
+通貨のフォーマットについての情報を含む出力ファイル。
+.TP
+.I outputpath/LC_NAME
+.\"O An output file that contains information about salutations for persons.
+人への挨拶 (呼びかけ) についての情報を含む出力ファイル。
+.TP
+.I outputpath/LC_NUMERIC
+.\"O An output file that contains information about formatting of nonmonetary
+.\"O numeric values.
+通貨以外の数値のフォーマットについての情報を含む出力ファイル。
+.TP
+.I outputpath/LC_PAPER
+.\"O An output file that contains information about settings related to
+.\"O standard paper size.
+標準的な紙のサイズについての情報を含む出力ファイル。
+.TP
+.I outputpath/LC_TELEPHONE
+.\"O An output file that contains information about formats to be used with
+.\"O telephone services.
+電話サービスで使われるフォーマットについての情報を含む出力ファイル。
+.TP
+.I outputpath/LC_TIME
+.\"O An output file that contains information about formatting of data and
+.\"O time values.
+データと時間の値のフォーマットについての情報を含む出力ファイル。
+.\"O .SH CONFORMING TO
+.SH 準拠
+POSIX.1-2008.
+.\"O .SH EXAMPLES
+.SH 例
+.\"O Compile the locale files for Finnish in the UTF\-8 character set
+.\"O and add it to the default locale archive with the name
+.\"O .BR fi_FI.UTF\-8 :
+ロケールファイルをフィンランド語を UTF\-8 文字集合でコンパイルし、
+デフォルトのロケールアーカイブファイルに
+.B fi_FI.UTF\-8
+という名前で追加するには、以下のようにする:
+.PP
+.in +4n
+.EX
+localedef \-f UTF\-8 \-i fi_FI fi_FI.UTF\-8
+.EE
+.in
+.PP
+.\"O The next example does the same thing, but generates files into the
+.\"O .I fi_FI.UTF\-8
+.\"O directory which can then be used by programs when the environment
+.\"O variable
+.\"O .B LOCPATH
+.\"O is set to the current directory (note that the last argument must
+.\"O contain a slash):
+次の例では、同様のことをするが、ファイルを
+.I fi_FI.UTF\-8
+ディレクトリに生成し、環境変数
+.B LOCPATH
+がカレントディレクトリに設定された場合に、プログラムが使えるようにする
+(最後の引き数がスラッシュを含んでいなければならない点に注意すること):
+.PP
+.in +4n
+.EX
+localedef \-f UTF\-8 \-i fi_FI ./fi_FI.UTF\-8
+.EE
+.in
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR locale (1),
+.BR charmap (5),
+.BR locale (5),
+.BR repertoiremap (5),
+.BR locale (7)
