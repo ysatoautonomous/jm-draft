@@ -1,0 +1,332 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of ACCESS</TITLE>
+</HEAD><BODY>
+<H1>ACCESS</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2016-03-15<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+access, faccessat - ユーザーのファイルへのアクセス権をチェックする
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/unistd.h">unistd.h</A>&gt;</B>
+
+<B>int access(const char *</B><I>pathname</I><B>, int </B><I>mode</I><B>);</B>
+
+<B>#include &lt;<A HREF="file:///usr/include/fcntl.h">fcntl.h</A>&gt;           </B>/* AT_* 定数の定義 */
+<B>#include &lt;<A HREF="file:///usr/include/unistd.h">unistd.h</A>&gt;</B>
+
+<B>int faccessat(int </B><I>dirfd</I><B>, const char *</B><I>pathname</I><B>, int </B><I>mode</I><B>, int </B><I>flags</I><B>);</B>
+</PRE>
+
+<P>
+
+
+glibc 向けの機能検査マクロの要件 (<B><A HREF="../man7/feature_test_macros.7.html">feature_test_macros</A></B>(7)  参照):
+
+<P>
+
+<B>faccessat</B>():
+
+
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>glibc 2.10 以降:<DD>
+_POSIX_C_SOURCE&nbsp;&gt;=&nbsp;200809L
+<DT>glibc 2.10 より前:<DD>
+_ATFILE_SOURCE
+</DL>
+</DL>
+
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>access</B>()  は、呼び出し元プロセスがファイル <I>pathname</I> にアクセスできるかどうかをチェックする。 <I>pathname</I>
+がシンボリックリンクの場合、シンボリックリンクは展開される。
+<P>
+
+
+<I>mode</I> はチェックを行うアクセス権を指定するもので、その値は <B>F_OK</B>、 もしくは <B>R_OK</B>, <B>W_OK</B>, <B>X_OK</B> の
+1個以上のビット単位の論理和から構成されるマスクである。 <B>F_OK</B> はファイルが存在するかどうかのみを検査する。 <B>R_OK</B>,
+<B>W_OK</B>, <B>X_OK</B> は、ファイルが存在して、それぞれ読み込み、書き込み、実行の許可があるか を検査する。
+<P>
+
+チェックは、実際に操作が行われる際に使用される実効 (effective) ID でなく、 呼び出し元プロセスの <I>実 (real)</I> UID と
+<I>実 (real)</I> GID を使って行われる。
+
+
+
+
+同様に、root ユーザーに対しては、実効ケーパビリティではなく、
+許可されたケーパビリティのセットをチェックする。
+root 以外のユーザでは、ケーパビリティの空のセットをチェックする。
+<P>
+
+
+
+これにより、set-user-ID プログラムと、
+ケーパビリティが与えられたプログラムで、
+プログラムを起動するユーザーの権限を簡単に決定することができる。
+
+
+
+言い換えると、
+<B>access</B>()
+
+は「私がこのファイルに対して読み出し/書き込み/実行ができるか？」という
+質問には答えない。
+
+
+
+
+<B>access</B>()
+
+は少し異なった質問
+「(私が setuid バイナリであると仮定して) 
+<I>私をよびだしたユーザーが</I>
+
+このファイルに対して読み出し/書き込み/実行ができるか？」に答える。
+
+
+
+これにより、set-user-ID プログラムに対して、
+悪意のあるユーザーが、読み出しの出来ないファイルを
+読み込むことを防止できるようになる。
+<P>
+
+呼び出し元プロセスが特権プロセス (つまり、プロセスの実 UID が 0) の場合、 通常のファイルに対する <B>X_OK</B>
+のチェックは、そのファイルの所有者、グループ、他人のいずれかの 実行許可が有効になっていれば成功する。
+<A NAME="lbAE">&nbsp;</A>
+<H3>faccessat()</H3>
+
+<B>faccessat</B>() システムコールは <B>access</B>() と全く同様に動作するが、以下で説明する点が異なる。
+<P>
+
+<I>pathname</I> で指定されたパス名が相対パスの場合、このパス名はファイルディスクリプター <I>dirfd</I>
+が参照するディレクトリに対する相対パスと解釈される (<B>access</B>()
+に相対パス名を渡した場合のように、呼び出したプロセスのカレントワーキングディレクトリに対する相対パスではない)。
+<P>
+
+<I>pathname</I> で指定されたパス名が相対パスで、 <I>dirfd</I> が特別な値 <B>AT_FDCWD</B> の場合、 (<B>access</B>()
+と同様に) <I>pathname</I> は呼び出したプロセスのカレントワーキングディレクトリに対する相対パスと解釈される。
+<P>
+
+<I>pathname</I> で指定されたパス名が絶対パスの場合、 <I>dirfd</I> は無視される。
+<P>
+
+<I>flags</I> は以下に示す値の 0 個以上の OR (論理和) をとって作成される。
+<DL COMPACT>
+<DT><B>AT_EACCESS</B><DD>
+アクセスチェックを実行ユーザー/グループ ID を使って行う。デフォルトでは、<B>faccessat</B>() は (<B>access</B>() と同様に) 実
+ID を使用する。
+<DT><B>AT_SYMLINK_NOFOLLOW</B><DD>
+<I>pathname</I> がシンボリックリンクの場合、リンクの展開を行わない。代わりに、リンク自身の情報を返す。
+</DL>
+<P>
+
+<B>faccessat</B>() の必要性についての説明については <B><A HREF="../man2/openat.2.html">openat</A></B>(2) を参照。
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+成功した場合 (要求した全てについて許可が得られたか、 <I>mode</I> が <B>F_OK</B> でファイルが存在した場合)、ゼロが返される。 エラーの場合
+(<I>mode</I> の少なくとも一つのビットで要求した許可がなかった場合、 <I>mode</I> が <B>F_OK</B>
+でファイルが存在しなかった場合、他のエラーが起こった場合)、-1 が返され、 <I>errno</I> が適切に設定される。
+<A NAME="lbAG">&nbsp;</A>
+<H2>エラー</H2>
+
+<B>access</B>() と <B>faccessat</B>() は以下の場合に失敗する。
+<DL COMPACT>
+<DT><B>EACCES</B><DD>
+要求されたアクセスは そのファイル自身に拒否されたか <I>pathname</I> へ至るまでディレクトリのいずれかに対する検索許可 (search
+permission) が得られなかった。 (<B><A HREF="../man7/path_resolution.7.html">path_resolution</A></B>(7)  も参照のこと)
+<DT><B>ELOOP</B><DD>
+<I>pathname</I> を解決するときに、解決すべきシンボリックリンクが多すぎた。
+<DT><B>ENAMETOOLONG</B><DD>
+<I>pathname</I> が長過ぎる。
+<DT><B>ENOENT</B><DD>
+<I>pathname</I> を構成するパスのいずれかが、存在しないか、 参照先のない (dangling) シンボリックリンクになっている。
+<DT><B>ENOTDIR</B><DD>
+<I>pathname</I> のディレクトリ部分が実際にはディレクトリでない。
+<DT><B>EROFS</B><DD>
+読み込み専用 (read-only) のファイルシステムに対して書き込み許可を 要求した。
+</DL>
+<P>
+
+<B>access</B>() と <B>faccessat</B>() は以下の理由により失敗することがある。
+<DL COMPACT>
+<DT><B>EFAULT</B><DD>
+<I>pathname</I> がアクセス可能なアドレス空間の外を指している。
+<DT><B>EINVAL</B><DD>
+<I>mode</I> に不正な値が指定された。
+<DT><B>EIO</B><DD>
+I/O エラーが発生した。
+<DT><B>ENOMEM</B><DD>
+カーネルに十分なメモリーがない。
+<DT><B>ETXTBSY</B><DD>
+実行中のファイルに対して書き込みを要求した。
+</DL>
+<P>
+
+<B>faccessat</B>() では以下のエラーも発生する。
+<DL COMPACT>
+<DT><B>EBADF</B><DD>
+<I>dirfd</I> が適切なファイルディスクリプターでない。
+<DT><B>EINVAL</B><DD>
+<I>flags</I> に無効なフラグが指定された。
+<DT><B>ENOTDIR</B><DD>
+<I>pathname</I> が相対パスで、 <I>dirfd</I> がディレクトリ以外のファイルを参照しているファイルディスクリプターである。
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>バージョン</H2>
+
+<B>faccessat</B>()  はバージョン 2.6.16 で Linux に追加された。 ライブラリによるサポートは glibc バージョン 2.4
+で追加された。
+<A NAME="lbAI">&nbsp;</A>
+<H2>準拠</H2>
+
+<B>access</B>(): SVr4, 4.3BSD, POSIX.1-2001, POSIX.1-2008.
+<P>
+
+<B>faccessat</B>(): POSIX.1-2008.
+<A NAME="lbAJ">&nbsp;</A>
+<H2>注意</H2>
+
+<P>
+
+<B>警告</B>: あるユーザーが、例えば <B><A HREF="../man2/open.2.html">open</A></B>(2) によるアクセスが可能かどうかを、 (実際に行う前に)
+これらのシステムコールを使ってチェックするのは、セキュリティホールの原因になる。なぜならチェックをしてから
+実際にファイルのオープン操作をする間の短い間隔を悪用できるからである。 <B>この理由があるので、このシステムコールを使うのは避けるべきである。</B>
+(ここで説明した例の場合には、より安全な方法としては、 そのプロセスの実効ユーザー ID を実ユーザー ID に一時的に切り替えてから
+<B><A HREF="../man2/open.2.html">open</A></B>(2) を呼び出す方法がある。)
+<P>
+
+<B>access</B>() は常にシンボリックリンクの展開を行う。
+シンボリックリンクのアクセス許可を確認する必要がある場合は、
+<B>AT_SYMLINK_NOFOLLOW</B> フラグ付きで <B>faccessat</B>() を使うこと。
+<P>
+
+<I>mode</I> で指定されたアクセス種別のいずれか一つでも拒否されると、 たとえ <I>mode</I> で指定された他のアクセス種別が許可されたとしても、
+これらのシステムコールはエラーを返す。
+<P>
+
+
+POSIX.1-2001 では、 呼び出し元プロセスが適切な特権を持っている場合 (つまり、スーパーユーザーの場合)、
+たとえファイルの実行許可ビットが全くセットされていなくても <B>X_OK</B> のチェックとして成功を返す実装が認められている。 Linux
+はこのようにはなっていない。
+<P>
+
+<I>pathname</I> のプレフィックスを構成するディレクトリの全てに対して 検索アクセス (すなわち、実行アクセス) が許可された場合にのみ、
+ファイルはアクセス可能となる。 いずれかのディレクトリがアクセス不可の場合、 ファイル自身のアクセス許可に関わらず、 <B>access</B>()
+は失敗する。
+<P>
+
+アクセスビットのみがチェックされ、ファイルの種類や内容はチェックされない。 従って、ディレクトリが書き込み可能となった場合は、ディレクトリに
+ファイルを作成することが可能なことを意味するのであり、ディレクトリに ファイルとして書き込むことができるわけではない。 同様に DOS
+のファイルは「実行可能」と判断されるが、 <B><A HREF="../man2/execve.2.html">execve</A></B>(2)  コールは失敗するだろう。
+<P>
+
+
+
+これらのシステムコールは、 UID マッピングを使用した NFSv2 ファイルシステムでは正常に機能しないかもしれない。なぜならば UID
+のマッピングはサーバーで 行なわれ、権利のチェックをするクライアントには見えないからである。 (NFS バージョン 3
+以降ではサーバー側でチェックが実行される。) 同様の問題は FUSE マウントでも起こり得る。
+
+<A NAME="lbAK">&nbsp;</A>
+<H3>C ライブラリとカーネルの違い</H3>
+
+生の <B>faccessat</B>() システムコールは、最初の 3 つの引き数だけを取る。フラグ <B>AT_EACCESS</B> と
+<B>AT_SYMLINK_NOFOLLOW</B> は実際には <B>faccessat</B>() の glibc
+のラッパー関数内で実装されている。これらのフラグのいずれかが指定された場合、ラッパー関数は <B><A HREF="../man2/fstatat.2.html">fstatat</A></B>(2)
+を使ってアクセス許可の判定を行う。
+<A NAME="lbAL">&nbsp;</A>
+<H3>glibc での注意</H3>
+
+<B>faccessat</B>() が利用できない古いカーネルでは、(フラグ <B>AT_EACCESS</B> と <B>AT_SYMLINK_NOFOLLOW</B>
+が指定されていない場合) glibc ラッパー関数は <B>access</B>() を使用するモードにフォールバックする。 <I>pathname</I>
+が相対パスの場合、 glibc は <I>dirfd</I> 引き数に対応する <I>/proc/self/fd</I>
+のシンボリックリンクに基づいてパス名を構成する。
+<A NAME="lbAM">&nbsp;</A>
+<H2>バグ</H2>
+
+
+バージョン 2.4 (とそれ以前) のカーネルには、スーパーユーザーでの <B>X_OK</B> のチェックの扱いに奇妙な点がある。
+ディレクトリ以外のファイルで (ユーザー、グループ、他人の) 全てのカテゴリーについて 実行許可がない場合、 <B>access</B>()  のチェックで
+-1 が返るのは <I>mode</I> に <B>X_OK</B> だけが指定されたときだけであり <I>mode</I> に <B>R_OK</B> や <B>W_OK</B>
+が一緒に指定された場合には <B>access</B>()  は 0 を返す。 (バージョン 2.6.3 以前の) 初期の 2.6 系のカーネルも 2.4
+系のカーネルと同様の動作をする。
+<P>
+
+2.6.20 より前のカーネルでは、 これらのシステムコールはファイルが存在するファイルシステムを <B><A HREF="../man2/mount.2.html">mount</A></B>(2) する際に指定された
+<B>MS_NOEXEC</B> フラグの効果を無視していた。 カーネル 2.6.20 以降では、 <B>MS_NOEXEC</B>
+フラグは考慮されるようになっている。
+<A NAME="lbAN">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/chmod.2.html">chmod</A></B>(2),
+
+<B><A HREF="../man2/chown.2.html">chown</A></B>(2),
+
+<B><A HREF="../man2/open.2.html">open</A></B>(2),
+
+<B><A HREF="../man2/setgid.2.html">setgid</A></B>(2),
+
+<B><A HREF="../man2/setuid.2.html">setuid</A></B>(2),
+
+<B><A HREF="../man2/stat.2.html">stat</A></B>(2),
+
+<B><A HREF="../man3/euidaccess.3.html">euidaccess</A></B>(3),
+
+<B><A HREF="../man7/credentials.7.html">credentials</A></B>(7),
+
+<B><A HREF="../man7/path_resolution.7.html">path_resolution</A></B>(7),
+
+<B><A HREF="../man7/symlink.7.html">symlink</A></B>(7)
+
+<A NAME="lbAO">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DL>
+<DT><A HREF="#lbAE">faccessat()</A><DD>
+</DL>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">エラー</A><DD>
+<DT><A HREF="#lbAH">バージョン</A><DD>
+<DT><A HREF="#lbAI">準拠</A><DD>
+<DT><A HREF="#lbAJ">注意</A><DD>
+<DL>
+<DT><A HREF="#lbAK">C ライブラリとカーネルの違い</A><DD>
+<DT><A HREF="#lbAL">glibc での注意</A><DD>
+</DL>
+<DT><A HREF="#lbAM">バグ</A><DD>
+<DT><A HREF="#lbAN">関連項目</A><DD>
+<DT><A HREF="#lbAO">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 17:25:32 GMT, December 29, 2020
+</BODY>
+</HTML>
