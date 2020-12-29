@@ -1,0 +1,375 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of ACCEPT</TITLE>
+</HEAD><BODY>
+<H1>ACCEPT</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2020-04-11<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+accept, accept4 - ソケットへの接続を受ける
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/sys/types.h">sys/types.h</A>&gt;</B>          /* 「注意」参照 */
+<B>#include &lt;<A HREF="file:///usr/include/sys/socket.h">sys/socket.h</A>&gt;</B>
+
+<B>int accept(int </B><I>sockfd</I><B>, struct sockaddr *</B><I>addr</I><B>, socklen_t *</B><I>addrlen</I><B>);</B>
+
+<B>#define _GNU_SOURCE</B>             /* <A HREF="../man7/feature_test_macros.7.html">feature_test_macros</A>(7) 参照 */
+<B>#include &lt;<A HREF="file:///usr/include/sys/socket.h">sys/socket.h</A>&gt;</B>
+
+<B>int accept4(int </B><I>sockfd</I><B>, struct sockaddr *</B><I>addr</I><B>,</B>
+<B>            socklen_t *</B><I>addrlen</I><B>, int </B><I>flags</I><B>);</B>
+</PRE>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>accept</B>()  システムコールは、接続指向のソケット型 (<B>SOCK_STREAM</B>, <B>SOCK_SEQPACKET</B>)
+で用いられる。 この関数は、接続待ちソケット <I>socket</I> 宛ての保留状態の接続要求が入っているキューから
+先頭の接続要求を取り出し、接続済みソケットを新規に生成し、 そのソケットを参照する新しいファイルディスクリプターを返す。
+新規に生成されたソケットは、接続待ち (listen) 状態ではない。 もともとのソケット <I>sockfd</I> はこの呼び出しによって影響を受けない。
+<P>
+
+引き数 <I>sockfd</I> は、 <B><A HREF="../man2/socket.2.html">socket</A></B>(2)  によって生成され、 <B><A HREF="../man2/bind.2.html">bind</A></B>(2)  によってローカルアドレスにバインドされ、
+<B><A HREF="../man2/listen.2.html">listen</A></B>(2)  を経て接続を待っているソケットである。
+<P>
+
+<I>addr</I> 引き数は <I>sockaddr</I> 構造体へのポインターである。 この構造体には接続相手のソケットのアドレスが入っている。 <I>addr</I>
+引き数で返されるアドレスの正確なフォーマットは、 ソケットのアドレス種別によって変わる (<B><A HREF="../man2/socket.2.html">socket</A></B>(2)  およびそれぞれのプロトコルの
+man ページを参照)。 <I>addr</I> が NULL の場合、 <I>addr</I> には何も入らない。この場合、 <I>addrlen</I>
+は使用されず、この引き数は NULL にしておくべきである。
+<P>
+
+<I>addrlen</I> 引き数は入出力両用の引き数である。呼び出し時には、呼び出し元が <I>addr</I> が指す構造体のサイズ (バイト単位)
+で初期化しておかなければならない。 返ってくる時には、接続相手のアドレスの実際の大きさが格納される。
+<P>
+
+渡されたバッファーが小さ過ぎた場合は、返されるアドレスの末尾が切り詰められる。
+この場合には、 <I>addrlen</I> には、呼び出し時に指定された値よりも大きな値が格納される。
+<P>
+
+キューに保留となっている接続要求がなく、 かつソケットが非停止になっていないときは、 <B>accept</B>()  は接続が発生するまで呼び出し元を停止
+(block) する。 ソケットが非停止になっていて、 待ち状態の接続要求がキューに無いときは、 <B>accept</B>()  はエラー <B>EAGAIN</B>
+か <B>EWOULDBLOCK</B> で失敗する。
+<P>
+
+
+
+
+
+
+ソケットへの接続到着を知るには、
+<B><A HREF="../man2/select.2.html">select</A></B>(2),
+
+<B><A HREF="../man2/poll.2.html">poll</A></B>(2),
+
+<B><A HREF="../man7/epoll.7.html">epoll</A></B>(7)
+
+のいずれかを用いればよい。
+新しい接続要求が来るとソケットは読み込み可能になるので、 そうしたら <B>accept</B>()  を呼んでその接続に対するソケットを取得すればよい。
+あるいはソケットに設定を行い、何らかのアクションがあったときに <B>SIGIO</B> を配送 (deliver) させるようにすることもできる。詳細は
+<B><A HREF="../man7/socket.7.html">socket</A></B>(7)  を参照のこと。
+<P>
+
+<I>flags</I> が 0 の場合、 <B>accept4</B>()  は <B>accept</B>()  と同じである。 <I>flags</I>
+に以下の値をビット毎の論理和 (OR) で指定することで、 異なる動作をさせることができる。
+<DL COMPACT>
+<DT><B>SOCK_NONBLOCK</B>
+
+<DD>
+
+
+
+
+
+新しいファイルディスクリプターで参照される
+オープンファイル記述 (open file description)
+(<B><A HREF="../man2/open.2.html">open</A></B>(2)
+
+を参照) の <B>O_NONBLOCK</B>
+ファイルステータスフラグをセットする。
+このフラグを使うことで、 <B>O_NONBLOCK</B> をセットするために <B><A HREF="../man2/fcntl.2.html">fcntl</A></B>(2)
+を追加で呼び出す必要がなくなる。
+<DT><B>SOCK_CLOEXEC</B><DD>
+新しいファイルディスクリプターに対して close-on-exec (<B>FD_CLOEXEC</B>)  フラグをセットする。
+このフラグが役に立つ理由については、 <B><A HREF="../man2/open.2.html">open</A></B>(2)  の <B>O_CLOEXEC</B> フラグの説明を参照のこと。
+</DL>
+<A NAME="lbAE">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+
+成功した場合、これらのシステムコールは受け付けたソケットの
+ディスクリプターを返す (非負の整数値)。
+
+
+
+
+
+エラーが発生した場合は -1 を返して、
+<I>errno</I>
+
+を適切に設定し、
+<I>addrlen</I>
+
+は変更しない。
+<A NAME="lbAF">&nbsp;</A>
+<H3>エラー処理</H3>
+
+Linux の <B>accept</B>()  (と <B>accept4</B>())  は、新しいソケットにおける、発生済みのネットワークエラーを
+<B>accept</B>()  からのエラーコードとして渡す。 この振舞いは BSD ソケットの実装とは異なる。 信頼性の高い動作を行うためには、
+アプリケーションはプロトコルで定義されているネットワークエラーの検知を <B>accept</B>()  のあとに行い、それらのエラーを <B>EAGAIN</B>
+と同じように扱い、再試行 (retry) を行うべきである。 TCP/IP では、以下のエラーが該当する: <B>ENETDOWN</B>,
+<B>EPROTO</B>, <B>ENOPROTOOPT</B>, <B>EHOSTDOWN</B>, <B>ENONET</B>, <B>EHOSTUNREACH</B>,
+<B>EOPNOTSUPP</B>, <B>ENETUNREACH</B>
+<A NAME="lbAG">&nbsp;</A>
+<H2>エラー</H2>
+
+<DL COMPACT>
+<DT><B>EAGAIN</B> または <B>EWOULDBLOCK</B><DD>
+
+
+
+ソケットが非停止になっていて、かつ受付け対象の接続が存在しない。
+
+
+
+
+POSIX.1-2001 と POSIX.1-2008 は、この場合にどちらのエラーを返すことも認めており、
+これら 2 つの定数が同じ値を持つことも求めていない。
+したがって、移植性が必要なアプリケーションでは、両方の可能性を
+確認すべきである。
+<DT><B>EBADF</B><DD>
+
+
+<I>sockfd</I>
+
+がオープンファイルディスクリプターではない。
+<DT><B>ECONNABORTED</B><DD>
+接続が中止された。
+<DT><B>EFAULT</B><DD>
+<I>addr</I> 引き数がユーザーアドレス空間の書き込み可能領域にない。
+<DT><B>EINTR</B><DD>
+有効な接続が到着する前に捕捉されたシグナルによって システムコールが中断された。 <B><A HREF="../man7/signal.7.html">signal</A></B>(7)  参照。
+<DT><B>EINVAL</B><DD>
+ソケットが接続待ち状態ではない。もしくは、 <I>addrlen</I> が不正である (例えば、負の場合など)。
+<DT><B>EINVAL</B><DD>
+(<B>accept4</B>())  <I>flags</I> に不正な値が指定されている。
+<DT><B>EMFILE</B><DD>
+
+1 プロセスがオープンできるファイルディスクリプター数の上限に達した。
+<DT><B>ENFILE</B><DD>
+
+オープンされたファイルの総数がシステム全体の上限に達した。
+<DT><B>ENOBUFS</B>, <B>ENOMEM</B><DD>
+メモリーが足りない。 多くの場合は、システムメモリーが足りないわけではなく、 ソケットバッファーの大きさによるメモリー割り当ての制限である。
+<DT><B>ENOTSOCK</B><DD>
+
+
+
+ファイルディスクリプター
+<I>sockfd</I>
+
+がソケットを参照していない。
+<DT><B>EOPNOTSUPP</B><DD>
+参照しているソケットの型が <B>SOCK_STREAM</B> でない。
+<DT><B>EPROTO</B><DD>
+プロトコルエラー。
+</DL>
+<P>
+
+上記に加えて、Linux の <B>accept</B>()  は以下のエラーで失敗する:
+<DL COMPACT>
+<DT><B>EPERM</B><DD>
+ファイアウォールのルールにより接続が禁止された。
+</DL>
+<P>
+
+この他に、新しいソケットに対するネットワークエラーが返されることもある。 これらはそれぞれのプロトコルで定義されている。 いろいろな Linux
+カーネルでは、 以下に示すようなエラーを返すこともある。 <B>ENOSR</B>, <B>ESOCKTNOSUPPORT</B>,
+<B>EPROTONOSUPPORT</B>, <B>ETIMEDOUT</B>.  <B>ERESTARTSYS</B> がトレースの最中に現れることもある。
+<A NAME="lbAH">&nbsp;</A>
+<H2>バージョン</H2>
+
+<B>accept4</B>()  システムコールは Linux 2.6.28 以降で利用可能である。 glibc でのサポートはバージョン 2.10
+以降で利用可能である。
+<A NAME="lbAI">&nbsp;</A>
+<H2>準拠</H2>
+
+
+
+
+
+
+<B>accept</B>():
+
+POSIX.1-2001, POSIX.1-2008,
+SVr4, 4.4BSD
+(<B>accept</B>()
+
+4.2BSD で初めて実装された)。
+
+
+
+
+
+
+<P>
+
+<B>accept4</B>() は非標準の Linux による拡張である。
+<P>
+
+
+
+Linux では、 <B>accept</B>()  が返す新しいソケットは listen を行っているソケットの ファイル状態フラグ
+(<B>O_NONBLOCK</B> や <B>O_ASYNC</B> など) を継承「しない」。 この動作は標準的な BSD ソケットの実装とは異なっている。
+移植性を考慮したプログラムではファイル状態フラグが継承されるかどうかは 前提にせず、常に <B>accept</B>()
+が返したソケットに対して全ての必要なフラグを明示的に設定するように すべきである。
+<A NAME="lbAJ">&nbsp;</A>
+<H2>注意</H2>
+
+POSIX.1-2001 では <I>&lt;<A HREF="file:///usr/include/sys/types.h">sys/types.h</A>&gt;</I> のインクルードは必須とされておらず、 Linux
+ではこのヘッダーファイルは必要ではない。 しかし、歴史的には、いくつかの実装 (BSD 系) でこのヘッダーファイルが
+必要であり、移植性が必要なアプリケーションではこのファイルを インクルードするのが賢明であろう。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+<B>SIGIO</B>
+
+が届けられた後や、
+<B><A HREF="../man2/select.2.html">select</A></B>(2),
+
+<B><A HREF="../man2/poll.2.html">poll</A></B>(2),
+
+<B><A HREF="../man7/epoll.7.html">epoll</A></B>(7)
+
+が読み込み可能イベントを返した後に、必ずしも待機中の接続があるとは
+限らない。
+なぜならその接続は、
+<B>accept</B>()
+
+が呼ばれる前に、非同期的なネットワークエラーや
+他のスレッドから呼ばれた (別の) accept によって 削除されているかもしれないからである。
+この場合、その <B>accept</B>()
+呼び出しは停止 (block) し、次の接続の到着を待ちつづける。 <B>accept</B>()  に停止を行わせないようにするには、引き数に渡すソケット
+<I>sockfd</I> に <B>O_NONBLOCK</B> フラグをセットしておく必要がある (<B><A HREF="../man7/socket.7.html">socket</A></B>(7)  を見よ)。
+<P>
+
+
+
+
+
+
+明示的な接続確認 (confirmation) を必要とするようなプロトコル (DECNet など) では、
+<B>accept</B>()
+
+は単に次の接続要求をキューから取り出すだけであり、
+接続確認は行わないことに注意せよ。
+
+
+
+接続確認は、新しいファイルディスクリプターに対する
+通常の読み取り/書き込みによってなされ、接続拒否 (rejection) は新しいソケットを
+クローズすることによってなされる。
+
+現在のところ、Linux 上でこれらのセマンティクスを持つのは DECNet だけである。
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H3>socklen_t 型</H3>
+
+
+
+
+
+
+オリジナルの BSD ソケット実装 (と他の古いシステム) では
+<B>accept</B>()
+
+の第 3 引き数は、<I>int *</I> と宣言されていた。
+
+
+
+
+
+POSIX.1g draft 標準は、これを <I>size_t&nbsp;*</I> に変更しようとし、
+後に POSIX 標準と glibc 2.x には <I>socklen_t *</I> が含まれるようになった。
+<A NAME="lbAL">&nbsp;</A>
+<H2>例</H2>
+
+
+
+<B><A HREF="../man2/bind.2.html">bind</A></B>(2)
+
+参照。
+<A NAME="lbAM">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/bind.2.html">bind</A></B>(2),
+
+<B><A HREF="../man2/connect.2.html">connect</A></B>(2),
+
+<B><A HREF="../man2/listen.2.html">listen</A></B>(2),
+
+<B><A HREF="../man2/select.2.html">select</A></B>(2),
+
+<B><A HREF="../man2/socket.2.html">socket</A></B>(2),
+
+<B><A HREF="../man7/socket.7.html">socket</A></B>(7)
+
+<A NAME="lbAN">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">返り値</A><DD>
+<DL>
+<DT><A HREF="#lbAF">エラー処理</A><DD>
+</DL>
+<DT><A HREF="#lbAG">エラー</A><DD>
+<DT><A HREF="#lbAH">バージョン</A><DD>
+<DT><A HREF="#lbAI">準拠</A><DD>
+<DT><A HREF="#lbAJ">注意</A><DD>
+<DL>
+<DT><A HREF="#lbAK">socklen_t 型</A><DD>
+</DL>
+<DT><A HREF="#lbAL">例</A><DD>
+<DT><A HREF="#lbAM">関連項目</A><DD>
+<DT><A HREF="#lbAN">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:32:59 GMT, December 29, 2020
+</BODY>
+</HTML>
