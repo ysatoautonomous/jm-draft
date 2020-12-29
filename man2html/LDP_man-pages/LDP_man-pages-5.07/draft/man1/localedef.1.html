@@ -1,0 +1,811 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LOCALEDEF</TITLE>
+</HEAD><BODY>
+<H1>LOCALEDEF</H1>
+Section: Linux User Manual (1)<BR>Updated: 2020-04-11<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+localedef - ロケール定義ファイルをコンパイルする
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+
+
+<B>localedef</B>
+
+[<I>options</I>]
+
+<I>outputpath</I>
+
+<BR>
+
+<B>localedef --add-to-archive</B>
+
+[<I>options</I>]
+
+<I>compiledpath</I>
+
+<BR>
+
+<B>localedef --delete-from-archive</B>
+
+[<I>options</I>]
+
+<I>localename</I> ...
+
+<BR>
+
+<B>localedef --list-archive</B>
+
+[<I>options</I>]
+
+<BR>
+
+<B>localedef --help</B>
+
+<BR>
+
+<B>localedef --usage</B>
+
+<BR>
+
+<B>localedef --version</B>
+
+
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B>localedef</B>
+
+プログラムは指定された
+<I>charmap</I>
+
+と
+<I>input</I>
+
+ファイルを読み込み、C ライブラリ
+(<B><A HREF="../man3/setlocale.3.html">setlocale</A></B>(3),
+
+<B><A HREF="../man3/localeconv.3.html">localeconv</A></B>(3),
+
+など) のロケール関数を使ってバイナリ形式に変換し、出力を
+<I>outputpath</I>
+
+に書き込む。
+<P>
+
+
+
+
+<I>outputpath</I>
+
+引数は以下のように解釈される:
+<DL COMPACT>
+<DT>*<DD>
+
+
+
+
+<I>outputpath</I>
+
+がスラッシュ文字 ('/') を含む場合、
+出力定義を格納するディレクトリ名として解釈される。
+
+
+
+
+この場合、各ロケールカテゴリ
+(<I>LC_TIME</I>,
+
+<I>LC_NUMERIC</I>,
+
+など) について別々の出力ファイルが作られる。
+<DT>*<DD>
+
+
+
+
+
+
+
+<B>--no-archive</B>
+
+オプションが指定された場合、
+<I>outputpath</I>
+
+は
+<I>/usr/lib/locale</I>
+
+以下のサブディレクトリの名前と解釈される。
+ここにカテゴリ毎のコンパイルされたファイルが置かれる。
+<DT>*<DD>
+
+
+
+
+
+その他の場合、
+<I>outputpath</I>
+
+はロケール名として解釈され、コンパイルされたロケールデータは
+アーカイブファイル
+<I>/usr/lib/locale/locale-archive</I>
+
+に追加される。
+
+
+ロケールアーカイブは、システムが提供するすべてのロケールを含む
+メモリマップファイルである。
+
+
+
+このファイルは、環境変数
+<B>LOCPATH</B>
+
+が設定されていない場合に、すべてのローカライズしたプログラムで使われる。
+</DL>
+<P>
+
+
+
+
+
+どのケースでも、ロケールファイルを書き込もうとしたディレクトリが
+作成されていない場合、
+<B>localedef</B>
+
+は失敗する。
+<P>
+
+
+
+
+
+
+<I>charmapfile</I>
+
+が指定されていない場合、値
+<I>ANSI_X3.4-1968</I>
+
+(ASCII) がデフォルトで使われる。
+
+
+
+
+
+
+<I>inputfile</I>
+
+が指定されていない場合、またはダッシュ (-) が指定された場合、
+<B>localedef</B>
+
+は標準入力を読み込む。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+<A NAME="lbAF">&nbsp;</A>
+<H3>操作の選択オプション</H3>
+
+
+
+
+<B>localedef</B>
+
+に対して、ロケール定義のコンパイル以外をさせるオプションが幾つかある。
+
+これらのオプションは 1 度に 1 つだけ使用できる。
+<DL COMPACT>
+<DT><B>--add-to-archive</B>
+
+<DD>
+
+
+
+ロケールアーカイブファイルに
+<I>compiledpath</I>
+
+ディレクトリを追加する。
+
+
+
+
+このディレクトリは、前もって
+<B>localedef ,</B>
+
+と
+<B>--no-archive</B>
+
+を使って作成されていなければならない。
+<DT><B>--delete-from-archive</B>
+
+<DD>
+
+ロケールアーカイブファイルから指定されたロケールを削除する。
+<DT><B>--list-archive</B>
+
+<DD>
+
+ロケールアーカイブファイルに含まれるロケールをリスト表示する。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H3>その他のオプション</H3>
+
+
+以下のオプションのいくつかは、特定の操作にのみ有効である。
+
+一般に、オプションがどの操作に有効かは自明である。
+
+
+
+
+
+
+
+
+<B>-f</B>
+
+と
+<B>-c</B>
+
+は期待しているのと逆の意味であるので、注意すること。
+つまり、
+<B>-f</B>
+
+は
+<B>--force</B>
+
+と同じではない。
+<DL COMPACT>
+<DT><B>-f</B><I> charmapfile</I><B></B>, --charmap=<I>charmapfile</I>
+
+<DD>
+
+
+入力ファイルで使われる文字集合を定義したファイルを指定する。
+
+
+
+
+<I>charmapfile</I>
+
+がスラッシュ文字 ('/') を含む場合、
+文字マップの名前として解釈される。
+
+
+含まない場合、ファイルをカレントディレクトリで探し、
+文字マップのデフォルトディレクトリとする。
+
+
+
+
+
+
+
+環境変数
+<B>I18NPATH</B>
+
+が設定されている場合、
+<I>$I18NPATH/charmaps/</I>
+
+と
+<I>$I18NPATH/</I>
+
+がカレントディレクトリの後に検索される。
+
+
+文字マップのデフォルトディレクトリは
+<B>localedef --help</B>
+
+で表示される。
+<DT><B>-i</B><I> inputfile</I><B></B>, --inputfile=<I>inputfile</I>
+
+<DD>
+
+コンパイルするロケール定義ファイルを指定する。
+
+
+ファイルをカレントディレクトリで探し、
+ロケール定義ファイルのデフォルトディレクトリとする。
+
+
+
+
+
+
+
+環境変数
+<B>I18NPATH</B>
+
+が設定されている場合、
+<I>$I18NPATH/locales/</I>
+
+と
+<I>$I18NPATH</I>
+
+がカレントディレクトリの後に検索される。
+
+
+ロケール定義ファイルのデフォルトディレクトリは
+<B>localedef --help</B>
+
+で表示される。
+<DT><B>-u</B><I> repertoirefile</I><B></B>, --repertoire-map=<I>repertoirefile</I>
+
+<DD>
+
+
+シンボル名から Unicode コードポイントへのマッピングを、
+<I>repertoirefile</I>
+
+から読み込む。
+
+
+
+
+<I>repertoirefile</I>
+
+がスラッシュ文字 ('/') を含む場合、
+レパートリーマップのパス名として解釈される。
+
+
+含まない場合、ファイルをカレントディレクトリで探し、
+レパートリーマップのデフォルトディレクトリとする。
+
+
+
+
+
+
+
+環境変数
+<B>I18NPATH</B>
+
+が設定されている場合、
+<I>$I18NPATH/repertoiremaps/</I>
+
+と
+<I>$I18NPATH</I>
+
+がカレントディレクトリの後に検索される。
+
+
+レパートリーマップのデフォルトディレクトリは
+<B>localedef --help</B>
+
+で表示される。
+<DT><B>-A</B><I> aliasfile</I><B></B>, --alias-file=<I>aliasfile</I>
+
+<DD>
+
+
+
+ロケール名のエイリアスを探すのに、
+<I>aliasfile</I>
+
+を使う。
+
+エイリアスファイルのデフォルトはない。
+<DT><B>-c</B>, <B>--force</B>
+
+<DD>
+
+
+入力ファイルの警告が出ても、出力ファイルを書き込む。
+<DT><B>-v</B>, <B>--verbose</B>
+
+<DD>
+
+通常は無視されるエラーについての追加の警告も出す。
+<DT><B>--big-endian</B>
+
+<DD>
+
+ビッグエンディアンで出力する。
+<DT><B>--little-endian</B>
+
+<DD>
+
+リトルエンディアンで出力する。
+<DT><B>--no-archive</B>
+
+<DD>
+
+
+
+
+ロケールアーカイブファイルを使わず、代わりに
+<I>outputpath</I>
+
+をロケールアーカイブファイルと同じディレクトリのサブディレクトリに
+作成して、その中にロケールカテゴリ毎に分けた出力ファイルを生成する。
+
+
+
+これは、
+<B>localedef</B>
+
+で作成されたカスタムのロケールが、システムのロケールアーカイブを
+上書きして更新してしまうのを防ぐ。
+<DT><B>--no-hard-links</B>
+
+<DD>
+
+インストールされたロケールにハードリンクを生成しない。
+<DT><B>--no-warnings=</B><I>warnings</I>
+
+<DD>
+
+無効にする警告のリストを、カンマ区切りで指定する。
+
+
+
+
+サポートされる警告は
+<I>ascii</I>
+
+と
+<I>intcurrsym</I>
+
+である。
+<DT><B>--posix</B>
+
+<DD>
+
+
+POSIX に厳密に準拠する。
+<B>--verbose</B>
+
+を暗黙に指定する。
+
+現在のところ、このオプションはその他の効果はない。
+
+
+
+環境変数
+<B>POSIXLY_CORRECT</B>
+
+が設定されている場合、POSIX 準拠が仮定される。
+<DT><B>--prefix=</B><I>pathname</I>
+
+<DD>
+
+完全なアーカイブパス名の前にプレフィックスを付ける。
+
+デフォルトでは、プレフィックスは空である。
+
+
+
+
+プレフィックスを
+<I>foo</I>
+
+にした場合、アーカイブは
+<I>foo/usr/lib/locale/locale-archive</I>
+
+に置かれる。
+<DT><B>--quiet</B>
+
+<DD>
+
+すべての通知と警告を抑制し、致命的なエラーのみを報告する。
+<DT><B>--replace</B>
+
+<DD>
+
+ロケールアーカイブファイルのロケールを置き換える。
+
+
+このオプションを指定しない場合、アーカイブファイルにロケールが
+既に存在する場合、エラーになる。
+<DT><B>--warnings=</B><I>warnings</I>
+
+<DD>
+
+有効にする警告のリストを、カンマ区切りで指定する。
+
+
+
+
+サポートされる警告は
+<I>ascii</I>
+
+と
+<I>intcurrsym</I>
+
+である。
+<DT><B>-?</B>, <B>--help</B>
+
+<DD>
+
+使用方法を表示し、終了する。
+
+
+また、
+<B>localedef</B>
+
+で使われるデフォルトのパスも表示する。
+<DT><B>--usage</B>
+
+<DD>
+
+簡潔な使用方法を表示し、終了する。
+<DT><B>-V</B>, <B>--version</B>
+
+<DD>
+
+
+<B>localedef</B>
+
+のバージョン番号、ライセンス、保障免責を表示する。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>終了ステータス</H2>
+
+
+
+<B>localedef</B>
+
+は以下のいずれかの終了ステータスを返す:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>0</B>
+
+<DD>
+
+コマンドが正常に完了した。
+<DT><B>1</B>
+
+<DD>
+
+警告またはエラーが起きたが、出力ファイルが書き出された。
+<DT><B>4</B>
+
+<DD>
+
+エラーが発生し、出力ファイルが生成されなかった。
+</DL>
+</DL>
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT><B>POSIXLY_CORRECT</B>
+
+<DD>
+
+
+
+この環境変数が設定された場合、
+<B>--posix</B>
+
+フラグを指定することが仮定される。
+<DT><B>I18NPATH</B>
+
+<DD>
+
+ファイルを検索するカンマ区切りのディレクトリのリスト。
+
+</DL>
+<A NAME="lbAJ">&nbsp;</A>
+<H2>ファイル</H2>
+
+<DL COMPACT>
+<DT><I>/usr/share/i18n/charmaps</I>
+
+<DD>
+
+通常のデフォルト文字マップのパス。
+<DT><I>/usr/share/i18n/locales</I>
+
+<DD>
+
+ロケール定義ファイルの通常のデフォルトパス。
+<DT><I>/usr/share/i18n/repertoiremaps</I>
+
+<DD>
+
+通常のデフォルトレパートリーマップのパス。
+<DT><I>/usr/lib/locale/locale-archive</I>
+
+<DD>
+
+通常のデフォルトロケールアーカイブの場所。
+<DT><I>/usr/lib/locale</I>
+
+<DD>
+
+コンパイルされたロケールデータファイルを置く通常のデフォルトパス。
+<DT><I>outputpath/LC_ADDRESS</I>
+
+<DD>
+
+
+住所と地理関連のアイテムのフォーマットについての情報を含む
+出力ファイル。
+<DT><I>outputpath/LC_COLLATE</I>
+
+<DD>
+
+
+文字列の比較の規則についての情報を含む出力ファイル。
+<DT><I>outputpath/LC_CTYPE</I>
+
+<DD>
+
+文字クラスについての情報を含む出力ファイル。
+<DT><I>outputpath/LC_IDENTIFICATION</I>
+
+<DD>
+
+ロケールのメタデータを含む出力ファイル。
+<DT><I>outputpath/LC_MEASUREMENT</I>
+
+<DD>
+
+
+ロケールの単位系についての情報を含む出力ファイル
+(メートル法と US で慣習で使われる単位系)。
+<DT><I>outputpath/LC_MESSAGES/SYS_LC_MESSAGES</I>
+
+<DD>
+
+
+
+言語ごとに表示されるメッセージについての情報と、
+肯定と否定の返答を表すメッセージを含む出力ファイル。
+<DT><I>outputpath/LC_MONETARY</I>
+
+<DD>
+
+
+通貨のフォーマットについての情報を含む出力ファイル。
+<DT><I>outputpath/LC_NAME</I>
+
+<DD>
+
+人への挨拶 (呼びかけ) についての情報を含む出力ファイル。
+<DT><I>outputpath/LC_NUMERIC</I>
+
+<DD>
+
+
+通貨以外の数値のフォーマットについての情報を含む出力ファイル。
+<DT><I>outputpath/LC_PAPER</I>
+
+<DD>
+
+
+標準的な紙のサイズについての情報を含む出力ファイル。
+<DT><I>outputpath/LC_TELEPHONE</I>
+
+<DD>
+
+
+電話サービスで使われるフォーマットについての情報を含む出力ファイル。
+<DT><I>outputpath/LC_TIME</I>
+
+<DD>
+
+
+データと時間の値のフォーマットについての情報を含む出力ファイル。
+
+</DL>
+<A NAME="lbAK">&nbsp;</A>
+<H2>準拠</H2>
+
+POSIX.1-2008.
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>例</H2>
+
+
+
+
+ロケールファイルをフィンランド語を UTF-8 文字集合でコンパイルし、
+デフォルトのロケールアーカイブファイルに
+<B>fi_FI.UTF-8</B>
+
+という名前で追加するには、以下のようにする:
+<P>
+
+
+
+localedef -f UTF-8 -i fi_FI fi_FI.UTF-8
+
+
+<P>
+
+
+
+
+
+
+
+
+次の例では、同様のことをするが、ファイルを
+<I>fi_FI.UTF-8</I>
+
+ディレクトリに生成し、環境変数
+<B>LOCPATH</B>
+
+がカレントディレクトリに設定された場合に、プログラムが使えるようにする
+(最後の引き数がスラッシュを含んでいなければならない点に注意すること):
+<P>
+
+
+
+localedef -f UTF-8 -i fi_FI ./fi_FI.UTF-8
+
+
+
+<A NAME="lbAM">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/locale.1.html">locale</A></B>(1),
+
+<B><A HREF="../man5/charmap.5.html">charmap</A></B>(5),
+
+<B><A HREF="../man5/locale.5.html">locale</A></B>(5),
+
+<B><A HREF="../man5/repertoiremap.5.html">repertoiremap</A></B>(5),
+
+<B><A HREF="../man7/locale.7.html">locale</A></B>(7)
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DL>
+<DT><A HREF="#lbAF">操作の選択オプション</A><DD>
+<DT><A HREF="#lbAG">その他のオプション</A><DD>
+</DL>
+<DT><A HREF="#lbAH">終了ステータス</A><DD>
+<DT><A HREF="#lbAI">環境変数</A><DD>
+<DT><A HREF="#lbAJ">ファイル</A><DD>
+<DT><A HREF="#lbAK">準拠</A><DD>
+<DT><A HREF="#lbAL">例</A><DD>
+<DT><A HREF="#lbAM">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:47:47 GMT, December 29, 2020
+</BODY>
+</HTML>
