@@ -1,0 +1,458 @@
+.\" Copyright (C) 2006 Red Hat, Inc. All Rights Reserved.
+.\"     Written by David Howells (dhowells@redhat.com)
+.\" and Copyright (C) 2016 Michael Kerrisk <mtk.man-pages@gmail.com>
+.\"
+.\" %%%LICENSE_START(GPLv2+_SW_ONEPARA)
+.\" This program is free software; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License
+.\" as published by the Free Software Foundation; either version
+.\" 2 of the License, or (at your option) any later version.
+.\" %%%LICENSE_END
+.\"
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.\" Updated & Modified Wed Dec 30 12:45:11 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH ADD_KEY 2 2020-06-09 Linux "Linux Key Management Calls"
+.SH 名前
+add_key \- カーネルの鍵管理機能に鍵を追加する
+.SH 書式
+.nf
+.B #include <sys/types.h>
+.B #include <keyutils.h>
+.PP
+.BI "key_serial_t add_key(const char *" type ", const char *" description ,
+.BI "                     const void *" payload ", size_t " plen ,
+.BI "                     key_serial_t " keyring ");"
+.fi
+.PP
+.\"O No glibc wrapper is provided for this system call; see NOTES.
+このシステムコールの glibc ラッパーは提供されていない。
+「注意」のセクションを参照すること。
+.SH 説明
+.\"O .BR add_key ()
+.\"O creates or updates a key of the given
+.\"O .I type
+.\"O and
+.\"O .IR description ,
+.\"O instantiates it with the
+.\"O .I payload
+.\"O of length
+.\"O .IR plen ,
+.\"O attaches it to the nominated
+.\"O .IR keyring ,
+.\"O and returns the key's serial number.
+.BR add_key ()
+は、指定した
+.I type
+と
+.I description
+を持つ鍵の作成、更新を行い、長さ
+.I plen
+の
+.I payload
+で鍵を生成し、指定された
+.I keyring
+にその鍵を追加し、鍵リングのシリアル番号を返す。
+.PP
+.\"O The key may be rejected if the provided data is in the wrong format or
+.\"O it is invalid in some other way.
+指定したデータのフォーマットが違っていたり、その他にも無効なものがあると、
+鍵が拒否される場合もある。
+.PP
+.\"O If the destination
+.\"O .I keyring
+.\"O already contains a key that matches the specified
+.\"O .IR type
+.\"O and
+.\"O .IR description ,
+.\"O then, if the key type supports it,
+.\"O .\" FIXME The aforementioned phrases begs the question:
+.\"O .\" which key types support this?
+.\"O that key will be updated rather than a new key being created;
+.\"O if not, a new key (with a different ID) will be created
+.\"O and it will displace the link to the extant key from the keyring.
+.\"O .\" FIXME Perhaps elaborate the implications here? Namely, the new
+.\"O .\" key will have a new ID, and if the old key was a keyring that
+.\"O .\" is consequently unlinked, then keys that it was anchoring
+.\"O .\" will have their reference count decreased by one (and may
+.\"O .\" consequently be garbage collected). Is this all correct?
+対象の \fIkeyring\fP に指定された \fItype\fP と \fIdescription\fP に合致する鍵がすでに含まれる場合、
+鍵タイプがサポートしていれば、新しい鍵が作成されるのではなく、
+その鍵が更新される。
+鍵タイプがサポートしていない場合、(異なる ID の)
+新しい鍵が作成され、鍵リングの現在の鍵のリンクはこの鍵で置き換えられる。
+.PP
+.\"O The destination
+.\"O .I keyring
+.\"O serial number may be that of a valid keyring for which the caller has
+.\"O .I write
+.\"O permission.
+.\"O Alternatively, it may be one of the following special keyring IDs:
+.\"O .\" FIXME . Perhaps have a separate page describing special keyring IDs?
+対象の \fIkeyring\fP のシリアル番号は、呼び出し元が
+.I 書き込み
+許可を持つ有効な鍵リングのシリアル番号でなければならない。
+そうでない場合は、以下のうち 1 つの特別な鍵リング ID を指定する。
+.TP 
+\fBKEY_SPEC_THREAD_KEYRING\fP
+.\"O This specifies the caller's thread-specific keyring
+.\"O .RB ( thread-keyring (7)).
+この値は呼び出し元スレッド固有の鍵リングを指定する
+.RB ( thread-keyring (7))。
+.TP 
+\fBKEY_SPEC_PROCESS_KEYRING\fP
+.\"O This specifies the caller's process-specific keyring
+.\"O .RB ( process-keyring (7)).
+この値は呼び出し元プロセス固有の鍵リングを指定する
+.RB ( process-keyring (7))。
+.TP 
+\fBKEY_SPEC_SESSION_KEYRING\fP
+.\"O This specifies the caller's session-specific keyring
+.\"O .RB ( session-keyring (7)).
+この値は呼び出し元セッション固有の鍵リングを指定する
+.RB ( session-keyring (7))。
+.TP 
+\fBKEY_SPEC_USER_KEYRING\fP
+.\"O This specifies the caller's UID-specific keyring
+.\"O .RB ( user-keyring (7)).
+この値は呼び出し元の UID 固有の鍵リングを指定する
+.RB ( user-keyring (7))。
+.TP 
+\fBKEY_SPEC_USER_SESSION_KEYRING\fP
+.\"O This specifies the caller's UID-session keyring
+.\"O .RB ( user-session-keyring (7)).
+この値は呼び出し元の UID のセッションの鍵リングを指定する
+.RB ( user-session-keyring (7))。
+.\"O .SS Key types
+.SS 鍵タイプ
+.\"O The key
+.\"O .I type
+.\"O is a string that specifies the key's type.
+鍵の
+.I type
+は、鍵のタイプを指定する文字列である。
+.\"O Internally, the kernel defines a number of key types that are
+.\"O available in the core key management code.
+内部では、カーネルがコアの鍵管理コードには様々な鍵タイプを定義している。
+.\"O Among the types that are available for user-space use
+.\"O and can be specified as the
+.\"O .I type
+.\"O argument to
+.\"O .BR add_key ()
+.\"O are the following:
+ユーザー空間で利用可能な鍵タイプと、
+.BR add_key ()
+の
+.I type
+引き数で指定可能な鍵タイプは以下の通り:
+.TP 
+.I """keyring"""
+.\"O Keyrings are special key types that may contain links to sequences of other
+.\"O keys of any type.
+鍵リングは、任意のタイプの他の鍵の列へのリンクを保持できる
+特別な鍵タイプである。
+.\"O If this interface is used to create a keyring, then
+.\"O .I payload
+.\"O should be NULL and
+.\"O .I plen
+.\"O should be zero.
+このインターフェースを使って鍵リングを作成する場合、
+.I payload
+は NULL で
+.I plen
+は 0 でなければならない。
+.TP
+.IR """user"""
+.\"O This is a general purpose key type whose payload may be read and updated
+.\"O by user-space applications.
+これは様々な目的の鍵タイプであり、payload はユーザー空間のアプリケーションに
+読み込まれて更新される。
+.\"O The key is kept entirely within kernel memory.
+鍵全体がカーネルメモリに保持される。
+.\"O The payload for keys of this type is a blob of arbitrary data
+.\"O of up to 32,767 bytes.
+このタイプの鍵の \fIpayload\fP には、
+32,767 バイトまでの任意のデータの blob を入れることができる。
+.TP
+.IR """logon""" " (since Linux 3.3)"
+.\" commit 9f6ed2ca257fa8650b876377833e6f14e272848b
+.\"O This key type is essentially the same as
+.\"O .IR """user""" ,
+.\"O but it does not permit the key to read.
+この鍵のタイプは基本的には
+.I """user"""
+と同じであるが、キーの読み込みが出来ない。
+.\"O This is suitable for storing payloads
+.\"O that you do not want to be readable from user space.
+これはユーザー空間から読み込ませたくない
+ペイロードを格納するのに適している。
+.PP
+.\"O This key type vets the
+.\"O .I description
+.\"O to ensure that it is qualified by a "service" prefix,
+.\"O by checking to ensure that the
+.\"O .I description
+.\"O contains a ':' that is preceded by other characters.
+この鍵タイプは、
+.I description
+の他の文字の前に ':' が含まれていることを保証するためにチェックし、
+.I description
+に "service" プレフィックスが付けられていることを保証するために入念に調べる。
+.TP
+.\"O .IR """big_key""" " (since Linux 3.13)"
+.IR """big_key""" " (Linux 3.13 以降)"
+.\" commit ab3c3587f8cda9083209a61dbe3a4407d3cada10
+.\"O This key type is similar to
+.\"O .IR """user""" ,
+.\"O but may hold a payload of up to 1\ MiB.
+この鍵タイプは
+.I """user"""
+と同様であるが、1\ MiB までのペイロードを保持できる。
+.\"O If the key payload is large enough,
+.\"O then it may be stored encrypted in tmpfs
+.\"O (which can be swapped out) rather than kernel memory.
+鍵のペイロードがとても大きい場合、
+カーネルメモリではなく、(スワップアウトされて)
+tmpfs に暗号化して格納される。
+.PP
+.\"O For further details on these key types, see
+.\"O .BR keyrings (7).
+これらのキーのより詳細な情報は、
+.BR keyrings (7)
+を参照すること。
+.\"O .SH RETURN VALUE
+.SH 返り値
+.\"O On success,
+.\"O .BR add_key ()
+.\"O returns the serial number of the key it created or updated.
+成功すると
+.BR add_key ()
+は、作成または更新した鍵のシリアル番号を返す。
+.\"O On error, \-1 is returned and
+.\"O .I errno
+.\"O is set to indicate the cause of the error.
+エラーの場合、値 \-1 が返され
+.I errno
+にエラーの原因を示す値が設定される。
+.\"O .SH ERRORS
+.SH エラー
+.TP
+.B EACCES
+.\"O The keyring wasn't available for modification by the user.
+そのユーザーは指定された鍵リングを変更できない。
+.TP
+.B EDQUOT
+.\"O The key quota for this user would be exceeded by creating this key or linking
+.\"O it to the keyring.
+この鍵を作成するか、鍵を鍵リングに追加すると、このユーザーの
+鍵リングのクォータを超過してしまう。
+.TP
+.B EFAULT
+.\"O One or more of
+.\"O .IR type ,
+.\"O .IR description ,
+.\"O and
+.\"O .I payload
+.\"O points outside process's accessible address space.
+.IR type ,
+.IR description ,
+.I payload
+の 1 つ以上が、プロセスのアクセス可能なアドレス空間の外を指した。
+.TP
+.B EINVAL
+.\"O The size of the string (including the terminating null byte) specified in
+.\"O .I type
+.\"O or
+.\"O .I description
+.\"O exceeded the limit (32 bytes and 4096 bytes respectively).
+.I type
+または
+.I description
+で指定された文字列のサイズ (終端の null バイトを含む) が制限を越えた
+(制限はそれぞれ 32 バイトと 4096 バイトである)。
+.TP
+.B EINVAL
+.\"O The payload data was invalid.
+ペイロードデータが無効である。
+.TP
+.B EINVAL
+.\"O .IR type
+.\"O was
+.\"O .IR """logon"""
+.\"O and the
+.\"O .I description
+.\"O was not qualified with a prefix string of the form
+.\"O .IR """service:""" .
+.I type
+が
+.I """logon"""
+であるが、
+.I description
+に
+.I """service:"""
+という形式のプレフィックス文字列が付けられていない。
+.TP
+.B EKEYEXPIRED
+.\"O The keyring has expired.
+鍵リングが期限切れである。
+.TP
+.B EKEYREVOKED
+.\"O The keyring has been revoked.
+鍵リングが廃止されている。
+.TP
+.B ENOKEY
+.\"O The keyring doesn't exist.
+鍵リングが存在しない。
+.TP
+.B ENOMEM
+.\"O Insufficient memory to create a key.
+鍵を作成するのに十分なメモリーがない。
+.TP
+.B EPERM
+.\"O The
+.\"O .I type
+.\"O started with a period (\(aq.\(aq).
+.I type
+がピリオド (\(aq.\(aq) から始まっている。
+.\"O Key types that begin with a period are reserved to the implementation.
+ピリオドから始まる鍵タイプは、実装用に予約されている。
+.TP
+.B EPERM
+.\"O .I type
+.\"O was
+.\"O .I """keyring"""
+.\"O and the
+.\"O .I description
+.\"O started with a period (\(aq.\(aq).
+.\"O Keyrings with descriptions (names)
+.\"O that begin with a period are reserved to the implementation.
+.I type
+が
+.I """keyring"""
+であり、
+.I description
+がピリオド (\(aq.\(aq) から始まっている。
+ピリオドで始まる description (名前) 付きの鍵リングは、
+実装用に予約されている。
+.\"O .SH VERSIONS
+.SH バージョン
+.\"O This system call first appeared in Linux 2.6.10.
+このシステムコールは Linux 2.6.10 で初めて登場した。
+.\"O .SH CONFORMING TO
+.SH 準拠
+.\"O This system call is a nonstandard Linux extension.
+このシステムコールは、標準ではなく Linux 拡張である。
+.\"O .SH NOTES
+.SH 注意
+.\"O No wrapper for this system call is provided in glibc.
+このシステムコールのラッパーは、glibc では提供されていない。
+.\"O A wrapper is provided in the
+.\"O .IR libkeyutils
+.\"O package.
+ラッパーは
+.I libkeyutils
+パッケージで提供されている。
+.\"O When employing the wrapper in that library, link with
+.\"O .IR \-lkeyutils .
+このライブラリのラッパーを使う場合、
+.I \-lkeyutils
+でリンクすること。
+.\"O .SH EXAMPLES
+.SH 例
+.\"O The program below creates a key with the type, description, and payload
+.\"O specified in its command-line arguments,
+.\"O and links that key into the session keyring.
+下記のプログラムはコマンドラインで指定された
+type, description, payload の付いた鍵を作成し、
+その鍵をセッションの鍵リングにリンクする。
+.\"O The following shell session demonstrates the use of the program:
+下記のシェルセッションは、プログラムの使い方を表している:
+.PP
+.in +4n
+.EX
+$ \fB./a.out user mykey "Some payload"\fP
+Key ID is 64a4dca
+$ \fBgrep \(aq64a4dca\(aq /proc/keys\fP
+064a4dca I--Q---    1 perm 3f010000  1000  1000 user    mykey: 12
+.EE
+.in
+.\"O .SS Program source
+.SS プログラムソース
+\&
+.EX
+#include <sys/types.h>
+#include <keyutils.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int
+main(int argc, char *argv[])
+{
+    key_serial_t key;
+
+    if (argc != 4) {
+        fprintf(stderr, "Usage: %s type description payload\en",
+                argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    key = add_key(argv[1], argv[2], argv[3], strlen(argv[3]),
+                KEY_SPEC_SESSION_KEYRING);
+    if (key == \-1) {
+        perror("add_key");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Key ID is %lx\en", (long) key);
+
+    exit(EXIT_SUCCESS);
+}
+.EE
+.\"O .SH SEE ALSO
+.SH 関連項目
+.ad l
+.nh
+.BR keyctl (1),
+.BR keyctl (2),
+.BR request_key (2),
+.BR keyctl (3),
+.BR keyrings (7),
+.BR keyutils (7),
+.BR persistent\-keyring (7),
+.BR process\-keyring (7),
+.BR session\-keyring (7),
+.BR thread\-keyring (7),
+.BR user\-keyring (7),
+.BR user\-session\-keyring (7)
+.PP
+.\"O The kernel source files
+.\"O .IR Documentation/security/keys/core.rst
+.\"O and
+.\"O .IR Documentation/keys/request\-key.rst
+.\"O (or, before Linux 4.13, in the files
+.\"O .\" commit b68101a1e8f0263dbc7b8375d2a7c57c6216fb76
+.\"O .IR Documentation/security/keys.txt
+.\"O and
+.\"O .\" commit 3db38ed76890565772fcca3279cc8d454ea6176b
+.\"O .IR Documentation/security/keys\-request\-key.txt ).
+カーネルソースファイル
+.I Documentation/security/keys/core.rst
+と
+.I Documentation/keys/request\-key.rst
+(Linux 4.13 以前ではファイル
+.\" commit b68101a1e8f0263dbc7b8375d2a7c57c6216fb76
+.I Documentation/security/keys.txt
+と
+.\" commit 3db38ed76890565772fcca3279cc8d454ea6176b
+.IR Documentation/security/keys\-request\-key.txt )。
+.SH この文書について
+この man ページは Linux \fIman\-pages\fP プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+http://www.kernel.org/doc/man\-pages/ に書かれている。
