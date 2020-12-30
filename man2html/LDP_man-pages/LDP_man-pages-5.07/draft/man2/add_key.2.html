@@ -1,0 +1,588 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of ADD_KEY</TITLE>
+</HEAD><BODY>
+<H1>ADD_KEY</H1>
+Section: Linux Key Management Calls (2)<BR>Updated: 2020-06-09<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+add_key - カーネルの鍵管理機能に鍵を追加する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/sys/types.h">sys/types.h</A>&gt;</B>
+<B>#include &lt;<A HREF="file:///usr/include/keyutils.h">keyutils.h</A>&gt;</B>
+
+<B>key_serial_t add_key(const char *</B><I>type</I><B>, const char *</B><I>description</I><B>,</B>
+<B>                     const void *</B><I>payload</I><B>, size_t </B><I>plen</I><B>,</B>
+<B>                     key_serial_t </B><I>keyring</I><B>);</B>
+</PRE>
+
+<P>
+
+
+このシステムコールの glibc ラッパーは提供されていない。
+「注意」のセクションを参照すること。
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B>add_key</B>()
+
+は、指定した
+<I>type</I>
+
+と
+<I>description</I>
+
+を持つ鍵の作成、更新を行い、長さ
+<I>plen</I>
+
+の
+<I>payload</I>
+
+で鍵を生成し、指定された
+<I>keyring</I>
+
+にその鍵を追加し、鍵リングのシリアル番号を返す。
+<P>
+
+
+
+指定したデータのフォーマットが違っていたり、その他にも無効なものがあると、
+鍵が拒否される場合もある。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+対象の <I>keyring</I> に指定された <I>type</I> と <I>description</I> に合致する鍵がすでに含まれる場合、
+鍵タイプがサポートしていれば、新しい鍵が作成されるのではなく、
+その鍵が更新される。
+鍵タイプがサポートしていない場合、(異なる ID の)
+新しい鍵が作成され、鍵リングの現在の鍵のリンクはこの鍵で置き換えられる。
+<P>
+
+
+
+
+
+
+
+
+対象の <I>keyring</I> のシリアル番号は、呼び出し元が
+<I>書き込み</I>
+
+許可を持つ有効な鍵リングのシリアル番号でなければならない。
+そうでない場合は、以下のうち 1 つの特別な鍵リング ID を指定する。
+<DL COMPACT>
+<DT><B>KEY_SPEC_THREAD_KEYRING</B><DD>
+
+
+この値は呼び出し元スレッド固有の鍵リングを指定する
+(<B><A HREF="../man7/thread-keyring.7.html">thread-keyring</A></B>(7))。
+
+<DT><B>KEY_SPEC_PROCESS_KEYRING</B><DD>
+
+
+この値は呼び出し元プロセス固有の鍵リングを指定する
+(<B><A HREF="../man7/process-keyring.7.html">process-keyring</A></B>(7))。
+
+<DT><B>KEY_SPEC_SESSION_KEYRING</B><DD>
+
+
+この値は呼び出し元セッション固有の鍵リングを指定する
+(<B><A HREF="../man7/session-keyring.7.html">session-keyring</A></B>(7))。
+
+<DT><B>KEY_SPEC_USER_KEYRING</B><DD>
+
+
+この値は呼び出し元の UID 固有の鍵リングを指定する
+(<B><A HREF="../man7/user-keyring.7.html">user-keyring</A></B>(7))。
+
+<DT><B>KEY_SPEC_USER_SESSION_KEYRING</B><DD>
+
+
+この値は呼び出し元の UID のセッションの鍵リングを指定する
+(<B><A HREF="../man7/user-session-keyring.7.html">user-session-keyring</A></B>(7))。
+
+
+</DL>
+<A NAME="lbAE">&nbsp;</A>
+<H3>鍵タイプ</H3>
+
+
+
+
+鍵の
+<I>type</I>
+
+は、鍵のタイプを指定する文字列である。
+
+
+内部では、カーネルがコアの鍵管理コードには様々な鍵タイプを定義している。
+
+
+
+
+
+
+ユーザー空間で利用可能な鍵タイプと、
+<B>add_key</B>()
+
+の
+<I>type</I>
+
+引き数で指定可能な鍵タイプは以下の通り:
+<DL COMPACT>
+<DT><I>keyring</I>
+
+<DD>
+
+
+鍵リングは、任意のタイプの他の鍵の列へのリンクを保持できる
+特別な鍵タイプである。
+
+
+
+
+
+このインターフェースを使って鍵リングを作成する場合、
+<I>payload</I>
+
+は NULL で
+<I>plen</I>
+
+は 0 でなければならない。
+<DT><I>&quot;user&quot;</I>
+
+<DD>
+
+
+これは様々な目的の鍵タイプであり、payload はユーザー空間のアプリケーションに
+読み込まれて更新される。
+
+鍵全体がカーネルメモリに保持される。
+
+
+このタイプの鍵の <I>payload</I> には、
+32,767 バイトまでの任意のデータの blob を入れることができる。
+<DT><I>&quot;logon&quot;</I> (since Linux 3.3)
+
+<DD>
+
+
+
+
+この鍵のタイプは基本的には
+<I>user</I>
+
+と同じであるが、キーの読み込みが出来ない。
+
+
+これはユーザー空間から読み込ませたくない
+ペイロードを格納するのに適している。
+</DL>
+<P>
+
+
+
+
+
+
+
+この鍵タイプは、
+<I>description</I>
+
+の他の文字の前に ':' が含まれていることを保証するためにチェックし、
+<I>description</I>
+
+に &quot;service&quot; プレフィックスが付けられていることを保証するために入念に調べる。
+<DL COMPACT>
+<DT>
+<DD>
+<I>&quot;big_key&quot;</I> (Linux 3.13 以降)
+
+
+
+
+
+この鍵タイプは
+<I>user</I>
+
+と同様であるが、1&nbsp;MiB までのペイロードを保持できる。
+
+
+
+鍵のペイロードがとても大きい場合、
+カーネルメモリではなく、(スワップアウトされて)
+tmpfs に暗号化して格納される。
+</DL>
+<P>
+
+
+
+これらのキーのより詳細な情報は、
+<B><A HREF="../man7/keyrings.7.html">keyrings</A></B>(7)
+
+を参照すること。
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+
+成功すると
+<B>add_key</B>()
+
+は、作成または更新した鍵のシリアル番号を返す。
+
+
+
+エラーの場合、値 -1 が返され
+<I>errno</I>
+
+にエラーの原因を示す値が設定される。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>エラー</H2>
+
+<DL COMPACT>
+<DT><B>EACCES</B>
+
+<DD>
+
+そのユーザーは指定された鍵リングを変更できない。
+<DT><B>EDQUOT</B>
+
+<DD>
+
+
+この鍵を作成するか、鍵を鍵リングに追加すると、このユーザーの
+鍵リングのクォータを超過してしまう。
+<DT><B>EFAULT</B>
+
+<DD>
+
+
+
+
+
+
+<I>type</I>,
+
+<I>description</I>,
+
+<I>payload</I>
+
+の 1 つ以上が、プロセスのアクセス可能なアドレス空間の外を指した。
+<DT><B>EINVAL</B>
+
+<DD>
+
+
+
+
+
+<I>type</I>
+
+または
+<I>description</I>
+
+で指定された文字列のサイズ (終端の null バイトを含む) が制限を越えた
+(制限はそれぞれ 32 バイトと 4096 バイトである)。
+<DT><B>EINVAL</B>
+
+<DD>
+
+ペイロードデータが無効である。
+<DT><B>EINVAL</B>
+
+<DD>
+
+
+
+
+
+
+
+<I>type</I>
+
+が
+<I>logon</I>
+
+であるが、
+<I>description</I>
+
+に
+<I>service:</I>
+
+という形式のプレフィックス文字列が付けられていない。
+<DT><B>EKEYEXPIRED</B>
+
+<DD>
+
+鍵リングが期限切れである。
+<DT><B>EKEYREVOKED</B>
+
+<DD>
+
+鍵リングが廃止されている。
+<DT><B>ENOKEY</B>
+
+<DD>
+
+鍵リングが存在しない。
+<DT><B>ENOMEM</B>
+
+<DD>
+
+鍵を作成するのに十分なメモリーがない。
+<DT><B>EPERM</B>
+
+<DD>
+
+
+
+<I>type</I>
+
+がピリオド ('.') から始まっている。
+
+ピリオドから始まる鍵タイプは、実装用に予約されている。
+<DT><B>EPERM</B>
+
+<DD>
+
+
+
+
+
+
+
+
+<I>type</I>
+
+が
+<I>keyring</I>
+
+であり、
+<I>description</I>
+
+がピリオド ('.') から始まっている。
+ピリオドで始まる description (名前) 付きの鍵リングは、
+実装用に予約されている。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>バージョン</H2>
+
+
+このシステムコールは Linux 2.6.10 で初めて登場した。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>準拠</H2>
+
+
+このシステムコールは、標準ではなく Linux 拡張である。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>注意</H2>
+
+
+このシステムコールのラッパーは、glibc では提供されていない。
+
+
+
+ラッパーは
+<I>libkeyutils</I>
+
+パッケージで提供されている。
+
+
+このライブラリのラッパーを使う場合、
+<I>-lkeyutils</I>
+
+でリンクすること。
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>例</H2>
+
+
+
+
+下記のプログラムはコマンドラインで指定された
+type, description, payload の付いた鍵を作成し、
+その鍵をセッションの鍵リングにリンクする。
+
+下記のシェルセッションは、プログラムの使い方を表している:
+<P>
+
+
+
+$ <B>./a.out user mykey &quot;Some payload&quot;</B>
+Key ID is 64a4dca
+$ <B>grep '64a4dca' /proc/keys</B>
+064a4dca I--Q---    1 perm 3f010000  1000  1000 user    mykey: 12
+
+
+
+<A NAME="lbAL">&nbsp;</A>
+<H3>プログラムソース</H3>
+
+
+
+#include &lt;<A HREF="file:///usr/include/sys/types.h">sys/types.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/keyutils.h">keyutils.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/stdio.h">stdio.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/stdlib.h">stdlib.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/string.h">string.h</A>&gt;
+<P>
+int
+main(int argc, char *argv[])
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;key_serial_t&nbsp;key;
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(argc&nbsp;!=&nbsp;4)&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fprintf(stderr,&nbsp;&quot;Usage:&nbsp;%s&nbsp;type&nbsp;description&nbsp;payload\n&quot;,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;argv[0]);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exit(EXIT_FAILURE);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;}
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;=&nbsp;add_key(argv[1],&nbsp;argv[2],&nbsp;argv[3],&nbsp;strlen(argv[3]),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;KEY_SPEC_SESSION_KEYRING);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(key&nbsp;==&nbsp;-1)&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;perror(&quot;add_key&quot;);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exit(EXIT_FAILURE);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;}
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;printf(&quot;Key&nbsp;ID&nbsp;is&nbsp;%lx\n&quot;,&nbsp;(long)&nbsp;key);
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;exit(EXIT_SUCCESS);
+}
+
+
+<A NAME="lbAM">&nbsp;</A>
+<H2>関連項目</H2>
+
+
+
+<B><A HREF="../man1/keyctl.1.html">keyctl</A></B>(1),
+
+<B><A HREF="../man2/keyctl.2.html">keyctl</A></B>(2),
+
+<B><A HREF="../man2/request_key.2.html">request_key</A></B>(2),
+
+<B><A HREF="../man3/keyctl.3.html">keyctl</A></B>(3),
+
+<B><A HREF="../man7/keyrings.7.html">keyrings</A></B>(7),
+
+<B><A HREF="../man7/keyutils.7.html">keyutils</A></B>(7),
+
+<B><A HREF="../man7/persistent-keyring.7.html">persistent-keyring</A></B>(7),
+
+<B><A HREF="../man7/process-keyring.7.html">process-keyring</A></B>(7),
+
+<B><A HREF="../man7/session-keyring.7.html">session-keyring</A></B>(7),
+
+<B><A HREF="../man7/thread-keyring.7.html">thread-keyring</A></B>(7),
+
+<B><A HREF="../man7/user-keyring.7.html">user-keyring</A></B>(7),
+
+<B><A HREF="../man7/user-session-keyring.7.html">user-session-keyring</A></B>(7)
+
+<P>
+
+
+
+
+
+
+
+
+
+
+
+カーネルソースファイル
+<I>Documentation/security/keys/core.rst</I>
+
+と
+<I>Documentation/keys/request-key.rst</I>
+
+(Linux 4.13 以前ではファイル
+
+<I>Documentation/security/keys.txt</I>
+
+と
+
+<I>Documentation/security/keys-request-key.txt</I>)。
+
+<A NAME="lbAN">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DL>
+<DT><A HREF="#lbAE">鍵タイプ</A><DD>
+</DL>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">エラー</A><DD>
+<DT><A HREF="#lbAH">バージョン</A><DD>
+<DT><A HREF="#lbAI">準拠</A><DD>
+<DT><A HREF="#lbAJ">注意</A><DD>
+<DT><A HREF="#lbAK">例</A><DD>
+<DL>
+<DT><A HREF="#lbAL">プログラムソース</A><DD>
+</DL>
+<DT><A HREF="#lbAM">関連項目</A><DD>
+<DT><A HREF="#lbAN">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 03:49:00 GMT, December 30, 2020
+</BODY>
+</HTML>
