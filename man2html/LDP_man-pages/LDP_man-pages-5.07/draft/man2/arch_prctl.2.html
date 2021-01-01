@@ -1,0 +1,267 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of ARCH_PRCTL</TITLE>
+</HEAD><BODY>
+<H1>ARCH_PRCTL</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2020-04-11<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+arch_prctl - アーキテクチャー固有のスレッド状態を設定する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/asm/prctl.h">asm/prctl.h</A>&gt;</B>
+<B>#include &lt;<A HREF="file:///usr/include/sys/prctl.h">sys/prctl.h</A>&gt;</B>
+
+<B>int arch_prctl(int </B><I>code</I><B>, unsigned long *</B><I>addr</I><B>);</B>
+</PRE>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>arch_prctl</B>() はアーキテクチャー固有のプロセス状態またはスレッド状態を設定する。 <I>code</I> は副機能を選択し、引き数
+<I>addr</I> を副機能に渡す。 <I>addr</I> は、&quot;set&quot; 操作では <I>unsigned long</I> として、&quot;get&quot; 操作では
+<I>unsigned long&nbsp;*</I> として解釈される。
+<P>
+
+
+x86 と x86-64 の副機能は以下の通り:
+<DL COMPACT>
+<DT>
+<DD>
+<B>ARCH_SET_CPUID</B> (Linux 4.12 以降)
+
+
+
+
+
+
+
+
+
+カレントスレッドの
+<I>cpuid</I>
+
+命令を有効
+(<I>addr != 0</I>)
+
+または無効
+(<I>addr == 0</I>)
+
+にする。
+
+命令はデフォルトで有効にされている。
+
+
+
+
+
+無効にされている場合、
+<I>cpuid</I>
+
+命令の実行では、代わりに
+<B>SIGSEGV</B>
+
+シグナルが生成される。
+
+
+
+
+この機能は、(例えば、準仮想化設定において) 下層のハードウェアが生成する
+<I>cpuid</I>
+
+の結果が異なる場合に、
+<I>cpuid</I>
+
+の結果をエミュレートするために使われる。
+<DT><DD>
+
+
+
+
+
+
+
+
+
+
+<B>ARCH_SET_CPUID</B>
+
+の設定は、
+<B><A HREF="../man2/fork.2.html">fork</A></B>(2)
+
+と
+<B><A HREF="../man2/clone.2.html">clone</A></B>(2)
+
+では保存されるが、
+<B><A HREF="../man2/execve.2.html">execve</A></B>(2)
+
+ではデフォルト (つまり
+<I>cpuid</I>
+
+が有効) にリセットされる。
+<DT>
+<DD>
+<B>ARCH_GET_CPUID</B> (Linux 4.12 以降)
+
+
+
+
+システムコールの結果として、
+<B>ARCH_SET_CPUID</B>
+
+で操作されたフラグの設定を返す (1 が有効で、0 が無効)。
+
+
+<I>addr</I>
+
+は無視される。
+<DT>
+<DD>
+x86-64 のみの副機能は以下の通り:
+<DT><B>ARCH_SET_FS</B><DD>
+<I>FS</I> レジスターの 64 ビットベースを <I>addr</I> に設定する。
+<DT><B>ARCH_GET_FS</B><DD>
+現在のスレッドの <I>FS</I> レジスターの 64 ビットベース値を、 <I>addr</I> が指す <I>unsigned long</I> の領域に格納する。
+<DT><B>ARCH_SET_GS</B><DD>
+<I>GS</I> レジスターの 64 ビットベースを <I>addr</I> に設定する。
+<DT><B>ARCH_GET_GS</B><DD>
+現在のスレッドの <I>GS</I> レジスターの 64 ビットベース値を、 <I>addr</I> が指す <I>unsigned long</I> の領域に格納する。
+</DL>
+<A NAME="lbAE">&nbsp;</A>
+<H2>返り値</H2>
+
+成功すると、 <B>arch_prctl</B>()  は 0 を返す。エラーの場合、-1 を返し、 <I>errno</I> をエラーを示す値に設定する。
+<A NAME="lbAF">&nbsp;</A>
+<H2>エラー</H2>
+
+<DL COMPACT>
+<DT><B>EFAULT</B><DD>
+<I>addr</I> がアンマップされたアドレスを指しているか、プロセスのアドレス空間の外にある。
+<DT><B>EINVAL</B><DD>
+<I>code</I> が有効なサブコマンドでない。
+<DT><B>EPERM</B><DD>
+<I>addr</I> がプロセスのアドレス空間の外にある。
+<DT><B>ENODEV</B>
+
+<DD>
+
+
+<B>ARCH_SET_CPUID</B>
+
+がリクエストされたが、下層のハードウェアが CPUID フォールティングをサポートしていない。
+
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>準拠</H2>
+
+<B>arch_prctl</B>()  は Linux/x86-64 拡張であり、移植性を意図したプログラムでは使うべきでない。
+<A NAME="lbAH">&nbsp;</A>
+<H2>注意</H2>
+
+<B>arch_prctl</B>()  は現在のところ Linux/x86-64 上の 64 ビットプログラムでのみサポートされている。
+<P>
+
+新しい 32 ビットセグメントセレクタがロードされた場合、 64 ビットベースは変更される。
+<P>
+
+<B>ARCH_SET_GS</B> が無効にされているカーネルもある。
+<P>
+
+64 ビットセグメントベースのコンテキストスイッチは、やや高価である。
+
+
+
+
+
+最適化として、32 ビット TLS ベースアドレスが使われた場合、
+<B>arch_prctl</B>()
+
+は、セグメントベースレジスタを直接操作する代わりに、
+<B><A HREF="../man2/set_thread_area.2.html">set_thread_area</A></B>(2)
+
+が呼ばれたかのように、実際の TLS エントリを使う可能性がある。
+
+
+
+
+
+アドレス空間の最初の 2GB にあるメモリーは、 <B><A HREF="../man2/mmap.2.html">mmap</A></B>(2)  に <B>MAP_32BIT</B>
+フラグを指定して割り当てることができる。
+<P>
+
+
+
+
+
+
+
+前述の最適化のため、
+<B>arch_prctl</B>()
+
+と
+<B><A HREF="../man2/set_thread_area.2.html">set_thread_area</A></B>(2)
+
+を同じスレッドで使うのは、お互いの TLS エントリを上書きする可能性があるため、危険である。
+<P>
+
+バージョン 2.7 時点では、glibc には <B>arch_prctl</B>()  のプロトタイプがない。
+今のところユーザーは自分自身で宣言する必要がある。 これは将来の glibc のバージョンで修正されるかもしれない。
+<P>
+
+
+
+<I>FS</I> はスレッドライブラリで既に使われているかもしれない。
+
+
+
+<B>ARCH_SET_FS</B>
+
+ディレクトリを使うプログラムは、とてもクラッシュしやすい。
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/mmap.2.html">mmap</A></B>(2), <B><A HREF="../man2/modify_ldt.2.html">modify_ldt</A></B>(2), <B><A HREF="../man2/prctl.2.html">prctl</A></B>(2), <B><A HREF="../man2/set_thread_area.2.html">set_thread_area</A></B>(2)
+<P>
+
+AMD X86-64 Programmer's manual
+<A NAME="lbAJ">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">返り値</A><DD>
+<DT><A HREF="#lbAF">エラー</A><DD>
+<DT><A HREF="#lbAG">準拠</A><DD>
+<DT><A HREF="#lbAH">注意</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 17:33:15 GMT, January 01, 2021
+</BODY>
+</HTML>
