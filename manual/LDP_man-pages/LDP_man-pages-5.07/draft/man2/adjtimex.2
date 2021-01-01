@@ -1,0 +1,911 @@
+.\" Copyright (c) 1995 Michael Chastain (mec@shell.portal.com), 15 April 1995.
+.\" and Copyright (C) 2014, 2016 Michael Kerrisk <mtk.manpages@gmail.com>
+.\"
+.\" %%%LICENSE_START(GPLv2+_DOC_FULL)
+.\" This is free documentation; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License as
+.\" published by the Free Software Foundation; either version 2 of
+.\" the License, or (at your option) any later version.
+.\"
+.\" The GNU General Public License's references to "object code"
+.\" and "executables" are to be interpreted as the output of any
+.\" document formatting or typesetting system, including
+.\" intermediate and printed output.
+.\"
+.\" This manual is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public
+.\" License along with this manual; if not, see
+.\" <http://www.gnu.org/licenses/>.
+.\" %%%LICENSE_END
+.\"
+.\" Modified 1997-01-31 by Eric S. Raymond <esr@thyrsus.com>
+.\" Modified 1997-07-30 by Paul Slootman <paul@wurtel.demon.nl>
+.\" Modified 2004-05-27 by Michael Kerrisk <mtk.manpages@gmail.com>
+.\"
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.\" Japanese Version Copyright (c) 1997 HANATAKA Shinya
+.\"         all rights reserved.
+.\" Translated 1997-12-17, HANATAKA Shinya <hanataka@abyss.rim.or.jp>
+.\" Updated and Modified 2001-06-12,Yuichi SATO <ysato@h4.dion.ne.jp>
+.\" Updated and Modified 2004-12-28, Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated 2006-07-16, Akihiro MOTOKI <amotoki@dd.iij4u.or.jp>, LDP v2.34
+.\" Updated & Modified Fri Jan  1 23:20:33 JST 2021
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH ADJTIMEX 2 2020-06-09 "Linux" "Linux Programmer's Manual"
+.SH 名前
+.\"O adjtimex, clock_adjtime, ntp_adjtime \- tune kernel clock
+adjtimex, clock_adjtime, ntp_adjtime \- カーネルの時計を調整する
+.SH 書式
+.nf
+.B #include <sys/timex.h>
+.PP
+.BI "int adjtimex(struct timex *" "buf" );
+.PP
+.BI "int clock_adjtime(clockid_t " clk_id, " struct timex *" "buf" );
+.PP
+.BI "int ntp_adjtime(struct timex *" buf );
+.fi
+.SH 説明
+.\"O Linux uses David L.\& Mills' clock adjustment algorithm (see RFC\ 5905).
+Linux は David L.\& Mill の時計調節アルゴリズムを使用している (RFC\ 5905 を参照)。
+.\"O The system call
+.\"O .BR adjtimex ()
+.\"O reads and optionally sets adjustment parameters for this algorithm.
+システムコール
+.BR adjtimex ()
+はこのアルゴリズムの調節のパラメーターを読み取ったり、設定したりする。
+.\"O It takes a pointer to a
+.\"O .I timex
+.\"O structure, updates kernel parameters from (selected) field values,
+.\"O and returns the same structure updated with the current kernel values.
+この関数は \fItimex\fP
+構造体へのポインターを受け取り、(選択された) フィールド値でカーネルのパラメーターを更新して、
+現在のカーネルの値で更新された同じ構造体を返す。
+.\"O This structure is declared as follows:
+この構造体は以下のように宣言される:
+.PP
+.in +4n
+.EX
+struct timex {
+.\"O     int  modes;      /* Mode selector */
+    int  modes;      /* モードの選択 */
+.\"O     long offset;     /* Time offset; nanoseconds, if STA_NANO
+.\"O                         status flag is set, otherwise
+.\"O                         microseconds */
+    long offset;     /* 時刻オフセット; STA_NANO ステータスフラグが
+                        設定されるとナノ秒で、それ以外はマイクロ秒 */
+.\"O     long freq;       /* Frequency offset; see NOTES for units */
+    long freq;       /* 周波数オフセット。 単位は「注意」を参照 */
+.\"O     long maxerror;   /* Maximum error (microseconds) */
+    long maxerror;   /* 最大エラー (マイクロ秒) */
+.\"O     long esterror;   /* Estimated error (microseconds) */
+    long esterror;   /* 推定エラー (マイクロ秒) */
+.\"O     int  status;     /* Clock command/status */
+    int  status;     /* クロックコマンド/ステータス */
+.\"O     long constant;   /* PLL (phase-locked loop) time constant */
+    long constant;   /* PLL (phase\-locked loop) 時刻定数 */
+.\"O     long precision;  /* Clock precision
+.\"O                         (microseconds, read-only) */
+    long precision;  /* クロック精度 (マイクロ秒、読み出し専用) */
+.\"O     long tolerance;  /* Clock frequency tolerance (read-only);
+.\"O                         see NOTES for units */
+    long tolerance;  /* クロック周波数耐性 (読み出し専用)
+                        単位は「注意」を参照 */
+.\"O     struct timeval time;
+.\"O                      /* Current time (read-only, except for
+.\"O                         ADJ_SETOFFSET); upon return, time.tv_usec
+.\"O                         contains nanoseconds, if STA_NANO status
+.\"O                         flag is set, otherwise microseconds */
+    struct timeval time;
+                     /* 現在時刻 (読み出し専用、 ADJ_SETOFFSET の
+                        場合以外); リターン時は time.tv_usec は
+                        STA_NANO ステータスフラグが設定されると
+                        ナノ秒で、それ以外はマイクロ秒 */
+.\"O     long tick;       /* Microseconds between clock ticks */
+    long tick;       /* クロック tick 間のマイクロ秒 */
+.\"O     long ppsfreq;    /* PPS (pulse per second) frequency
+.\"O                         (read-only); see NOTES for units */
+    long ppsfreq;    /* PPS (pulse per second) 周波数 (読み出し専用)
+                        単位は「注意」を参照 */
+.\"O     long jitter;     /* PPS jitter (read-only); nanoseconds, if
+.\"O                         STA_NANO status flag is set, otherwise
+.\"O                         microseconds */
+    long jitter;     /* PPS ジッター (読み出し専用); STA_NANO
+                        ステータスフラグが設定されるとナノ秒、
+                        それ以外はマイクロ秒 */
+.\"O     int  shift;      /* PPS interval duration
+.\"O                         (seconds, read-only) */
+    int  shift;      /* PPS interval duration (秒、読み出し専用) */
+.\"O     long stabil;     /* PPS stability (read-only);
+.\"O                         see NOTES for units */
+    long stabil;     /* PPS 安定性 (読み出し専用)
+                        単位は「注意」を参照、 */
+.\"O     long jitcnt;     /* PPS count of jitter limit exceeded
+.\"O                         events (read-only) */
+    long jitcnt;     /* ジッター上限超過イベントの PPS カウント
+                        (読み出し専用) */
+.\"O     long calcnt;     /* PPS count of calibration intervals
+.\"O                         (read-only) */
+    long calcnt;     /* 校正間隔の PPS カウント (読み出し専用) */
+.\"O     long errcnt;     /* PPS count of calibration errors
+.\"O                         (read-only) */
+    long errcnt;     /* 校正エラーの PPS カウント (読み出し専用) */
+.\"O     long stbcnt;     /* PPS count of stability limit exceeded
+.\"O                         events (read-only) */
+    long stbcnt;     /* 安定性上限超過イベントの PPS カウント
+                        (読み出し専用) */
+.\"O     int tai;         /* TAI offset, as set by previous ADJ_TAI
+.\"O                         operation (seconds, read-only,
+.\"O                         since Linux 2.6.26) */
+    int tai;         /* TAI オフセット、直前の ADJ_TAI 命令で設定
+                        したもの (秒、読み出し専用、
+                        Linux 2.6.26 以降) */
+.\"O     /* Further padding bytes to allow for future expansion */
+    /* これ以降のパディングバイトは将来の拡張用である */
+};
+.EE
+.in
+.PP
+.\"O The
+.\"O .I modes
+.\"O field determines which parameters, if any, to set.
+.I modes
+フィールドは (必要に応じて) どのパラメーターを設定するか決定する。
+.\"O (As described later in this page,
+.\"O the constants used for
+.\"O .BR ntp_adjtime ()
+.\"O are equivalent but differently named.)
+(このページの後の方で説明するように、
+.BR ntp_adjtime ()
+で使われる定数は等しいが、異なる名前になっている。)
+.\"O It is a bit mask containing a
+.\"O .RI bitwise- or
+.\"O combination of zero or more of the following bits:
+.I modes
+は、以下のビット値の 0 個以上のビット
+.I OR
+からなるビットマスクである:
+.TP 
+\fBADJ_OFFSET\fP
+\fIbuf.offset\fP を時刻オフセットを設定する。
+.\"O Since Linux 2.6.26,
+.\"O .\" commit 074b3b87941c99bc0ce35385b5817924b1ed0c23
+.\"O the supplied value is clamped to the range (\-0.5s, +0.5s).
+Linux 2.6.26 以降では、
+指定された値は (\-0.5s, +0.5s) の範囲にされる。
+.\"O In older kernels, an
+.\"O .B EINVAL
+.\"O error occurs if the supplied value is out of range.
+古いカーネルでは、指定された値が範囲外の場合、
+.B EINVAL
+エラーが起こる。
+.TP 
+\fBADJ_FREQUENCY\fP
+\fIbuf.freq\fP を周波数オフセットを設定する。
+.\"O Since Linux 2.6.26,
+.\"O .\" commit 074b3b87941c99bc0ce35385b5817924b1ed0c23
+.\"O the supplied value is clamped to the range (\-32768000, +32768000).
+Linux 2.6.26 以降では、
+指定された値は (\-32768000, +32768000) の範囲にされる。
+.\"O In older kernels, an
+.\"O .B EINVAL
+.\"O error occurs if the supplied value is out of range.
+古いカーネルでは、指定された値が範囲外の場合、
+.B EINVAL
+エラーが起こる。
+.TP 
+\fBADJ_MAXERROR\fP
+\fIbuf.maxerror\fP を最大時刻エラーを設定する。
+.TP 
+\fBADJ_ESTERROR\fP
+\fIbuf.esterror\fP を推定時刻エラー (estimated time error) を設定する。
+.TP 
+\fBADJ_STATUS\fP
+.\"O Set clock status bits from
+.\"O .IR buf.status .
+.I buf.status
+をクロックステータスビットを設定する。
+.\"O A description of these bits is provided below.
+このビットの説明は以下でする。
+.TP 
+\fBADJ_TIMECONST\fP
+\fIbuf.constant\fP を PLL の時刻定数を設定する。 (下記の) \fBSTA_NANO\fP ステータスフラグがクリアされた場合、
+カーネルはこの値に 4 を足す。
+.TP
+.\"O .BR ADJ_SETOFFSET " (since Linux 2.6.39)"
+.BR ADJ_SETOFFSET " (Linux 2.6.39 以降)"
+.\" commit 094aa1881fdc1b8889b442eb3511b31f3ec2b762
+.\" Author: Richard Cochran <richardcochran@gmail.com>
+\fIbuf.time\fP を現在時刻に加算する。 \fIbuf.status\fP に \fBADJ_NANO\fP フラグが指定された場合、
+\fIbuf.time.tv_usec\fP はナノ秒として解釈される。 そうでない場合はマイクロ秒として解釈される。
+.IP
+.\" The value of
+.\" .I buf.time
+.\" is the sum of its two fields, but the
+.\" field
+.\" .I buf.time.tv_usec
+.\" must always be nonnegative.
+.I buf.time
+の値は、2 つのフィールドの合計であるが、フィールド
+.I buf.time.tv_usec
+は非負でなければならない。
+.\" The following example shows how to
+.\" normalize a
+.\" .I timeval
+.\" with nanosecond resolution.
+以下の例では、
+.I timeval
+をナノ秒の精度に正規化する方法を示している。
+.PP
+.in +12n
+.EX
+while (buf.time.tv_usec < 0) {
+    buf.time.tv_sec  -= 1;
+    buf.time.tv_usec += 1000000000;
+}
+.EE
+.in
+.PP
+.TP
+.\"O .BR ADJ_MICRO " (since Linux 2.6.26)"
+.BR ADJ_MICRO " (Linux 2.6.26 以降)"
+.\" commit eea83d896e318bda54be2d2770d2c5d6668d11db
+.\" Author: Roman Zippel <zippel@linux-m68k.org>
+マイクロ秒単位の精度を選択する。
+.TP
+.\"O .BR ADJ_NANO " (since Linux 2.6.26)"
+.BR ADJ_NANO " (Linux 2.6.26 以降)"
+.\" commit eea83d896e318bda54be2d2770d2c5d6668d11db
+.\" Author: Roman Zippel <zippel@linux-m68k.org>
+ナノ秒単位の精度を選択する。 \fBADJ_MICRO\fP と \fBADJ_NANO\fP の一方のみを指定すること。
+.TP 
+\fBADJ_TAI\fP (Linux 2.6.26 以降)
+.\" commit 153b5d054ac2d98ea0d86504884326b6777f683d
+.\"O Set TAI (Atomic International Time) offset from
+.\"O .IR buf.constant .
+.I buf.constant
+を TAI (Atomic International Time) オフセットを設定する。
+.IP
+.\"O .BR ADJ_TAI
+.\"O should not be used in conjunction with
+.\"O .BR ADJ_TIMECONST ,
+.\"O since the latter mode also employs the
+.\"O .IR buf.constant
+.\"O field.
+.B ADJ_TAI
+は
+.B ADJ_TIMECONST
+と組み合わせて使わないこと。
+.B ADJ_TIMECONST
+も
+.I buf.constant
+フィールド利用するからである。
+.IP
+TAI の詳細な説明および TAI と UTC の違いについては
+.UR http://www.bipm.org/en/bipm/tai/tai.html
+\fIBIPM\fP
+.UE
+を参照。
+.TP 
+\fBADJ_TICK\fP
+\fIbuf.tick\fP を tick 値に設定する。
+.PP
+.\" In general, the other bits are ignored, but ADJ_OFFSET_SINGLESHOT 0x8001
+.\" ORed with ADJ_NANO (0x2000) gives 0xa0001 == ADJ_OFFSET_SS_READ!!
+上記の代わりに、 \fImodes\fP に以下の値 (複数ビットのマスク) のいずれかを指定することもできる。 この場合は他のビットは \fImodes\fP
+に指定すべきではない。
+.TP 
+\fBADJ_OFFSET_SINGLESHOT\fP
+.\" In user space, ADJ_OFFSET_SINGLESHOT is 0x8001
+.\" In kernel space it is 0x0001, and must be ANDed with ADJ_ADJTIME (0x8000)
+.\"O Old-fashioned
+.\"O .BR adjtime (3):
+.\"O (gradually) adjust time by value specified in
+.\"O .IR buf.offset ,
+.\"O which specifies an adjustment in microseconds.
+古い形式の
+.BR adjtime (3):
+時刻を
+.I buf.offset
+で指定された値で (徐々に) 調整する。
+.I buf.offset
+はマイクロ秒単位の調整値である。
+.TP 
+\fBADJ_OFFSET_SS_READ\fP (Linux 2.6.28 以降で機能する)
+.\" In user space, ADJ_OFFSET_SS_READ is 0xa001
+.\" In kernel space there is ADJ_OFFSET_READONLY (0x2000) anded with
+.\" ADJ_ADJTIME (0x8000) and ADJ_OFFSET_SINGLESHOT (0x0001) to give 0xa001)
+.\" commit 52bfb36050c8529d9031d2c2513b281a360922ec
+.\" commit 916c7a855174e3b53d182b97a26b2e27a29726a1
+\fBADJ_OFFSET_SINGLESHOT\fP 操作を行った後でまだ残っている調整すべき時刻量を (\fIbuf.offset\fP で) 返す。
+この機能は Linux 2.6.24 で追加されたが、 Linux 2.6.28 までは正常に動作しなかった。
+.PP
+通常のユーザーは \fImodes\fP の値は 0 か \fBADJ_OFFSET_SS_READ\fP のいずれかに制限されている。
+スーパーユーザーのみが全てのパラメーターを設定できる。
+.PP
+\fIbuf.status\fP フィールドはビットマスクで、
+このフィールドを使って NTP 実装に関連するステータスビットの設定や取得を行うことができる。
+マスクのビットのいくつかは読み書き両用で、他のビットは読み出し専用である。
+.TP 
+.\"O .BR STA_PLL " (read-write)"
+.BR STA_PLL " (読み書き両用)"
+.\"O Enable phase-locked loop (PLL) updates via
+.\"O .BR ADJ_OFFSET .
+Phase Locked Loop (PLL) の更新を有効にする。
+.B ADJ_OFFSET
+経由で設定できる。
+.TP 
+.\"O .BR STA_PPSFREQ " (read-write)"
+.BR STA_PPSFREQ " (読み書き両用)"
+.\"O Enable PPS (pulse-per-second) frequency discipline.
+PPS (pulse-per-second) freq discipline を有効にする。
+.TP
+.\"O .BR STA_PPSTIME " (read-write)"
+.BR STA_PPSTIME " (読み書き両用)"
+.\"O Enable PPS time discipline.
+PPS time discipline を有効にする。
+.TP
+.\"O .BR STA_FLL " (read-write)"
+.BR STA_FLL " (読み書き両用)"
+.\"O Select frequency-locked loop (FLL) mode.
+Frequency Locked Loop (FLL) モードを選択する。
+.TP 
+.\"O .BR STA_INS " (read-write)"
+.BR STA_INS " (読み書き両用)"
+.\"O Insert a leap second after the last second of the UTC day,
+.\"O thus extending the last minute of the day by one second.
+.\"O Leap-second insertion will occur each day, so long as this flag remains set.
+UTC 日付の最後の秒の後に、閏秒を挿入する。
+よって日付けの最後の分が 1 秒延長される。
+このフラグが設定されている限り、閏秒の挿入は毎日発生する。
+.\" John Stultz;
+.\"     Usually this is written as extending the day by one second,
+.\"     which is represented as:
+.\"        23:59:59
+.\"        23:59:60
+.\"        00:00:00
+.\"
+.\"     But since posix cannot represent 23:59:60, we repeat the last second:
+.\"        23:59:59 + TIME_INS
+.\"        23:59:59 + TIME_OOP
+.\"        00:00:00 + TIME_WAIT
+.\"
+.TP 
+.\"O .BR STA_DEL " (read-write)"
+.BR STA_DEL " (読み書き両用)"
+.\"O Delete a leap second at the last second of the UTC day.
+UTC 日付の最後の秒から閏秒を削除する 。
+.\" John Stultz:
+.\"     Similarly the progression here is:
+.\"        23:59:57 + TIME_DEL
+.\"        23:59:58 + TIME_DEL
+.\"        00:00:00 + TIME_WAIT
+.\"O Leap second deletion will occur each day, so long as this flag
+.\"O remains set.
+このフラグが設定されている限り、閏秒の削除は毎日発生する。
+.\" FIXME Does there need to be a statement that it is nonsensical to set
+.\" to set both STA_INS and STA_DEL?
+.TP 
+.\"O .BR STA_UNSYNC " (read-write)"
+.BR STA_UNSYNC " (読み書き両用)"
+.\"O Clock unsynchronized.
+クロックを非同期状態にする。
+.TP 
+.\"O .BR STA_FREQHOLD " (read-write)"
+.BR STA_FREQHOLD " (読み書き両用)"
+.\"O Hold frequency.
+周波数を保持する。
+.\" Following text from John Stultz:
+.\"O Normally adjustments made via
+.\"O .B ADJ_OFFSET
+.\"O result in dampened frequency adjustments also being made.
+通常、
+.B ADJ_OFFSET
+による調整では、減衰 (dampened) させながらの周波数調整が行われる。
+.\"O So a single call corrects the current offset,
+.\"O but as offsets in the same direction are made repeatedly,
+.\"O the small frequency adjustments will accumulate to fix the long-term skew.
+これにより、1 回の呼び出しで現在のオフセットを補正するが、
+長い期間のずれを修正するためには、少しずつ周波数調整を積み重ねて、
+同じ方向へのオフセット調整が繰り返し行われる。
+.IP
+.\"O This flag prevents the small frequency adjustment from being made
+.\"O when correcting for an
+.\"O .B ADJ_OFFSET
+.\"O value.
+このフラグを使うと、
+.B ADJ_OFFSET
+の値を修正するときに、少しずつ周波数調整を行わない。
+.\" According to the Kernel Application Program Interface document,
+.\" STA_FREQHOLD is not used by the NTP version 4 daemon
+.TP 
+.\"O .BR STA_PPSSIGNAL " (read-only)"
+.BR STA_PPSSIGNAL " (読み出し専用)"
+.\"O A valid PPS (pulse-per-second) signal is present.
+有効な PPS 信号が存在する。
+.TP 
+.\"O .BR STA_PPSJITTER " (read-only)"
+.BR STA_PPSJITTER " (読み出し専用)"
+.\"O PPS signal jitter exceeded.
+PPS 信号のジッターが超過している。
+.TP
+.\"O .BR STA_PPSWANDER " (read-only)"
+.BR STA_PPSWANDER " (読み出し専用)"
+.\"O PPS signal wander exceeded.
+PPS 信号の wander が超過している。
+.TP
+.\"O .BR STA_PPSERROR " (read-only)"
+.BR STA_PPSERROR " (読み出し専用)"
+.\"O PPS signal calibration error.
+PPS 信号の校正エラー。
+.TP 
+.\"O .BR STA_CLOCKERR " (read-only)"
+.BR STA_CLOCKERR " (読み出し専用)"
+.\"O Clock hardware fault.
+クロックハードウェア障害。
+.\" Not set in current kernel (4.5), but checked in a few places
+.TP 
+.\"O .BR STA_NANO " (read-only; since Linux 2.6.26)"
+.BR STA_NANO " (読み出し専用。Linux 2.6.26 以降)"
+.\" commit eea83d896e318bda54be2d2770d2c5d6668d11db
+.\" Author: Roman Zippel <zippel@linux-m68k.org>
+.\"O Resolution (0 = microsecond, 1 = nanoseconds).
+精度 (0 = マイクロ秒、1 = ナノ秒)。
+.\"O Set via
+.\"O .BR ADJ_NANO ,
+.\"O cleared via
+.\"O .BR ADJ_MICRO .
+.B ADJ_NANO
+でセットし、
+.B ADJ_MICRO
+でクリアする。
+.TP 
+.\"O .BR STA_MODE " (since Linux 2.6.26)"
+.BR STA_MODE " (読み出し専用。Linux 2.6.26 以降)"
+.\" commit eea83d896e318bda54be2d2770d2c5d6668d11db
+.\" Author: Roman Zippel <zippel@linux-m68k.org>
+.\"O Mode (0 = Phase Locked Loop, 1 = Frequency Locked Loop).
+モード (0 = Phase Locked Loop, 1 = Frequency Locked Loop)。
+.TP 
+.\"O .BR STA_CLK " (read-only; since Linux 2.6.26)"
+.BR STA_CLK " (読み出し専用。Linux 2.6.26 以降)"
+.\" commit eea83d896e318bda54be2d2770d2c5d6668d11db
+.\" Author: Roman Zippel <zippel@linux-m68k.org>
+.\"O Clock source (0 = A, 1 = B); currently unused.
+クロック源 (0 = A, 1 = B); 現在は使われていない。
+.PP
+.\"O Attempts to set read-only
+.\"O .I status
+.\"O bits are silently ignored.
+.I status
+の読み出し専用ビットを設定しようとした場合は黙って無視される。
+.\"
+.SS clock_adjtime ()
+.\"O The
+.\"O .BR clock_adjtime ()
+.\"O system call (added in Linux 2.6.39) behaves like
+.\"O .BR adjtimex ()
+.\"O but takes an additional
+.\"O .IR clk_id
+.\"O argument to specify the particular clock on which to act.
+(Linux 2.6.39 で追加された)
+.BR clock_adjtime ()
+システムコールは、
+.BR adjtimex ()
+の様に動作するが、動作させる対象の特定のクロックを指定する
+.IR clk_id
+引き数を取る。
+.SS ntp_adjtime ()
+.\"O The
+.\"O .BR ntp_adjtime ()
+.\"O library function
+.\"O (described in the NTP "Kernel Application Program API", KAPI)
+.\"O is a more portable interface for performing the same task as
+.\"O .BR adjtimex ().
+(NTP "Kernel Application Program API", KAPI に記載されている)
+.BR ntp_adjtime ()
+ライブラリ関数は、
+.BR adjtimex ()
+と同じタスクを実行するための、より汎用的なインタフェースである。
+.\"O Other than the following points, it is identical to
+.\"O .BR adjtimex ():
+以下の点以外は、
+.BR adjtimex ()
+と同じである:
+.IP * 3
+.\"O The constants used in
+.\"O .I modes
+.\"O are prefixed with "MOD_" rather than "ADJ_", and have the same suffixes (thus,
+.\"O .BR MOD_OFFSET ,
+.\"O .BR MOD_FREQUENCY ,
+.\"O and so on), other than the exceptions noted in the following points.
+.I modes
+に使われる定数は、プレフィックス "ADJ_" ではなく、
+"MOD_" が使われており、同じサフィックスである (よって、
+.BR MOD_OFFSET ,
+.B MOD_FREQUENCY
+などがある)。
+また、以下のような例外がある。
+.IP *
+.\"O .BR MOD_CLKA
+.\"O is the synonym for
+.\"O .BR ADJ_OFFSET_SINGLESHOT .
+.BR MOD_CLKA
+は
+.B ADJ_OFFSET_SINGLESHOT
+と同じ意味である。
+.IP *
+.\"O .BR MOD_CLKB
+.\"O is the synonym for
+.\"O .BR ADJ_TICK .
+.BR MOD_CLKB
+は
+.B ADJ_TICK
+と同じ意味である。
+.IP *
+.\"O The is no synonym for
+.\"O .BR ADJ_OFFSET_SS_READ ,
+.\"O which is not described in the KAPI.
+KAPI に記載されていない
+.B ADJ_OFFSET_SS_READ
+は、同じ意味の定数はない。
+.\"O .SH RETURN VALUE
+.SH 返り値
+.\"O On success,
+.\"O .BR adjtimex ()
+.\"O and
+.\"O .BR ntp_adjtime ()
+.\"O return the clock state; that is, one of the following values:
+成功した場合、
+.BR adjtimex ()
+と
+.BR ntp_adjtime ()
+は、クロックの状態、つまり、以下のいずれかの値を返す。
+.TP 12
+.BR TIME_OK
+.\"O Clock synchronized, no leap second adjustment pending.
+クロックが同期しており、閏秒の調整が保留されていない。
+.TP
+.BR TIME_INS
+.\"O Indicates that a leap second will be added at the end of the UTC day.
+UTC 日付の最後に閏秒が挿入される。
+.TP
+.BR TIME_DEL
+.\"O Indicates that a leap second will be deleted at the end of the UTC day.
+UTC 日付の最後から閏秒が削除される。
+.TP
+.BR TIME_OOP
+.\"O Insertion of a leap second is in progress.
+閏秒の挿入が処理中である。
+.TP 
+\fBTIME_WAIT\fP
+.\"O A leap-second insertion or deletion has been completed.
+閏秒の挿入または削除が完了した。
+.\"O This value will be returned until the next
+.\"O .BR ADJ_STATUS
+.\"O operation clears the
+.\"O .B STA_INS
+.\"O and
+.\"O .B STA_DEL
+.\"O flags.
+この値は、次の
+.B ADJ_STATUS
+操作で
+.B STA_INS
+または
+.B STA_DEL
+フラグをクリアするまで、返される。
+.TP 
+.BR TIME_ERROR
+.\"O The system clock is not synchronized to a reliable server.
+システムクロックが信頼できるサーバと同期できなかった。
+.\"O This value is returned when any of the following holds true:
+この値は、以下のいずれかが真の場合、返される。
+.RS
+.IP * 3
+.\"O Either
+.\"O .B STA_UNSYNC
+.\"O or
+.\"O .B STA_CLOCKERR
+.\"O is set.
+.B STA_UNSYNC
+または
+.B STA_CLOCKERR
+のいずれかが設定されている。
+.IP *
+.\"O .B STA_PPSSIGNAL
+.\"O is clear and either
+.\"O .B STA_PPSFREQ
+.\"O or
+.\"O .B STA_PPSTIME
+.\"O is set.
+.B STA_PPSSIGNAL
+がクリアされ、かつ
+.B STA_PPSFREQ
+また
+.B STA_PPSTIME
+のいずれかが設定されている。
+.IP *
+.\"O .B STA_PPSTIME
+.\"O and
+.\"O .B STA_PPSJITTER
+.\"O are both set.
+.B STA_PPSTIME
+と
+.B STA_PPSJITTER
+の両方が設定されている。
+.IP *
+.\"O .B STA_PPSFREQ
+.\"O is set and either
+.\"O .B STA_PPSWANDER
+.\"O or
+.\"O .B STA_PPSJITTER
+.\"O is set.
+.B STA_PPSFREQ
+が設定され、かつ
+.B STA_PPSWANDER
+または
+.B STA_PPSJITTER
+のいずれかが設定されている。
+.RE
+.IP
+.\"O The symbolic name
+.\"O .B TIME_BAD
+.\"O is a synonym for
+.\"O .BR TIME_ERROR ,
+.\"O provided for backward compatibility.
+シンボル名
+.B TIME_BAD
+は
+.B TIME_ERROR
+の同義語であり、過去互換性のために提供されている。
+.PP
+.\"O Note that starting with Linux 3.4,
+.\"O .\" commit 6b43ae8a619d17c4935c3320d2ef9e92bdeed05d changed to asynchronous
+.\"O .\"  operation, so we can no longer rely on the return code.
+.\"O the call operates asynchronously and the return value usually will
+.\"O not reflect a state change caused by the call itself.
+Linux 3.4 以降では、
+呼び出し操作が非同期になったので、通常は、返り値が
+呼び出し自体によって起きた状態変更を反映していない点に注意すること。
+.PP
+.\"O On failure, these calls return \-1 and set
+.\"O .IR errno .
+失敗した場合は
+.BR adjtimex ()
+と
+.BR ntp_adjtime ()
+は \-1 を返し、
+.I errno
+が設定される。
+.\"O .SH ERRORS
+.SH エラー
+.TP
+.B EFAULT
+.\"O .I buf
+.\"O does not point to writable memory.
+.I buf
+が書き込み可能なメモリーを指していない。
+.TP
+.\"O .BR EINVAL " (kernels before Linux 2.6.26)"
+.BR EINVAL " (カーネル Linux 2.6.26 以前)"
+.\"O An attempt was made to set
+.\"O .I buf.freq
+.\"O to a value outside the range (\-33554432, +33554432).
+.I buf.freq
+の値を範囲 (\-33554432, +33554432) の外に設定しようとした。
+.\" From a quick glance, it appears there was no clamping or range check
+.\" for buf.freq in kernels before 2.0
+.TP
+.\"O .BR EINVAL " (kernels before Linux 2.6.26)"
+.BR EINVAL " (カーネル Linux 2.6.26 以前)"
+.\"O An attempt was made to set
+.\"O .I buf.offset
+.\"O to a value outside the permitted range.
+.I buf.offset
+の値を許可された範囲外に設定しようとした。
+.\"O In kernels before Linux 2.0, the permitted range was (\-131072, +131072).
+カーネル Linux 2.0 以前では、許可された範囲は (\-131072, +131072) である。
+.\"O In From Linux 2.0 onwards, the permitted range was (\-512000, +512000).
+カーネル Linux 2.0 以降では、許可された範囲は (\-512000, +512000) である。
+.TP
+.B EINVAL
+.\"O An attempt was made to set
+.\"O .I buf.status
+.\"O to a value other than those listed above.
+.I buf.status
+の値を上記に記載した以外に設定しようとした。
+.TP
+.B EINVAL
+.\"O The
+.\"O .I clk_id
+.\"O given to
+.\"O .BR clock_adjtime ()
+.\"O is invalid for one of two reasons.
+.BR clock_adjtime ()
+に指定された
+.I clk_id
+が、以下の 2 つのいずれかの理由で不正である。
+.\"O Either the System-V style hard-coded
+.\"O positive clock ID value is out of range, or the dynamic
+.\"O .I clk_id
+.\"O does not refer to a valid instance of a clock object.
+System-V 形式のハードコードされた
+正のクロック ID の値が範囲外である。
+または、動的な
+.I clk_id
+がクロックオブジェクトの有効なインスタンスを参照していない。
+.\"O See
+.\"O .BR clock_gettime (2)
+.\"O for a discussion of dynamic clocks.
+動的なクロックについての議論は、
+.BR clock_gettime (2)
+を参照すること。
+.TP
+.B EINVAL
+.\"O An attempt was made to set
+.\"O .I buf.tick
+.\"O to a value outside the range
+.\"O .RB 900000/ HZ
+.\"O to
+.\"O .RB 1100000/ HZ ,
+.\"O where
+.\"O .B HZ
+.\"O is the system timer interrupt frequency.
+.I buf.tick
+に
+.RB 900000/ HZ
+から
+.RB 1100000/ HZ
+の範囲外の値を設定しようとした。
+ここで
+.B HZ
+はシステムのタイマー割り込みの周期である。
+.TP
+.B ENODEV
+.\"O The hot-pluggable device (like USB for example) represented by a
+.\"O dynamic
+.\"O .I clk_id
+.\"O has disappeared after its character device was opened.
+動的な
+.I clk_id
+で表された (例えば、USB のような) ホットプラグデバイスが、
+キャラクターデバイスがオープンされた後で消えた。
+.\"O See
+.\"O .BR clock_gettime (2)
+.\"O for a discussion of dynamic clocks.
+動的なクロックについての議論は、
+.BR clock_gettime (2)
+を参照すること。
+.TP
+.B EOPNOTSUPP
+.\"O The given
+.\"O .I clk_id
+.\"O does not support adjustment.
+指定された
+.I clk_id
+が調整をサポートしていない。
+.TP
+.B EPERM
+.\"O .I buf.modes
+.\"O is neither 0 nor
+.\"O .BR ADJ_OFFSET_SS_READ ,
+.\"O and the caller does not have sufficient privilege.
+.I buf.modes
+が 0 でも
+.B ADJ_OFFSET_SS_READ
+でもなく、かつ呼び出し元が十分な特権を持っていない。
+.\"O Under Linux, the
+.\"O .B CAP_SYS_TIME
+.\"O capability is required.
+Linux では
+.B CAP_SYS_TIME
+ケーパビリティが必要である。
+.\"O .SH ATTRIBUTES
+.SH 属性
+.\"O For an explanation of the terms used in this section, see
+.\"O .BR attributes (7).
+このセクションで使われる用語の説明は、
+.BR attributes (7)
+を参照すること。
+.TS
+allbox;
+lb lb lb
+l l l.
+.\"O Interface	Attribute	Value
+インタフェース	属性	値
+T{
+.BR ntp_adjtime ()
+.\"O T}	Thread safety	MT-Safe
+T}	スレッドセーフ性	MT セーフ
+.TE
+
+.\"O .SH CONFORMING TO
+.SH 準拠
+.\"O None of these interfaces is described in POSIX.1
+これらのインタフェースは POSIX.1 に記載されていない。
+.PP
+.\"O .BR adjtimex ()
+.\"O and
+.\"O .BR clock_adjtime ()
+.\"O are Linux-specific and should not be used in programs
+.\"O intended to be portable.
+.BR adjtimex ()
+と
+.BR clock_adjtime ()
+は、Linux 特有であり、移植を意図したプログラムで使用すべきではない。
+.PP
+.\"O The preferred API for the NTP daemon is
+.\"O .BR ntp_adjtime ().
+NTP デーモンで使うべき API は
+.BR ntp_adjtime ()
+である。
+.\"O .SH NOTES
+.SH 注意
+.\"O In struct
+.\"O .IR timex ,
+.\"O .IR freq ,
+.\"O .IR ppsfreq ,
+.\"O and
+.\"O .I stabil
+.\"O are ppm (parts per million) with a 16-bit fractional part,
+.\"O which means that a value of 1 in one of those fields
+.\"O actually means 2^-16 ppm, and 2^16=65536 is 1 ppm.
+構造体
+.IR timex
+では、
+.IR freq ,
+.IR ppsfreq ,
+.I stabil
+は小数部が 16 ビットの ppm (parts per million) である。
+つまり、これらのフィールドの値 1 は 2^\-16 ppm で、2^16=65536 が 1 ppm である。
+.\"O This is the case for both input values (in the case of
+.\"O .IR freq )
+.\"O and output values.
+入力
+.RI ( freq
+の場合) でも出力でもこの通りである。
+.PP
+.\"O The leap-second processing triggered by
+.\"O .B STA_INS
+.\"O and
+.\"O .B STA_DEL
+.\"O is done by the kernel in timer context.
+.B STA_INS
+と
+.B STA_DEL
+をトリガーとして行われる閏秒の処理は、
+カーネルによってタイマーコンテクストで行われる。
+.\"O Thus, it will take one tick into the second
+.\"O for the leap second to be inserted or deleted.
+よって、挿入または削除される閏秒には、1 tick かかる。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR clock_gettime (2),
+.BR clock_settime (2),
+.BR settimeofday (2),
+.BR adjtime (3),
+.BR ntp_gettime (3),
+.BR capabilities (7),
+.BR time (7),
+.BR adjtimex (8),
+.BR hwclock (8)
+.PP
+.ad l
+.UR http://www.slac.stanford.edu/comp/unix/\:package/\:rtems/\:src/\:ssrlApps/\:ntpNanoclock/\:api.htm
+NTP "Kernel Application Program Interface"
+.UE
+.SH この文書について
+この man ページは Linux \fIman\-pages\fP プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+http://www.kernel.org/doc/man\-pages/ に書かれている。
