@@ -1,0 +1,225 @@
+.\" Copyright (C) 2003 Andi Kleen
+.\"
+.\" %%%LICENSE_START(VERBATIM)
+.\" Permission is granted to make and distribute verbatim copies of this
+.\" manual provided the copyright notice and this permission notice are
+.\" preserved on all copies.
+.\"
+.\" Permission is granted to copy and distribute modified versions of this
+.\" manual under the conditions for verbatim copying, provided that the
+.\" entire resulting derived work is distributed under the terms of a
+.\" permission notice identical to this one.
+.\"
+.\" Since the Linux kernel and libraries are constantly changing, this
+.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+.\" responsibility for errors or omissions, or for damages resulting from
+.\" the use of the information contained herein.  The author(s) may not
+.\" have taken the same level of care in the production of this manual,
+.\" which is licensed free of charge, as they might when working
+.\" professionally.
+.\"
+.\" Formatted or processed versions of this manual, if unaccompanied by
+.\" the source, must acknowledge the copyright and authors of this work.
+.\" %%%LICENSE_END
+.\"
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.\" Japanese Version Copyright (c) 2004 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated 2004-06-08, Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated 2005-11-19, Akihiro MOTOKI <amotoki@dd.iij4u.or.jp>
+.\" Updated 2008-02-10, Akihiro MOTOKI <amotoki@dd.iij4u.or.jp>, LDP v2.77
+.\" Updated & Modified Sat Jan  2 02:27:56 JST 2021
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>, LDP 5.07
+.\"
+.TH ARCH_PRCTL 2 2020-04-11 "Linux" "Linux Programmer's Manual"
+.SH 名前
+arch_prctl \- アーキテクチャー固有のスレッド状態を設定する
+.SH 書式
+.nf
+\fB#include <asm/prctl.h>\fP
+\fB#include <sys/prctl.h>\fP
+.PP
+\fBint arch_prctl(int \fP\fIcode\fP\fB, unsigned long *\fP\fIaddr\fP\fB);\fP
+.fi
+.SH 説明
+.\"O The
+.\"O .BR arch_prctl ()
+.\"O sets architecture-specific process or thread state.
+\fBarch_prctl\fP() はアーキテクチャー固有のプロセス状態またはスレッド状態を設定する。 \fIcode\fP は副機能を選択し、引き数
+\fIaddr\fP を副機能に渡す。 \fIaddr\fP は、"set" 操作では \fIunsigned long\fP として、"get" 操作では
+\fIunsigned long\ *\fP として解釈される。
+.PP
+.\"O Subfunctions for both x86 and x86-64 are:
+x86 と x86\-64 の副機能は以下の通り:
+.TP
+.\"O .BR ARCH_SET_CPUID " (since Linux 4.12)"
+.BR ARCH_SET_CPUID " (Linux 4.12 以降)"
+.\" commit e9ea1e7f53b852147cbd568b0568c7ad97ec21a3
+.\"O Enable
+.\"O .RI ( "addr != 0" )
+.\"O or disable
+.\"O .RI ( "addr == 0" )
+.\"O the
+.\"O .I cpuid
+.\"O instruction for the current thread.
+カレントスレッドの
+.I cpuid
+命令を有効
+.RI ( "addr != 0" )
+または無効
+.RI ( "addr == 0" )
+にする。
+.\"O The instruction is enabled by default.
+命令はデフォルトで有効にされている。
+.\"O If disabled, any execution of a
+.\"O .I cpuid
+.\"O instruction will instead generate a
+.\"O .B SIGSEGV
+.\"O signal.
+無効にされている場合、
+.I cpuid
+命令の実行では、代わりに
+.B SIGSEGV
+シグナルが生成される。
+.\"O This feature can be used to emulate
+.\"O .I cpuid
+.\"O results that differ from what the underlying
+.\"O hardware would have produced (e.g., in a paravirtualization setting).
+この機能は、(例えば、準仮想化設定において) 下層のハードウェアが生成する
+.I cpuid
+の結果が異なる場合に、
+.I cpuid
+の結果をエミュレートするために使われる。
+.IP
+.\"O The
+.\"O .BR ARCH_SET_CPUID
+.\"O setting is preserved across
+.\"O .BR fork (2)
+.\"O and
+.\"O .BR clone (2)
+.\"O but reset to the default (i.e.,
+.\"O .I cpuid
+.\"O enabled) on
+.\"O .BR execve (2).
+.BR ARCH_SET_CPUID
+の設定は、
+.BR fork (2)
+と
+.BR clone (2)
+では保存されるが、
+.BR execve (2)
+ではデフォルト (つまり
+.I cpuid
+が有効) にリセットされる。
+.TP
+.\"O .BR ARCH_GET_CPUID " (since Linux 4.12)"
+.BR ARCH_GET_CPUID " (Linux 4.12 以降)"
+.\"O Return the setting of the flag manipulated by
+.\"O .B ARCH_SET_CPUID
+.\"O as the result of the system call (1 for enabled, 0 for disabled).
+システムコールの結果として、
+.B ARCH_SET_CPUID
+で操作されたフラグの設定を返す (1 が有効で、0 が無効)。
+.\"O .I addr
+.\"O is ignored.
+.I addr
+は無視される。
+.TP
+.\"O Subfunctions for x86-64 only are:
+x86\-64 のみの副機能は以下の通り:
+.TP 
+\fBARCH_SET_FS\fP
+\fIFS\fP レジスターの 64 ビットベースを \fIaddr\fP に設定する。
+.TP 
+\fBARCH_GET_FS\fP
+現在のスレッドの \fIFS\fP レジスターの 64 ビットベース値を、 \fIaddr\fP が指す \fIunsigned long\fP の領域に格納する。
+.TP 
+\fBARCH_SET_GS\fP
+\fIGS\fP レジスターの 64 ビットベースを \fIaddr\fP に設定する。
+.TP 
+\fBARCH_GET_GS\fP
+現在のスレッドの \fIGS\fP レジスターの 64 ビットベース値を、 \fIaddr\fP が指す \fIunsigned long\fP の領域に格納する。
+.SH 返り値
+成功すると、 \fBarch_prctl\fP()  は 0 を返す。エラーの場合、\-1 を返し、 \fIerrno\fP をエラーを示す値に設定する。
+.SH エラー
+.TP 
+\fBEFAULT\fP
+\fIaddr\fP がアンマップされたアドレスを指しているか、プロセスのアドレス空間の外にある。
+.TP 
+\fBEINVAL\fP
+\fIcode\fP が有効なサブコマンドでない。
+.TP 
+\fBEPERM\fP
+\fIaddr\fP がプロセスのアドレス空間の外にある。
+.TP
+.B ENODEV
+.\"O .B ARCH_SET_CPUID
+.\"O was requested, but the underlying hardware does not support CPUID faulting.
+.B ARCH_SET_CPUID
+がリクエストされたが、下層のハードウェアが CPUID フォールティングをサポートしていない。
+.\" .SH AUTHOR
+.\" Man page written by Andi Kleen.
+.SH 準拠
+\fBarch_prctl\fP()  は Linux/x86\-64 拡張であり、移植性を意図したプログラムでは使うべきでない。
+.SH 注意
+\fBarch_prctl\fP()  は現在のところ Linux/x86\-64 上の 64 ビットプログラムでのみサポートされている。
+.PP
+新しい 32 ビットセグメントセレクタがロードされた場合、 64 ビットベースは変更される。
+.PP
+\fBARCH_SET_GS\fP が無効にされているカーネルもある。
+.PP
+64 ビットセグメントベースのコンテキストスイッチは、やや高価である。
+.\"O As an optimization, if a 32-bit TLS base address is used,
+.\"O .BR arch_prctl ()
+.\"O may use a real TLS entry as if
+.\"O .BR set_thread_area (2)
+.\"O had been called, instead of manipulating the segment base register directly.
+最適化として、32 ビット TLS ベースアドレスが使われた場合、
+.BR arch_prctl ()
+は、セグメントベースレジスタを直接操作する代わりに、
+.BR set_thread_area (2)
+が呼ばれたかのように、実際の TLS エントリを使う可能性がある。
+.\"O Memory in the first 2\ GB of address space can be allocated by using
+.\"O .BR mmap (2)
+.\"O with the
+.\"O .B MAP_32BIT
+.\"O flag.
+アドレス空間の最初の 2GB にあるメモリーは、 \fBmmap\fP(2)  に \fBMAP_32BIT\fP
+フラグを指定して割り当てることができる。
+.PP
+.\"O Because of the aforementioned optimization, using
+.\"O .BR arch_prctl ()
+.\"O and
+.\"O .BR set_thread_area (2)
+.\"O in the same thread is dangerous, as they may overwrite each other's
+.\"O TLS entries.
+前述の最適化のため、
+.BR arch_prctl ()
+と
+.BR set_thread_area (2)
+を同じスレッドで使うのは、お互いの TLS エントリを上書きする可能性があるため、危険である。
+.PP
+バージョン 2.7 時点では、glibc には \fBarch_prctl\fP()  のプロトタイプがない。
+今のところユーザーは自分自身で宣言する必要がある。 これは将来の glibc のバージョンで修正されるかもしれない。
+.PP
+.\"O .I FS
+.\"O may be already used by the threading library.
+\fIFS\fP はスレッドライブラリで既に使われているかもしれない。
+.\"O Programs that use
+.\"O .B ARCH_SET_FS
+.\"O directly are very likely to crash.
+.B ARCH_SET_FS
+ディレクトリを使うプログラムは、とてもクラッシュしやすい。
+.SH 関連項目
+\fBmmap\fP(2), \fBmodify_ldt\fP(2), \fBprctl\fP(2), \fBset_thread_area\fP(2)
+.PP
+AMD X86\-64 Programmer's manual
+.SH この文書について
+この man ページは Linux \fIman\-pages\fP プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+http://www.kernel.org/doc/man\-pages/ に書かれている。
