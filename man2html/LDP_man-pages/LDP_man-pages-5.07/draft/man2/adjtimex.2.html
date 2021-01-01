@@ -1,0 +1,1079 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of ADJTIMEX</TITLE>
+</HEAD><BODY>
+<H1>ADJTIMEX</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2020-06-09<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+adjtimex, clock_adjtime, ntp_adjtime - カーネルの時計を調整する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/sys/timex.h">sys/timex.h</A>&gt;</B>
+
+<B>int adjtimex(struct timex *</B><I>buf</I><B>);</B>
+
+<B>int clock_adjtime(clockid_t </B><I>clk_id,</I><B> struct timex *</B><I>buf</I><B>);</B>
+
+<B>int ntp_adjtime(struct timex *</B><I>buf</I><B>);</B>
+</PRE>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+Linux は David L. Mill の時計調節アルゴリズムを使用している (RFC&nbsp;5905 を参照)。
+
+
+
+システムコール
+<B>adjtimex</B>()
+
+はこのアルゴリズムの調節のパラメーターを読み取ったり、設定したりする。
+
+
+
+
+この関数は <I>timex</I>
+構造体へのポインターを受け取り、(選択された) フィールド値でカーネルのパラメーターを更新して、
+現在のカーネルの値で更新された同じ構造体を返す。
+
+この構造体は以下のように宣言される:
+<P>
+
+
+
+struct timex {
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;modes;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;モードの選択&nbsp;*/
+
+
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;offset;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;時刻オフセット;&nbsp;STA_NANO&nbsp;ステータスフラグが
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;設定されるとナノ秒で、それ以外はマイクロ秒&nbsp;*/
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;freq;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;周波数オフセット。&nbsp;単位は「注意」を参照&nbsp;*/
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;maxerror;&nbsp;&nbsp;&nbsp;/*&nbsp;最大エラー&nbsp;(マイクロ秒)&nbsp;*/
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;esterror;&nbsp;&nbsp;&nbsp;/*&nbsp;推定エラー&nbsp;(マイクロ秒)&nbsp;*/
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;status;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;クロックコマンド/ステータス&nbsp;*/
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;constant;&nbsp;&nbsp;&nbsp;/*&nbsp;PLL&nbsp;(phase-locked&nbsp;loop)&nbsp;時刻定数&nbsp;*/
+
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;precision;&nbsp;&nbsp;/*&nbsp;クロック精度&nbsp;(マイクロ秒、読み出し専用)&nbsp;*/
+
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;tolerance;&nbsp;&nbsp;/*&nbsp;クロック周波数耐性&nbsp;(読み出し専用)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;単位は「注意」を参照&nbsp;*/
+
+
+
+
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;struct&nbsp;timeval&nbsp;time;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;現在時刻&nbsp;(読み出し専用、&nbsp;ADJ_SETOFFSET&nbsp;の
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;場合以外);&nbsp;リターン時は&nbsp;time.tv_usec&nbsp;は
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;STA_NANO&nbsp;ステータスフラグが設定されると
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ナノ秒で、それ以外はマイクロ秒&nbsp;*/
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;tick;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;クロック&nbsp;tick&nbsp;間のマイクロ秒&nbsp;*/
+
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;ppsfreq;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;PPS&nbsp;(pulse&nbsp;per&nbsp;second)&nbsp;周波数&nbsp;(読み出し専用)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;単位は「注意」を参照&nbsp;*/
+
+
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;jitter;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;PPS&nbsp;ジッター&nbsp;(読み出し専用);&nbsp;STA_NANO
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ステータスフラグが設定されるとナノ秒、
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;それ以外はマイクロ秒&nbsp;*/
+
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;shift;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;PPS&nbsp;interval&nbsp;duration&nbsp;(秒、読み出し専用)&nbsp;*/
+
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;stabil;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;PPS&nbsp;安定性&nbsp;(読み出し専用)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;単位は「注意」を参照、&nbsp;*/
+
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;jitcnt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;ジッター上限超過イベントの&nbsp;PPS&nbsp;カウント
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(読み出し専用)&nbsp;*/
+
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;calcnt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;校正間隔の&nbsp;PPS&nbsp;カウント&nbsp;(読み出し専用)&nbsp;*/
+
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;errcnt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;校正エラーの&nbsp;PPS&nbsp;カウント&nbsp;(読み出し専用)&nbsp;*/
+
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;stbcnt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;安定性上限超過イベントの&nbsp;PPS&nbsp;カウント
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(読み出し専用)&nbsp;*/
+
+
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;tai;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;TAI&nbsp;オフセット、直前の&nbsp;ADJ_TAI&nbsp;命令で設定
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;したもの&nbsp;(秒、読み出し専用、
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Linux&nbsp;2.6.26&nbsp;以降)&nbsp;*/
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;これ以降のパディングバイトは将来の拡張用である&nbsp;*/
+};
+
+
+<P>
+
+
+
+
+<I>modes</I>
+
+フィールドは (必要に応じて) どのパラメーターを設定するか決定する。
+
+
+
+
+(このページの後の方で説明するように、
+<B>ntp_adjtime</B>()
+
+で使われる定数は等しいが、異なる名前になっている。)
+
+
+
+<I>modes</I>
+
+は、以下のビット値の 0 個以上のビット
+<I>OR</I>
+
+からなるビットマスクである:
+<DL COMPACT>
+<DT><B>ADJ_OFFSET</B><DD>
+<I>buf.offset</I> を時刻オフセットを設定する。
+
+
+
+Linux 2.6.26 以降では、
+指定された値は (-0.5s, +0.5s) の範囲にされる。
+
+
+
+古いカーネルでは、指定された値が範囲外の場合、
+<B>EINVAL</B>
+
+エラーが起こる。
+<DT><B>ADJ_FREQUENCY</B><DD>
+<I>buf.freq</I> を周波数オフセットを設定する。
+
+
+
+Linux 2.6.26 以降では、
+指定された値は (-32768000, +32768000) の範囲にされる。
+
+
+
+古いカーネルでは、指定された値が範囲外の場合、
+<B>EINVAL</B>
+
+エラーが起こる。
+<DT><B>ADJ_MAXERROR</B><DD>
+<I>buf.maxerror</I> を最大時刻エラーを設定する。
+<DT><B>ADJ_ESTERROR</B><DD>
+<I>buf.esterror</I> を推定時刻エラー (estimated time error) を設定する。
+<DT><B>ADJ_STATUS</B><DD>
+
+
+<I>buf.status</I>
+
+をクロックステータスビットを設定する。
+
+このビットの説明は以下でする。
+<DT><B>ADJ_TIMECONST</B><DD>
+<I>buf.constant</I> を PLL の時刻定数を設定する。 (下記の) <B>STA_NANO</B> ステータスフラグがクリアされた場合、
+カーネルはこの値に 4 を足す。
+<DT>
+<DD>
+<B>ADJ_SETOFFSET</B> (Linux 2.6.39 以降)
+
+
+
+<I>buf.time</I> を現在時刻に加算する。 <I>buf.status</I> に <B>ADJ_NANO</B> フラグが指定された場合、
+<I>buf.time.tv_usec</I> はナノ秒として解釈される。 そうでない場合はマイクロ秒として解釈される。
+<DT><DD>
+
+
+
+
+
+
+<I>buf.time</I>
+
+の値は、2 つのフィールドの合計であるが、フィールド
+<I>buf.time.tv_usec</I>
+
+は非負でなければならない。
+
+
+
+
+以下の例では、
+<I>timeval</I>
+
+をナノ秒の精度に正規化する方法を示している。
+</DL>
+<P>
+
+
+
+while (buf.time.tv_usec &lt; 0) {
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;buf.time.tv_sec&nbsp;&nbsp;-=&nbsp;1;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;buf.time.tv_usec&nbsp;+=&nbsp;1000000000;
+}
+
+
+<P>
+
+<DL COMPACT>
+<DT>
+<DD>
+<B>ADJ_MICRO</B> (Linux 2.6.26 以降)
+
+
+
+マイクロ秒単位の精度を選択する。
+<DT>
+<DD>
+<B>ADJ_NANO</B> (Linux 2.6.26 以降)
+
+
+
+ナノ秒単位の精度を選択する。 <B>ADJ_MICRO</B> と <B>ADJ_NANO</B> の一方のみを指定すること。
+<DT><B>ADJ_TAI</B> (Linux 2.6.26 以降)<DD>
+
+
+
+<I>buf.constant</I>
+
+を TAI (Atomic International Time) オフセットを設定する。
+<DT><DD>
+
+
+
+
+
+
+<B>ADJ_TAI</B>
+
+は
+<B>ADJ_TIMECONST</B>
+
+と組み合わせて使わないこと。
+<B>ADJ_TIMECONST</B>
+
+も
+<I>buf.constant</I>
+
+フィールド利用するからである。
+<DT><DD>
+TAI の詳細な説明および TAI と UTC の違いについては
+
+<I>BIPM</I>
+
+を参照。
+<DT><B>ADJ_TICK</B><DD>
+<I>buf.tick</I> を tick 値に設定する。
+</DL>
+<P>
+
+
+
+上記の代わりに、 <I>modes</I> に以下の値 (複数ビットのマスク) のいずれかを指定することもできる。 この場合は他のビットは <I>modes</I>
+に指定すべきではない。
+<DL COMPACT>
+<DT><B>ADJ_OFFSET_SINGLESHOT</B><DD>
+
+
+
+
+
+
+
+古い形式の
+<B><A HREF="../man3/adjtime.3.html">adjtime</A></B>(3):
+
+時刻を
+<I>buf.offset</I>
+
+で指定された値で (徐々に) 調整する。
+<I>buf.offset</I>
+
+はマイクロ秒単位の調整値である。
+<DT><B>ADJ_OFFSET_SS_READ</B> (Linux 2.6.28 以降で機能する)<DD>
+
+
+
+
+
+<B>ADJ_OFFSET_SINGLESHOT</B> 操作を行った後でまだ残っている調整すべき時刻量を (<I>buf.offset</I> で) 返す。
+この機能は Linux 2.6.24 で追加されたが、 Linux 2.6.28 までは正常に動作しなかった。
+</DL>
+<P>
+
+通常のユーザーは <I>modes</I> の値は 0 か <B>ADJ_OFFSET_SS_READ</B> のいずれかに制限されている。
+スーパーユーザーのみが全てのパラメーターを設定できる。
+<P>
+
+<I>buf.status</I> フィールドはビットマスクで、
+このフィールドを使って NTP 実装に関連するステータスビットの設定や取得を行うことができる。
+マスクのビットのいくつかは読み書き両用で、他のビットは読み出し専用である。
+<DL COMPACT>
+<DT>
+<DD>
+<B>STA_PLL</B> (読み書き両用)
+
+
+
+Phase Locked Loop (PLL) の更新を有効にする。
+<B>ADJ_OFFSET</B>
+
+経由で設定できる。
+<DT>
+<DD>
+<B>STA_PPSFREQ</B> (読み書き両用)
+
+
+PPS (pulse-per-second) freq discipline を有効にする。
+<DT>
+<DD>
+<B>STA_PPSTIME</B> (読み書き両用)
+
+
+PPS time discipline を有効にする。
+<DT>
+<DD>
+<B>STA_FLL</B> (読み書き両用)
+
+
+Frequency Locked Loop (FLL) モードを選択する。
+<DT>
+<DD>
+<B>STA_INS</B> (読み書き両用)
+
+
+
+
+UTC 日付の最後の秒の後に、閏秒を挿入する。
+よって日付けの最後の分が 1 秒延長される。
+このフラグが設定されている限り、閏秒の挿入は毎日発生する。
+
+
+
+
+
+
+
+
+
+
+
+
+<DT>
+<DD>
+<B>STA_DEL</B> (読み書き両用)
+
+
+UTC 日付の最後の秒から閏秒を削除する 。
+
+
+
+
+
+
+
+このフラグが設定されている限り、閏秒の削除は毎日発生する。
+
+
+<DT>
+<DD>
+<B>STA_UNSYNC</B> (読み書き両用)
+
+
+クロックを非同期状態にする。
+<DT>
+<DD>
+<B>STA_FREQHOLD</B> (読み書き両用)
+
+
+周波数を保持する。
+
+
+
+
+通常、
+<B>ADJ_OFFSET</B>
+
+による調整では、減衰 (dampened) させながらの周波数調整が行われる。
+
+
+
+これにより、1 回の呼び出しで現在のオフセットを補正するが、
+長い期間のずれを修正するためには、少しずつ周波数調整を積み重ねて、
+同じ方向へのオフセット調整が繰り返し行われる。
+<DT><DD>
+
+
+
+
+このフラグを使うと、
+<B>ADJ_OFFSET</B>
+
+の値を修正するときに、少しずつ周波数調整を行わない。
+
+
+<DT>
+<DD>
+<B>STA_PPSSIGNAL</B> (読み出し専用)
+
+
+有効な PPS 信号が存在する。
+<DT>
+<DD>
+<B>STA_PPSJITTER</B> (読み出し専用)
+
+
+PPS 信号のジッターが超過している。
+<DT>
+<DD>
+<B>STA_PPSWANDER</B> (読み出し専用)
+
+
+PPS 信号の wander が超過している。
+<DT>
+<DD>
+<B>STA_PPSERROR</B> (読み出し専用)
+
+
+PPS 信号の校正エラー。
+<DT>
+<DD>
+<B>STA_CLOCKERR</B> (読み出し専用)
+
+
+クロックハードウェア障害。
+
+<DT>
+<DD>
+<B>STA_NANO</B> (読み出し専用。Linux 2.6.26 以降)
+
+
+
+
+精度 (0 = マイクロ秒、1 = ナノ秒)。
+
+
+
+
+<B>ADJ_NANO</B>
+
+でセットし、
+<B>ADJ_MICRO</B>
+
+でクリアする。
+<DT>
+<DD>
+<B>STA_MODE</B> (読み出し専用。Linux 2.6.26 以降)
+
+
+
+
+モード (0 = Phase Locked Loop, 1 = Frequency Locked Loop)。
+<DT>
+<DD>
+<B>STA_CLK</B> (読み出し専用。Linux 2.6.26 以降)
+
+
+
+
+クロック源 (0 = A, 1 = B); 現在は使われていない。
+</DL>
+<P>
+
+
+
+
+<I>status</I>
+
+の読み出し専用ビットを設定しようとした場合は黙って無視される。
+
+<A NAME="lbAE">&nbsp;</A>
+<H3>clock_adjtime ()</H3>
+
+
+
+
+
+
+
+
+(Linux 2.6.39 で追加された)
+<B>clock_adjtime</B>()
+
+システムコールは、
+<B>adjtimex</B>()
+
+の様に動作するが、動作させる対象の特定のクロックを指定する
+<I>clk_id</I>
+
+引き数を取る。
+<A NAME="lbAF">&nbsp;</A>
+<H3>ntp_adjtime ()</H3>
+
+
+
+
+
+
+
+(NTP &quot;Kernel Application Program API&quot;, KAPI に記載されている)
+<B>ntp_adjtime</B>()
+
+ライブラリ関数は、
+<B>adjtimex</B>()
+
+と同じタスクを実行するための、より汎用的なインタフェースである。
+
+
+以下の点以外は、
+<B>adjtimex</B>()
+
+と同じである:
+<DL COMPACT>
+<DT>*<DD>
+
+
+
+
+
+
+<I>modes</I>
+
+に使われる定数は、プレフィックス &quot;ADJ_&quot; ではなく、
+&quot;MOD_&quot; が使われており、同じサフィックスである (よって、
+<B>MOD_OFFSET</B>,
+
+<B>MOD_FREQUENCY</B>
+
+などがある)。
+また、以下のような例外がある。
+<DT>*<DD>
+
+
+
+<B>MOD_CLKA</B>
+
+は
+<B>ADJ_OFFSET_SINGLESHOT</B>
+
+と同じ意味である。
+<DT>*<DD>
+
+
+
+<B>MOD_CLKB</B>
+
+は
+<B>ADJ_TICK</B>
+
+と同じ意味である。
+<DT>*<DD>
+
+
+
+KAPI に記載されていない
+<B>ADJ_OFFSET_SS_READ</B>
+
+は、同じ意味の定数はない。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+
+
+
+成功した場合、
+<B>adjtimex</B>()
+
+と
+<B>ntp_adjtime</B>()
+
+は、クロックの状態、つまり、以下のいずれかの値を返す。
+<DL COMPACT>
+<DT><B>TIME_OK</B>
+
+<DD>
+
+クロックが同期しており、閏秒の調整が保留されていない。
+<DT><B>TIME_INS</B>
+
+<DD>
+
+UTC 日付の最後に閏秒が挿入される。
+<DT><B>TIME_DEL</B>
+
+<DD>
+
+UTC 日付の最後から閏秒が削除される。
+<DT><B>TIME_OOP</B>
+
+<DD>
+
+閏秒の挿入が処理中である。
+<DT><B>TIME_WAIT</B><DD>
+
+閏秒の挿入または削除が完了した。
+
+
+
+
+
+
+
+この値は、次の
+<B>ADJ_STATUS</B>
+
+操作で
+<B>STA_INS</B>
+
+または
+<B>STA_DEL</B>
+
+フラグをクリアするまで、返される。
+<DT><B>TIME_ERROR</B>
+
+<DD>
+
+システムクロックが信頼できるサーバと同期できなかった。
+
+この値は、以下のいずれかが真の場合、返される。
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>*<DD>
+
+
+
+
+
+<B>STA_UNSYNC</B>
+
+または
+<B>STA_CLOCKERR</B>
+
+のいずれかが設定されている。
+<DT>*<DD>
+
+
+
+
+
+
+<B>STA_PPSSIGNAL</B>
+
+がクリアされ、かつ
+<B>STA_PPSFREQ</B>
+
+また
+<B>STA_PPSTIME</B>
+
+のいずれかが設定されている。
+<DT>*<DD>
+
+
+
+
+<B>STA_PPSTIME</B>
+
+と
+<B>STA_PPSJITTER</B>
+
+の両方が設定されている。
+<DT>*<DD>
+
+
+
+
+
+
+<B>STA_PPSFREQ</B>
+
+が設定され、かつ
+<B>STA_PPSWANDER</B>
+
+または
+<B>STA_PPSJITTER</B>
+
+のいずれかが設定されている。
+</DL>
+</DL>
+
+<DT><DD>
+
+
+
+
+
+シンボル名
+<B>TIME_BAD</B>
+
+は
+<B>TIME_ERROR</B>
+
+の同義語であり、過去互換性のために提供されている。
+</DL>
+<P>
+
+
+
+
+
+
+Linux 3.4 以降では、
+呼び出し操作が非同期になったので、通常は、返り値が
+呼び出し自体によって起きた状態変更を反映していない点に注意すること。
+<P>
+
+
+
+失敗した場合は
+<B>adjtimex</B>()
+
+と
+<B>ntp_adjtime</B>()
+
+は -1 を返し、
+<I>errno</I>
+
+が設定される。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>エラー</H2>
+
+<DL COMPACT>
+<DT><B>EFAULT</B>
+
+<DD>
+
+
+<I>buf</I>
+
+が書き込み可能なメモリーを指していない。
+<DT>
+<DD>
+<B>EINVAL</B> (カーネル Linux 2.6.26 以前)
+
+
+
+
+<I>buf.freq</I>
+
+の値を範囲 (-33554432, +33554432) の外に設定しようとした。
+
+
+<DT>
+<DD>
+<B>EINVAL</B> (カーネル Linux 2.6.26 以前)
+
+
+
+
+<I>buf.offset</I>
+
+の値を許可された範囲外に設定しようとした。
+
+カーネル Linux 2.0 以前では、許可された範囲は (-131072, +131072) である。
+
+カーネル Linux 2.0 以降では、許可された範囲は (-512000, +512000) である。
+<DT><B>EINVAL</B>
+
+<DD>
+
+
+
+<I>buf.status</I>
+
+の値を上記に記載した以外に設定しようとした。
+<DT><B>EINVAL</B>
+
+<DD>
+
+
+
+
+
+<B>clock_adjtime</B>()
+
+に指定された
+<I>clk_id</I>
+
+が、以下の 2 つのいずれかの理由で不正である。
+
+
+
+
+System-V 形式のハードコードされた
+正のクロック ID の値が範囲外である。
+または、動的な
+<I>clk_id</I>
+
+がクロックオブジェクトの有効なインスタンスを参照していない。
+
+
+
+動的なクロックについての議論は、
+<B><A HREF="../man2/clock_gettime.2.html">clock_gettime</A></B>(2)
+
+を参照すること。
+<DT><B>EINVAL</B>
+
+<DD>
+
+
+
+
+
+
+
+
+
+<I>buf.tick</I>
+
+に
+900000/<B>HZ</B>
+
+から
+1100000/<B>HZ</B>
+
+の範囲外の値を設定しようとした。
+ここで
+<B>HZ</B>
+
+はシステムのタイマー割り込みの周期である。
+<DT><B>ENODEV</B>
+
+<DD>
+
+
+
+
+動的な
+<I>clk_id</I>
+
+で表された (例えば、USB のような) ホットプラグデバイスが、
+キャラクターデバイスがオープンされた後で消えた。
+
+
+
+動的なクロックについての議論は、
+<B><A HREF="../man2/clock_gettime.2.html">clock_gettime</A></B>(2)
+
+を参照すること。
+<DT><B>EOPNOTSUPP</B>
+
+<DD>
+
+
+
+指定された
+<I>clk_id</I>
+
+が調整をサポートしていない。
+<DT><B>EPERM</B>
+
+<DD>
+
+
+
+
+<I>buf.modes</I>
+
+が 0 でも
+<B>ADJ_OFFSET_SS_READ</B>
+
+でもなく、かつ呼び出し元が十分な特権を持っていない。
+
+
+
+Linux では
+<B>CAP_SYS_TIME</B>
+
+ケーパビリティが必要である。
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>属性</H2>
+
+
+
+このセクションで使われる用語の説明は、
+<B><A HREF="../man7/attributes.7.html">attributes</A></B>(7)
+
+を参照すること。
+<TABLE BORDER>
+<TR VALIGN=top><TD><B>インタフェース</B></TD><TD><B>属性</B></TD><TD><B>値</B><BR></TD></TR>
+<TR VALIGN=top><TD>
+<B>ntp_adjtime</B>()
+
+
+</TD><TD>スレッドセーフ性</TD><TD>MT セーフ<BR></TD></TR>
+</TABLE>
+
+<P>
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>準拠</H2>
+
+
+これらのインタフェースは POSIX.1 に記載されていない。
+<P>
+
+
+
+
+
+
+<B>adjtimex</B>()
+
+と
+<B>clock_adjtime</B>()
+
+は、Linux 特有であり、移植を意図したプログラムで使用すべきではない。
+<P>
+
+
+
+NTP デーモンで使うべき API は
+<B>ntp_adjtime</B>()
+
+である。
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+
+
+
+
+
+構造体
+<I>timex</I>
+
+では、
+<I>freq</I>,
+
+<I>ppsfreq</I>,
+
+<I>stabil</I>
+
+は小数部が 16 ビットの ppm (parts per million) である。
+つまり、これらのフィールドの値 1 は 2^-16 ppm で、2^16=65536 が 1 ppm である。
+
+
+
+入力
+(<I>freq</I>
+
+の場合) でも出力でもこの通りである。
+<P>
+
+
+
+
+
+
+<B>STA_INS</B>
+
+と
+<B>STA_DEL</B>
+
+をトリガーとして行われる閏秒の処理は、
+カーネルによってタイマーコンテクストで行われる。
+
+
+よって、挿入または削除される閏秒には、1 tick かかる。
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/clock_gettime.2.html">clock_gettime</A></B>(2),
+
+<B><A HREF="../man2/clock_settime.2.html">clock_settime</A></B>(2),
+
+<B><A HREF="../man2/settimeofday.2.html">settimeofday</A></B>(2),
+
+<B><A HREF="../man3/adjtime.3.html">adjtime</A></B>(3),
+
+<B><A HREF="../man3/ntp_gettime.3.html">ntp_gettime</A></B>(3),
+
+<B><A HREF="../man7/capabilities.7.html">capabilities</A></B>(7),
+
+<B><A HREF="../man7/time.7.html">time</A></B>(7),
+
+<B><A HREF="../man8/adjtimex.8.html">adjtimex</A></B>(8),
+
+<B><A HREF="../man8/hwclock.8.html">hwclock</A></B>(8)
+
+<P>
+
+
+
+NTP &quot;Kernel Application Program Interface&quot;
+
+<A NAME="lbAM">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DL>
+<DT><A HREF="#lbAE">clock_adjtime ()</A><DD>
+<DT><A HREF="#lbAF">ntp_adjtime ()</A><DD>
+</DL>
+<DT><A HREF="#lbAG">返り値</A><DD>
+<DT><A HREF="#lbAH">エラー</A><DD>
+<DT><A HREF="#lbAI">属性</A><DD>
+<DT><A HREF="#lbAJ">準拠</A><DD>
+<DT><A HREF="#lbAK">注意</A><DD>
+<DT><A HREF="#lbAL">関連項目</A><DD>
+<DT><A HREF="#lbAM">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:23:47 GMT, January 01, 2021
+</BODY>
+</HTML>
