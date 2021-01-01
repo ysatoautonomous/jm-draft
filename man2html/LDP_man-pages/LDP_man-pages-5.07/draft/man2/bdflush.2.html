@@ -1,0 +1,120 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of BDFLUSH</TITLE>
+</HEAD><BODY>
+<H1>BDFLUSH</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2016-10-08<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+bdflush - バッファーダーティーフラッシュデーモンを起動、フラッシュ、調整する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/sys/kdaemon.h">sys/kdaemon.h</A>&gt;</B>
+
+<B>int bdflush(int </B><I>func</I><B>, long *</B><I>address</I><B>);</B>
+<B>int bdflush(int </B><I>func</I><B>, long </B><I>data</I><B>);</B>
+</PRE>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+<I>注意</I>: Linux 2.6 以降では、このシステムコールは非推奨であり、何も行わない。
+将来のカーネルのリリースで完全になくなる可能性が高い。現在は、<B>bdflush</B>() が
+実行していた処理はカーネルの <I>pdflush</I> スレッドによって行われている。
+<P>
+
+<B>bdflush</B>()  はバッファーダーティーフラッシュ (buffer-dirty-flush) デーモン (daemon) を起動、フラッシュ
+(flush)、調整 (tune) する。 (<B>CAP_SYS_ADMIN</B> ケーパビリティ (capability) を持つ) 特権プロセスのみが
+<B>bdflush</B>()  を呼び出すことができる。
+<P>
+
+<I>func</I> が負か 0 でデーモンが起動されていなれば、 <B>bdflush</B>()  はデーモンのコードへ入り、戻ってこない。
+<P>
+
+<I>func</I> が 1 ならば、 汚れた (dirty) バッファーがディスクへと書き込まれる。
+<P>
+
+<I>func</I> が 2 以上で偶数 (最小ビットが 0) ならば、 <I>address</I> にロングワードでアドレスを指定し、そのアドレスに
+(<I>func</I>-2)/2 で指定された調節パラメーターが返される。
+<P>
+
+<I>func</I> が 3 以上で奇数 (最小ビットが 1) ならば、 <I>data</I> をロングワードで指定し、その値を (<I>func</I>-3)/2
+で指定された調節パラメーターに設定する。
+<P>
+
+パラメーターの集合やその値、有効な範囲は Linux カーネルソースの <I>fs/buffer.c</I> に定義されている。
+<A NAME="lbAE">&nbsp;</A>
+<H2>返り値</H2>
+
+<I>func</I> が負か 0 で、デモーンの起動に成功した場合は <B>bdflush</B>()  は返ってこない。 そうでなければ成功した場合には 0
+が返される。失敗した場合には -1 が返され、 <I>errno</I> にそのエラーが指示される。
+<A NAME="lbAF">&nbsp;</A>
+<H2>エラー</H2>
+
+<DL COMPACT>
+<DT><B>EBUSY</B><DD>
+他のプロセスが既にデーモンコードに入っているのに、入ろうと試みた。
+<DT><B>EFAULT</B><DD>
+<I>address</I> がアクセス可能なアドレス空間の外部を指している。
+<DT><B>EINVAL</B><DD>
+不正なパラメーターの読み書きを試みたか、パラメーターへ不正な値を 書き込もうとした。
+<DT><B>EPERM</B><DD>
+呼び出し元に <B>CAP_SYS_ADMIN</B> ケーパビリティがない。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>バージョン</H2>
+
+
+バージョン 2.23 以降で、glibc はこの古いシステムコールをサポートしていない。
+<A NAME="lbAH">&nbsp;</A>
+<H2>準拠</H2>
+
+<B>bdflush</B>()  は Linux 特有であり移植を意図したプログラムで使用すべきではない。
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/sync.1.html">sync</A></B>(1),
+
+<B><A HREF="../man2/fsync.2.html">fsync</A></B>(2),
+
+<B><A HREF="../man2/sync.2.html">sync</A></B>(2)
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">返り値</A><DD>
+<DT><A HREF="#lbAF">エラー</A><DD>
+<DT><A HREF="#lbAG">バージョン</A><DD>
+<DT><A HREF="#lbAH">準拠</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 23:55:53 GMT, January 01, 2021
+</BODY>
+</HTML>
