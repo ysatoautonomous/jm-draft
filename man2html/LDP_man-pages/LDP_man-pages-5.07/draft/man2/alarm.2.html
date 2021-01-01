@@ -1,0 +1,108 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of ALARM</TITLE>
+</HEAD><BODY>
+<H1>ALARM</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2017-05-03<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+alarm - シグナル配送のためのアラームクロックを設定する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/unistd.h">unistd.h</A>&gt;</B>
+
+<B>unsigned int alarm(unsigned int </B><I>seconds</I><B>);</B>
+</PRE>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>alarm</B>()  は <B>SIGALRM</B> シグナルを <I>seconds</I> 秒後に呼び出したプロセスに配送するように手配する。
+<P>
+
+<I>seconds</I> がゼロならば、処理待ち (pending) のアラームはすべてキャンセルされる。
+<P>
+
+今までに設定されていた <B>alarm</B>()  は中断される。
+<A NAME="lbAE">&nbsp;</A>
+<H2>返り値</H2>
+
+<B>alarm</B>()  は以前に予定されていたアラームの配送までの残り時間を返す。以前に アラームが予定されていなければゼロを返す。
+<A NAME="lbAF">&nbsp;</A>
+<H2>準拠</H2>
+
+POSIX.1-2001, POSIX.1-2008, SVr4, 4.3BSD.
+<A NAME="lbAG">&nbsp;</A>
+<H2>注意</H2>
+
+<B>alarm</B>()  と <B><A HREF="../man2/setitimer.2.html">setitimer</A></B>(2)  は同じタイマーを共有している; 片方を呼び出すことはもう一方の 使用に影響を与える。
+<P>
+
+<B>alarm</B>() で作成されたアラームは <B><A HREF="../man2/execve.2.html">execve</A></B>(2) の前後で保持され、 <B><A HREF="../man2/fork.2.html">fork</A></B>(2)
+で作成された子プロセスには継承されない。
+<P>
+
+<B><A HREF="../man3/sleep.3.html">sleep</A></B>(3)  は <B>SIGALRM</B> を利用して実装されているかもしれない。 <B>alarm</B>()  と <B><A HREF="../man3/sleep.3.html">sleep</A></B>(3)
+を混ぜて使用してはならない。
+<P>
+
+スケジューリング(scheduling)の遅延により、プロセスの実行に不定量の 遅延が起きる可能性がある。
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/gettimeofday.2.html">gettimeofday</A></B>(2),
+
+<B><A HREF="../man2/pause.2.html">pause</A></B>(2),
+
+<B><A HREF="../man2/select.2.html">select</A></B>(2),
+
+<B><A HREF="../man2/setitimer.2.html">setitimer</A></B>(2),
+
+<B><A HREF="../man2/sigaction.2.html">sigaction</A></B>(2),
+
+<B><A HREF="../man2/signal.2.html">signal</A></B>(2),
+
+<B><A HREF="../man2/timer_create.2.html">timer_create</A></B>(2),
+
+<B><A HREF="../man2/timerfd_create.2.html">timerfd_create</A></B>(2),
+
+<B><A HREF="../man3/sleep.3.html">sleep</A></B>(3),
+
+<B><A HREF="../man7/time.7.html">time</A></B>(7)
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">返り値</A><DD>
+<DT><A HREF="#lbAF">準拠</A><DD>
+<DT><A HREF="#lbAG">注意</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:05:20 GMT, January 01, 2021
+</BODY>
+</HTML>
