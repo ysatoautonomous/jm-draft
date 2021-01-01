@@ -1,0 +1,128 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of ALLOC_HUGEPAGES</TITLE>
+</HEAD><BODY>
+<H1>ALLOC_HUGEPAGES</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2017-09-15<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+alloc_hugepages, free_hugepages - 大きなサイズのページの割り当てと解放を行う
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>void *alloc_hugepages(int </B><I>key</I><B>, void *</B><I>addr</I><B>, size_t </B><I>len</I><B>,</B>
+<B>                      int </B><I>prot</I><B>, int </B><I>flag</I><B>);</B>
+
+<B>int free_hugepages(void *</B><I>addr</I><B>);</B>
+</PRE>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+システムコール <B>alloc_hugepages</B>()  と <B>free_hugepages</B>()  は Linux 2.5.36
+で導入され、2.5.54 で再び削除された。 これらのシステムコールは i386 と ia64 のみで (かつ
+<B>CONFIG_HUGETLB_PAGE</B> を指定してビルドされた場合に) 存在する。 Linux 2.4.20 では syscall
+番号が存在するが、 呼び出すとエラー <B>ENOSYS</B> で失敗する。
+<P>
+
+i386 では、メモリー管理ハードウェアは通常のページ (4 KiB) と 大きなサイズのページ (以下、ヒュージページ; 2MiB または 4
+MiB) を 扱うことができる。 同様に、ia64 もいくつかのサイズのヒュージページを扱うことができる。
+これらのシステムコールは、ヒュージページをプロセスのメモリーにマップしたり、 再び解放したりする。
+ヒュージページはメモリー内にロックされ、スワップされない。
+<P>
+
+<I>key</I> 引き数は識別子である。 0 の場合、ページは非公開になり、子プロセスに継承されない。 正の場合、ページは同じ <I>key</I>
+を使う他のアプリケーションと共有され、子プロセスに継承される。
+<P>
+
+<B>free_hugepages</B>()  の <I>addr</I> 引き数は、どのページを解放するかを指定する: <I>addr</I> は
+<B>alloc_hugepages</B>()  の呼び出しの返り値である (全てのユーザーがメモリーを解放したときに、
+そのメモリーは初めて実際に解放される)。 <B>alloc_hugepages</B>()  の <I>addr</I>
+引き数はヒントであり、カーネルはそれに従うかもしれないし、 従わないかもしれない。 アドレスは正しく配置されなければならない。
+<P>
+
+<I>len</I> 引き数は要求されたセグメントの長さである。 これはヒュージページのサイズの倍数にしなければならない。
+<P>
+
+<I>prot</I> 引き数はセグメントのメモリー保護を指定する。 これは <B>PROT_READ</B>, <B>PROT_WRITE</B>, <B>PROT_EXEC</B>
+のいずれかである。
+<P>
+
+<I>key</I> が正でない限り、 <I>flag</I> 引き数は無視される。 <I>key</I> が正で、かつ <I>flag</I> が <B>IPC_CREAT</B>
+であり、かつ指定された <I>key</I> で (セグメントが) 何も存在しない場合、 新しいヒュージページセグメントが作成される。 <I>flag</I>
+が設定されておらず、かつ指定された <I>key</I> のセグメントが存在しない場合、 <B>ENOENT</B> が返される。
+<A NAME="lbAE">&nbsp;</A>
+<H2>返り値</H2>
+
+成功した場合、 <B>alloc_hugepages</B>()  は割り当てられた仮想アドレスを返し、 <B>free_hugepages</B>()  は 0
+を返す。 失敗した場合、-1 を返し、 <I>errno</I> が適切に設定される。
+<A NAME="lbAF">&nbsp;</A>
+<H2>エラー</H2>
+
+<DL COMPACT>
+<DT><B>ENOSYS</B><DD>
+このシステムコールはカーネルでサポートされていない。
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>ファイル</H2>
+
+<DL COMPACT>
+<DT><I>/proc/sys/vm/nr_hugepages</I> 設定された hugetlb ページの数。 このファイルは読み書きできる。<DD>
+<DT><I>/proc/meminfo</I> 設定された hugetlb ページの数と、 3 つの変数 HugePages_Total,<DD>
+HugePages_Free, Hugepagesize の サイズについての情報を提供する。
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>準拠</H2>
+
+このシステムコールは Intel プロセッサ上の Linux に固有のものであり、 移植性が必要なプログラムで使うべきでない。
+<A NAME="lbAI">&nbsp;</A>
+<H2>注意</H2>
+
+これらのシステムコールはなくなった。 これらは Linux 2.5.36 から 2.5.54 にのみ存在する。 代わりに今は hugetlbfs
+ファイルシステムを使うことができる。 (CPU がサポートしている場合) ヒュージページを持つメモリーは、 <B><A HREF="../man2/mmap.2.html">mmap</A></B>(2)
+を使ってこの仮想ファイルシステムでファイルをマップすることで取得できる。
+<P>
+
+ヒュージページの最大数は、 <B>hugepages=</B> 起動パラメーターを使って指定できる。
+<P>
+
+
+
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">返り値</A><DD>
+<DT><A HREF="#lbAF">エラー</A><DD>
+<DT><A HREF="#lbAG">ファイル</A><DD>
+<DT><A HREF="#lbAH">準拠</A><DD>
+<DT><A HREF="#lbAI">注意</A><DD>
+<DT><A HREF="#lbAJ">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:40:13 GMT, January 01, 2021
+</BODY>
+</HTML>
