@@ -1,0 +1,256 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of BIND</TITLE>
+</HEAD><BODY>
+<H1>BIND</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2020-06-09<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+bind - ソケットに名前をつける
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/sys/types.h">sys/types.h</A>&gt;</B>          /* 「注意」参照 */
+<B>#include &lt;<A HREF="file:///usr/include/sys/socket.h">sys/socket.h</A>&gt;</B>
+
+<B>int bind(int </B><I>sockfd</I><B>, const struct sockaddr *</B><I>addr</I><B>,</B>
+<B>         socklen_t </B><I>addrlen</I><B>);</B>
+</PRE>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B><A HREF="../man2/socket.2.html">socket</A></B>(2)  でソケットが作成されたとき、そのソケットは名前空間 (アドレスファミリー) に 存在するが、アドレスは割り当てられていない。
+<B>bind</B>()  は、ファイルディスクリプター <I>sockfd</I> で参照されるソケットに <I>addr</I> で指定されたアドレスを割り当てる。
+<I>addrlen</I> には <I>addr</I> が指すアドレス構造体のサイズをバイト単位で指定する。 伝統的にこの操作は 「ソケットに名前をつける」
+と呼ばれる。
+<P>
+
+<B>SOCK_STREAM</B> ソケットが接続を受け付けられるようにするには (<B><A HREF="../man2/accept.2.html">accept</A></B>(2)  を参照)、通常その前に <B>bind</B>()
+を使用してローカルアドレスを割り当てる必要がある。
+<P>
+
+名前付けのルールはアドレスファミリーごとに異なっている。詳細な情報は 第 7 章の各マニュアルを参照すること。 <B>AF_INET</B> は
+<B><A HREF="../man7/ip.7.html">ip</A></B>(7)  を、 <B>AF_INET6</B> は <B><A HREF="../man7/ipv6.7.html">ipv6</A></B>(7)  を、 <B>AF_UNIX</B> は <B><A HREF="../man7/unix.7.html">unix</A></B>(7)  を、
+<B>AF_APPLETALK</B> は <B><A HREF="../man7/ddp.7.html">ddp</A></B>(7)  を、 <B>AF_PACKET</B> は <B><A HREF="../man7/packet.7.html">packet</A></B>(7)  を、 <B>AF_X25</B> は
+<B><A HREF="../man7/x25.7.html">x25</A></B>(7)  を、 <B>AF_NETLINK</B> は <B><A HREF="../man7/netlink.7.html">netlink</A></B>(7)  を参照。
+<P>
+
+<I>addr</I> 引き数に実際にどのような構造体が渡されるかは、 アドレスファミリーに依存する。 <I>sockaddr</I>
+構造体は以下のような感じで定義されている:
+
+
+struct sockaddr {
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;sa_family_t&nbsp;sa_family;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;char&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sa_data[14];
+}
+
+
+この構造体は、 <I>addr</I> に渡される構造体へのポインターをキャストし、 コンパイラの警告メッセージを抑えるためだけに存在する。
+下記の「例」を参照。
+<A NAME="lbAE">&nbsp;</A>
+<H2>返り値</H2>
+
+成功した場合にはゼロが返される。エラー時には -1 が返され、 <I>errno</I> が適切に設定される。
+<A NAME="lbAF">&nbsp;</A>
+<H2>エラー</H2>
+
+<DL COMPACT>
+<DT><B>EACCES</B><DD>
+
+そのアドレスは保護されていて、かつユーザーがスーパーユーザーではない。
+<DT><B>EADDRINUSE</B><DD>
+指定されたアドレスが既に使用中である。
+<DT><B>EADDRINUSE</B><DD>
+(インターネットドメインソケットの場合) ソケットアドレス構造体でポート番号に 0 が指定されたが、 一時ポート (ephemeral port)
+を割り当てようとした際に、 一時ポートとして使用する範囲のすべてのポート番号が使用中であった。 <B><A HREF="../man7/ip.7.html">ip</A></B>(7) の
+<I>/proc/sys/net/ipv4/ip_local_port_range</I> の説明を参照。
+<DT><B>EBADF</B><DD>
+
+
+<I>sockfd</I> が不正なファイルディスクリプターである。
+<DT><B>EINVAL</B><DD>
+
+
+ソケットがすでにアドレスに結びつけ (bind) られている。
+<DT><B>EINVAL</B><DD>
+<I>addrlen</I> が間違っているか、 <I>addr</I> がこのソケットのドメインで有効なアドレスではない。
+<DT><B>ENOTSOCK</B><DD>
+
+
+
+ファイルディスクリプター <I>sockfd</I> が、ソケットを参照していない。
+</DL>
+<P>
+
+以下のエラーは UNIXドメイン (<B>AF_UNIX</B>)  のソケット特有である:
+<DL COMPACT>
+<DT><B>EACCES</B><DD>
+パス名の構成要素に検索許可 (search permission) がない (<B><A HREF="../man7/path_resolution.7.html">path_resolution</A></B>(7)  も参照すること)。
+<DT><B>EADDRNOTAVAIL</B><DD>
+存在しないインターフェースが要求されたか、要求されたアドレスが ローカルではなかった。
+<DT><B>EFAULT</B><DD>
+<I>addr</I> がユーザーのアクセス可能なアドレス空間の外を指している。
+<DT><B>ELOOP</B><DD>
+<I>addr</I> を解決する際に遭遇したシンボリックリンクが多過ぎる。
+<DT><B>ENAMETOOLONG</B><DD>
+<I>addr</I> が長過ぎる。
+<DT><B>ENOENT</B><DD>
+
+ソケットパス名のディレクトリプレフィックスの構成要素が存在しない。
+<DT><B>ENOMEM</B><DD>
+カーネルに、利用可能なメモリーが十分にない。
+<DT><B>ENOTDIR</B><DD>
+パス名の構成要素がディレクトリではない。
+<DT><B>EROFS</B><DD>
+ソケット inode が読み込み専用のファイルシステム上にある。
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>準拠</H2>
+
+
+
+
+
+
+
+
+
+POSIX.1-2001, POSIX.1-2008, SVr4, 4.4BSD
+(<B>bind</B>()  は 4.2BSD で最初に現われた)。
+<A NAME="lbAH">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+
+POSIX.1 では <I>&lt;<A HREF="file:///usr/include/sys/types.h">sys/types.h</A>&gt;</I> のインクルードは必須とされておらず、 Linux
+ではこのヘッダーファイルは必要ではない。 しかし、歴史的には、いくつかの実装 (BSD 系) でこのヘッダーファイルが
+必要であり、移植性が必要なアプリケーションではこのファイルを インクルードするのが賢明であろう。
+<P>
+
+
+
+
+
+<I>socklen_t</I>
+
+の型のバックグランドについては、
+<B><A HREF="../man2/accept.2.html">accept</A></B>(2)
+
+を参照すること。
+<A NAME="lbAI">&nbsp;</A>
+<H2>バグ</H2>
+
+
+透過的プロキシ (transparent proxy) オプションについて記述していない。
+<A NAME="lbAJ">&nbsp;</A>
+<H2>例</H2>
+
+インターネットドメインソケットでの <B>bind</B>()  の利用例が <B><A HREF="../man3/getaddrinfo.3.html">getaddrinfo</A></B>(3)  に記載されている。
+<P>
+
+
+
+
+以下の例は、UNIX ドメイン (<B>AF_UNIX</B>)  でストリームソケットを bind する方法を示したものである。
+<P>
+
+
+#include &lt;<A HREF="file:///usr/include/sys/socket.h">sys/socket.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/sys/un.h">sys/un.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/stdlib.h">stdlib.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/stdio.h">stdio.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/string.h">string.h</A>&gt;
+<P>
+#define MY_SOCK_PATH &quot;/somepath&quot;
+#define LISTEN_BACKLOG 50
+<P>
+#define handle_error(msg) \
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;do&nbsp;{&nbsp;perror(msg);&nbsp;exit(EXIT_FAILURE);&nbsp;}&nbsp;while&nbsp;(0)
+<P>
+int
+main(int argc, char *argv[])
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;sfd,&nbsp;cfd;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;struct&nbsp;sockaddr_un&nbsp;my_addr,&nbsp;peer_addr;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;socklen_t&nbsp;peer_addr_size;
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;sfd&nbsp;=&nbsp;socket(AF_UNIX,&nbsp;SOCK_STREAM,&nbsp;0);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(sfd&nbsp;==&nbsp;-1)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;handle_error(&quot;socket&quot;);
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;memset(&amp;my_addr,&nbsp;0,&nbsp;sizeof(struct&nbsp;sockaddr_un));
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;Clear&nbsp;structure&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;my_addr.sun_family&nbsp;=&nbsp;AF_UNIX;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;strncpy(my_addr.sun_path,&nbsp;MY_SOCK_PATH,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sizeof(my_addr.sun_path)&nbsp;-&nbsp;1);
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(bind(sfd,&nbsp;(struct&nbsp;sockaddr&nbsp;*)&nbsp;&amp;my_addr,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sizeof(struct&nbsp;sockaddr_un))&nbsp;==&nbsp;-1)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;handle_error(&quot;bind&quot;);
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(listen(sfd,&nbsp;LISTEN_BACKLOG)&nbsp;==&nbsp;-1)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;handle_error(&quot;listen&quot;);
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;Now&nbsp;we&nbsp;can&nbsp;accept&nbsp;incoming&nbsp;connections&nbsp;one
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at&nbsp;a&nbsp;time&nbsp;using&nbsp;<A HREF="../man2/accept.2.html">accept</A>(2)&nbsp;*/
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;peer_addr_size&nbsp;=&nbsp;sizeof(struct&nbsp;sockaddr_un);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;cfd&nbsp;=&nbsp;accept(sfd,&nbsp;(struct&nbsp;sockaddr&nbsp;*)&nbsp;&amp;peer_addr,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;peer_addr_size)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(cfd&nbsp;==&nbsp;-1)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;handle_error(&quot;accept&quot;);
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;Code&nbsp;to&nbsp;deal&nbsp;with&nbsp;incoming&nbsp;connection(s)...&nbsp;*/
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;When&nbsp;no&nbsp;longer&nbsp;required,&nbsp;the&nbsp;socket&nbsp;pathname,&nbsp;MY_SOCK_PATH
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;should&nbsp;be&nbsp;deleted&nbsp;using&nbsp;<A HREF="../man2/unlink.2.html">unlink</A>(2)&nbsp;or&nbsp;<A HREF="../man3/remove.3.html">remove</A>(3)&nbsp;*/
+}
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/accept.2.html">accept</A></B>(2), <B><A HREF="../man2/connect.2.html">connect</A></B>(2), <B><A HREF="../man2/getsockname.2.html">getsockname</A></B>(2), <B><A HREF="../man2/listen.2.html">listen</A></B>(2), <B><A HREF="../man2/socket.2.html">socket</A></B>(2),
+<B><A HREF="../man3/getaddrinfo.3.html">getaddrinfo</A></B>(3), <B><A HREF="../man3/getifaddrs.3.html">getifaddrs</A></B>(3), <B><A HREF="../man7/ip.7.html">ip</A></B>(7), <B><A HREF="../man7/ipv6.7.html">ipv6</A></B>(7),
+<B><A HREF="../man7/path_resolution.7.html">path_resolution</A></B>(7), <B><A HREF="../man7/socket.7.html">socket</A></B>(7), <B><A HREF="../man7/unix.7.html">unix</A></B>(7)
+<A NAME="lbAL">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">返り値</A><DD>
+<DT><A HREF="#lbAF">エラー</A><DD>
+<DT><A HREF="#lbAG">準拠</A><DD>
+<DT><A HREF="#lbAH">注意</A><DD>
+<DT><A HREF="#lbAI">バグ</A><DD>
+<DT><A HREF="#lbAJ">例</A><DD>
+<DT><A HREF="#lbAK">関連項目</A><DD>
+<DT><A HREF="#lbAL">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 00:27:21 GMT, January 02, 2021
+</BODY>
+</HTML>
