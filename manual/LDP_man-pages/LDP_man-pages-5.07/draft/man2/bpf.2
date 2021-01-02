@@ -93,7 +93,7 @@ eBPF マップは、さまざまなデータ型を格納するための、基本
 マップの中に何を格納するかは、ユーザプロセスと eBPF プログラムが決定できる。
 .PP
 .\"O There's one special map type, called a program array.
-プログラムアレイと呼ばれる特別なマップ型がある。
+プログラム配列と呼ばれる特別なマップ型がある。
 .\"O This type of map stores file descriptors referring to other eBPF programs.
 この型のマップは、他の eBPF プログラムを参照するファイルディスクリプターを格納する。
 .\"O When a lookup in the map is performed, the program flow is
@@ -114,7 +114,7 @@ eBPF マップは、さまざまなデータ型を格納するための、基本
 .\"O All programs referred to in a program-array map must
 .\"O have been previously loaded into the kernel via
 .\"O .BR bpf ().
-プログラムアレイマップで参照されるすべてのプログラムは、
+プログラム配列マップで参照されるすべてのプログラムは、
 .BR bpf ()
 で前もってカーネルにロードされていなればならない。
 .\"O If a map lookup fails, the current program continues its execution.
@@ -932,40 +932,73 @@ bpf_get_next_key(int fd, const void *key, void *next_key)
 .TP
 .B BPF_MAP_TYPE_ARRAY
 .\" commit 28fbcfa08d8ed7c5a50d41a0433aad222835e8e3
-Array maps have the following characteristics:
+.\"O Array maps have the following characteristics:
+配列マップには、以下の特徴がある。
 .RS
 .IP * 3
-Optimized for fastest possible lookup.
-In the future the verifier/JIT compiler
-may recognize lookup() operations that employ a constant key
-and optimize it into constant pointer.
-It is possible to optimize a non-constant
-key into direct pointer arithmetic as well, since pointers and
+.\"O Optimized for fastest possible lookup.
+検索を最速にするために最適化されている。
+.\"O In the future the verifier/JIT compiler
+.\"O may recognize lookup() operations that employ a constant key
+.\"O and optimize it into constant pointer.
+将来的に、検証器と JIT コンパイラーは、
+固定のキーが使われている lookup() 操作を認識し、
+固定のポインタに最適化できるかもしれない。
+.\"O It is possible to optimize a non-constant
+.\"O key into direct pointer arithmetic as well, since pointers and
+.\"O .I value_size
+.\"O are constant for the life of the eBPF program.
+eBPF プログラムの生存期間中、
+ポインタと
 .I value_size
-are constant for the life of the eBPF program.
-In other words,
+は一定であるので、固定でないキーでも、直接のポインタ計算に
+最適化できる。
+.\"O In other words,
+.\"O .BR array_map_lookup_elem ()
+.\"O may be 'inlined' by the verifier/JIT compiler
+.\"O while preserving concurrent access to this map from user space.
+言い換えると、
 .BR array_map_lookup_elem ()
-may be 'inlined' by the verifier/JIT compiler
-while preserving concurrent access to this map from user space.
+は、ユーザ空間からの並行アクセスを保持しながら、
+検証器と JIT コンパイラによって「インライン」にできる。
 .IP *
-All array elements pre-allocated and zero initialized at init time
+.\"O All array elements pre-allocated and zero initialized at init time
+すべての配列要素はあらかじめ確保され、最初に 0 で初期化される。
 .IP *
-The key is an array index, and must be exactly four bytes.
+.\"O The key is an array index, and must be exactly four bytes.
+キーは配列のインデックスであり、必ず 4 バイトでなければならない。
 .IP *
+.\"O .BR map_delete_elem ()
+.\"O fails with the error
+.\"O .BR EINVAL ,
+.\"O since elements cannot be deleted.
 .BR map_delete_elem ()
-fails with the error
-.BR EINVAL ,
-since elements cannot be deleted.
+は、要素が削除できないので、エラー
+.B EINVAL
+で失敗する。
 .IP *
+.\"O .BR map_update_elem ()
+.\"O replaces elements in a
+.\"O .B nonatomic
+.\"O fashion;
+.\"O for atomic updates, a hash-table map should be used instead.
 .BR map_update_elem ()
-replaces elements in a
-.B nonatomic
-fashion;
-for atomic updates, a hash-table map should be used instead.
-There is however one special case that can also be used with arrays:
-the atomic built-in
+は要素を
+.B アトミックでない
+やり方で置き換える。
+アトミックな更新をするためには、ハッシュテーブルマップを使うべきである。
+.\"O There is however one special case that can also be used with arrays:
+しかし、特別な場合には、(アトミックな更新に) 配列を使うことができる:
+.\"O the atomic built-in
+.\"O .B __sync_fetch_and_add()
+.\"O can be used on 32 and 64 bit atomic counters.
+アトミックな組み込みの
 .B __sync_fetch_and_add()
-can be used on 32 and 64 bit atomic counters.
+は 32 ビットと 64 ビットのアトミックなカウンターで使うことができる。
+.\"O For example, it can be
+.\"O applied on the whole value itself if it represents a single counter,
+.\"O or in case of a structure containing multiple counters, it could be
+.\"O used on individual counters.
 For example, it can be
 applied on the whole value itself if it represents a single counter,
 or in case of a structure containing multiple counters, it could be
