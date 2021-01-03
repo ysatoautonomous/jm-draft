@@ -999,40 +999,63 @@ eBPF プログラムの生存期間中、
 .\"O applied on the whole value itself if it represents a single counter,
 .\"O or in case of a structure containing multiple counters, it could be
 .\"O used on individual counters.
-For example, it can be
-applied on the whole value itself if it represents a single counter,
-or in case of a structure containing multiple counters, it could be
-used on individual counters.
-This is quite often useful for aggregation and accounting of events.
+例えば、この関数は、値が 1 つのカウンターである場合、値全体に適用することができる。
+また、この関数は、構造体が複数のカウンターを含んでいる場合、
+個々のカウンターに使うことができる。
+.\"O This is quite often useful for aggregation and accounting of events.
+これは、しばしばイベントの集約や集計にとても役立つ。
 .RE
 .IP
-Among the uses for array maps are the following:
+.\"O Among the uses for array maps are the following:
+配列マップの使い方は、以下の通りである:
 .RS
 .IP * 3
-As "global" eBPF variables: an array of 1 element whose key is (index) 0
-and where the value is a collection of 'global' variables which
-eBPF programs can use to keep state between events.
+.\"O As "global" eBPF variables: an array of 1 element whose key is (index) 0
+.\"O and where the value is a collection of 'global' variables which
+.\"O eBPF programs can use to keep state between events.
+「グローバルな」eBPF 変数として:要素が 1 の配列で、キーを (インデックス) 0 とする。
+ここで値は、「グローバルな」変数の集合であり、
+eBPF プログラムはイベント間で状態を保持するのに使う。
 .IP *
-Aggregation of tracing events into a fixed set of buckets.
+.\"O Aggregation of tracing events into a fixed set of buckets.
+.\": 
+.\": この翻訳は自信なし
+.\": 
+トレーシングイベントを、バケットの固定の集合に集約する。
 .IP *
-Accounting of networking events, for example, number of packets and packet
-sizes.
+.\"O Accounting of networking events, for example, number of packets and packet
+.\"O sizes.
+ネットワーキングイベント、例えば、パケット数または
+パケットサイズを集計する。
 .RE
 .TP
-.BR BPF_MAP_TYPE_PROG_ARRAY " (since Linux 4.2)"
-A program array map is a special kind of array map whose map values
-contain only file descriptors referring to other eBPF programs.
-Thus, both the
+.\"O .BR BPF_MAP_TYPE_PROG_ARRAY " (since Linux 4.2)"
+.BR BPF_MAP_TYPE_PROG_ARRAY " (Linux 4.2 以降)"
+.\"O A program array map is a special kind of array map whose map values
+.\"O contain only file descriptors referring to other eBPF programs.
+プログラム配列マップは、配列マップの特別な形式であり、
+マップの値は、他の eBPF プログラムを参照するファイルディスクリプターのみを保持する。
+.\"O Thus, both the
+.\"O .I key_size
+.\"O and
+.\"O .I value_size
+.\"O must be exactly four bytes.
+よって、
 .I key_size
-and
+と
 .I value_size
-must be exactly four bytes.
-This map is used in conjunction with the
+は、必ず 4 バイトでなければならない。
+.\"O This map is used in conjunction with the
+.\"O .BR bpf_tail_call ()
+.\"O helper.
+このマップは、
 .BR bpf_tail_call ()
-helper.
+ヘルパーと併せて使われる。
 .IP
-This means that an eBPF program with a program array map attached to it
-can call from kernel side into
+.\"O This means that an eBPF program with a program array map attached to it
+.\"O can call from kernel side into
+これは、プログラム配列マップをつけた eBPF プログラムは、
+カーネルサイドから以下のように呼び出すことができるということである。
 .IP
 .in +4n
 .EX
@@ -1041,39 +1064,67 @@ void bpf_tail_call(void *context, void *prog_map,
 .EE
 .in
 .IP
-and therefore replace its own program flow with the one from the program
-at the given program array slot, if present.
-This can be regarded as kind of a jump table to a different eBPF program.
-The invoked program will then reuse the same stack.
-When a jump into the new program has been performed,
-it won't return to the old program anymore.
+.\"O and therefore replace its own program flow with the one from the program
+.\"O at the given program array slot, if present.
+そして、自身のプログラムフローを、指定したプログラム配列の
+スロットにプログラムがあれば、それに置き換えることができる。
+.\"O This can be regarded as kind of a jump table to a different eBPF program.
+これは、別の eBPF プログラムへのジャンプテーブルの一種として扱うことができる。
+.\"O The invoked program will then reuse the same stack.
+そして、起動されたプログラムは、同じスタックを再利用する。
+.\"O When a jump into the new program has been performed,
+.\"O it won't return to the old program anymore.
+新しいプログラムへのジャンプが実行された場合、前のプログラムには
+戻らない。
 .IP
-If no eBPF program is found at the given index of the program array
-(because the map slot doesn't contain a valid program file descriptor,
-the specified lookup index/key is out of bounds,
-or the limit of 32
-.\" MAX_TAIL_CALL_CNT
-nested calls has been exceed),
-execution continues with the current eBPF program.
-This can be used as a fall-through for default cases.
+.\"O If no eBPF program is found at the given index of the program array
+.\"O (because the map slot doesn't contain a valid program file descriptor,
+.\"O the specified lookup index/key is out of bounds,
+.\"O or the limit of 32
+.\"O .\" MAX_TAIL_CALL_CNT
+.\"O nested calls has been exceed),
+.\"O execution continues with the current eBPF program.
+プログラム配列の指定されたインデックスに eBPF プログラムがない場合
+(マップスロットに有効なプログラムファイルディスクリプターがない
+場合、
+または指定された検索インデックス/キーが範囲外である場合、
+または入れ子の呼び出しが 32 の制限を肥えた場合)
+現在の eBPF プログラムで実行が継続される。
+.\"O This can be used as a fall-through for default cases.
+これは、失敗した場合のデフォルトとして、使われる。
 .IP
-A program array map is useful, for example, in tracing or networking, to
-handle individual system calls or protocols in their own subprograms and
-use their identifiers as an individual map index.
-This approach may result in performance benefits,
-and also makes it possible to overcome the maximum
-instruction limit of a single eBPF program.
-In dynamic environments,
-a user-space daemon might atomically replace individual subprograms
-at run-time with newer versions to alter overall program behavior,
-for instance, if global policies change.
+.\"O A program array map is useful, for example, in tracing or networking, to
+.\"O handle individual system calls or protocols in their own subprograms and
+.\"O use their identifiers as an individual map index.
+プログラム配列マップは、例えば、トレーシング、または
+ネットワーキングで役に立つ。
+プログラム配列マップ自身のサブプログラムで各システムコールや
+プロトコルを扱ったり、それらの識別子を各マップのインデックスとして
+使うことが出来る。
+.\"O This approach may result in performance benefits,
+.\"O and also makes it possible to overcome the maximum
+.\"O instruction limit of a single eBPF program.
+この方法は性能上の利点になり、単一の eBPF プログラムの
+命令数の制限の最大値を超えることもできる。
+.\"O In dynamic environments,
+.\"O a user-space daemon might atomically replace individual subprograms
+.\"O at run-time with newer versions to alter overall program behavior,
+.\"O for instance, if global policies change.
+動的な環境では、ユーザ空間のデーモンは、実行時に各サブプログラムを
+新バージョンに自動的に置き換え、たとえば、グローバルなポリシーを
+変更することで、プログラムの挙動全体を変更することができる。
 .\"
-.SS eBPF programs
-The
+.\"O .SS eBPF programs
+.SS eBPF プログラム
+.\"O The
+.\"O .B BPF_PROG_LOAD
+.\"O command is used to load an eBPF program into the kernel.
 .B BPF_PROG_LOAD
-command is used to load an eBPF program into the kernel.
-The return value for this command is a new file descriptor associated
-with this eBPF program.
+コマンドを使って、eBPF プログラムをカーネルにロードすることができる。
+.\"O The return value for this command is a new file descriptor associated
+.\"O with this eBPF program.
+このコマンドの返り値は、この eBPF プログラムに関連づけられた
+新しいファイルディスクリプターである。
 .PP
 .in +4n
 .EX
@@ -1099,8 +1150,10 @@ bpf_prog_load(enum bpf_prog_type type,
 .EE
 .in
 .PP
+.\"O .I prog_type
+.\"O is one of the available program types:
 .I prog_type
-is one of the available program types:
+は以下の利用可能なプログラムタイプのうちのいずれかである:
 .IP
 .in +4n
 .EX
@@ -1134,44 +1187,78 @@ enum bpf_prog_type {
 .EE
 .in
 .PP
-For further details of eBPF program types, see below.
+.\"O For further details of eBPF program types, see below.
+eBPF プログラム型のより詳細については、下記を参照すること。
 .PP
-The remaining fields of
+.\"O The remaining fields of
+.\"O .I bpf_attr
+.\"O are set as follows:
 .I bpf_attr
-are set as follows:
+の残りのフィールドは以下のように設定される:
 .IP * 3
+.\"O .I insns
+.\"O is an array of
+.\"O .I "struct bpf_insn"
+.\"O instructions.
 .I insns
-is an array of
+は
 .I "struct bpf_insn"
-instructions.
+命令の配列である。
 .IP *
+.\"O .I insn_cnt
+.\"O is the number of instructions in the program referred to by
+.\"O .IR insns .
 .I insn_cnt
-is the number of instructions in the program referred to by
-.IR insns .
+は
+.I insns
+で参照されるプログラムの命令数である。
 .IP *
+.\"O .I license
+.\"O is a license string, which must be GPL compatible to call helper functions
+.\"O marked
+.\"O .IR gpl_only .
 .I license
-is a license string, which must be GPL compatible to call helper functions
-marked
-.IR gpl_only .
-(The licensing rules are the same as for kernel modules,
-so that also dual licenses, such as "Dual BSD/GPL", may be used.)
+はライセンス文字列であり、
+.I gpl_only
+とマークされているヘルパー関数を呼ぶために、GPL 互換でなければならない。
+.\"O (The licensing rules are the same as for kernel modules,
+.\"O so that also dual licenses, such as "Dual BSD/GPL", may be used.)
+(ライセンシングのルールは、カーネルモジュールと同じであり、
+"Dual BSD/GPL" のようなデュアルライセンスも使える。)
 .IP *
+.\"O .I log_buf
+.\"O is a pointer to a caller-allocated buffer in which the in-kernel
+.\"O verifier can store the verification log.
 .I log_buf
-is a pointer to a caller-allocated buffer in which the in-kernel
-verifier can store the verification log.
-This log is a multi-line string that can be checked by
-the program author in order to understand how the verifier came to
-the conclusion that the eBPF program is unsafe.
-The format of the output can change at any time as the verifier evolves.
+は、呼び出し側によって確保されたバッファーであり、
+カーネル内の検証器が検証ログを格納できる。
+.\"O This log is a multi-line string that can be checked by
+.\"O the program author in order to understand how the verifier came to
+.\"O the conclusion that the eBPF program is unsafe.
+ログは、複数行の文字列であり、
+検証器がどのようにして eBPF プログラムが安全でないとの結論にしたかを、プログラムの作者が知るために
+チェックできる。
+.\"O The format of the output can change at any time as the verifier evolves.
+出力の形式は、検証器の開発が進むにつれて、変更される可能性がある。
 .IP *
+.\"O .I log_size
+.\"O size of the buffer pointed to by
+.\"O .IR log_buf .
 .I log_size
-size of the buffer pointed to by
-.IR log_buf .
-If the size of the buffer is not large enough to store all
-verifier messages, \-1 is returned and
+は
+.I log_buf
+で指されるバッファーのサイズである。
+.\"O If the size of the buffer is not large enough to store all
+.\"O verifier messages, \-1 is returned and
+.\"O .I errno
+.\"O is set to
+.\"O .BR ENOSPC .
+バッファーサイズが、検証器のすべてのメッセージを格納するのに
+充分でない場合、\-1 が返され、
 .I errno
-is set to
-.BR ENOSPC .
+が
+.B ENOSPC
+に設定される。
 .IP *
 .I log_level
 verbosity level of the verifier.
