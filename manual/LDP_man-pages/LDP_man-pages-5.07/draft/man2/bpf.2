@@ -1260,41 +1260,73 @@ eBPF プログラム型のより詳細については、下記を参照するこ
 .B ENOSPC
 に設定される。
 .IP *
+.\"O .I log_level
+.\"O verbosity level of the verifier.
 .I log_level
-verbosity level of the verifier.
-A value of zero means that the verifier will not provide a log;
-in this case,
+は検証器の詳細レベルである。
+.\"O A value of zero means that the verifier will not provide a log;
+値を 0 にすると、検証器はログを出力しない。
+.\"O in this case,
+.\"O .I log_buf
+.\"O must be a NULL pointer, and
+.\"O .I log_size
+.\"O must be zero.
+この場合、
 .I log_buf
-must be a NULL pointer, and
+は NULL ポインターでなければならず、
 .I log_size
-must be zero.
+は 0 でなければならない。
 .PP
-Applying
-.BR close (2)
-to the file descriptor returned by
+.\"O Applying
+.\"O .BR close (2)
+.\"O to the file descriptor returned by
+.\"O .B BPF_PROG_LOAD
+.\"O will unload the eBPF program (but see NOTES).
 .B BPF_PROG_LOAD
-will unload the eBPF program (but see NOTES).
+で返されるファイルディスクリプターを
+.BR close (2)
+を適用すると、eBPF プログラムをアンロードする
+(「注意」を参照すること)。
 .PP
-Maps are accessible from eBPF programs and are used to exchange data between
-eBPF programs and between eBPF programs and user-space programs.
-For example,
-eBPF programs can process various events (like kprobe, packets) and
-store their data into a map,
-and user-space programs can then fetch data from the map.
-Conversely, user-space programs can use a map as a configuration mechanism,
-populating the map with values checked by the eBPF program,
-which then modifies its behavior on the fly according to those values.
+.\"O Maps are accessible from eBPF programs and are used to exchange data between
+.\"O eBPF programs and between eBPF programs and user-space programs.
+マップは eBPF プログラムからアクセス可能であり、
+eBPF プログラム間や、eBPF プログラムとユーザ空間プログラムの間で、
+データを交換するのに使える。
+.\"O For example,
+.\"O eBPF programs can process various events (like kprobe, packets) and
+.\"O store their data into a map,
+.\"O and user-space programs can then fetch data from the map.
+例えば、eBPF プログラムは (kprobe, パケットのような) さまざまなイベントを処理可能で、
+そのデータをマップに格納できる。
+そして、ユーザ空間プログラムはマップからそのデータを取得できる。
+.\"O Conversely, user-space programs can use a map as a configuration mechanism,
+.\"O populating the map with values checked by the eBPF program,
+.\"O which then modifies its behavior on the fly according to those values.
+逆に、ユーザ空間プログラムはマップを設定の仕組みとして使うことができる。
+eBPF プログラムがチェックする値を含むマップを渡すことで、
+この値に基づいて、即時にプログラムの挙動を変更することができる。
 .\"
 .\"
-.SS eBPF program types
-The eBPF program type
+.\"O .SS eBPF program types
+.SS eBPF プログラム型
+.\"O The eBPF program type
+.\"O .RI ( prog_type )
+.\"O determines the subset of kernel helper functions that the program
+.\"O may call.
+eBPF プログラム型
 .RI ( prog_type )
-determines the subset of kernel helper functions that the program
-may call.
-The program type also determines the program input (context)\(emthe
-format of
+は、プログラムが呼ばれるカーネルヘルパー関数のサブセットを決定する。
+.\"O The program type also determines the program input (context)\(emthe
+.\"O format of
+.\"O .I "struct bpf_context"
+.\"O (which is the data blob passed into the eBPF program as the first argument).
+プログラム型は、プログラムの入力 (コンテキスト)\em
+つまり
 .I "struct bpf_context"
-(which is the data blob passed into the eBPF program as the first argument).
+のフォーマットも決定する。
+.RI ( "struct bpf_context"
+は、データ blob で、eBPF プログラムの最初の引き数として渡される)。
 .\"
 .\" FIXME
 .\" Somewhere in this page we need a general introduction to the
