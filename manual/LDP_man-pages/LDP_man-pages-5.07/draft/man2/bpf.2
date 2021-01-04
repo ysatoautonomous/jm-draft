@@ -23,6 +23,10 @@
 .\" the source, must acknowledge the copyright and authors of this work.
 .\" %%%LICENSE_END
 .\"
+.\" Japanese Version Copyright (c) 2021 Yuichi SATO
+.\" Translated Tue Jan  5 00:18:15 JST 2021
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
 .TH BPF 2 2020-06-09 "Linux" "Linux Programmer's Manual"
 .\"O .SH NAME
 .SH 名前
@@ -1483,15 +1487,24 @@ ioctl(event_fd, PERF_EVENT_IOC_SET_BPF, prog_fd);
 .in
 .\"
 .\"
-.SH EXAMPLES
+.\"O .SH EXAMPLES
+.SH 例
 .EX
-/* bpf+sockets example:
- * 1. create array map of 256 elements
- * 2. load program that counts number of packets received
+.\"O /* bpf+sockets example:
+.\"O  * 1. create array map of 256 elements
+.\"O  * 2. load program that counts number of packets received
+.\"O  *    r0 = skb->data[ETH_HLEN + offsetof(struct iphdr, protocol)]
+.\"O  *    map[r0]++
+.\"O  * 3. attach prog_fd to raw socket via setsockopt()
+.\"O  * 4. print number of received TCP/UDP packets every second
+.\"O  */
+/* bpf とソケットの例:
+ * 1. 要素数 256 の配列マップを作成する。
+ * 2. 受信したパケット数をカウントするプログラムをロードする。
  *    r0 = skb->data[ETH_HLEN + offsetof(struct iphdr, protocol)]
  *    map[r0]++
- * 3. attach prog_fd to raw socket via setsockopt()
- * 4. print number of received TCP/UDP packets every second
+ * 3. setsockopt() で prog_fd を raw ソケットに紐づける。
+ * 4. 受信した TCP/UDP パケット数を毎秒表示する。
  */
 int
 main(int argc, char **argv)
@@ -1549,130 +1562,210 @@ main(int argc, char **argv)
 }
 .EE
 .PP
-Some complete working code can be found in the
+.\"O Some complete working code can be found in the
+.\"O .I samples/bpf
+.\"O directory in the kernel source tree.
+動作している完全なコードは、カーネルソースツリーの
 .I samples/bpf
-directory in the kernel source tree.
-.SH RETURN VALUE
-For a successful call, the return value depends on the operation:
+にある。
+.\"O .SH RETURN VALUE
+.SH 返り値
+.\"O For a successful call, the return value depends on the operation:
+呼び出しに成功した場合、返り値は操作に依存する:
 .TP
 .B BPF_MAP_CREATE
-The new file descriptor associated with the eBPF map.
+.\"O The new file descriptor associated with the eBPF map.
+eBPF マップに関連づけられた新しいファイルディスクリプター。
 .TP
 .B BPF_PROG_LOAD
-The new file descriptor associated with the eBPF program.
+.\"O The new file descriptor associated with the eBPF program.
+eBPF プログラムに関連づけられた新しいファイルディスクリプター。
 .TP
-All other commands
-Zero.
+.\"O All other commands
+他のコマンド
+.\"O Zero.
+0。
 .PP
-On error, \-1 is returned, and
+.\"O On error, \-1 is returned, and
+.\"O .I errno
+.\"O is set appropriately.
+エラーの場合、\-1 が返され、
 .I errno
-is set appropriately.
-.SH ERRORS
+が適切に設定される。
+.\"O .SH ERRORS
+.SH エラー
 .TP
 .B E2BIG
-The eBPF program is too large or a map reached the
+.\"O The eBPF program is too large or a map reached the
+.\"O .I max_entries
+.\"O limit (maximum number of elements).
+eBPF プログラムが大きすぎる、またはマップが
 .I max_entries
-limit (maximum number of elements).
+の制限 (要素数の最大値) に達した。
 .TP
 .B EACCES
-For
-.BR BPF_PROG_LOAD ,
-even though all program instructions are valid, the program has been
-rejected because it was deemed unsafe.
-This may be because it may have
-accessed a disallowed memory region or an uninitialized stack/register or
-because the function constraints don't match the actual types or because
-there was a misaligned memory access.
-In this case, it is recommended to call
+.\"O For
+.\"O .BR BPF_PROG_LOAD ,
+.\"O even though all program instructions are valid, the program has been
+.\"O rejected because it was deemed unsafe.
+.B BPF_PROG_LOAD
+の場合に、すべてのプログラム命令が有効であるが、
+プログラムが安全でないと思われて、拒否された。
+.\"O This may be because it may have
+.\"O accessed a disallowed memory region or an uninitialized stack/register or
+.\"O because the function constraints don't match the actual types or because
+.\"O there was a misaligned memory access.
+これは、許可されていないメモリ領域または初期化されていない
+スタック/レジスタにアクセスする可能性がある場合、
+関数の制限が実際のタイプにマッチしない場合、
+配置を間違えたメモリアクセスがある場合などである。
+.\"O In this case, it is recommended to call
+.\"O .BR bpf ()
+.\"O again with
+.\"O .I log_level = 1
+.\"O and examine
+.\"O .I log_buf
+.\"O for the specific reason provided by the verifier.
+この場合、
 .BR bpf ()
-again with
+を
 .I log_level = 1
-and examine
+としてもう一度呼んで、検証器が提供する特定の理由を
 .I log_buf
-for the specific reason provided by the verifier.
+で調べることをお勧めする。
 .TP
 .B EBADF
+.\"O .I fd
+.\"O is not an open file descriptor.
 .I fd
-is not an open file descriptor.
+がオープンされたファイルディスクリプターでない。
 .TP
 .B EFAULT
-One of the pointers
-.RI ( key
-or
-.I value
-or
-.I log_buf
-or
+.\"O One of the pointers
+.\"O .RI ( key
+.\"O or
+.\"O .I value
+.\"O or
+.\"O .I log_buf
+.\"O or
+.\"O .IR insns )
+.\"O is outside the accessible address space.
+ポインター
+.RI ( key ,
+.IR value ,
+.IR log_buf ,
 .IR insns )
-is outside the accessible address space.
+のいずれかが、アクセス可能はアドレス空間の外にある。
 .TP
 .B EINVAL
-The value specified in
+.\"O The value specified in
+.\"O .I cmd
+.\"O is not recognized by this kernel.
 .I cmd
-is not recognized by this kernel.
+に指定された値が、カーネルに認識されない。
 .TP
 .B EINVAL
-For
-.BR BPF_MAP_CREATE ,
-either
+.\"O For
+.\"O .BR BPF_MAP_CREATE ,
+.\"O either
+.\"O .I map_type
+.\"O or attributes are invalid.
+.B BPF_MAP_CREATE
+の場合に、
 .I map_type
-or attributes are invalid.
+または属性が無効である。
 .TP
 .B EINVAL
-For
+.\"O For
+.\"O .B BPF_MAP_*_ELEM
+.\"O commands,
+.\"O some of the fields of
+.\"O .I "union bpf_attr"
+.\"O that are not used by this command
+.\"O are not set to zero.
 .B BPF_MAP_*_ELEM
-commands,
-some of the fields of
+コマンドの場合に、このコマンドで使われない
 .I "union bpf_attr"
-that are not used by this command
-are not set to zero.
+のどれかのフィールドが 0 に設定されていない。
 .TP
 .B EINVAL
-For
-.BR BPF_PROG_LOAD ,
-indicates an attempt to load an invalid program.
-eBPF programs can be deemed
-invalid due to unrecognized instructions, the use of reserved fields, jumps
-out of range, infinite loops or calls of unknown functions.
+.\"O For
+.\"O .BR BPF_PROG_LOAD ,
+.\"O indicates an attempt to load an invalid program.
+.B BPF_PROG_LOAD
+の場合に、無効なプログラムをロードしようとしたことを表す。
+.\"O eBPF programs can be deemed
+.\"O invalid due to unrecognized instructions, the use of reserved fields, jumps
+.\"O out of range, infinite loops or calls of unknown functions.
+eBPF プログラムは、認識されない命令、予約されたフィールドの利用、
+範囲外へのジャンプ、無限ループ、不明な関数呼び出しの場合に、
+無効であると認識される。
 .TP
 .B ENOENT
-For
+.\"O For
+.\"O .B BPF_MAP_LOOKUP_ELEM
+.\"O or
+.\"O .BR BPF_MAP_DELETE_ELEM ,
+.\"O indicates that the element with the given
+.\"O .I key
+.\"O was not found.
 .B BPF_MAP_LOOKUP_ELEM
-or
-.BR BPF_MAP_DELETE_ELEM ,
-indicates that the element with the given
+または
+.B BPF_MAP_DELETE_ELEM
+の場合、指定された
 .I key
-was not found.
+の要素が見つからないことを示す。
 .TP
 .B ENOMEM
-Cannot allocate sufficient memory.
+.\"O Cannot allocate sufficient memory.
+十分なメモリが確保できない。
 .TP
 .B EPERM
-The call was made without sufficient privilege
-(without the
+.\"O The call was made without sufficient privilege
+.\"O (without the
+.\"O .B CAP_SYS_ADMIN
+.\"O capability).
+十分な権限
+.RB ( CAP_SYS_ADMIN
+ケーパビリティ) なしで呼び出しが行われた。
+.\"O .SH VERSIONS
+.SH バージョン
+.\"O The
+.\"O .BR bpf ()
+.\"O system call first appeared in Linux 3.18.
+.BR bpf ()
+は Linux 3.18 で最初に登場した。
+.\"O .SH CONFORMING TO
+.SH 準拠
+.\"O The
+.\"O .BR bpf ()
+.\"O system call is Linux-specific.
+.BR bpf ()
+システムコールは Linux 固有である。
+.\"O .SH NOTES
+.SH 注意
+.\"O Prior to Linux 4.4, all
+.\"O .BR bpf ()
+.\"O commands require the caller to have the
+.\"O .B CAP_SYS_ADMIN
+.\"O capability.
+Linux 4.4 より前では、すべての
+.BR bpf ()
+コマンドで、呼び出し元が
 .B CAP_SYS_ADMIN
-capability).
-.SH VERSIONS
-The
-.BR bpf ()
-system call first appeared in Linux 3.18.
-.SH CONFORMING TO
-The
-.BR bpf ()
-system call is Linux-specific.
-.SH NOTES
-Prior to Linux 4.4, all
-.BR bpf ()
-commands require the caller to have the
-.B CAP_SYS_ADMIN
-capability.
-From Linux 4.4 onwards,
-.\" commit 1be7f75d1668d6296b80bf35dcf6762393530afc
-an unprivileged user may create limited programs of type
+ケーパビリティを持つ必要があった。
+.\"O From Linux 4.4 onwards,
+.\"O .\" commit 1be7f75d1668d6296b80bf35dcf6762393530afc
+.\"O an unprivileged user may create limited programs of type
+.\"O .BR BPF_PROG_TYPE_SOCKET_FILTER
+.\"O and associated maps.
+Linux 4.4 以降では、特権のないユーザでもタイプ
 .BR BPF_PROG_TYPE_SOCKET_FILTER
-and associated maps.
-However they may not store kernel pointers within
-the maps and are presently limited to the following helper functions:
+と関連するマップの限定されたプログラムを作れるようになった。
+.\"O However they may not store kernel pointers within
+.\"O the maps and are presently limited to the following helper functions:
+しかし、マップにカーネルのポインターを格納できず、現在のところ下記の
+ヘルパー関数に限定されている:
 .\" [Linux 5.6] mtk: The list of available functions is, I think, governed
 .\" by the check in net/core/filter.c::bpf_base_func_proto().
 .IP * 3
@@ -1686,108 +1779,169 @@ tail_call
 ktime_get_ns
 .PD 1
 .PP
-Unprivileged access may be blocked by setting the sysctl
-.IR /proc/sys/kernel/unprivileged_bpf_disabled .
+.\"O Unprivileged access may be blocked by setting the sysctl
+.\"O .IR /proc/sys/kernel/unprivileged_bpf_disabled .
+特権のないアクセスは、sysctl
+.I /proc/sys/kernel/unprivileged_bpf_disabled
+を設定することで、ブロックできる。
 .PP
-eBPF objects (maps and programs) can be shared between processes.
-For example, after
-.BR fork (2),
-the child inherits file descriptors referring to the same eBPF objects.
-In addition, file descriptors referring to eBPF objects can be
-transferred over UNIX domain sockets.
-File descriptors referring to eBPF objects can be duplicated
-in the usual way, using
+.\"O eBPF objects (maps and programs) can be shared between processes.
+eBPF オブジェクト (マップとプログラム) は、プロセス間で共有できる。
+.\"O For example, after
+.\"O .BR fork (2),
+.\"O the child inherits file descriptors referring to the same eBPF objects.
+例えば、
+.BR fork (2)
+の後、子プロセスは、同じ eBPF オブジェクトを参照するファイルディスクリプターを継承する。
+.\"O In addition, file descriptors referring to eBPF objects can be
+.\"O transferred over UNIX domain sockets.
+加えて、eBPF オブジェクトを参照するファイルディスクリプターは、
+UNIX ドメインソケットを使って転送できる。
+.\"O File descriptors referring to eBPF objects can be duplicated
+.\"O in the usual way, using
+.\"O .BR dup (2)
+.\"O and similar calls.
+eBPF オブジェクトを参照するファイルディスクリプターは、
 .BR dup (2)
-and similar calls.
-An eBPF object is deallocated only after all file descriptors
-referring to the object have been closed.
+や同様の呼び出しで、通常の方法で複製できる。
+.\"O An eBPF object is deallocated only after all file descriptors
+.\"O referring to the object have been closed.
+eBPF オブジェクトは、オブジェクトを参照するすべてのファイルディスクリプターが
+閉じられた場合に、解放される。
 .PP
-eBPF programs can be written in a restricted C that is compiled (using the
-.B clang
-compiler) into eBPF bytecode.
-Various features are omitted from this restricted C, such as loops,
-global variables, variadic functions, floating-point numbers,
-and passing structures as function arguments.
-Some examples can be found in the
+.\"O eBPF programs can be written in a restricted C that is compiled (using the
+.\"O .B clang
+.\"O compiler) into eBPF bytecode.
+eBPF プログラムは、制限付きの C で書くことができて、
+.RB ( clang
+コンパイラーを使って) eBPF バイトコードにコンパイルされる。
+.\"O Various features are omitted from this restricted C, such as loops,
+.\"O global variables, variadic functions, floating-point numbers,
+.\"O and passing structures as function arguments.
+制限付きの C では、ループ、グローバル変数、可変長期引き数の関数、
+浮動小数点小数、構造体の関数引き数への受け渡しなど、
+さまざまな機能が省略されている。
+.\"O Some examples can be found in the
+.\"O .I samples/bpf/*_kern.c
+.\"O files in the kernel source tree.
+カーネルソースコードツリーの
 .I samples/bpf/*_kern.c
-files in the kernel source tree.
+ファイルに、いくつかの例が書かれている。
 .\" There are also examples for the tc classifier, in the iproute2
 .\" project, in examples/bpf
 .PP
-The kernel contains a just-in-time (JIT) compiler that translates
-eBPF bytecode into native machine code for better performance.
-In kernels before Linux 4.15,
-the JIT compiler is disabled by default,
-but its operation can be controlled by writing one of the
-following integer strings to the file
-.IR /proc/sys/net/core/bpf_jit_enable :
+.\"O The kernel contains a just-in-time (JIT) compiler that translates
+.\"O eBPF bytecode into native machine code for better performance.
+カーネルは just-in-time (JIT) を含んでおり、
+eBPF バイトコードをネイティブのマシンコードに変換し、
+性能を良くすることができる。
+.\"O In kernels before Linux 4.15,
+.\"O the JIT compiler is disabled by default,
+.\"O but its operation can be controlled by writing one of the
+.\"O following integer strings to the file
+.\"O .IR /proc/sys/net/core/bpf_jit_enable :
+Linux 4.15 より前のカーネルでは、
+デフォルトでは JIT コンパイラーは無効化されているが、
+下記の整数文字列のいずれかを
+.I /proc/sys/net/core/bpf_jit_enable
+に書き込むことにより、操作をコントロールできる。
 .IP 0 3
-Disable JIT compilation (default).
+.\"O Disable JIT compilation (default).
+JIT コンパイルを無効化する (デフォルト)。
 .IP 1
-Normal compilation.
+.\"O Normal compilation.
+通常のコンパイル。
 .IP 2
-Debugging mode.
-The generated opcodes are dumped in hexadecimal into the kernel log.
-These opcodes can then be disassembled using the program
+.\"O Debugging mode.
+デバッグモード。
+.\"O The generated opcodes are dumped in hexadecimal into the kernel log.
+生成されたオペコード (opcode) はカーネルログに 16 進数でダンプされる。
+.\"O These opcodes can then be disassembled using the program
+.\"O .I tools/net/bpf_jit_disasm.c
+.\"O provided in the kernel source tree.
+これらのオペコードは、カーネルソースツリーの
 .I tools/net/bpf_jit_disasm.c
-provided in the kernel source tree.
+で提供されるプログラムで逆アセンブルできる。
 .PP
-Since Linux 4.15,
-.\" commit 290af86629b25ffd1ed6232c4e9107da031705cb
-the kernel may configured with the
+.\"O Since Linux 4.15,
+.\"O .\" commit 290af86629b25ffd1ed6232c4e9107da031705cb
+.\"O the kernel may configured with the
+.\"O .B CONFIG_BPF_JIT_ALWAYS_ON
+.\"O option.
+Linux 4.15 以降では、カーネルが
 .B CONFIG_BPF_JIT_ALWAYS_ON
-option.
-In this case, the JIT compiler is always enabled, and the
+オプション付きで設定されているかもしれない。
+.\"O In this case, the JIT compiler is always enabled, and the
+.\"O .I bpf_jit_enable
+.\"O is initialized to 1 and is immutable.
+この場合、JIT コンパイラーは常に有効になっており、
 .I bpf_jit_enable
-is initialized to 1 and is immutable.
-(This kernel configuration option was provided as a mitigation for
-one of the Spectre attacks against the BPF interpreter.)
+は 1 で初期化されており、変更できない。
+.\"O (This kernel configuration option was provided as a mitigation for
+.\"O one of the Spectre attacks against the BPF interpreter.)
+(このカーネル設定オプションは、BPF インタプリターへのスペクター (Spectre) アタックを
+緩和するために提供されている。)
 .PP
-The JIT compiler for eBPF is currently
-.\" Last reviewed in Linux 4.18-rc by grepping for BPF_ALU64 in arch/
-.\" and by checking the documentation for bpf_jit_enable in
-.\" Documentation/sysctl/net.txt
-available for the following architectures:
+.\"O The JIT compiler for eBPF is currently
+.\"O .\" Last reviewed in Linux 4.18-rc by grepping for BPF_ALU64 in arch/
+.\"O .\" and by checking the documentation for bpf_jit_enable in
+.\"O .\" Documentation/sysctl/net.txt
+.\"O available for the following architectures:
+JIT コンパイラーは、現在のところ下記のアーキテクチャーで提供されている:
 .IP * 3
-x86-64 (since Linux 3.18; cBPF since Linux 3.0);
+.\"O x86-64 (since Linux 3.18; cBPF since Linux 3.0);
+x86-64 (Linux 3.18 以降; cBPF は Linux 3.0 以降);
 .\" commit 0a14842f5a3c0e88a1e59fac5c3025db39721f74
 .PD 0
 .IP *
-ARM32 (since Linux 3.18; cBPF since Linux 3.4);
+.\"O ARM32 (since Linux 3.18; cBPF since Linux 3.4);
+ARM32 (Linux 3.18 以降; cBPF は Linux 3.4 以降);
 .\" commit ddecdfcea0ae891f782ae853771c867ab51024c2
 .IP *
-SPARC 32 (since Linux 3.18; cBPF since Linux 3.5);
+.\"O SPARC 32 (since Linux 3.18; cBPF since Linux 3.5);
+SPARC 32 (Linux 3.18 以降; cBPF は Linux 3.5 以降);
 .\" commit 2809a2087cc44b55e4377d7b9be3f7f5d2569091
 .IP *
-ARM-64 (since Linux 3.18);
+.\"O ARM-64 (since Linux 3.18);
+ARM-64 (Linux 3.18 以降);
 .\" commit e54bcde3d69d40023ae77727213d14f920eb264a
 .IP *
-s390 (since Linux 4.1; cBPF since Linux 3.7);
+.\"O s390 (since Linux 4.1; cBPF since Linux 3.7);
+s390 (Linux 4.1 以降; cBPF は Linux 3.7 以降);
 .\" commit c10302efe569bfd646b4c22df29577a4595b4580
 .IP *
-PowerPC 64 (since Linux 4.8; cBPF since Linux 3.1);
+.\"O PowerPC 64 (since Linux 4.8; cBPF since Linux 3.1);
+PowerPC 64 (Linux 4.8 以降; cBPF は Linux 3.1 以降);
 .\" commit 0ca87f05ba8bdc6791c14878464efc901ad71e99
 .\" commit 156d0e290e969caba25f1851c52417c14d141b24
 .IP *
-SPARC 64 (since Linux 4.12);
+.\"O SPARC 64 (since Linux 4.12);
+SPARC 64 (Linux 4.12 以降);
 .\" commit 7a12b5031c6b947cc13918237ae652b536243b76
 .IP *
-x86-32 (since Linux 4.18);
+.\"O x86-32 (since Linux 4.18);
+x86-32 (Linux 4.18 以降);
 .\" commit 03f5781be2c7b7e728d724ac70ba10799cc710d7
 .IP *
-MIPS 64 (since Linux 4.18; cBPF since Linux 3.16);
+.\"O MIPS 64 (since Linux 4.18; cBPF since Linux 3.16);
+MIPS 64 (Linux 4.18 以降; cBPF は Linux 3.16 以降);
 .\" commit c6610de353da5ca6eee5b8960e838a87a90ead0c
 .\" commit f381bf6d82f032b7410185b35d000ea370ac706b
 .IP *
-riscv (since Linux 5.1).
+.\"O riscv (since Linux 5.1).
+riscv (Linux 5.1 以降).
 .\" commit 2353ecc6f91fd15b893fa01bf85a1c7a823ee4f2
 .PD
-.SH SEE ALSO
+.\"O .SH SEE ALSO
+.SH 関連項目
 .BR seccomp (2),
 .BR bpf-helpers (7),
 .BR socket (7),
 .BR tc (8),
 .BR tc-bpf (8)
 .PP
-Both classic and extended BPF are explained in the kernel source file
-.IR Documentation/networking/filter.txt .
+.\"O Both classic and extended BPF are explained in the kernel source file
+.\"O .IR Documentation/networking/filter.txt .
+classic BPF と extended BPF の両方が、カーネルソースコード
+.I Documentation/networking/filter.txt
+で説明されている。
