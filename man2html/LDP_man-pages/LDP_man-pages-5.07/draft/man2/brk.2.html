@@ -1,0 +1,161 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of BRK</TITLE>
+</HEAD><BODY>
+<H1>BRK</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2016-03-15<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+brk, sbrk - データセグメントのサイズの変更する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>#include &lt;<A HREF="file:///usr/include/unistd.h">unistd.h</A>&gt;</B>
+<P>
+
+<B>int brk(void *</B><I>addr</I><B>);</B>
+<P>
+
+<B>void *sbrk(intptr_t </B><I>increment</I><B>);</B>
+<P>
+
+
+glibc 向けの機能検査マクロの要件 (<B><A HREF="../man7/feature_test_macros.7.html">feature_test_macros</A></B>(7)  参照):
+
+<P>
+
+<B>brk</B>(), <B>sbrk</B>():
+
+<DL COMPACT><DT><DD>
+
+<DL COMPACT>
+<DT>
+<DD>
+glibc 2.19 以降:
+<PRE>
+_DEFAULT_SOURCE ||
+    (_XOPEN_SOURCE&nbsp;&gt;=&nbsp;500) &amp;&amp;
+    ! (_POSIX_C_SOURCE&nbsp;&gt;=&nbsp;200112L)
+</PRE>
+
+<DT>
+<DD>
+glibc 2.12 から 2.19 まで:
+<PRE>
+_BSD_SOURCE || _SVID_SOURCE ||
+    (_XOPEN_SOURCE&nbsp;&gt;=&nbsp;500) &amp;&amp;
+    ! (_POSIX_C_SOURCE&nbsp;&gt;=&nbsp;200112L)
+</PRE>
+
+<DT>
+<DD>
+glibc 2.12 より前:
+_BSD_SOURCE || _SVID_SOURCE || _XOPEN_SOURCE&nbsp;&gt;=&nbsp;500
+
+
+</DL>
+</DL>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>brk</B>()  と <B>sbrk</B>()  は <I>プログラムブレーク (program break)</I> の場所を変更する。
+プログラムブレークはプロセスのデータセグメント (data segment) の 末尾を示す (プログラムブレークは、初期化されていない
+データセグメントの末尾の直後の場所となる)。 プログラムブレークを増やすということは、そのプロセスへの メモリーを割り当てる効果があり、
+プログラムブレークを減らすということは、メモリーを解放する ということである。
+<P>
+
+<B>brk</B>()  は、データセグメントの末尾を <I>addr</I> で指定した値に設定する。 設定が行われるのは、指定した値が有効で、
+システムに十分なメモリーがあり、 プロセスのデータサイズの最大値を超えていない場合である (<B><A HREF="../man2/setrlimit.2.html">setrlimit</A></B>(2)  を参照)。
+<P>
+
+<B>sbrk</B>()  は、プログラムのデータ空間を <I>increment</I> バイトだけ増やす。 <I>increment</I> を 0 にして
+<B>sbrk</B>()  を呼び出すことで、プログラムの現在のブレーク (break) 場所を知ることができる。
+<A NAME="lbAE">&nbsp;</A>
+<H2>返り値</H2>
+
+成功した場合、 <B>brk</B>()  は 0 を返す。 エラーの場合には、-1 を返し、 <I>errno</I> に <B>ENOMEM</B> を設定する。
+<P>
+
+成功した場合、 <B>sbrk</B>()  は変更前のプログラムブレークを返す (プログラムブレークが増やされた場合、この値は
+新しく割り当てられたメモリーの先頭を指すポインターとなる)。 エラーの場合には、 <I>(void&nbsp;*)&nbsp;-1</I> を返し、 <I>errno</I> に
+<B>ENOMEM</B> を設定する。
+<A NAME="lbAF">&nbsp;</A>
+<H2>準拠</H2>
+
+
+
+
+
+
+
+4.3BSD, SUSv1.  SUSv2 では「過去の名残 (LEGACY)」と位置付けられており、 POSIX.1-2001 で削除された。
+<A NAME="lbAG">&nbsp;</A>
+<H2>注意</H2>
+
+<B>brk</B>()  や <B>sbrk</B>()  を使用するのは避けること。 <B><A HREF="../man3/malloc.3.html">malloc</A></B>(3)  メモリー割り当てパッケージの方が、移植性が高く、
+使いやすいメモリー割り当て方法を提供している。
+<P>
+
+
+
+
+
+
+いろいろなシステムにおいて、 <B>sbrk</B>()  の引き数に様々な型が使われている。 一般的なのは <I>int</I>, <I>ssize_t</I>,
+<I>ptrdiff_t</I>, <I>intptr_t</I> である。
+
+<A NAME="lbAH">&nbsp;</A>
+<H3>C ライブラリとカーネルの違い</H3>
+
+上で説明した <B>brk</B>()  の返り値についての動作は、 Linux の <B>brk</B>()  システムコールをラップする glibc
+の関数によるものである。 (その他の多くの実装でも、 <B>brk</B>()  の返り値はこれと同じである。 この返り値は SUSv2 でも規定されている。)
+しかし、実際の Linux システムコールは、成功した場合、 プログラムの新しいブレークを返す。
+失敗した場合、このシステムコールは現在のブレークを返す。 glibc ラッパー関数は同様の働きをし (すなわち、新しいブレークが <I>addr</I>
+より小さいかどうかをチェックし)、 上で説明した 0 と -1 という返り値を返す。
+<P>
+
+Linux では <B>sbrk</B>()  は <B>brk</B>()  システムコールを使うライブラリ関数として実装されており、
+以前のブレークの値を返すことができるように内部で調整が行われている。
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/execve.2.html">execve</A></B>(2), <B><A HREF="../man2/getrlimit.2.html">getrlimit</A></B>(2), <B><A HREF="../man3/end.3.html">end</A></B>(3), <B><A HREF="../man3/malloc.3.html">malloc</A></B>(3)
+<A NAME="lbAJ">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">返り値</A><DD>
+<DT><A HREF="#lbAF">準拠</A><DD>
+<DT><A HREF="#lbAG">注意</A><DD>
+<DL>
+<DT><A HREF="#lbAH">C ライブラリとカーネルの違い</A><DD>
+</DL>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:00:26 GMT, January 04, 2021
+</BODY>
+</HTML>
