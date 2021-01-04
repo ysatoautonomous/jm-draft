@@ -986,7 +986,8 @@ eBPF プログラムの生存期間中、
 は要素を
 .B アトミックでない
 やり方で置き換える。
-アトミックな更新をするためには、ハッシュテーブルマップを使うべきである。
+アトミックな更新をするためには、ハッシュテーブルマップを
+使うべきである。
 .\"O There is however one special case that can also be used with arrays:
 しかし、特別な場合には、(アトミックな更新に) 配列を使うことができる:
 .\"O the atomic built-in
@@ -1321,7 +1322,7 @@ eBPF プログラム型
 .\"O format of
 .\"O .I "struct bpf_context"
 .\"O (which is the data blob passed into the eBPF program as the first argument).
-プログラム型は、プログラムの入力 (コンテキスト)\em
+プログラム型は、プログラムの入力 (コンテキスト)\(em
 つまり
 .I "struct bpf_context"
 のフォーマットも決定する。
@@ -1333,22 +1334,34 @@ eBPF プログラム型
 .\" bpf_context. For example, how does a BPF program access the
 .\" context?
 .PP
-For example, a tracing program does not have the exact same
-subset of helper functions as a socket filter program
-(though they may have some helpers in common).
-Similarly,
-the input (context) for a tracing program is a set of register values,
-while for a socket filter it is a network packet.
+.\"O For example, a tracing program does not have the exact same
+.\"O subset of helper functions as a socket filter program
+.\"O (though they may have some helpers in common).
+例えば、トレーシングプログラムは、ソケットフィルタープログラムとは、
+厳密には同じヘルパー関数のサブセットを持たない
+(しかし、いくつかのヘルパー関数は共通に持つ)。
+.\"O Similarly,
+.\"O the input (context) for a tracing program is a set of register values,
+.\"O while for a socket filter it is a network packet.
+同様に、トレーシングプログラムの入力 (コンテキスト) はレジスター値の集合であるが、
+ソケットフィルターの入力 (コンテキスト) はネットワークパケットである。
 .PP
-The set of functions available to eBPF programs of a given type may increase
-in the future.
+.\"O The set of functions available to eBPF programs of a given type may increase
+.\"O in the future.
+指定された型の eBPF プログラムで利用可能な関数のセットは、
+将来増えるかもしれない。
 .PP
-The following program types are supported:
+.\"O The following program types are supported:
+以下のプログラム型がサポートされている:
 .TP
-.BR BPF_PROG_TYPE_SOCKET_FILTER " (since Linux 3.19)"
-Currently, the set of functions for
+.\"O .BR BPF_PROG_TYPE_SOCKET_FILTER " (since Linux 3.19)"
+.BR BPF_PROG_TYPE_SOCKET_FILTER " (Linux 3.19 以降)"
+.\"O Currently, the set of functions for
+.\"O .B BPF_PROG_TYPE_SOCKET_FILTER
+.\"O is:
+現在、
 .B BPF_PROG_TYPE_SOCKET_FILTER
-is:
+で利用可能な関数のセットは以下の通り:
 .IP
 .in +4n
 .EX
@@ -1361,10 +1374,14 @@ bpf_map_delete_elem(map_fd, void *key)
 .EE
 .in
 .IP
-The
+.\"O The
+.\"O .I bpf_context
+.\"O argument is a pointer to a
+.\"O .IR "struct __sk_buff" .
 .I bpf_context
-argument is a pointer to a
-.IR "struct __sk_buff" .
+引き数は、
+.I "struct __sk_buff"
+へのポインターである。
 .\" FIXME: We need some text here to explain how the program
 .\" accesses __sk_buff.
 .\" See 'struct __sk_buff' and commit 9bac3d6d548e5
@@ -1374,42 +1391,61 @@ argument is a pointer to a
 .\" the program can now access skb fields.
 .\"
 .TP
-.BR BPF_PROG_TYPE_KPROBE " (since Linux 4.1)"
+.\"O .BR BPF_PROG_TYPE_KPROBE " (since Linux 4.1)"
+.BR BPF_PROG_TYPE_KPROBE " (Linux 4.1 以降)"
 .\" commit 2541517c32be2531e0da59dfd7efc1ce844644f5
-[To be documented]
+.\"O [To be documented]
+[ドキュメント化が必要]
 .\" FIXME Document this program type
 .\"	  Describe allowed helper functions for this program type
 .\"	  Describe bpf_context for this program type
 .\"
 .\" FIXME We need text here to describe 'kern_version'
 .TP
-.BR BPF_PROG_TYPE_SCHED_CLS " (since Linux 4.1)"
+.\"O .BR BPF_PROG_TYPE_SCHED_CLS " (since Linux 4.1)"
+.BR BPF_PROG_TYPE_SCHED_CLS " (Linux 4.1 以降)"
 .\" commit 96be4325f443dbbfeb37d2a157675ac0736531a1
 .\" commit e2e9b6541dd4b31848079da80fe2253daaafb549
-[To be documented]
+.\"O [To be documented]
+[ドキュメント化が必要]
 .\" FIXME Document this program type
 .\"	  Describe allowed helper functions for this program type
 .\"	  Describe bpf_context for this program type
 .TP
-.BR BPF_PROG_TYPE_SCHED_ACT " (since Linux 4.1)"
+.\"O .BR BPF_PROG_TYPE_SCHED_ACT " (since Linux 4.1)"
+.BR BPF_PROG_TYPE_SCHED_ACT " (Linux 4.1 以降)"
 .\" commit 94caee8c312d96522bcdae88791aaa9ebcd5f22c
 .\" commit a8cb5f556b567974d75ea29c15181c445c541b1f
-[To be documented]
+.\"O [To be documented]
+[ドキュメント化が必要]
 .\" FIXME Document this program type
 .\"	  Describe allowed helper functions for this program type
 .\"	  Describe bpf_context for this program type
-.SS Events
-Once a program is loaded, it can be attached to an event.
-Various kernel subsystems have different ways to do so.
+.\"O .SS Events
+.SS イベント
+.\"O Once a program is loaded, it can be attached to an event.
+プログラムが 1 度ロードされると、イベントに紐づけられる。
+.\"O Various kernel subsystems have different ways to do so.
+いろいろなカーネルサブシステムが、さまざまな方法でこれを行う。
 .PP
-Since Linux 3.19,
-.\" commit 89aa075832b0da4402acebd698d0411dcc82d03e
-the following call will attach the program
+.\"O Since Linux 3.19,
+.\"O .\" commit 89aa075832b0da4402acebd698d0411dcc82d03e
+.\"O the following call will attach the program
+.\"O .I prog_fd
+.\"O to the socket
+.\"O .IR sockfd ,
+.\"O which was created by an earlier call to
+.\"O .BR socket (2):
+Linux 3.19 以降では、以下の呼び出しで、プログラム
 .I prog_fd
-to the socket
-.IR sockfd ,
-which was created by an earlier call to
-.BR socket (2):
+をソケット
+.I sockfd
+に紐づける。
+ここで、
+.I sockfd
+は
+.BR socket (2)
+の呼び出しで前もって作られたものである:
 .PP
 .in +4n
 .EX
@@ -1418,15 +1454,27 @@ setsockopt(sockfd, SOL_SOCKET, SO_ATTACH_BPF,
 .EE
 .in
 .PP
-Since Linux 4.1,
-.\" commit 2541517c32be2531e0da59dfd7efc1ce844644f5
-the following call may be used to attach
-the eBPF program referred to by the file descriptor
+.\"O Since Linux 4.1,
+.\"O .\" commit 2541517c32be2531e0da59dfd7efc1ce844644f5
+.\"O the following call may be used to attach
+.\"O the eBPF program referred to by the file descriptor
+.\"O .I prog_fd
+.\"O to a perf event file descriptor,
+.\"O .IR event_fd ,
+.\"O that was created by a previous call to
+.\"O .BR perf_event_open (2):
+Linux 4.1 以降では、以下の呼び出しで、
+ファイルディスクリプター
 .I prog_fd
-to a perf event file descriptor,
-.IR event_fd ,
-that was created by a previous call to
-.BR perf_event_open (2):
+で参照される eBPF プログラムを、
+perf イベントディスクリプター
+.I event_fd
+に紐づける。
+ここで、
+.I event_fd
+は
+.BR perf_event_open (2)
+の呼び出しで前もって作られたものである:
 .PP
 .in +4n
 .EX
