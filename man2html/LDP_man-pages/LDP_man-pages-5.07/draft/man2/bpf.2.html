@@ -1,0 +1,2285 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of BPF</TITLE>
+</HEAD><BODY>
+<H1>BPF</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2020-06-09<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+bpf - 拡張 (extended) BPF マップまたはプログラム上で、コマンドを実行する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/linux/bpf.h">linux/bpf.h</A>&gt;</B>
+
+<B>int bpf(int </B><I>cmd</I><B>, union bpf_attr *</B><I>attr</I><B>, unsigned int </B><I>size</I><B>);</B>
+</PRE>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>bpf</B>()
+
+システムコールは、extended Berkeley Packet Filters に関連する
+さまざまな操作を実行する。
+
+
+extended BPF (または eBPF) は、
+元々の (&quot;classic&quot;) BPF (cBPF) と同じく、
+ネットワークパケットをフィルタするために使われる。
+
+
+
+cBPF と eBPF のプログラムの両方に対して、
+カーネルはプログラムをロードする前に統計的に解析し、
+プログラムが実行中のシステムを害することできないように保証する。
+<P>
+
+
+
+
+
+
+
+
+eBPF は cBPF をいろいろな方法で拡張しており、
+(eBPF で提供される
+<B>BPF_CALL</B>
+
+オペコード拡張を使って)
+カーネル内ヘルパー関数のセットを呼び出したり、
+eBPF マップのような共有データ構造体にアクセスできたりする。
+
+
+<A NAME="lbAE">&nbsp;</A>
+<H3>extended BPF のデザイン/アーキテクチャ</H3>
+
+
+eBPF マップは、さまざまなデータ型を格納するための、基本的なデータ構造体である。
+
+
+データ型は、一般的にバイナリ blob として扱われるので、
+ユーザはマップの作成時にキーのサイズと値のサイズを指定するだけでよい。
+
+言い換えれば、指定されたマップのキー/値には、任意の構造体を含めることが
+できる。
+<P>
+
+
+
+ユーザプロセスは (データのバイト数が不定なキー/値のペアを持つ) 複数のマップを作成し、
+ファイルディスクリプターを使ってマップにアクセスできる。
+
+異なる eBPF プログラムが、同じマップに同時並行にアクセスできる。
+
+
+マップの中に何を格納するかは、ユーザプロセスと eBPF プログラムが決定できる。
+<P>
+
+
+プログラム配列と呼ばれる特別なマップ型がある。
+
+この型のマップは、他の eBPF プログラムを参照するファイルディスクリプターを格納する。
+
+
+
+マップの参照が行われると、プログラムフローが
+その場で他の eBPF プログラムの最初にリダイレクトされ、
+呼び出したプログラムには戻らない。
+
+
+
+入れ子のレベルは 32 に制限されているので、
+無限ループは作れない。
+
+
+マップに格納されたファイルディスクリプターは、実行時に変更できるので、
+プログラムの機能は、特定の要件に基づいて変更できる。
+
+
+
+プログラム配列マップで参照されるすべてのプログラムは、
+<B>bpf</B>()
+
+で前もってカーネルにロードされていなればならない。
+
+マップの参照が失敗した場合、現在のプログラムが実行を継続する。
+
+
+
+より詳細は、下記の
+<B>BPF_MAP_TYPE_PROG_ARRAY</B>
+
+を参照すること。
+<P>
+
+
+
+一般的には、eBPF プログラムはユーザプロセスによってロードされ、
+プロセスが終了すると自動的にアンロードされる。
+
+
+
+
+いくつかの場合、例えば
+<B><A HREF="../man8/tc-bpf.8.html">tc-bpf</A></B>(8)
+
+では、プログラムをロードしたプロセスが終了した後でも、
+プログラムをカーネル内部に生かし続けることができる。
+
+
+
+この場合、ファイルディスクリプターがユーザ空間プログラムによって
+クローズされた後も、tc サブシステムが eBPF プログラムの参照を持ちづづける。
+
+
+
+
+よって、特定のプログラムをカーネル内部で生かし続けるか否かは、
+<B>bpf</B>()
+
+でロードされた後に、指定されたカーネルサブシステムにどのように
+アタッチされるかに依存する。
+<P>
+
+
+
+各 eBPF プログラムは、命令 (instruction) の集合であり、
+その命令は完了まで安全に実行することができる。
+
+
+カーネル内の検証器 (verifier) は、eBPF プログラムが終了するかと、
+安全に実行できるかを、統計的に決定する。
+
+
+
+検証の過程で、カーネルは eBPF プログラムが使う各マップの参照カウントを増やすので、
+アタッチされたマップは、プログラムがアンロードされるまで削除されない。
+<P>
+
+
+eBPF プログラムは、さまざまなイベントにアタッチすることができる。
+
+
+
+
+
+これらのイベントには、ネットワークパケットの到達、追跡 (tracing) イベント、
+(<B><A HREF="../man8/tc.8.html">tc</A></B>(8)
+
+classifier にアタッチされた eBPF プログラムについての)
+ネットワーク待ちの規則 (queueing discipline) による分類イベント、
+将来追加される可能性のある他のタイプのイベントがある。
+
+
+新しいイベントが起きると、eBPF マップにそのイベントについての情報を格納している、
+eBPF マップが実行される。
+
+
+eBPF プログラムは、データを格納するだけでなく、
+固定のカーネルヘルパー関数のセットを呼び出すことができる。
+<P>
+
+
+
+eBPF プログラムを複数のイベントにアタッチでき、
+複数の eBPF プログラムから同じマップにアクセスできる。
+<P>
+
+
+
+tracing     tracing    tracing    packet      packet     packet
+event A     event B    event C    on eth0     on eth1    on eth2
+<BR>&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^
+<BR>&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;v&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+<BR>&nbsp;--&gt;&nbsp;tracing&nbsp;&lt;--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tracing&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;socket&nbsp;&nbsp;&nbsp;&nbsp;tc&nbsp;ingress&nbsp;&nbsp;&nbsp;tc&nbsp;egress
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prog_1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prog_2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prog_3&nbsp;&nbsp;&nbsp;&nbsp;classifier&nbsp;&nbsp;&nbsp;&nbsp;action
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prog_4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prog_5
+<BR>&nbsp;&nbsp;&nbsp;|---&nbsp;&nbsp;-----|&nbsp;&nbsp;|------|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;map_3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+<BR>&nbsp;map_1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;map_2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--|&nbsp;map_4&nbsp;|--
+
+
+
+
+<A NAME="lbAF">&nbsp;</A>
+<H3>引き数</H3>
+
+
+
+
+
+
+<B>bpf</B>()
+
+システムコールで実行される操作は、
+<I>cmd</I>
+
+引き数で決定される。
+
+
+
+
+
+
+各操作は、
+<I>attr</I>
+
+で与えられる付随する引き数をとる。
+<I>attr</I>
+
+は
+<I>bpf_attr</I>
+
+型の共用体 (union) へのポインタである (下記参照)。
+
+
+
+
+<I>size</I>
+
+引き数は、
+<I>attr</I>
+
+で指される共用体のサイズである。
+<P>
+
+
+
+
+<I>cmd</I>
+
+に指定可能な値は、以下のいずれかである:
+<DL COMPACT>
+<DT><B>BPF_MAP_CREATE</B>
+
+<DD>
+
+マップを作成し、マップを参照するファイルディスクリプターを返す。
+
+
+
+新しいファイルディスクリプターについては、
+close-on-exec ファイルディスクリプターフラグ
+(<B><A HREF="../man2/fcntl.2.html">fcntl</A></B>(2)
+
+を参照) が自動的に有効にされる。
+<DT><B>BPF_MAP_LOOKUP_ELEM</B>
+
+<DD>
+
+指定されたマップでキーで要素を探し、その値を返す。
+<DT><B>BPF_MAP_UPDATE_ELEM</B>
+
+<DD>
+
+指定されたマップで要素 (キー/値のペア) を作成または更新する。
+<DT><B>BPF_MAP_DELETE_ELEM</B>
+
+<DD>
+
+指定されたマップでキーで要素を探し、削除する。
+<DT><B>BPF_MAP_GET_NEXT_KEY</B>
+
+<DD>
+
+
+指定されたマップでキーで要素を探し、次の要素のキーを返す。
+<DT><B>BPF_PROG_LOAD</B>
+
+<DD>
+
+
+eBPF プログラムを検証してロードし、
+プログラムに紐づけられた新しいファイルディスクリプターを返す。
+
+
+
+close-on-exec ファイルディスクリプターフラグ
+(<B><A HREF="../man2/fcntl.2.html">fcntl</A></B>(2)
+
+を参照) が自動的に有効にされる。
+<DT><DD>
+
+
+
+
+
+<I>bpf_attr</I>
+
+共用体は、
+いろいろな
+<B>bpf</B>()
+
+コマンドで使われるさまざまな無名 (anonymous) の構造体から構成される :
+</DL>
+<P>
+
+
+
+union bpf_attr {
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;struct&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;Used&nbsp;by&nbsp;BPF_MAP_CREATE&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__u32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;map_type;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__u32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;key_size;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;size&nbsp;of&nbsp;key&nbsp;in&nbsp;bytes&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__u32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value_size;&nbsp;&nbsp;/*&nbsp;size&nbsp;of&nbsp;value&nbsp;in&nbsp;bytes&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__u32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max_entries;&nbsp;/*&nbsp;maximum&nbsp;number&nbsp;of&nbsp;entries
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;a&nbsp;map&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;};
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;struct&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;Used&nbsp;by&nbsp;BPF_MAP_*_ELEM&nbsp;and&nbsp;BPF_MAP_GET_NEXT_KEY
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;commands&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__u32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;map_fd;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__aligned_u64&nbsp;key;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;union&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__aligned_u64&nbsp;value;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__aligned_u64&nbsp;next_key;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;};
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__u64&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flags;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;};
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;struct&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;Used&nbsp;by&nbsp;BPF_PROG_LOAD&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__u32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prog_type;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__u32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;insn_cnt;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__aligned_u64&nbsp;insns;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;'const&nbsp;struct&nbsp;bpf_insn&nbsp;*'&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__aligned_u64&nbsp;license;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;'const&nbsp;char&nbsp;*'&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__u32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;log_level;&nbsp;&nbsp;/*&nbsp;verbosity&nbsp;level&nbsp;of&nbsp;verifier&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__u32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;log_size;&nbsp;&nbsp;&nbsp;/*&nbsp;size&nbsp;of&nbsp;user&nbsp;buffer&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__aligned_u64&nbsp;log_buf;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;user&nbsp;supplied&nbsp;'char&nbsp;*'
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buffer&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__u32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kern_version;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;checked&nbsp;when&nbsp;prog_type=kprobe
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(since&nbsp;Linux&nbsp;4.1)&nbsp;*/
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;};
+} __attribute__((<A HREF="../man8/aligned.8.html">aligned</A>(8)));
+
+
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H3>eBPF マップ</H3>
+
+
+マップは、いろいろタイプのデータを格納するための、基本的な
+データ構造である。
+
+
+マップによって、eBPF カーネルプログラム間でデータを共有したり、
+カーネルとユーザ空間アプリケーションでデータを共有したりできる。
+<P>
+
+
+各マップタイプには以下の属性がある:
+<DL COMPACT>
+<DT>*<DD>
+
+型
+<DT>*<DD>
+
+最大の要素数
+<DT>*<DD>
+
+キーのサイズ (バイト単位)
+<DT>*<DD>
+
+値のサイズ (バイト単位)
+</DL>
+<P>
+
+
+
+
+以下のラッパー関数は、さまざまな
+<B>bpf</B>()
+
+コマンドが、どのようにマップへのアクセスに使えるかを示している。
+
+
+
+これらの関数は、
+<I>cmd</I>
+
+引き数を使って、別々の操作を呼び出している。
+<DL COMPACT>
+<DT><B>BPF_MAP_CREATE</B>
+
+<DD>
+
+
+
+
+<B>BPF_MAP_CREATE</B>
+
+コマンドは新しいマップを作成し、
+そのマップを参照する新しいファイルディスクリプターを返す。
+<DT><DD>
+
+
+int
+bpf_create_map(enum bpf_map_type map_type,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned&nbsp;int&nbsp;key_size,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned&nbsp;int&nbsp;value_size,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned&nbsp;int&nbsp;max_entries)
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;union&nbsp;bpf_attr&nbsp;attr&nbsp;=&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.map_type&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;map_type,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.key_size&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;key_size,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.value_size&nbsp;&nbsp;=&nbsp;value_size,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.max_entries&nbsp;=&nbsp;max_entries
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;};
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;bpf(BPF_MAP_CREATE,&nbsp;&amp;attr,&nbsp;sizeof(attr));
+}
+
+
+<DT><DD>
+
+
+
+
+
+
+
+新しいマップは
+<I>map_type</I>
+
+で指定された型で、
+<I>key_size</I>,
+
+<I>value_size</I>,
+
+<I>max_entries</I>
+
+で指定された属性を持つ。
+
+成功した場合、この操作はファイルディスクリプターを返す。
+
+
+
+
+
+
+
+エラーの場合、-1 が返され、
+<I>errno</I>
+
+に
+<B>EINVAL</B>,
+
+<B>EPERM</B>,
+
+<B>ENOMEM</B>
+
+のいずれかが設定される。
+<DT><DD>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<I>key_size</I>
+
+と
+<I>value_size</I>
+
+属性は、プログラムのロード時に検証器が使用し、プログラムが、
+正しく初期化された
+<I>key</I>
+
+で
+<B>bpf_map_*_elem</B>()
+
+ヘルパー関数を呼び出しているかのチェックと、
+<I>value_size</I>
+
+で指定された範囲を超えてマップ要素
+<I>value</I>
+
+にアクセスしていないかのチェックを行う。
+
+
+
+例えば、
+<I>key_size</I>
+
+を 8 としてマップが作成されて、eBPF プログラムが
+<DT><DD>
+
+
+bpf_map_lookup_elem(map_fd, fp - 4)
+
+
+<DT><DD>
+
+
+を呼び出した場合、プログラムは拒否される。
+なぜなら、カーネル内のヘルパー関数
+<DT><DD>
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;bpf_map_lookup_elem(map_fd,&nbsp;void&nbsp;*key)
+
+<DT><DD>
+
+
+
+
+
+
+
+
+は、
+<I>key</I>
+
+で指される位置から、8 バイトを読み込むことを想定しているが、
+開始アドレス
+<I>fp&nbsp;-&nbsp;4</I>
+
+(ここで
+<I>fp</I>
+
+はスタックのトップ) は、範囲外のスタックアスクセスを起こしてしまうからである。
+<DT><DD>
+
+
+
+同様に、
+<I>value_size</I>
+
+を 1 としてマップが作成された場合、eBPF プログラムに
+<DT><DD>
+
+
+value = bpf_map_lookup_elem(...);
+*(u32 *) value = 1;
+
+
+<DT><DD>
+
+
+
+
+
+というコードが含まれていた場合、プログラムは拒否される。
+なぜなら、
+<I>value</I>
+
+ポインターが指定した 1 バイトの
+<I>value_size</I>
+
+の制限を越えてしまうからである。
+<DT><DD>
+
+
+現在のところ、
+<I>map_type</I>
+
+として以下の値がサポートされている:
+<DT><DD>
+
+
+enum bpf_map_type {
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_UNSPEC,&nbsp;&nbsp;/*&nbsp;Reserve&nbsp;0&nbsp;as&nbsp;invalid&nbsp;map&nbsp;type&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_HASH,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_ARRAY,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_PROG_ARRAY,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_PERF_EVENT_ARRAY,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_PERCPU_HASH,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_PERCPU_ARRAY,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_STACK_TRACE,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_CGROUP_ARRAY,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_LRU_HASH,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_LRU_PERCPU_HASH,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_LPM_TRIE,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_ARRAY_OF_MAPS,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_HASH_OF_MAPS,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_DEVMAP,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_SOCKMAP,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_CPUMAP,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_XSKMAP,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_SOCKHASH,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_CGROUP_STORAGE,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_REUSEPORT_SOCKARRAY,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_QUEUE,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_MAP_TYPE_STACK,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;See&nbsp;/usr/include/linux/bpf.h&nbsp;for&nbsp;the&nbsp;full&nbsp;list.&nbsp;*/
+};
+
+
+<DT><DD>
+
+
+<I>map_type</I>
+
+として、カーネルでの利用可能なマップ実装の 1 つを選択する。
+
+
+
+
+
+
+
+
+すべてのマップ型について、eBPF プログラムは
+<B>bpf_map_lookup_elem</B>()
+
+と
+<B>bpf_map_update_elem</B>()
+
+ヘルパー関数でマップにアクセスできる。
+
+いろいろなマップ型のより詳細については、下記を参照すること。
+<DT><B>BPF_MAP_LOOKUP_ELEM</B>
+
+<DD>
+
+
+
+
+
+
+<B>BPF_MAP_LOOKUP_ELEM</B>
+
+コマンドは、ファイルディスクリプター
+<I>fd</I>
+
+で参照されるマップから、指定された
+<I>key</I>
+
+で要素を検索する。
+<DT><DD>
+
+
+int
+bpf_lookup_elem(int fd, const void *key, void *value)
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;union&nbsp;bpf_attr&nbsp;attr&nbsp;=&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.map_fd&nbsp;=&nbsp;fd,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.key&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;ptr_to_u64(key),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.value&nbsp;&nbsp;=&nbsp;ptr_to_u64(value),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;};
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;bpf(BPF_MAP_LOOKUP_ELEM,&nbsp;&amp;attr,&nbsp;sizeof(attr));
+}
+
+
+<DT><DD>
+
+
+
+
+
+
+要素が見つかった場合、この操作では 0 が返され、要素の値が
+<I>value</I>
+
+に格納される。
+<I>value</I>
+
+は
+<I>value_size</I>
+
+バイトのバッファを指していなければならない。
+<DT><DD>
+
+
+
+
+要素が見つからない場合、この操作では -1 が返され、
+<I>errno</I>
+
+が
+<B>ENOENT</B>
+
+に設定される。
+<DT><B>BPF_MAP_UPDATE_ELEM</B>
+
+<DD>
+
+
+
+
+
+
+
+<B>BPF_MAP_UPDATE_ELEM</B>
+
+コマンドは、ファイルディスクリプター
+<I>fd</I>
+
+で参照されるマップに、指定した
+<I>key/value</I>
+
+の要素を作成または更新する。
+<DT><DD>
+
+
+int
+bpf_update_elem(int fd, const void *key, const void *value,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;uint64_t&nbsp;flags)
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;union&nbsp;bpf_attr&nbsp;attr&nbsp;=&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.map_fd&nbsp;=&nbsp;fd,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.key&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;ptr_to_u64(key),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.value&nbsp;&nbsp;=&nbsp;ptr_to_u64(value),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.flags&nbsp;&nbsp;=&nbsp;flags,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;};
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;bpf(BPF_MAP_UPDATE_ELEM,&nbsp;&amp;attr,&nbsp;sizeof(attr));
+}
+
+
+<DT><DD>
+
+
+
+<I>flags</I>
+
+引き数は、以下のうち 1 つを指定しなければならない:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>BPF_ANY</B>
+
+<DD>
+
+新しい要素を作成するか、既存の要素を更新する。
+<DT><B>BPF_NOEXIST</B>
+
+<DD>
+
+指定した要素が存在しない場合にのみ、新しい要素として
+作成する。
+<DT><B>BPF_EXIST</B>
+
+<DD>
+
+既存の要素を更新する。
+</DL>
+</DL>
+
+<DT><DD>
+
+成功した場合、この操作は 0 を返す。
+
+
+
+
+
+
+
+
+エラーの場合、-1 が返され、
+<I>errno</I>
+
+が
+<B>EINVAL</B>,
+
+<B>EPERM</B>,
+
+<B>ENOMEM</B>,
+
+<B>E2BIG</B>
+
+のいずれかに設定される。
+
+
+
+
+<B>E2BIG</B>
+
+はマップの要素数が、マップの作成時に指定した
+<I>max_entries</I>
+
+の制限に達したことを表す。
+
+
+
+
+
+
+
+
+<B>EEXIST</B>
+
+は、
+<I>flags</I>
+
+に
+<B>BPF_NOEXIST</B>
+
+が指定されていて、かつマップに
+<I>key</I>
+
+の要素が既に存在する場合に返される。
+
+
+
+
+
+
+
+
+<B>ENOENT</B>
+
+は、
+<I>flags</I>
+
+に
+<B>BPF_EXIST</B>
+
+が指定されていて、かつマップに
+<I>key</I>
+
+の要素が存在しない場合に返される。
+<DT><B>BPF_MAP_DELETE_ELEM</B>
+
+<DD>
+
+
+
+
+
+
+
+<B>BPF_MAP_DELETE_ELEM</B>
+
+コマンドは、ファイルディスクリプター
+<I>fd</I>
+
+で参照されるマップから、キーが
+<I>key</I>
+
+の要素を削除する。
+<DT><DD>
+
+
+int
+bpf_delete_elem(int fd, const void *key)
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;union&nbsp;bpf_attr&nbsp;attr&nbsp;=&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.map_fd&nbsp;=&nbsp;fd,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.key&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;ptr_to_u64(key),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;};
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;bpf(BPF_MAP_DELETE_ELEM,&nbsp;&amp;attr,&nbsp;sizeof(attr));
+}
+
+
+<DT><DD>
+
+成功した場合、0 が返される。
+
+
+
+
+要素が見つからない場合、-1 が返され、
+<I>errno</I>
+
+が
+<B>ENOENT</B>
+
+に設定される。
+<DT><B>BPF_MAP_GET_NEXT_KEY</B>
+
+<DD>
+
+
+
+
+
+
+
+
+
+<B>BPF_MAP_GET_NEXT_KEY</B>
+
+コマンドは、ファイルディスクリプター
+<I>fd</I>
+
+で参照されるマップから
+<I>key</I>
+
+で要素を検索し、次の要素のキーを
+<I>next_key</I>
+
+ポインタに設定する。
+<DT><DD>
+
+
+int
+bpf_get_next_key(int fd, const void *key, void *next_key)
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;union&nbsp;bpf_attr&nbsp;attr&nbsp;=&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.map_fd&nbsp;&nbsp;&nbsp;=&nbsp;fd,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.key&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;ptr_to_u64(key),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.next_key&nbsp;=&nbsp;ptr_to_u64(next_key),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;};
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;bpf(BPF_MAP_GET_NEXT_KEY,&nbsp;&amp;attr,&nbsp;sizeof(attr));
+}
+
+
+<DT><DD>
+
+
+
+
+
+<I>key</I>
+
+が見つかった場合、この操作は 0 を返し、次の要素のキーが
+<I>next_key</I>
+
+ポインタに設定される。
+
+
+
+
+
+<I>key</I>
+
+が見つからなかった場合、この操作は 0 を返し、最初の要素のキーが
+<I>next_key</I>
+
+ポインタに設定される。
+
+
+
+
+
+
+<I>key</I>
+
+が最後の要素の場合、-1 が返され、
+<I>errno</I>
+
+が
+<B>ENOENT</B>
+
+に設定される。
+
+
+
+
+
+
+
+
+その他に
+<I>errno</I>
+
+に設定される可能性のある値は、
+<B>ENOMEM</B>,
+
+<B>EFAULT</B>,
+
+<B>EPERM</B>,
+
+<B>EINVAL</B>
+
+である。
+
+このメソッドは、マップのすべての要素を辿るために使われる。
+<DT><B>close(map_fd)</B>
+
+<DD>
+
+
+ファイルディスクリプター
+<I>map_fd</I>
+
+で参照されるマップを削除する。
+
+
+マップを作成したユーザ空間プログラムが存在する場合、
+すべてのマップは自動的に削除される (「注意」を参照すること)。
+
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H3>eBPF マップ型</H3>
+
+
+以下のマップ型がサポートされる:
+<DL COMPACT>
+<DT><B>BPF_MAP_TYPE_HASH</B>
+
+<DD>
+
+
+ハッシュテーブルマップには、以下の特徴がある。
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>*<DD>
+
+マップはユーザ空間プログラムによって、作成または破壊される。
+
+
+ユーザ空間プログラムと eBPF プログラムの両方が、
+検索、更新、削除の操作を行える。
+<DT>*<DD>
+
+カーネルがキー/値のペアの確保と解放に責任を持つ。
+<DT>*<DD>
+
+
+
+
+
+<B>map_update_elem</B>()
+
+ヘルパーは、
+<I>max_entries</I>
+
+の制限に到達した場合、新しい要素の挿入に失敗する。
+
+(これにより、eBPF プログラムがメモリを使い果たさないようにできる。)
+<DT>*<DD>
+
+
+<B>map_update_elem</B>()
+
+は、既存の要素を自動的に置き換える。
+</DL>
+</DL>
+
+<DT><DD>
+
+
+ハッシュテーブルマップは、検索の速度に最適化されている。
+<DT><B>BPF_MAP_TYPE_ARRAY</B>
+
+<DD>
+
+
+配列マップには、以下の特徴がある。
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>*<DD>
+
+検索を最速にするために最適化されている。
+
+
+
+将来的に、検証器と JIT コンパイラーは、
+固定のキーが使われている lookup() 操作を認識し、
+固定のポインタに最適化できるかもしれない。
+
+
+
+
+eBPF プログラムの生存期間中、
+ポインタと
+<I>value_size</I>
+
+は一定であるので、固定でないキーでも、直接のポインタ計算に
+最適化できる。
+
+
+
+
+言い換えると、
+<B>array_map_lookup_elem</B>()
+
+は、ユーザ空間からの並行アクセスを保持しながら、
+検証器と JIT コンパイラによって「インライン」にできる。
+<DT>*<DD>
+
+すべての配列要素はあらかじめ確保され、最初に 0 で初期化される。
+<DT>*<DD>
+
+キーは配列のインデックスであり、必ず 4 バイトでなければならない。
+<DT>*<DD>
+
+
+
+
+<B>map_delete_elem</B>()
+
+は、要素が削除できないので、エラー
+<B>EINVAL</B>
+
+で失敗する。
+<DT>*<DD>
+
+
+
+
+
+<B>map_update_elem</B>()
+
+は要素を
+<B>アトミックでない</B>
+
+やり方で置き換える。
+アトミックな更新をするためには、ハッシュテーブルマップを
+使うべきである。
+
+しかし、特別な場合には、(アトミックな更新に) 配列を使うことができる:
+
+
+
+アトミックな組み込みの
+<B>__sync_fetch_and_add()</B>
+
+は 32 ビットと 64 ビットのアトミックなカウンターで使うことができる。
+
+
+
+
+例えば、この関数は、値が 1 つのカウンターである場合、値全体に適用することができる。
+また、この関数は、構造体が複数のカウンターを含んでいる場合、
+個々のカウンターに使うことができる。
+
+これは、しばしばイベントの集約や集計にとても役立つ。
+</DL>
+</DL>
+
+<DT><DD>
+
+配列マップの使い方は、以下の通りである:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>*<DD>
+
+
+
+「グローバルな」eBPF 変数として:要素が 1 の配列で、キーを (インデックス) 0 とする。
+ここで値は、「グローバルな」変数の集合であり、
+eBPF プログラムはイベント間で状態を保持するのに使う。
+<DT>*<DD>
+
+
+
+
+トレーシングイベントを、バケットの固定の集合に集約する。
+<DT>*<DD>
+
+
+ネットワーキングイベント、例えば、パケット数または
+パケットサイズを集計する。
+</DL>
+</DL>
+
+<DT>
+<DD>
+<B>BPF_MAP_TYPE_PROG_ARRAY</B> (Linux 4.2 以降)
+
+
+
+プログラム配列マップは、配列マップの特別な形式であり、
+マップの値は、他の eBPF プログラムを参照するファイルディスクリプターのみを保持する。
+
+
+
+
+
+よって、
+<I>key_size</I>
+
+と
+<I>value_size</I>
+
+は、必ず 4 バイトでなければならない。
+
+
+
+このマップは、
+<B>bpf_tail_call</B>()
+
+ヘルパーと併せて使われる。
+<DT><DD>
+
+
+これは、プログラム配列マップをつけた eBPF プログラムは、
+カーネルサイドから以下のように呼び出すことができるということである。
+<DT><DD>
+
+
+void bpf_tail_call(void *context, void *prog_map,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned&nbsp;int&nbsp;index);
+
+
+<DT><DD>
+
+
+そして、自身のプログラムフローを、指定したプログラム配列の
+スロットにプログラムがあれば、それに置き換えることができる。
+
+これは、別の eBPF プログラムへのジャンプテーブルの一種として扱うことができる。
+
+そして、起動されたプログラムは、同じスタックを再利用する。
+
+
+新しいプログラムへのジャンプが実行された場合、前のプログラムには
+戻らない。
+<DT><DD>
+
+
+
+
+
+
+
+プログラム配列の指定されたインデックスに eBPF プログラムがない場合
+(マップスロットに有効なプログラムファイルディスクリプターがない
+場合、
+または指定された検索インデックス/キーが範囲外である場合、
+または入れ子の呼び出しが 32 の制限を肥えた場合)
+現在の eBPF プログラムで実行が継続される。
+
+これは、失敗した場合のデフォルトとして、使われる。
+<DT><DD>
+
+
+
+プログラム配列マップは、例えば、トレーシング、または
+ネットワーキングで役に立つ。
+プログラム配列マップ自身のサブプログラムで各システムコールや
+プロトコルを扱ったり、それらの識別子を各マップのインデックスとして
+使うことが出来る。
+
+
+
+この方法は性能上の利点になり、単一の eBPF プログラムの
+命令数の制限の最大値を超えることもできる。
+
+
+
+
+動的な環境では、ユーザ空間のデーモンは、実行時に各サブプログラムを
+新バージョンに自動的に置き換え、たとえば、グローバルなポリシーを
+変更することで、プログラムの挙動全体を変更することができる。
+
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H3>eBPF プログラム</H3>
+
+
+
+
+<B>BPF_PROG_LOAD</B>
+
+コマンドを使って、eBPF プログラムをカーネルにロードすることができる。
+
+
+このコマンドの返り値は、この eBPF プログラムに関連づけられた
+新しいファイルディスクリプターである。
+<P>
+
+
+
+char bpf_log_buf[LOG_BUF_SIZE];
+<P>
+int
+bpf_prog_load(enum bpf_prog_type type,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const&nbsp;struct&nbsp;bpf_insn&nbsp;*insns,&nbsp;int&nbsp;insn_cnt,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const&nbsp;char&nbsp;*license)
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;union&nbsp;bpf_attr&nbsp;attr&nbsp;=&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.prog_type&nbsp;=&nbsp;type,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.insns&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;ptr_to_u64(insns),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.insn_cnt&nbsp;&nbsp;=&nbsp;insn_cnt,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.license&nbsp;&nbsp;&nbsp;=&nbsp;ptr_to_u64(license),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.log_buf&nbsp;&nbsp;&nbsp;=&nbsp;ptr_to_u64(bpf_log_buf),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.log_size&nbsp;&nbsp;=&nbsp;LOG_BUF_SIZE,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.log_level&nbsp;=&nbsp;1,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;};
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;bpf(BPF_PROG_LOAD,&nbsp;&amp;attr,&nbsp;sizeof(attr));
+}
+
+
+<P>
+
+
+
+<I>prog_type</I>
+
+は以下の利用可能なプログラムタイプのうちのいずれかである:
+<DL COMPACT>
+<DT><DD>
+
+
+enum bpf_prog_type {
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_UNSPEC,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;Reserve&nbsp;0&nbsp;as&nbsp;invalid
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;program&nbsp;type&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_SOCKET_FILTER,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_KPROBE,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_SCHED_CLS,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_SCHED_ACT,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_TRACEPOINT,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_XDP,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_PERF_EVENT,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_CGROUP_SKB,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_CGROUP_SOCK,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_LWT_IN,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_LWT_OUT,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_LWT_XMIT,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_SOCK_OPS,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_SK_SKB,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_CGROUP_DEVICE,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_SK_MSG,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_RAW_TRACEPOINT,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_LWT_SEG6LOCAL,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_LIRC_MODE2,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_SK_REUSEPORT,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;BPF_PROG_TYPE_FLOW_DISSECTOR,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;See&nbsp;/usr/include/linux/bpf.h&nbsp;for&nbsp;the&nbsp;full&nbsp;list.&nbsp;*/
+};
+
+
+</DL>
+<P>
+
+
+eBPF プログラム型のより詳細については、下記を参照すること。
+<P>
+
+
+
+
+<I>bpf_attr</I>
+
+の残りのフィールドは以下のように設定される:
+<DL COMPACT>
+<DT>*<DD>
+
+
+
+
+<I>insns</I>
+
+は
+<I>struct bpf_insn</I>
+
+命令の配列である。
+<DT>*<DD>
+
+
+
+<I>insn_cnt</I>
+
+は
+<I>insns</I>
+
+で参照されるプログラムの命令数である。
+<DT>*<DD>
+
+
+
+
+<I>license</I>
+
+はライセンス文字列であり、
+<I>gpl_only</I>
+
+とマークされているヘルパー関数を呼ぶために、GPL 互換でなければならない。
+
+
+(ライセンシングのルールは、カーネルモジュールと同じであり、
+&quot;Dual BSD/GPL&quot; のようなデュアルライセンスも使える。)
+<DT>*<DD>
+
+
+
+<I>log_buf</I>
+
+は、呼び出し側によって確保されたバッファーであり、
+カーネル内の検証器が検証ログを格納できる。
+
+
+
+ログは、複数行の文字列であり、
+検証器がどのようにして eBPF プログラムが安全でないとの結論にしたかを、プログラムの作者が知るために
+チェックできる。
+
+出力の形式は、検証器の開発が進むにつれて、変更される可能性がある。
+<DT>*<DD>
+
+
+
+<I>log_size</I>
+
+は
+<I>log_buf</I>
+
+で指されるバッファーのサイズである。
+
+
+
+
+
+バッファーサイズが、検証器のすべてのメッセージを格納するのに
+充分でない場合、-1 が返され、
+<I>errno</I>
+
+が
+<B>ENOSPC</B>
+
+に設定される。
+<DT>*<DD>
+
+
+<I>log_level</I>
+
+は検証器の詳細レベルである。
+
+値を 0 にすると、検証器はログを出力しない。
+
+
+
+
+
+この場合、
+<I>log_buf</I>
+
+は NULL ポインターでなければならず、
+<I>log_size</I>
+
+は 0 でなければならない。
+</DL>
+<P>
+
+
+
+
+
+
+<B>BPF_PROG_LOAD</B>
+
+で返されるファイルディスクリプターを
+<B><A HREF="../man2/close.2.html">close</A></B>(2)
+
+を適用すると、eBPF プログラムをアンロードする
+(「注意」を参照すること)。
+<P>
+
+
+
+マップは eBPF プログラムからアクセス可能であり、
+eBPF プログラム間や、eBPF プログラムとユーザ空間プログラムの間で、
+データを交換するのに使える。
+
+
+
+
+例えば、eBPF プログラムは (kprobe, パケットのような) さまざまなイベントを処理可能で、
+そのデータをマップに格納できる。
+そして、ユーザ空間プログラムはマップからそのデータを取得できる。
+
+
+
+逆に、ユーザ空間プログラムはマップを設定の仕組みとして使うことができる。
+eBPF プログラムがチェックする値を含むマップを渡すことで、
+この値に基づいて、即時にプログラムの挙動を変更することができる。
+
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H3>eBPF プログラム型</H3>
+
+
+
+
+
+eBPF プログラム型
+(<I>prog_type</I>)
+
+は、プログラムが呼ばれるカーネルヘルパー関数のサブセットを決定する。
+
+
+
+
+プログラム型は、プログラムの入力 (コンテキスト)---
+つまり
+<I>struct bpf_context</I>
+
+のフォーマットも決定する。
+(<I>struct bpf_context</I>
+
+は、データ blob で、eBPF プログラムの最初の引き数として渡される)。
+
+
+
+
+
+<P>
+
+
+
+
+例えば、トレーシングプログラムは、ソケットフィルタープログラムとは、
+厳密には同じヘルパー関数のサブセットを持たない
+(しかし、いくつかのヘルパー関数は共通に持つ)。
+
+
+
+同様に、トレーシングプログラムの入力 (コンテキスト) はレジスター値の集合であるが、
+ソケットフィルターの入力 (コンテキスト) はネットワークパケットである。
+<P>
+
+
+
+指定された型の eBPF プログラムで利用可能な関数のセットは、
+将来増えるかもしれない。
+<P>
+
+
+以下のプログラム型がサポートされている:
+<DL COMPACT>
+<DT>
+<DD>
+<B>BPF_PROG_TYPE_SOCKET_FILTER</B> (Linux 3.19 以降)
+
+
+
+
+現在、
+<B>BPF_PROG_TYPE_SOCKET_FILTER</B>
+
+で利用可能な関数のセットは以下の通り:
+<DT><DD>
+
+
+bpf_map_lookup_elem(map_fd, void *key)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;look&nbsp;up&nbsp;key&nbsp;in&nbsp;a&nbsp;map_fd&nbsp;*/
+bpf_map_update_elem(map_fd, void *key, void *value)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;update&nbsp;key/value&nbsp;*/
+bpf_map_delete_elem(map_fd, void *key)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;delete&nbsp;key&nbsp;in&nbsp;a&nbsp;map_fd&nbsp;*/
+
+
+<DT><DD>
+
+
+
+
+<I>bpf_context</I>
+
+引き数は、
+<I>struct __sk_buff</I>
+
+へのポインターである。
+
+
+
+
+
+
+
+
+<DT>
+<DD>
+<B>BPF_PROG_TYPE_KPROBE</B> (Linux 4.1 以降)
+
+
+
+[ドキュメント化が必要]
+
+
+
+
+
+<DT>
+<DD>
+<B>BPF_PROG_TYPE_SCHED_CLS</B> (Linux 4.1 以降)
+
+
+
+
+[ドキュメント化が必要]
+
+
+
+<DT>
+<DD>
+<B>BPF_PROG_TYPE_SCHED_ACT</B> (Linux 4.1 以降)
+
+
+
+
+[ドキュメント化が必要]
+
+
+
+
+</DL>
+<A NAME="lbAK">&nbsp;</A>
+<H3>イベント</H3>
+
+
+プログラムが 1 度ロードされると、イベントに紐づけられる。
+
+いろいろなカーネルサブシステムが、さまざまな方法でこれを行う。
+<P>
+
+
+
+
+
+
+
+
+
+Linux 3.19 以降では、以下の呼び出しで、プログラム
+<I>prog_fd</I>
+
+をソケット
+<I>sockfd</I>
+
+に紐づける。
+ここで、
+<I>sockfd</I>
+
+は
+<B><A HREF="../man2/socket.2.html">socket</A></B>(2)
+
+の呼び出しで前もって作られたものである:
+<P>
+
+
+
+setsockopt(sockfd, SOL_SOCKET, SO_ATTACH_BPF,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;prog_fd,&nbsp;sizeof(prog_fd));
+
+
+<P>
+
+
+
+
+
+
+
+
+
+
+Linux 4.1 以降では、以下の呼び出しで、
+ファイルディスクリプター
+<I>prog_fd</I>
+
+で参照される eBPF プログラムを、
+perf イベントディスクリプター
+<I>event_fd</I>
+
+に紐づける。
+ここで、
+<I>event_fd</I>
+
+は
+<B><A HREF="../man2/perf_event_open.2.html">perf_event_open</A></B>(2)
+
+の呼び出しで前もって作られたものである:
+<P>
+
+
+
+ioctl(event_fd, PERF_EVENT_IOC_SET_BPF, prog_fd);
+
+
+
+
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>例</H2>
+
+
+
+
+
+
+
+
+
+
+/* bpf とソケットの例:
+<BR>&nbsp;*&nbsp;1.&nbsp;要素数&nbsp;256&nbsp;の配列マップを作成する。
+<BR>&nbsp;*&nbsp;2.&nbsp;受信したパケット数をカウントするプログラムをロードする。
+<BR>&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;r0&nbsp;=&nbsp;skb-&gt;data[ETH_HLEN&nbsp;+&nbsp;offsetof(struct&nbsp;iphdr,&nbsp;protocol)]
+<BR>&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;map[r0]++
+<BR>&nbsp;*&nbsp;3.&nbsp;setsockopt()&nbsp;で&nbsp;prog_fd&nbsp;を&nbsp;raw&nbsp;ソケットに紐づける。
+<BR>&nbsp;*&nbsp;4.&nbsp;受信した&nbsp;TCP/UDP&nbsp;パケット数を毎秒表示する。
+<BR>&nbsp;*/
+int
+main(int argc, char **argv)
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;sock,&nbsp;map_fd,&nbsp;prog_fd,&nbsp;key;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;long&nbsp;value&nbsp;=&nbsp;0,&nbsp;tcp_cnt,&nbsp;udp_cnt;
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;map_fd&nbsp;=&nbsp;bpf_create_map(BPF_MAP_TYPE_ARRAY,&nbsp;sizeof(key),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sizeof(value),&nbsp;256);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(map_fd&nbsp;&lt;&nbsp;0)&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf(&quot;failed&nbsp;to&nbsp;create&nbsp;map&nbsp;'%s'\n&quot;,&nbsp;strerror(errno));
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;likely&nbsp;not&nbsp;run&nbsp;as&nbsp;root&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;1;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;}
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;struct&nbsp;bpf_insn&nbsp;prog[]&nbsp;=&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BPF_MOV64_REG(BPF_REG_6,&nbsp;BPF_REG_1),&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;r6&nbsp;=&nbsp;r1&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BPF_LD_ABS(BPF_B,&nbsp;ETH_HLEN&nbsp;+&nbsp;offsetof(struct&nbsp;iphdr,&nbsp;protocol)),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;r0&nbsp;=&nbsp;ip-&gt;proto&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BPF_STX_MEM(BPF_W,&nbsp;BPF_REG_10,&nbsp;BPF_REG_0,&nbsp;-4),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;*(u32&nbsp;*)(fp&nbsp;-&nbsp;4)&nbsp;=&nbsp;r0&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BPF_MOV64_REG(BPF_REG_2,&nbsp;BPF_REG_10),&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;r2&nbsp;=&nbsp;fp&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BPF_ALU64_IMM(BPF_ADD,&nbsp;BPF_REG_2,&nbsp;-4),&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;r2&nbsp;=&nbsp;r2&nbsp;-&nbsp;4&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BPF_LD_MAP_FD(BPF_REG_1,&nbsp;map_fd),&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;r1&nbsp;=&nbsp;map_fd&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BPF_CALL_FUNC(BPF_FUNC_map_lookup_elem),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;r0&nbsp;=&nbsp;map_lookup(r1,&nbsp;r2)&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BPF_JMP_IMM(BPF_JEQ,&nbsp;BPF_REG_0,&nbsp;0,&nbsp;2),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;if&nbsp;(r0&nbsp;==&nbsp;0)&nbsp;goto&nbsp;pc+2&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BPF_MOV64_IMM(BPF_REG_1,&nbsp;1),&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;r1&nbsp;=&nbsp;1&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BPF_XADD(BPF_DW,&nbsp;BPF_REG_0,&nbsp;BPF_REG_1,&nbsp;0,&nbsp;0),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;lock&nbsp;*(u64&nbsp;*)&nbsp;r0&nbsp;+=&nbsp;r1&nbsp;*/
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BPF_MOV64_IMM(BPF_REG_0,&nbsp;0),&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;r0&nbsp;=&nbsp;0&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BPF_EXIT_INSN(),&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;return&nbsp;r0&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;};
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;prog_fd&nbsp;=&nbsp;bpf_prog_load(BPF_PROG_TYPE_SOCKET_FILTER,&nbsp;prog,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sizeof(prog)&nbsp;/&nbsp;sizeof(prog[0]),&nbsp;&quot;GPL&quot;);
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;sock&nbsp;=&nbsp;open_raw_sock(&quot;lo&quot;);
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;assert(setsockopt(sock,&nbsp;SOL_SOCKET,&nbsp;SO_ATTACH_BPF,&nbsp;&amp;prog_fd,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sizeof(prog_fd))&nbsp;==&nbsp;0);
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(;;)&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;=&nbsp;IPPROTO_TCP;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;assert(bpf_lookup_elem(map_fd,&nbsp;&amp;key,&nbsp;&amp;tcp_cnt)&nbsp;==&nbsp;0);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;=&nbsp;IPPROTO_UDP;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;assert(bpf_lookup_elem(map_fd,&nbsp;&amp;key,&nbsp;&amp;udp_cnt)&nbsp;==&nbsp;0);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf(&quot;TCP&nbsp;%lld&nbsp;UDP&nbsp;%lld&nbsp;packets\n&quot;,&nbsp;tcp_cnt,&nbsp;udp_cnt);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="../man1/sleep.1.html">sleep</A>(1);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;}
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;0;
+}
+
+<P>
+
+
+
+
+動作している完全なコードは、カーネルソースツリーの
+<I>samples/bpf</I>
+
+にある。
+
+<A NAME="lbAM">&nbsp;</A>
+<H2>返り値</H2>
+
+
+呼び出しに成功した場合、返り値は操作に依存する:
+<DL COMPACT>
+<DT><B>BPF_MAP_CREATE</B>
+
+<DD>
+
+eBPF マップに関連づけられた新しいファイルディスクリプター。
+<DT><B>BPF_PROG_LOAD</B>
+
+<DD>
+
+eBPF プログラムに関連づけられた新しいファイルディスクリプター。
+<DT>
+<DD>
+他のコマンド
+
+0。
+</DL>
+<P>
+
+
+
+
+エラーの場合、-1 が返され、
+<I>errno</I>
+
+が適切に設定される。
+
+<A NAME="lbAN">&nbsp;</A>
+<H2>エラー</H2>
+
+<DL COMPACT>
+<DT><B>E2BIG</B>
+
+<DD>
+
+
+
+eBPF プログラムが大きすぎる、またはマップが
+<I>max_entries</I>
+
+の制限 (要素数の最大値) に達した。
+<DT><B>EACCES</B>
+
+<DD>
+
+
+
+
+<B>BPF_PROG_LOAD</B>
+
+の場合に、すべてのプログラム命令が有効であるが、
+プログラムが安全でないと思われて、拒否された。
+
+
+
+
+これは、許可されていないメモリ領域または初期化されていない
+スタック/レジスタにアクセスする可能性がある場合、
+関数の制限が実際のタイプにマッチしない場合、
+配置を間違えたメモリアクセスがある場合などである。
+
+
+
+
+
+
+
+この場合、
+<B>bpf</B>()
+
+を
+<I>log_level = 1</I>
+
+としてもう一度呼んで、検証器が提供する特定の理由を
+<I>log_buf</I>
+
+で調べることをお勧めする。
+<DT><B>EBADF</B>
+
+<DD>
+
+
+<I>fd</I>
+
+がオープンされたファイルディスクリプターでない。
+<DT><B>EFAULT</B>
+
+<DD>
+
+
+
+
+
+
+
+
+
+ポインター
+(<I>key</I>,
+
+<I>value</I>,
+
+<I>log_buf</I>,
+
+<I>insns</I>)
+
+のいずれかが、アクセス可能はアドレス空間の外にある。
+<DT><B>EINVAL</B>
+
+<DD>
+
+
+
+<I>cmd</I>
+
+に指定された値が、カーネルに認識されない。
+<DT><B>EINVAL</B>
+
+<DD>
+
+
+
+
+
+<B>BPF_MAP_CREATE</B>
+
+の場合に、
+<I>map_type</I>
+
+または属性が無効である。
+<DT><B>EINVAL</B>
+
+<DD>
+
+
+
+
+
+
+
+<B>BPF_MAP_*_ELEM</B>
+
+コマンドの場合に、このコマンドで使われない
+<I>union bpf_attr</I>
+
+のどれかのフィールドが 0 に設定されていない。
+<DT><B>EINVAL</B>
+
+<DD>
+
+
+
+<B>BPF_PROG_LOAD</B>
+
+の場合に、無効なプログラムをロードしようとしたことを表す。
+
+
+
+eBPF プログラムは、認識されない命令、予約されたフィールドの利用、
+範囲外へのジャンプ、無限ループ、不明な関数呼び出しの場合に、
+無効であると認識される。
+<DT><B>ENOENT</B>
+
+<DD>
+
+
+
+
+
+
+
+<B>BPF_MAP_LOOKUP_ELEM</B>
+
+または
+<B>BPF_MAP_DELETE_ELEM</B>
+
+の場合、指定された
+<I>key</I>
+
+の要素が見つからないことを示す。
+<DT><B>ENOMEM</B>
+
+<DD>
+
+十分なメモリが確保できない。
+<DT><B>EPERM</B>
+
+<DD>
+
+
+
+
+十分な権限
+(<B>CAP_SYS_ADMIN</B>
+
+ケーパビリティ) なしで呼び出しが行われた。
+
+</DL>
+<A NAME="lbAO">&nbsp;</A>
+<H2>バージョン</H2>
+
+
+
+
+<B>bpf</B>()
+
+は Linux 3.18 で最初に登場した。
+
+<A NAME="lbAP">&nbsp;</A>
+<H2>準拠</H2>
+
+
+
+
+<B>bpf</B>()
+
+システムコールは Linux 固有である。
+
+<A NAME="lbAQ">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+
+Linux 4.4 より前では、すべての
+<B>bpf</B>()
+
+コマンドで、呼び出し元が
+<B>CAP_SYS_ADMIN</B>
+
+ケーパビリティを持つ必要があった。
+
+
+
+
+
+Linux 4.4 以降では、特権のないユーザでもタイプ
+<B>BPF_PROG_TYPE_SOCKET_FILTER</B>
+
+と関連するマップの限定されたプログラムを作れるようになった。
+
+
+しかし、マップにカーネルのポインターを格納できず、現在のところ下記の
+ヘルパー関数に限定されている:
+
+
+<DL COMPACT>
+<DT>*<DD>
+get_random
+
+<DT>*<DD>
+get_smp_processor_id
+<DT>*<DD>
+tail_call
+<DT>*<DD>
+ktime_get_ns
+
+</DL>
+<P>
+
+
+
+特権のないアクセスは、sysctl
+<I>/proc/sys/kernel/unprivileged_bpf_disabled</I>
+
+を設定することで、ブロックできる。
+<P>
+
+
+eBPF オブジェクト (マップとプログラム) は、プロセス間で共有できる。
+
+
+
+例えば、
+<B><A HREF="../man2/fork.2.html">fork</A></B>(2)
+
+の後、子プロセスは、同じ eBPF オブジェクトを参照するファイルディスクリプターを継承する。
+
+
+加えて、eBPF オブジェクトを参照するファイルディスクリプターは、
+UNIX ドメインソケットを使って転送できる。
+
+
+
+
+eBPF オブジェクトを参照するファイルディスクリプターは、
+<B><A HREF="../man2/dup.2.html">dup</A></B>(2)
+
+や同様の呼び出しで、通常の方法で複製できる。
+
+
+eBPF オブジェクトは、オブジェクトを参照するすべてのファイルディスクリプターが
+閉じられた場合に、解放される。
+<P>
+
+
+
+
+eBPF プログラムは、制限付きの C で書くことができて、
+(<B>clang</B>
+
+コンパイラーを使って) eBPF バイトコードにコンパイルされる。
+
+
+
+制限付きの C では、ループ、グローバル変数、可変長期引き数の関数、
+浮動小数点小数、構造体の関数引き数への受け渡しなど、
+さまざまな機能が省略されている。
+
+
+
+カーネルソースコードツリーの
+<I>samples/bpf/*_kern.c</I>
+
+ファイルに、いくつかの例が書かれている。
+
+
+<P>
+
+
+
+カーネルは just-in-time (JIT) を含んでおり、
+eBPF バイトコードをネイティブのマシンコードに変換し、
+性能を良くすることができる。
+
+
+
+
+
+Linux 4.15 より前のカーネルでは、
+デフォルトでは JIT コンパイラーは無効化されているが、
+下記の整数文字列のいずれかを
+<I>/proc/sys/net/core/bpf_jit_enable</I>
+
+に書き込むことにより、操作をコントロールできる。
+<DL COMPACT>
+<DT>0<DD>
+
+JIT コンパイルを無効化する (デフォルト)。
+<DT>1<DD>
+
+通常のコンパイル。
+<DT>2<DD>
+
+デバッグモード。
+
+生成されたオペコード (opcode) はカーネルログに 16 進数でダンプされる。
+
+
+
+これらのオペコードは、カーネルソースツリーの
+<I>tools/net/bpf_jit_disasm.c</I>
+
+で提供されるプログラムで逆アセンブルできる。
+</DL>
+<P>
+
+
+
+
+
+
+Linux 4.15 以降では、カーネルが
+<B>CONFIG_BPF_JIT_ALWAYS_ON</B>
+
+オプション付きで設定されているかもしれない。
+
+
+
+この場合、JIT コンパイラーは常に有効になっており、
+<I>bpf_jit_enable</I>
+
+は 1 で初期化されており、変更できない。
+
+
+(このカーネル設定オプションは、BPF インタプリターへのスペクター (Spectre) アタックを
+緩和するために提供されている。)
+<P>
+
+
+
+
+
+
+JIT コンパイラーは、現在のところ下記のアーキテクチャーで提供されている:
+<DL COMPACT>
+<DT>*<DD>
+
+x86-64 (Linux 3.18 以降; cBPF は Linux 3.0 以降);
+
+
+<DT>*<DD>
+
+ARM32 (Linux 3.18 以降; cBPF は Linux 3.4 以降);
+
+<DT>*<DD>
+
+SPARC 32 (Linux 3.18 以降; cBPF は Linux 3.5 以降);
+
+<DT>*<DD>
+
+ARM-64 (Linux 3.18 以降);
+
+<DT>*<DD>
+
+s390 (Linux 4.1 以降; cBPF は Linux 3.7 以降);
+
+<DT>*<DD>
+
+PowerPC 64 (Linux 4.8 以降; cBPF は Linux 3.1 以降);
+
+
+<DT>*<DD>
+
+SPARC 64 (Linux 4.12 以降);
+
+<DT>*<DD>
+
+x86-32 (Linux 4.18 以降);
+
+<DT>*<DD>
+
+MIPS 64 (Linux 4.18 以降; cBPF は Linux 3.16 以降);
+
+
+<DT>*<DD>
+
+riscv (Linux 5.1 以降).
+
+
+
+</DL>
+<A NAME="lbAR">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/seccomp.2.html">seccomp</A></B>(2),
+
+<B><A HREF="../man7/bpf-helpers.7.html">bpf-helpers</A></B>(7),
+
+<B><A HREF="../man7/socket.7.html">socket</A></B>(7),
+
+<B><A HREF="../man8/tc.8.html">tc</A></B>(8),
+
+<B><A HREF="../man8/tc-bpf.8.html">tc-bpf</A></B>(8)
+
+<P>
+
+
+
+classic BPF と extended BPF の両方が、カーネルソースコード
+<I>Documentation/networking/filter.txt</I>
+
+で説明されている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DL>
+<DT><A HREF="#lbAE">extended BPF のデザイン/アーキテクチャ</A><DD>
+<DT><A HREF="#lbAF">引き数</A><DD>
+<DT><A HREF="#lbAG">eBPF マップ</A><DD>
+<DT><A HREF="#lbAH">eBPF マップ型</A><DD>
+<DT><A HREF="#lbAI">eBPF プログラム</A><DD>
+<DT><A HREF="#lbAJ">eBPF プログラム型</A><DD>
+<DT><A HREF="#lbAK">イベント</A><DD>
+</DL>
+<DT><A HREF="#lbAL">例</A><DD>
+<DT><A HREF="#lbAM">返り値</A><DD>
+<DT><A HREF="#lbAN">エラー</A><DD>
+<DT><A HREF="#lbAO">バージョン</A><DD>
+<DT><A HREF="#lbAP">準拠</A><DD>
+<DT><A HREF="#lbAQ">注意</A><DD>
+<DT><A HREF="#lbAR">関連項目</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:28:38 GMT, January 04, 2021
+</BODY>
+</HTML>
