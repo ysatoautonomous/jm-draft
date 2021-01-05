@@ -1,0 +1,128 @@
+.\" Written by Ralf Baechle (ralf@waldorf-gmbh.de),
+.\" Copyright (c) 1994, 1995 Waldorf GMBH
+.\"
+.\" %%%LICENSE_START(GPLv2+_DOC_FULL)
+.\" This is free documentation; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License as
+.\" published by the Free Software Foundation; either version 2 of
+.\" the License, or (at your option) any later version.
+.\"
+.\" The GNU General Public License's references to "object code"
+.\" and "executables" are to be interpreted as the output of any
+.\" document formatting or typesetting system, including
+.\" intermediate and printed output.
+.\"
+.\" This manual is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public
+.\" License along with this manual; if not, see
+.\" <http://www.gnu.org/licenses/>.
+.\" %%%LICENSE_END
+.\"
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.\" Japanese Version Copyright (c) 1997 HANATAKA Shinya
+.\"         all rights reserved.
+.\" Translated Sat Feb 22 20:07:45 JST 1997
+.\"         by HANATAKA Shinya <hanataka@abyss.rim.or.jp>
+.\" Updated 2007-06-13, Akihiro MOTOKI <amotoki@dd.iij4u.or.jp>, LDP v2.55
+.\" Updated & Modified Tue Jan  5 20:50:02 JST 2021
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>, LDP 5.07
+.\"
+.TH CACHEFLUSH 2 2017-09-15 "Linux" "Linux Programmer's Manual"
+.SH 名前
+cacheflush \- 命令キャッシュやデータキャッシュの内容をフラッシュする
+.SH 書式
+.nf
+\fB#include <asm/cachectl.h>\fP
+.PP
+\fBint cacheflush(char *\fP\fIaddr\fP\fB, int \fP\fInbytes\fP\fB, int \fP\fIcache\fP\fB);\fP
+.fi
+.SH 説明
+\fBcacheflush\fP()  は \fIaddr\fP から \fI(addr+nbytes\-1)\fP の範囲のユーザーアドレスに対応する
+指定されたキャッシュをフラッシュする。 \fIcache\fP には以下のいずれかを指定する:
+.TP 
+\fBICACHE\fP
+命令 (instruction) キャッシュをフラッシュする。
+.TP 
+\fBDCACHE\fP
+変更があったキャッシュラインをメモリーに書き戻し、無効にする。
+.TP 
+\fBBCACHE\fP
+\fB(ICACHE|DCACHE)\fP と同じ。
+.SH 返り値
+\fBcacheflush\fP()  は成功した場合は 0 を、失敗した場合は \-1 を返す。エラーが検出された場合は \fIerrno\fP
+にエラーが指示される。
+.SH エラー
+.TP 
+\fBEFAULT\fP
+\fIaddr\fP から \fI(addr+nbytes\-1)\fP の範囲のアドレスの全てまたは一部が アクセス可能ではない。
+.TP 
+\fBEINVAL\fP
+\fIcache\fP パラメーターが \fBICACHE\fP, \fBDCACHE\fP, \fBBCACHE\fP のどれでもない
+.\"O (but see BUGS).
+(「バグ」を参照すること)。
+.SH 準拠
+.\"O Historically, this system call was available on all MIPS UNIX variants
+.\"O including RISC/os, IRIX, Ultrix, NetBSD, OpenBSD, and FreeBSD
+.\"O (and also on some non-UNIX MIPS operating systems), so that
+.\"O the existence of this call in MIPS operating systems is a de-facto
+.\"O standard.
+歴史的には、このシステムコールは
+RISC/os, IRIX, Ultrix, NetBSD, OpenBSD, FreeBSD を含む
+すべての MIPS UNIX 派生物
+(と UNIX ではない、いくつかの MIPS オペレーティングシステム) で利用可能であった。
+そのため、このシステムコールが存在することは、MIPS オペレーティングシステムでは、
+デファクトスタンダードであった。
+.\"O .SS Caveat
+.SS 注意
+.\"O .BR cacheflush ()
+.\"O should not be used in programs intended to be portable.
+.BR cacheflush ()
+は移植を意図したプログラムで使用すべきではない。
+.\"O On Linux, this call first appeared on the MIPS architecture,
+.\"O but nowadays, Linux provides a
+.\"O .BR cacheflush ()
+.\"O system call on some other architectures, but with different arguments.
+Linux では、このシステムコールは、MIPS アーキテクチャーで最初に登場した。
+しかし、今日では、Linux は
+.BR cacheflush ()
+システムコールを他のアーキテクチャーでも提供している。
+ただし、引き数が異なる。
+.SH バグ
+.\"O Linux kernels older than version 2.6.11 ignore the
+.\"O .I addr
+.\"O and
+.\"O .I nbytes
+.\"O arguments, making this function fairly expensive.
+バージョン 2.6.11 より古い Linux カーネルでは、
+引き数 \fIaddr\fP と \fInbytes\fP は無視されるため、
+この関数はとても処理コストが高い。
+.\"O Therefore, the whole cache is always flushed.
+そのため、常に全てのキャッシュがフラッシュされる。
+.PP
+.\"O This function always behaves as if
+.\"O .BR BCACHE
+.\"O has been passed for the
+.\"O .I cache
+.\"O argument and does not do any error checking on the
+.\"O .I cache
+.\"O argument.
+この関数は
+.BR BCACHE
+が
+.I cache
+引き数に渡されたかのように動作し、
+.I cache
+引き数のエラーチェックを行わない。
+.SH この文書について
+この man ページは Linux \fIman\-pages\fP プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+http://www.kernel.org/doc/man\-pages/ に書かれている。
