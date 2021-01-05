@@ -1,0 +1,149 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of CACHEFLUSH</TITLE>
+</HEAD><BODY>
+<H1>CACHEFLUSH</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2017-09-15<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+cacheflush - 命令キャッシュやデータキャッシュの内容をフラッシュする
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/asm/cachectl.h">asm/cachectl.h</A>&gt;</B>
+
+<B>int cacheflush(char *</B><I>addr</I><B>, int </B><I>nbytes</I><B>, int </B><I>cache</I><B>);</B>
+</PRE>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>cacheflush</B>()  は <I>addr</I> から <I>(addr+nbytes-1)</I> の範囲のユーザーアドレスに対応する
+指定されたキャッシュをフラッシュする。 <I>cache</I> には以下のいずれかを指定する:
+<DL COMPACT>
+<DT><B>ICACHE</B><DD>
+命令 (instruction) キャッシュをフラッシュする。
+<DT><B>DCACHE</B><DD>
+変更があったキャッシュラインをメモリーに書き戻し、無効にする。
+<DT><B>BCACHE</B><DD>
+<B>(ICACHE|DCACHE)</B> と同じ。
+</DL>
+<A NAME="lbAE">&nbsp;</A>
+<H2>返り値</H2>
+
+<B>cacheflush</B>()  は成功した場合は 0 を、失敗した場合は -1 を返す。エラーが検出された場合は <I>errno</I>
+にエラーが指示される。
+<A NAME="lbAF">&nbsp;</A>
+<H2>エラー</H2>
+
+<DL COMPACT>
+<DT><B>EFAULT</B><DD>
+<I>addr</I> から <I>(addr+nbytes-1)</I> の範囲のアドレスの全てまたは一部が アクセス可能ではない。
+<DT><B>EINVAL</B><DD>
+<I>cache</I> パラメーターが <B>ICACHE</B>, <B>DCACHE</B>, <B>BCACHE</B> のどれでもない
+
+(「バグ」を参照すること)。
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>準拠</H2>
+
+
+
+
+
+
+歴史的には、このシステムコールは
+RISC/os, IRIX, Ultrix, NetBSD, OpenBSD, FreeBSD を含む
+すべての MIPS UNIX 派生物
+(と UNIX ではない、いくつかの MIPS オペレーティングシステム) で利用可能であった。
+そのため、このシステムコールが存在することは、MIPS オペレーティングシステムでは、
+デファクトスタンダードであった。
+
+<A NAME="lbAH">&nbsp;</A>
+<H3>注意</H3>
+
+
+
+<B>cacheflush</B>()
+
+は移植を意図したプログラムで使用すべきではない。
+
+
+
+
+Linux では、このシステムコールは、MIPS アーキテクチャーで最初に登場した。
+しかし、今日では、Linux は
+<B>cacheflush</B>()
+
+システムコールを他のアーキテクチャーでも提供している。
+ただし、引き数が異なる。
+<A NAME="lbAI">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+
+
+バージョン 2.6.11 より古い Linux カーネルでは、
+引き数 <I>addr</I> と <I>nbytes</I> は無視されるため、
+この関数はとても処理コストが高い。
+
+そのため、常に全てのキャッシュがフラッシュされる。
+<P>
+
+
+
+
+
+
+
+
+この関数は
+<B>BCACHE</B>
+
+が
+<I>cache</I>
+
+引き数に渡されたかのように動作し、
+<I>cache</I>
+
+引き数のエラーチェックを行わない。
+<A NAME="lbAJ">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">返り値</A><DD>
+<DT><A HREF="#lbAF">エラー</A><DD>
+<DT><A HREF="#lbAG">準拠</A><DD>
+<DL>
+<DT><A HREF="#lbAH">注意</A><DD>
+</DL>
+<DT><A HREF="#lbAI">バグ</A><DD>
+<DT><A HREF="#lbAJ">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:53:34 GMT, January 05, 2021
+</BODY>
+</HTML>
