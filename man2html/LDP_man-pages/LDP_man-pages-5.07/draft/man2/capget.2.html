@@ -1,0 +1,282 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of CAPGET</TITLE>
+</HEAD><BODY>
+<H1>CAPGET</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2020-02-09<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+capget, capset - スレッドのケーパビリティを設定/取得する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>#include &lt;<A HREF="file:///usr/include/sys/capability.h">sys/capability.h</A>&gt;</B>
+<P>
+
+<B>int capget(cap_user_header_t </B><I>hdrp</I><B>, cap_user_data_t </B><I>datap</I><B>);</B>
+<P>
+
+<B>int capset(cap_user_header_t </B><I>hdrp</I><B>, const cap_user_data_t
+</B><I>datap</I><B>);</B>
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+この二つのシステムコールはスレッドのケーパビリティを取得したり設定したりするための 生のカーネルインターフェースである。 これらのシステムコールは
+Linux 特有であるというだけでなく、 カーネル API は変更されるかもしれず、これらのシステムコールの使用法 (特に
+<I>cap_user_*_t</I> 型という書式) はカーネルのリビジョン毎に拡張されるかもしれないが、 以前のプログラムはそのまま動作する。
+<P>
+
+移植性のあるインターフェースは <B><A HREF="../man3/cap_set_proc.3.html">cap_set_proc</A></B>(3)  と <B><A HREF="../man3/cap_get_proc.3.html">cap_get_proc</A></B>(3)  である。
+可能ならばアプリケーションはこれらの関数を使用すべきである。
+
+<A NAME="lbAE">&nbsp;</A>
+<H3>現在の詳細</H3>
+
+現在のカーネルの詳細について注意を述べておく。 構造体は以下のように定義される。
+<P>
+
+
+
+#define _LINUX_CAPABILITY_VERSION_1  0x19980330
+#define _LINUX_CAPABILITY_U32S_1     1
+<P>
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;V2&nbsp;は&nbsp;in&nbsp;Linux&nbsp;2.6.25&nbsp;で追加された;&nbsp;古い&nbsp;*/
+#define _LINUX_CAPABILITY_VERSION_2  0x20071026
+
+
+#define _LINUX_CAPABILITY_U32S_2     2
+<P>
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;V3&nbsp;は&nbsp;Linux&nbsp;2.6.26&nbsp;で追加された&nbsp;*/
+#define _LINUX_CAPABILITY_VERSION_3  0x20080522
+
+#define _LINUX_CAPABILITY_U32S_3     2
+<P>
+typedef struct __user_cap_header_struct {
+<BR>&nbsp;&nbsp;&nbsp;__u32&nbsp;version;
+<BR>&nbsp;&nbsp;&nbsp;int&nbsp;pid;
+} *cap_user_header_t;
+<P>
+typedef struct __user_cap_data_struct {
+<BR>&nbsp;&nbsp;&nbsp;__u32&nbsp;effective;
+<BR>&nbsp;&nbsp;&nbsp;__u32&nbsp;permitted;
+<BR>&nbsp;&nbsp;&nbsp;__u32&nbsp;inheritable;
+} *cap_user_data_t;
+
+
+<P>
+
+フィールド <I>effective</I>, <I>permitted</I>, <I>inheritable</I> は、 <B><A HREF="../man7/capabilities.7.html">capabilities</A></B>(7)
+で定義されるケーパビリティのビットマスクである。 <I>CAP_*</I> はビット番号を表すインデックス値であり、 ビットフィールドに OR を行う前に
+<I>CAP_*</I> の値の分だけビットシフトを行う必要がある。 typedef の方はポインターなので、 このシステムコールに渡す構造体を定義するには、
+<I>struct __user_cap_header_struct</I> と <I>struct __user_cap_data_struct</I>
+という名前を使用しなければならない。
+<P>
+カーネル 2.6.25 より前では、バージョン <B>_LINUX_CAPABILITY_VERSION_1</B> の 32
+ビットケーパビリティが推奨である。 カーネル 2.6.25 では、バージョン <B>_LINUX_CAPABILITY_VERSION_2</B> の 64
+ビットケーパビリティが追加された。
+
+
+
+しかし、API に不具合があったので、問題を解消するため、
+Linux 2.6.26 で
+<B>_LINUX_CAPABILITY_VERSION_3</B>
+
+が追加された。
+<P>
+
+64 ビットケーパビリティでは <I>datap</I>[0] と <I>datap</I>[1] が使用されるのに対し、 32
+ビットケーパビリティでは <I>datap</I>[0] だけが使用される。
+<P>
+
+
+
+ファイルケーパビリティ (VFS ケーパビリティ) をサポートするカーネルでは、
+これらのシステムコールの挙動が微妙に異なる。
+
+
+VFS ケーパビリティのサポートは、Linux 2.6.24 でオプションとして追加され、
+Linux 2.6.33 で (オプションではなく) 固定となった。
+<P>
+
+<B>capget</B>()  では、 <I>hdrp-&gt;pid</I> のフィールド値にケーパビリティを知りたいプロセスのプロセス ID を
+指定することで、任意のプロセスのケーパビリティを調べることができる。
+<P>
+
+
+
+データの詳細は、
+<B><A HREF="../man7/capabilities.7.html">capabilities</A></B>(7)
+
+を参照すること。
+
+<A NAME="lbAF">&nbsp;</A>
+<H3>VFS ケーパビリティがサポートされている場合</H3>
+
+
+
+
+VFS ケーパビリティは、ファイル拡張属性
+(<B><A HREF="../man7/xattr.7.html">xattr</A></B>(7)
+
+を参照) を使い、実行ファイルにケーパビリティを付与する。
+
+
+この特権モデルの導入により、あるプロセスにより別のプロセスのケーパビリティ を非同期に設定する機能のカーネルによるサポートは廃止される。
+
+
+
+
+
+
+つまり、VFS ケーパビリティをサポートするカーネルでは、
+<B>capset</B>() を呼び出す際に <I>hdrp-&gt;pid</I> の値として許されるのは 0 と <B><A HREF="../man2/getpid.2.html">getpid</A></B>(2)
+が返す値だけとなる (どちらの値でも等価である)。
+<A NAME="lbAG">&nbsp;</A>
+<H3>VFS ケーパビリティがサポートされていない場合</H3>
+
+
+
+
+
+
+
+VFS ケーパビリティをサポートしていない古いカーネルでは、
+呼び出し元が
+<B>CAP_SETPCAP</B>
+
+ケーパビリティを持っている場合、
+<B>capset</B>()
+
+は呼び出し元自体のケーパビリティを変更するだけでなく、
+他のスレッドのケーパビリティも変更するのに使われる。
+
+
+
+
+
+
+
+この呼び出しでは、<I>hdrp</I> の <I>pid</I> フィールドが 0 以外であれば、 <B>capset</B>()
+の操作対象は <I>pid</I> で指定されたスレッドのケーパビリティになる。 <I>pid</I> が 0
+の場合は呼び出し元のスレッドのケーパビリティが操作対象となる。 <I>pid</I> がシングルスレッドプロセスを参照している場合、 <I>pid</I>
+は以前から使われているプロセスID を使って指定できる。 マルチスレッドプロセス内のあるスレッドを対象にする場合は、 <B><A HREF="../man2/gettid.2.html">gettid</A></B>(2)
+が返すスレッドID を用いて指定する必要がある。 また、 <B>capset</B>()  では -1 や -1 より小さな値を指定することもできる。 -1
+は呼び出し元と <B><A HREF="../man1/init.1.html">init</A></B>(1)  を除く全てのスレッドを対象として変更を行うことを、 -1 より小さな値は ID が -<I>pid</I>
+のプロセスグループの全メンバ を対象として変更を行うことを意味する。
+<A NAME="lbAH">&nbsp;</A>
+<H2>返り値</H2>
+
+成功した場合は 0 が返される。エラーの場合は -1 が返され、 <I>errno</I> が適切に設定される。
+<P>
+
+<I>hdrp</I> のフィールド <I>version</I> にサポートされていない値が指定された場合、 呼び出しはエラー <B>EINVAL</B> で失敗し、
+<I>version</I> にカーネル推奨の <B>_LINUX_CAPABILITY_VERSION_?</B> を設定する。
+このようにして、現在の推奨ケーパビリティリビジョンが何かを 調べることができる。
+<A NAME="lbAI">&nbsp;</A>
+<H2>エラー</H2>
+
+<DL COMPACT>
+<DT><B>EFAULT</B><DD>
+不正なメモリーアドレス。 <I>hdrp</I> は NULL であってはならない。 <I>datap</I> に NULL
+を指定してよいのは、ユーザーがカーネルがサポートしている 推奨のケーパビリティバージョンを判定しようとしているときだけである。
+<DT><B>EINVAL</B><DD>
+引き数のどれかが無効である。
+<DT><B>EPERM</B><DD>
+
+
+
+「許可ケーパビリティセット」にケーパビリティを追加しようとしているか、
+もしくは「許可ケーパビリティセット」に含まれないケーパビリティを
+「実効ケーパビリティセット」にセットしようとしている。
+<DT><B>EPERM</B>
+
+<DD>
+
+「継承可能ケーパビリティセット」にケーパビリティを追加しようと
+していて、かつ以下のいずれかである。
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>*<DD>
+
+そのケーパビリティが、呼び出し元に紐づけられたセットにない。
+<DT>*<DD>
+
+
+
+
+そのケーパビリティが、呼び出し元の「許可ケーパビリティセット」
+になく、かつ、呼び出し元の「実効ケーパビリティセット」に
+<B>CAP_SETPCAP</B>
+
+ケーパビリティがない。
+</DL>
+</DL>
+
+<DT><B>EPERM</B><DD>
+呼び出し元が自分以外のスレッドのケーパビリティを <B>capset</B>()  を使って修正しようとしたが、十分な特権がなかった。 VFS
+ケーパビリティをサポートしているカーネルでは、 この操作が許可されることは決してない。 VFS ケーパビリティをサポートしていないカーネルでは、
+<B>CAP_SETPCAP</B> ケーパビリティが必要である。 (バージョン 2.6.11 より前のカーネルには、 このケーパビリティを持たないスレッドが
+<I>pid</I> フィールドに 0 でない値 (つまり、0 の代わりに <B><A HREF="../man2/getpid.2.html">getpid</A></B>(2)  が返す値)
+を指定して自分自身のケーパビリティを変更しようとした場合にも、 このエラーが発生するというバグがあった。)
+<DT><B>ESRCH</B><DD>
+そのようなスレッドが存在しない。
+</DL>
+<A NAME="lbAJ">&nbsp;</A>
+<H2>準拠</H2>
+
+これらのシステムコールは Linux 独自である。
+<A NAME="lbAK">&nbsp;</A>
+<H2>注意</H2>
+
+ケーパビリティを設定したり取得したりする機能のための移植性ある インターフェースは <I>libcap</I> ライブラリによって提供される。
+このライブラリは以下から入手できる:
+<BR>
+
+
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/clone.2.html">clone</A></B>(2), <B><A HREF="../man2/gettid.2.html">gettid</A></B>(2), <B><A HREF="../man7/capabilities.7.html">capabilities</A></B>(7)
+<A NAME="lbAM">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DL>
+<DT><A HREF="#lbAE">現在の詳細</A><DD>
+<DT><A HREF="#lbAF">VFS ケーパビリティがサポートされている場合</A><DD>
+<DT><A HREF="#lbAG">VFS ケーパビリティがサポートされていない場合</A><DD>
+</DL>
+<DT><A HREF="#lbAH">返り値</A><DD>
+<DT><A HREF="#lbAI">エラー</A><DD>
+<DT><A HREF="#lbAJ">準拠</A><DD>
+<DT><A HREF="#lbAK">注意</A><DD>
+<DT><A HREF="#lbAL">関連項目</A><DD>
+<DT><A HREF="#lbAM">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:07:36 GMT, January 11, 2021
+</BODY>
+</HTML>
