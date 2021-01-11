@@ -1,0 +1,355 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of CHMOD</TITLE>
+</HEAD><BODY>
+<H1>CHMOD</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2017-09-15<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+chmod, fchmod, fchmodat - ファイルのモードを変更する
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/sys/stat.h">sys/stat.h</A>&gt;</B>
+
+<B>int chmod(const char *</B><I>pathname</I><B>, mode_t </B><I>mode</I><B>);</B>
+<BR>
+<B>int fchmod(int </B><I>fd</I><B>, mode_t </B><I>mode</I><B>);</B>
+
+<B>#include &lt;<A HREF="file:///usr/include/fcntl.h">fcntl.h</A>&gt;</B>           /* AT_* 定数の定義 */
+<B>#include &lt;<A HREF="file:///usr/include/sys/stat.h">sys/stat.h</A>&gt;</B>
+
+<B>int fchmodat(int </B><I>dirfd</I><B>, const char *</B><I>pathname</I><B>, mode_t </B><I>mode</I><B>, int </B><I>flags</I><B>);</B>
+</PRE>
+
+<P>
+
+
+glibc 向けの機能検査マクロの要件 (<B><A HREF="../man7/feature_test_macros.7.html">feature_test_macros</A></B>(7)  参照):
+
+<P>
+
+
+
+<B>fchmod</B>():
+<DL COMPACT><DT><DD>
+
+glibc 2.24 以降:
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;_POSIX_C_SOURCE&nbsp;&gt;=&nbsp;199309L
+
+<P>
+
+
+glibc 2.19 から 2.23
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;_POSIX_C_SOURCE
+<P>
+
+
+glibc 2.16 から 2.19:
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;_BSD_SOURCE&nbsp;||&nbsp;_POSIX_C_SOURCE
+<P>
+
+
+glibc 2.12 から 2.16:
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;_BSD_SOURCE&nbsp;||&nbsp;_XOPEN_SOURCE&nbsp;&gt;=&nbsp;500&nbsp;||
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_POSIX_C_SOURCE&nbsp;&gt;=&nbsp;200809L
+<P>
+
+
+glibc 2.11 以前:
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;_BSD_SOURCE&nbsp;||&nbsp;_XOPEN_SOURCE&nbsp;&gt;=&nbsp;500
+
+</DL>
+
+
+<P>
+
+<B>fchmodat</B>():
+
+
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>glibc 2.10 以降:<DD>
+_POSIX_C_SOURCE&nbsp;&gt;=&nbsp;200809L
+<DT>glibc 2.10 より前:<DD>
+_ATFILE_SOURCE
+</DL>
+</DL>
+
+
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+システムコール <B>chmod</B>() と <B>fchmod</B>() は、
+ファイルのモードビットを変更する。
+(ファイルモードには、ファイルのアクセス許可 (permission) に加え、
+set-user-ID, set-group-ID, スティッキービット (sticky bit) が含まれる。)
+
+システムコール間の違いは、ファイルの指定の仕方だけである。
+<DL COMPACT>
+<DT>*<DD>
+
+
+<B>chmod</B>()  は、 <I>pathname</I> で指定されたパス名を持つファイルのモードを変更する。 <I>pathname</I>
+がシンボリックリンクの場合は、リンクの展開が行われる。
+<DT>*<DD>
+
+
+<B>fchmod</B>()  は、オープンされたファイルディスクリプター <I>fd</I> により参照されるファイルのモードを変更する。
+</DL>
+<P>
+
+
+
+
+
+新しいファイルモードは <I>mode</I> で指定される。 <I>mode</I> は、以下に示す値の 0 個以上の OR (論理和) をとって作成される
+ビットマスクである。
+<DL COMPACT>
+<DT><B>S_ISUID</B>  (04000)<DD>
+set-user-ID (<B><A HREF="../man2/execve.2.html">execve</A></B>(2)  時にプロセスの実効ユーザー ID にセットされる)
+<DT><B>S_ISGID</B>  (02000)<DD>
+set-group-ID (以下の場合に (<B><A HREF="../man2/execve.2.html">execve</A></B>(2)  実行時にプロセスの実効グループ ID にセットされる、 強制ロック
+(mandatory locking) を行う (<B><A HREF="../man2/fcntl.2.html">fcntl</A></B>(2)  の説明を参照)、
+新しいファイルのグループとして親ディレクトリと同じものを使う (<B><A HREF="../man2/chown.2.html">chown</A></B>(2)  と <B>(</B><A HREF="../man2/mkdir.2.html">mkdir</A><B>(2)</B> の説明を参照)
+<DT><B>S_ISVTX</B>  (01000)<DD>
+スティッキービット (sticky bit) (削除制限フラグ、 <B><A HREF="../man2/unlink.2.html">unlink</A></B>(2)  の説明を参照)
+<DT><B>S_IRUSR</B>  (00400)<DD>
+所有者による読み取り
+<DT><B>S_IWUSR</B>  (00200)<DD>
+所有者による書き込み
+<DT><B>S_IXUSR</B>  (00100)<DD>
+所有者による実行 (execute) / 検索 (search)  (「検索」はディレクトリに対して適用されるもので、
+そのディレクトリ内のエントリーへアクセスできるかを意味する)
+<DT><B>S_IRGRP</B>  (00040)<DD>
+グループによる読み取り
+<DT><B>S_IWGRP</B>  (00020)<DD>
+グループによる書き込み
+<DT><B>S_IXGRP</B>  (00010)<DD>
+グループによる実行 / 検索
+<DT><B>S_IROTH</B>  (00004)<DD>
+他人 (others) による読み取り
+<DT><B>S_IWOTH</B>  (00002)<DD>
+他人による書き込み
+<DT><B>S_IXOTH</B>  (00001)<DD>
+他人による実行 / 検索
+</DL>
+<P>
+
+呼び出したプロセスの実効 (effective) UID がファイルの所有者と一致するか、 そのプロセスが特権を持たなければならない (Linux では
+<B>CAP_FOWNER</B> ケーパビリティ (capability) を持たなければならない)。
+<P>
+
+呼び出したプロセスに特権がなく (Linux では <B>CAP_FSETID</B> ケーパビリティがなく)、かつファイルのグループ ID が
+プロセスの実効グループ ID または補助的なグループ ID にマッチしない場合、 <B>S_ISGID</B>
+ビットはオフにされるが、これによってエラーが返されることはない。
+<P>
+
+安全のための処置として、 ファイルシステムによっては、ファイルの書き込みを行う時に set-user-ID とset-group-ID
+ビットと実行ビットが オフにされることがある。 (Linux では、書き込みプロセスが <B>CAP_FSETID</B>
+ケーパビリティを持っていない場合に、これが起こる。)  ファイルシステムの中には、スーパーユーザーだけが
+特別の意味を持つスティッキービットを設定できるものがある。 スティッキービットとディレクトリに対する set-user-ID
+(set-group-ID) ビットについては、 <B><A HREF="../man7/inode.7.html">inode</A></B>(7)  を見よ。
+<P>
+
+
+
+NFS ファイルシステム上では、パーミッションを制限すると、 既にオープンされているファイルに対してすぐに影響が及ぶ。
+これはアクセス制御がサーバー上で行われているが、 オープンされているファイルはクライアント側で管理されているためである。
+クライアント側でファイル属性のキャッシュが有効になっている場合に、 パーミッションの制限を緩くすると、
+他のクライアントに情報が伝わるのが遅れるかもしれない。
+<A NAME="lbAE">&nbsp;</A>
+<H3>fchmodat()</H3>
+
+<B>fchmodat</B>() システムコールは <B>chmod</B>() と全く同様に動作するが、以下で説明する点が異なる。
+<P>
+
+<I>pathname</I> で指定されたパス名が相対パスの場合、このパス名はファイルディスクリプター <I>dirfd</I>
+が参照するディレクトリに対する相対パスと解釈される (<B>chmod</B>()
+に相対パス名を渡した場合のように、呼び出したプロセスのカレントワーキングディレクトリに対する相対パスではない)。
+<P>
+
+<I>pathname</I> で指定されたパス名が相対パスで、 <I>dirfd</I> が特別な値 <B>AT_FDCWD</B> の場合、 (<B>chmod</B>()
+と同様に) <I>pathname</I> は呼び出したプロセスのカレントワーキングディレクトリに対する相対パスと解釈される。
+<P>
+
+<I>pathname</I> で指定されたパス名が絶対パスの場合、 <I>dirfd</I> は無視される。
+<P>
+
+<I>flags</I> には 0 か、以下のフラグを指定することができる。
+<DL COMPACT>
+<DT><B>AT_SYMLINK_NOFOLLOW</B><DD>
+<I>pathname</I>
+がシンボリックリンクの場合、リンクの展開を行わない。代わりに、リンク自身に対して操作を行う。このフラグは現在のところ実装されていない。
+</DL>
+<P>
+
+<B>fchmodat</B>() の必要性についての説明については <B><A HREF="../man2/openat.2.html">openat</A></B>(2) を参照。
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+成功した場合は 0 が返される。エラーの場合は -1 が返され、 <I>errno</I> が適切に設定される。
+<A NAME="lbAG">&nbsp;</A>
+<H2>エラー</H2>
+
+ファイルシステムによっては、下記の一覧にない他のエラーが返されることもある。
+<P>
+
+<B>chmod</B>() のごく一般的なエラーを挙げる:
+<DL COMPACT>
+<DT><B>EACCES</B><DD>
+パス名の構成要素に検索許可がない (<B><A HREF="../man7/path_resolution.7.html">path_resolution</A></B>(7)  も見よ)。
+<DT><B>EFAULT</B><DD>
+<I>pathname</I> がアクセス可能なアドレス空間の外を指している。
+<DT><B>EIO</B><DD>
+I/O エラーが発生した。
+<DT><B>ELOOP</B><DD>
+<I>pathname</I> を解決するときに、解決すべきシンボリックリンクが多すぎた。
+<DT><B>ENAMETOOLONG</B><DD>
+<I>pathname</I> が長過ぎる。
+<DT><B>ENOENT</B><DD>
+ファイルが存在しない。
+<DT><B>ENOMEM</B><DD>
+カーネルに十分なメモリーがない。
+<DT><B>ENOTDIR</B><DD>
+パス名の構成要素がディレクトリではない。
+<DT><B>EPERM</B><DD>
+実効 UID がファイルの所有者と一致せず、プロセスに特権がない (Linux では <B>CAP_FOWNER</B> ケーパビリティを持たない)。
+<DT><B>EPERM</B>
+
+<DD>
+
+
+
+ファイルが複製不可 (immutable) または、追加のみとしてマークされてる。
+(<B><A HREF="../man2/ioctl_iflags.2.html">ioctl_iflags</A></B>(2)
+
+を参照。)
+<DT><B>EROFS</B><DD>
+ファイルが読み込み専用 (read only) のファイルシステム上にある。
+</DL>
+<P>
+
+<B>fchmod</B>()  で一般的なエラーを挙げる:
+<DL COMPACT>
+<DT><B>EBADF</B><DD>
+ファイルディスクリプター <I>fd</I> が有効でない。
+<DT><B>EIO</B><DD>
+上記を参照。
+<DT><B>EPERM</B><DD>
+上記を参照。
+<DT><B>EROFS</B><DD>
+上記を参照。
+</DL>
+<P>
+
+<B>chmod</B>() で発生するのと同じエラーが <B>fchmodat</B>() でも起こる。 <B>fchmodat</B>() では以下のエラーも発生する。
+<DL COMPACT>
+<DT><B>EBADF</B><DD>
+<I>dirfd</I> が適切なファイルディスクリプターでない。
+<DT><B>EINVAL</B><DD>
+<I>flags</I> に無効なフラグが指定された。
+<DT><B>ENOTDIR</B><DD>
+<I>pathname</I> が相対パスで、 <I>dirfd</I> がディレクトリ以外のファイルを参照しているファイルディスクリプターである。
+<DT><B>ENOTSUP</B><DD>
+<I>flags</I> に対応していないフラグ <B>AT_SYMLINK_NOFOLLOW</B> が指定された。
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>バージョン</H2>
+
+<B>fchmodat</B>()  はカーネル 2.6.16 で Linux に追加された。 ライブラリによるサポートはバージョン 2.4 以降の glibc
+で利用できる。
+<A NAME="lbAI">&nbsp;</A>
+<H2>準拠</H2>
+
+<B>chmod</B>(), <B>fchmod</B>(): 4.4BSD, SVr4, POSIX.1-2001i, POSIX.1-2008.
+<P>
+
+<B>fchmodat</B>(): POSIX.1-2008.
+<A NAME="lbAJ">&nbsp;</A>
+<H2>注意</H2>
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H3>C ライブラリとカーネルの違い</H3>
+
+GNU C ライブラリの <B>fchmodat</B>() ラッパー関数は、このページで説明している POSIX
+で規定されたインターフェースを実装している。このインターフェースは、内部で呼ばれる Linux のシステムコールとは異なる。システムコールは
+<I>flags</I> 引き数を<I>持たない</I>。
+<A NAME="lbAL">&nbsp;</A>
+<H3>glibc での注意</H3>
+
+<B>fchmodat</B>() が利用できない古いカーネルでは、 glibc ラッパー関数は <B>chmod</B>() を使用するモードにフォールバックする。
+<I>pathname</I> が相対パスの場合、 glibc は <I>dirfd</I> 引き数に対応する <I>/proc/self/fd</I>
+のシンボリックリンクに基づいてパス名を構成する。
+<A NAME="lbAM">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/chmod.1.html">chmod</A></B>(1),
+
+<B><A HREF="../man2/chown.2.html">chown</A></B>(2),
+
+<B><A HREF="../man2/execve.2.html">execve</A></B>(2),
+
+<B><A HREF="../man2/open.2.html">open</A></B>(2),
+
+<B><A HREF="../man2/stat.2.html">stat</A></B>(2),
+
+<B><A HREF="../man7/inode.7.html">inode</A></B>(7),
+
+<B><A HREF="../man7/path_resolution.7.html">path_resolution</A></B>(7),
+
+<B><A HREF="../man7/symlink.7.html">symlink</A></B>(7)
+
+<A NAME="lbAN">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DL>
+<DT><A HREF="#lbAE">fchmodat()</A><DD>
+</DL>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">エラー</A><DD>
+<DT><A HREF="#lbAH">バージョン</A><DD>
+<DT><A HREF="#lbAI">準拠</A><DD>
+<DT><A HREF="#lbAJ">注意</A><DD>
+<DL>
+<DT><A HREF="#lbAK">C ライブラリとカーネルの違い</A><DD>
+<DT><A HREF="#lbAL">glibc での注意</A><DD>
+</DL>
+<DT><A HREF="#lbAM">関連項目</A><DD>
+<DT><A HREF="#lbAN">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:59:09 GMT, January 11, 2021
+</BODY>
+</HTML>
