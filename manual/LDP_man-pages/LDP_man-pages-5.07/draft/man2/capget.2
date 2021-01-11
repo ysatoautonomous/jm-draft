@@ -1,0 +1,234 @@
+.\" Copyright: written by Andrew Morgan <morgan@kernel.org>
+.\" and Copyright 2006, 2008, Michael Kerrisk <tmk.manpages@gmail.com>
+.\"
+.\" %%%LICENSE_START(GPL_NOVERSION_ONELINE)
+.\" may be distributed as per GPL
+.\" %%%LICENSE_END
+.\"
+.\" Modified by David A. Wheeler <dwheeler@ida.org>
+.\" Modified 2004-05-27, mtk
+.\" Modified 2004-06-21, aeb
+.\" Modified 2008-04-28, morgan of kernel.org
+.\"     Update in line with addition of file capabilities and
+.\"     64-bit capability sets in kernel 2.6.2[45].
+.\" Modified 2009-01-26, andi kleen
+.\"
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.\" Japanese Version Copyright (c) 1999 HANATAKA Shinya
+.\"         all rights reserved.
+.\" Translated 1999-12-26, HANATAKA Shinya <hanataka@abyss.rim.or.jp>
+.\" Updated & Modified 2005-02-03, Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated & Modified 2006-01-31, Akihiro MOTOKI <amotoki@dd.iij4u.or.jp>
+.\" Updated & Modified 2006-07-23, Akihiro MOTOKI, LDP v2.36
+.\" Updated & Modified 2008-08-11, Akihiro MOTOKI, LDP v3.05
+.\" Updated 2009-02-24, Akihiro MOTOKI, LDP v3.19
+.\" Updated & Modified Mon Jan 11 22:05:13 JST 2021
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>, LDP v5.07
+.\"
+.TH CAPGET 2 2020-02-09 "Linux" "Linux Programmer's Manual"
+.SH 名前
+capget, capset \- スレッドのケーパビリティを設定/取得する
+.SH 書式
+\fB#include <sys/capability.h>\fP
+.PP
+\fBint capget(cap_user_header_t \fP\fIhdrp\fP\fB, cap_user_data_t \fP\fIdatap\fP\fB);\fP
+.PP
+\fBint capset(cap_user_header_t \fP\fIhdrp\fP\fB, const cap_user_data_t
+\fP\fIdatap\fP\fB);\fP
+.SH 説明
+この二つのシステムコールはスレッドのケーパビリティを取得したり設定したりするための 生のカーネルインターフェースである。 これらのシステムコールは
+Linux 特有であるというだけでなく、 カーネル API は変更されるかもしれず、これらのシステムコールの使用法 (特に
+\fIcap_user_*_t\fP 型という書式) はカーネルのリビジョン毎に拡張されるかもしれないが、 以前のプログラムはそのまま動作する。
+.PP
+移植性のあるインターフェースは \fBcap_set_proc\fP(3)  と \fBcap_get_proc\fP(3)  である。
+可能ならばアプリケーションはこれらの関数を使用すべきである。
+.\"
+.SS 現在の詳細
+現在のカーネルの詳細について注意を述べておく。 構造体は以下のように定義される。
+.PP
+.in +4n
+.EX
+#define _LINUX_CAPABILITY_VERSION_1  0x19980330
+#define _LINUX_CAPABILITY_U32S_1     1
+
+.\"O         /* V2 added in Linux 2.6.25; deprecated */
+        /* V2 は in Linux 2.6.25 で追加された; 古い */
+#define _LINUX_CAPABILITY_VERSION_2  0x20071026
+.\" commit e338d263a76af78fe8f38a72131188b58fceb591
+.\" Added 64 bit capability support
+#define _LINUX_CAPABILITY_U32S_2     2
+
+.\"O         /* V3 added in Linux 2.6.26 */
+        /* V3 は Linux 2.6.26 で追加された */
+#define _LINUX_CAPABILITY_VERSION_3  0x20080522
+.\" commit ca05a99a54db1db5bca72eccb5866d2a86f8517f
+#define _LINUX_CAPABILITY_U32S_3     2
+
+typedef struct __user_cap_header_struct {
+   __u32 version;
+   int pid;
+} *cap_user_header_t;
+
+typedef struct __user_cap_data_struct {
+   __u32 effective;
+   __u32 permitted;
+   __u32 inheritable;
+} *cap_user_data_t;
+.EE
+.in
+.PP
+フィールド \fIeffective\fP, \fIpermitted\fP, \fIinheritable\fP は、 \fBcapabilities\fP(7)
+で定義されるケーパビリティのビットマスクである。 \fICAP_*\fP はビット番号を表すインデックス値であり、 ビットフィールドに OR を行う前に
+\fICAP_*\fP の値の分だけビットシフトを行う必要がある。 typedef の方はポインターなので、 このシステムコールに渡す構造体を定義するには、
+\fIstruct __user_cap_header_struct\fP と \fIstruct __user_cap_data_struct\fP
+という名前を使用しなければならない。
+
+カーネル 2.6.25 より前では、バージョン \fB_LINUX_CAPABILITY_VERSION_1\fP の 32
+ビットケーパビリティが推奨である。 カーネル 2.6.25 では、バージョン \fB_LINUX_CAPABILITY_VERSION_2\fP の 64
+ビットケーパビリティが追加された。
+.\"O There was, however, an API glitch, and Linux 2.6.26 added
+.\"O .BR _LINUX_CAPABILITY_VERSION_3
+.\"O to fix the problem.
+しかし、API に不具合があったので、問題を解消するため、
+Linux 2.6.26 で
+.B _LINUX_CAPABILITY_VERSION_3
+が追加された。
+.PP
+64 ビットケーパビリティでは \fIdatap\fP[0] と \fIdatap\fP[1] が使用されるのに対し、 32
+ビットケーパビリティでは \fIdatap\fP[0] だけが使用される。
+.PP
+.\"O On kernels that support file capabilities (VFS capabilities support),
+.\"O these system calls behave slightly differently.
+ファイルケーパビリティ (VFS ケーパビリティ) をサポートするカーネルでは、
+これらのシステムコールの挙動が微妙に異なる。
+.\"O This support was added as an option in Linux 2.6.24,
+.\"O and became fixed (nonoptional) in Linux 2.6.33.
+VFS ケーパビリティのサポートは、Linux 2.6.24 でオプションとして追加され、
+Linux 2.6.33 で (オプションではなく) 固定となった。
+.PP
+\fBcapget\fP()  では、 \fIhdrp\->pid\fP のフィールド値にケーパビリティを知りたいプロセスのプロセス ID を
+指定することで、任意のプロセスのケーパビリティを調べることができる。
+.PP
+.\"O For details on the data, see
+.\"O .BR capabilities (7).
+データの詳細は、
+.BR capabilities (7)
+を参照すること。
+.\"
+.SS "VFS ケーパビリティがサポートされている場合"
+.\"O VFS capabilities employ a file extended attribute (see
+.\"O .BR xattr (7))
+.\"O to allow capabilities to be attached to executables.
+VFS ケーパビリティは、ファイル拡張属性
+.RB ( xattr (7)
+を参照) を使い、実行ファイルにケーパビリティを付与する。
+.\"O This privilege model obsoletes kernel support for one process
+.\"O asynchronously setting the capabilities of another.
+この特権モデルの導入により、あるプロセスにより別のプロセスのケーパビリティ を非同期に設定する機能のカーネルによるサポートは廃止される。
+.\"O That is, on kernels that have VFS capabilities support, when calling
+.\"O .BR capset (),
+.\"O the only permitted values for
+.\"O .I hdrp->pid
+.\"O are 0 or, equivalently, the value returned by
+.\"O .BR gettid (2).
+つまり、VFS ケーパビリティをサポートするカーネルでは、
+\fBcapset\fP() を呼び出す際に \fIhdrp\->pid\fP の値として許されるのは 0 と \fBgetpid\fP(2)
+が返す値だけとなる (どちらの値でも等価である)。
+.SS "VFS ケーパビリティがサポートされていない場合"
+.\"O On older kernels that do not provide VFS capabilities support
+.\"O .BR capset ()
+.\"O can, if the caller has the
+.\"O .BR CAP_SETPCAP
+.\"O capability, be used to change not only the caller's own capabilities,
+.\"O but also the capabilities of other threads.
+VFS ケーパビリティをサポートしていない古いカーネルでは、
+呼び出し元が
+.B CAP_SETPCAP
+ケーパビリティを持っている場合、
+.BR capset ()
+は呼び出し元自体のケーパビリティを変更するだけでなく、
+他のスレッドのケーパビリティも変更するのに使われる。
+.\"O The call operates on the capabilities of the thread specified by the
+.\"O .I pid
+.\"O field of
+.\"O .I hdrp
+.\"O when that is nonzero, or on the capabilities of the calling thread if
+.\"O .I pid
+.\"O is 0.
+この呼び出しでは、\fIhdrp\fP の \fIpid\fP フィールドが 0 以外であれば、 \fBcapset\fP()
+の操作対象は \fIpid\fP で指定されたスレッドのケーパビリティになる。 \fIpid\fP が 0
+の場合は呼び出し元のスレッドのケーパビリティが操作対象となる。 \fIpid\fP がシングルスレッドプロセスを参照している場合、 \fIpid\fP
+は以前から使われているプロセスID を使って指定できる。 マルチスレッドプロセス内のあるスレッドを対象にする場合は、 \fBgettid\fP(2)
+が返すスレッドID を用いて指定する必要がある。 また、 \fBcapset\fP()  では \-1 や \-1 より小さな値を指定することもできる。 \-1
+は呼び出し元と \fBinit\fP(1)  を除く全てのスレッドを対象として変更を行うことを、 \-1 より小さな値は ID が \-\fIpid\fP
+のプロセスグループの全メンバ を対象として変更を行うことを意味する。
+.SH 返り値
+成功した場合は 0 が返される。エラーの場合は \-1 が返され、 \fIerrno\fP が適切に設定される。
+.PP
+\fIhdrp\fP のフィールド \fIversion\fP にサポートされていない値が指定された場合、 呼び出しはエラー \fBEINVAL\fP で失敗し、
+\fIversion\fP にカーネル推奨の \fB_LINUX_CAPABILITY_VERSION_?\fP を設定する。
+このようにして、現在の推奨ケーパビリティリビジョンが何かを 調べることができる。
+.SH エラー
+.TP 
+\fBEFAULT\fP
+不正なメモリーアドレス。 \fIhdrp\fP は NULL であってはならない。 \fIdatap\fP に NULL
+を指定してよいのは、ユーザーがカーネルがサポートしている 推奨のケーパビリティバージョンを判定しようとしているときだけである。
+.TP 
+\fBEINVAL\fP
+引き数のどれかが無効である。
+.TP 
+\fBEPERM\fP
+.\"O An attempt was made to add a capability to the permitted set, or to set
+.\"O a capability in the effective set that is not in the
+.\"O permitted set.
+「許可ケーパビリティセット」にケーパビリティを追加しようとしているか、
+もしくは「許可ケーパビリティセット」に含まれないケーパビリティを
+「実効ケーパビリティセット」にセットしようとしている。
+.TP
+.B EPERM
+.\"O An attempt was made to add a capability to the inheritable set, and either:
+「継承可能ケーパビリティセット」にケーパビリティを追加しようと
+していて、かつ以下のいずれかである。
+.RS
+.IP * 3
+.\"O that capability was not in the caller's bounding set; or
+そのケーパビリティが、呼び出し元に紐づけられたセットにない。
+.IP *
+.\"O the capability was not in the caller's permitted set
+.\"O and the caller lacked the
+.\"O .B CAP_SETPCAP
+.\"O capability in its effective set.
+そのケーパビリティが、呼び出し元の「許可ケーパビリティセット」
+になく、かつ、呼び出し元の「実効ケーパビリティセット」に
+.B CAP_SETPCAP
+ケーパビリティがない。
+.RE
+.TP 
+\fBEPERM\fP
+呼び出し元が自分以外のスレッドのケーパビリティを \fBcapset\fP()  を使って修正しようとしたが、十分な特権がなかった。 VFS
+ケーパビリティをサポートしているカーネルでは、 この操作が許可されることは決してない。 VFS ケーパビリティをサポートしていないカーネルでは、
+\fBCAP_SETPCAP\fP ケーパビリティが必要である。 (バージョン 2.6.11 より前のカーネルには、 このケーパビリティを持たないスレッドが
+\fIpid\fP フィールドに 0 でない値 (つまり、0 の代わりに \fBgetpid\fP(2)  が返す値)
+を指定して自分自身のケーパビリティを変更しようとした場合にも、 このエラーが発生するというバグがあった。)
+.TP 
+\fBESRCH\fP
+そのようなスレッドが存在しない。
+.SH 準拠
+これらのシステムコールは Linux 独自である。
+.SH 注意
+ケーパビリティを設定したり取得したりする機能のための移植性ある インターフェースは \fIlibcap\fP ライブラリによって提供される。
+このライブラリは以下から入手できる:
+.br
+.UR http://git.kernel.org/cgit\:/linux\:/kernel\:/git\:/morgan\:\:/libcap.git
+.UE
+.SH 関連項目
+\fBclone\fP(2), \fBgettid\fP(2), \fBcapabilities\fP(7)
+.SH この文書について
+この man ページは Linux \fIman\-pages\fP プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+http://www.kernel.org/doc/man\-pages/ に書かれている。
