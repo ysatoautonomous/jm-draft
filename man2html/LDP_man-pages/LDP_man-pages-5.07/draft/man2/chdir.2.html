@@ -1,0 +1,148 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of CHDIR</TITLE>
+</HEAD><BODY>
+<H1>CHDIR</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2019-08-02<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+chdir, fchdir - 作業ディレクトリの変更
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>#include &lt;<A HREF="file:///usr/include/unistd.h">unistd.h</A>&gt;</B>
+<P>
+
+<B>int chdir(const char *</B><I>path</I><B>);</B>
+<BR>
+
+<B>int fchdir(int </B><I>fd</I><B>);</B>
+<P>
+
+
+glibc 向けの機能検査マクロの要件 (<B><A HREF="../man7/feature_test_macros.7.html">feature_test_macros</A></B>(7)  参照):
+
+<P>
+
+<B>fchdir</B>():
+
+
+<DL COMPACT><DT><DD>
+_XOPEN_SOURCE&nbsp;&gt;=&nbsp;500
+
+
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;||&nbsp;/*&nbsp;glibc&nbsp;2.12&nbsp;以降:&nbsp;*/&nbsp;_POSIX_C_SOURCE&nbsp;&gt;=&nbsp;200809L
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;||&nbsp;/*&nbsp;glibc&nbsp;2.19&nbsp;以降:&nbsp;*/&nbsp;_BSD_SOURCE
+</DL>
+
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>chdir</B>()  は、呼び出し元プロセスの現在の作業ディレクトリ (current working directory) を、 <I>path</I>
+に指定されたディレクトリに変更する。
+<P>
+
+<B>fchdir</B>()  は、ディレクトリがオープンされたファイルディスクリプターとして 指定される以外は、 <B>chdir</B>()  と同じである。
+<A NAME="lbAE">&nbsp;</A>
+<H2>返り値</H2>
+
+成功した場合は 0 が返される。エラーの場合は -1 が返され、 <I>errno</I> が適切に設定される。
+<A NAME="lbAF">&nbsp;</A>
+<H2>エラー</H2>
+
+ファイルシステムによっては他のエラーが返される事がある。 <B>chdir</B>()  で一般的なエラーを以下に挙げる:
+<DL COMPACT>
+<DT><B>EACCES</B><DD>
+<I>path</I> の構成要素のいずれかに検索許可 (search permission) がない (<B><A HREF="../man7/path_resolution.7.html">path_resolution</A></B>(7)
+も参照すること)。
+<DT><B>EFAULT</B><DD>
+<I>path</I> がアクセスできるアドレス空間外を指している。
+<DT><B>EIO</B><DD>
+I/O エラーが発生した。
+<DT><B>ELOOP</B><DD>
+<I>path</I> を解決する際に遭遇したシンボリックリンクが多過ぎる。
+<DT><B>ENAMETOOLONG</B><DD>
+<I>path</I> が長過ぎる。
+<DT><B>ENOENT</B><DD>
+
+
+
+<I>path</I>
+
+で指定されたディレクトリが存在しない。
+<DT><B>ENOMEM</B><DD>
+カーネルに十分なメモリーがない。
+<DT><B>ENOTDIR</B><DD>
+<I>path</I> の構成要素がディレクトリではない。
+</DL>
+<P>
+
+<B>fchdir</B>()  で一般的なエラーを以下に挙げる:
+<DL COMPACT>
+<DT><B>EACCES</B><DD>
+<I>fd</I> をディレクトリとしてオープンするための検索許可がない。
+<DT><B>EBADF</B><DD>
+<I>fd</I> が適切なファイルディスクリプターでない。
+<DT><B>ENOTDIR</B>
+
+<DD>
+
+
+<I>fd</I>
+
+がディレクトリを参照していない。
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>準拠</H2>
+
+POSIX.1-2001, POSIX.1-2008, SVr4, 4.4BSD.
+<A NAME="lbAH">&nbsp;</A>
+<H2>注意</H2>
+
+現在の作業ディレクトリは、相対パス名 ('/') で始まっていないパス名) を 解釈する際の開始点である。
+<P>
+
+<B><A HREF="../man2/fork.2.html">fork</A></B>(2)  で作成された子プロセスは、親プロセスの現在の作業ディレクトリを 継承する。 <B><A HREF="../man2/execve.2.html">execve</A></B>(2)
+の前後で、現在の作業ディレクトリは変更されない。
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/chroot.2.html">chroot</A></B>(2), <B><A HREF="../man3/getcwd.3.html">getcwd</A></B>(3), <B><A HREF="../man7/path_resolution.7.html">path_resolution</A></B>(7)
+<A NAME="lbAJ">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">返り値</A><DD>
+<DT><A HREF="#lbAF">エラー</A><DD>
+<DT><A HREF="#lbAG">準拠</A><DD>
+<DT><A HREF="#lbAH">注意</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:29:12 GMT, January 11, 2021
+</BODY>
+</HTML>
