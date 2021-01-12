@@ -1,0 +1,214 @@
+.\" Copyright (c) 1992 Drew Eckhardt (drew@cs.colorado.edu), March 28, 1992
+.\"
+.\" %%%LICENSE_START(VERBATIM)
+.\" Permission is granted to make and distribute verbatim copies of this
+.\" manual provided the copyright notice and this permission notice are
+.\" preserved on all copies.
+.\"
+.\" Permission is granted to copy and distribute modified versions of this
+.\" manual under the conditions for verbatim copying, provided that the
+.\" entire resulting derived work is distributed under the terms of a
+.\" permission notice identical to this one.
+.\"
+.\" Since the Linux kernel and libraries are constantly changing, this
+.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+.\" responsibility for errors or omissions, or for damages resulting from
+.\" the use of the information contained herein.  The author(s) may not
+.\" have taken the same level of care in the production of this manual,
+.\" which is licensed free of charge, as they might when working
+.\" professionally.
+.\"
+.\" Formatted or processed versions of this manual, if unaccompanied by
+.\" the source, must acknowledge the copyright and authors of this work.
+.\" %%%LICENSE_END
+.\"
+.\" Modified by Michael Haardt <michael@moria.de>
+.\" Modified 1993-07-21 by Rik Faith <faith@cs.unc.edu>
+.\" Modified 1994-08-21 by Michael Chastain <mec@shell.portal.com>
+.\" Modified 1996-06-13 by aeb
+.\" Modified 1996-11-06 by Eric S. Raymond <esr@thyrsus.com>
+.\" Modified 1997-08-21 by Joseph S. Myers <jsm28@cam.ac.uk>
+.\" Modified 2004-06-23 by Michael Kerrisk <mtk.manpages@gmail.com>
+.\"
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.\" Japanese Version Copyright (c) 1996 Yosiaki Yanagihara
+.\"         all rights reserved.
+.\" Translated Mon Jun 24 14:29:55 JST 1996
+.\"         by Yosiaki Yanagihara <yosiaki@bsd2.kbnes.nec.co.jp>
+.\" Modified Sat Dec 13 23:29:07 JST 1997
+.\"         by HANATAKA Shinya <hanataka@abyss.rim.or.jp>
+.\" Updated & Modified Fri 6 Apr 2001
+.\"         by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Thu Dec 23 10:04:20 JST 2004
+.\"         by Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated & Modified Tue Jan 12 20:32:21 JST 2021
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH CHROOT 2 2019-03-06 "Linux" "Linux Programmer's Manual"
+.SH 名前
+chroot \- ルートディレクトリを変更する
+.SH 書式
+\fB#include <unistd.h>\fP
+.PP
+\fBint chroot(const char *\fP\fIpath\fP\fB);\fP
+.PP
+.in -4n
+glibc 向けの機能検査マクロの要件 (\fBfeature_test_macros\fP(7)  参照):
+.in
+.PP
+\fBchroot\fP():
+.ad l
+.RS 4
+.PD 0
+.TP  4
+glibc 2.2.2 以降:
+.nf
+_XOPEN_SOURCE && ! (_POSIX_C_SOURCE\ >=\ 200112L)
+.\"O     || /* Since glibc 2.20: */ _DEFAULT_SOURCE
+.\"O     || /* Glibc versions <= 2.19: */ _BSD_SOURCE
+    || /* glibc 2.20 以降: */ _DEFAULT_SOURCE
+    || /* glibc 2.19 以降: */ _BSD_SOURCE
+.TP  4
+.fi
+glibc 2.2.2 より前: なし
+.PD
+.RE
+.ad b
+.SH 説明
+\fBchroot\fP()  は、呼び出し元プロセスのルートディレクトリを \fIpath\fP で指定されたディレクトリに変更する。 このディレクトリ以下が
+\fI/\fP から始まるパス名として使われる。 このルートディレクトリは呼び出し元のプロセスの全ての子プロセスに受け継がれる。
+.PP
+特権プロセス (Linux では、ユーザー名前空間に \fBCAP_SYS_CHROOT\fP ケーパビリティを持つプロセス) のみが \fBchroot\fP()
+を呼び出すことができる。
+.PP
+このコールはパス名解決の過程で構成要素を変更するのみで、 その他には何も行わない。
+.\"O In particular, it is not intended to be used
+.\"O for any kind of security purpose, neither to fully sandbox a process nor
+.\"O to restrict filesystem system calls.
+特に、これは何らかのセキュリティ上の目的を意図しておらず、
+プロセスの完全なサンドボックスになる訳でも、
+ファイルシステムのシステムコールを制限する訳でもない。
+.\"O In the past,
+.\"O .BR chroot ()
+.\"O has been used by daemons to restrict themselves prior to passing paths
+.\"O supplied by untrusted users to system calls such as
+.\"O .BR open (2).
+かつては、
+.BR chroot ()
+は、信用できないユーザーから指定されたパスを、
+.BR open (2)
+のようなシステムコールに渡す際に、デーモンがそのパスを前もって
+制限するのに使われていた。
+.\"O However, if a folder is moved out of the chroot directory, an attacker
+.\"O can exploit that to get out of the chroot directory as well.
+しかし、フォルダが chroot ディレクトリの外に出されてしまうと、
+攻撃者も chroot ディレクトリの外に出て悪用できてしまう。
+.\"O The easiest way to do that is to
+.\"O .BR chdir (2)
+.\"O to the to-be-moved directory, wait for it to be moved out, then open a
+.\"O path like ../../../etc/passwd.
+これを行う最も簡単な方法は、移動される予定のディレクトリに
+.BR chdir (2)
+しておいて、外に出されるのを待ち、
+\&../../../etc/passwd のようにパスをオープンすることである。
+.PP
+.\" This is how the "slightly trickier variation" works:
+.\" https://github.com/QubesOS/qubes-secpack/blob/master/QSBs/qsb-014-2015.txt#L142
+.\"O A slightly
+.\"O trickier variation also works under some circumstances if
+.\"O .BR chdir (2)
+.\"O is not permitted.
+ちょっとトリッキーな派生型を使うと、
+.BR chdir (2)
+が許可されていない環境でも動作する。
+.\"O If a daemon allows a "chroot directory" to be specified,
+.\"O that usually means that if you want to prevent remote users from accessing
+.\"O files outside the chroot directory, you must ensure that folders are never
+.\"O moved out of it.
+デーモンに "chroot ディレクトリ" を許可する指定がされている場合、
+リモートユーザーが chroot ディレクトリの外にアクセスするのを防止するには、
+フォルダを chroot ディレクトリの外に絶対に出さないようにしなければならない。
+.PP
+このコールは現在の作業ディレクトリ (working directory) を変更しない。 そのため、このコールの後に \(aq\fI.\fP\(aq が
+\(aq\fI/\fP\(aq を 根とするツリーの外になる場合がある。 特に、スーパーユーザーは以下のようにすることで "chroot jail"
+から逃げ出せてしまう。
+.PP
+.in +4n
+.EX
+mkdir foo; chroot foo; cd ..
+.EE
+.in
+.PP
+このコールはオープンファイルディスクリプターをクローズしないので、 このようなファイルディスクリプターは chroot ツリーの外にある
+ファイルにアクセスできる。
+.SH 返り値
+成功した場合は 0 が返される。エラーの場合は \-1 が返され、 \fIerrno\fP が適切に設定される。
+.SH エラー
+ファイルシステムによっては他のエラーが返される事がある。 一般的なエラーを以下に挙げる:
+.TP 
+\fBEACCES\fP
+.\" Also search permission is required on the final component,
+.\" maybe just to guarantee that it is a directory?
+パス名の構成要素に検索許可がない (\fBpath_resolution\fP(7)  も見よ)。
+.TP 
+\fBEFAULT\fP
+\fIpath\fP がアクセスできるアドレス空間外を指している。
+.TP 
+\fBEIO\fP
+I/O エラーが発生した。
+.TP 
+\fBELOOP\fP
+\fIpath\fP を解決する際に遭遇したシンボリックリンクが多過ぎる。
+.TP 
+\fBENAMETOOLONG\fP
+\fIpath\fP が長過ぎる。
+.TP 
+\fBENOENT\fP
+ファイルが存在しない。
+.TP 
+\fBENOMEM\fP
+カーネルに十分なメモリーがない。
+.TP 
+\fBENOTDIR\fP
+\fIpath\fP の構成要素がディレクトリではない。
+.TP 
+\fBEPERM\fP
+呼び出し側に十分な特権がない。
+.SH 準拠
+.\" SVr4 documents additional EINTR, ENOLINK and EMULTIHOP error conditions.
+.\" X/OPEN does not document EIO, ENOMEM or EFAULT error conditions.
+SVr4, 4.4BSD, SUSv2 (但し、SUSv2 では過去の名残とされている)。 この関数は POSIX.1\-2001 にはない。
+.SH 注意
+\fBfork\fP(2)  で作成された子プロセスは、 親プロセスのルートディレクトリを継承する。 \fBexecve\fP(2)
+の場合も、ルートディレクトリは変更されない。
+.PP
+.\"O The magic symbolic link,
+.\"O .IR /proc/[pid]/root ,
+.\"O can be used to discover a process's root directory; see
+.\"O .BR proc (5)
+.\"O for details.
+マジックシンボリックリンク
+.I /proc/[pid]/root
+を使って、プロセスのルートディレクトリを見つけることができる。
+詳細は
+.BR proc (5)
+を参照すること。
+.PP
+.\" FIXME . eventually say something about containers,
+.\" virtual servers, etc.?
+FreeBSD にはより強力な \fBjail\fP()  システムコールがある。
+.SH 関連項目
+.BR chroot (1),
+.BR chdir (2),
+.BR pivot_root (2),
+.BR path_resolution (7),
+.BR switch_root (8)
+.SH この文書について
+この man ページは Linux \fIman\-pages\fP プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+http://www.kernel.org/doc/man\-pages/ に書かれている。
