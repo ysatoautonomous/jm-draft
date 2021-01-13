@@ -1,0 +1,230 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of CLOCK_NANOSLEEP</TITLE>
+</HEAD><BODY>
+<H1>CLOCK_NANOSLEEP</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2020-04-11<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+clock_nanosleep - 指定したクロックでの高精度な実行停止 (sleep)
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>#include &lt;<A HREF="file:///usr/include/time.h">time.h</A>&gt;</B>
+<PRE>
+
+<B>int clock_nanosleep(clockid_t </B><I>clockid</I><B>, int </B><I>flags</I><B>,</B>
+<B>                    const struct timespec *</B><I>request</I><B>,</B>
+<B>                    struct timespec *</B><I>remain</I><B>);</B>
+</PRE>
+
+<P>
+
+<I>-lrt</I> とリンクする (バージョン 2.17 より前の glibc のみ)
+<P>
+
+
+
+glibc 向けの機能検査マクロの要件 (<B><A HREF="../man7/feature_test_macros.7.html">feature_test_macros</A></B>(7)  参照):
+
+<P>
+
+<B>clock_nanosleep</B>():
+<DL COMPACT><DT><DD>
+_POSIX_C_SOURCE&nbsp;&gt;=&nbsp;200112L
+</DL>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>clock_nanosleep</B>()  を使うと、 <B><A HREF="../man2/nanosleep.2.html">nanosleep</A></B>(2)
+同様、ナノ秒の精度で指定された期間だけ呼び出したスレッドの実行を 停止することができる。 <B><A HREF="../man2/nanosleep.2.html">nanosleep</A></B>(2)
+と違うのは、呼び出し側が停止期間をどのクロックに対して計測するのかを選択 できる点と、停止期間を絶対値でも相対値でも指定できる点である。
+<P>
+
+このシステムコールに渡したり、このシステムコールが返したりする時間の値は <I>timespec</I>
+構造体を使って指定される。この構造体の定義は以下の通りである。
+<P>
+
+
+
+struct timespec {
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;time_t&nbsp;tv_sec;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;seconds&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;&nbsp;&nbsp;tv_nsec;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;nanoseconds&nbsp;[0&nbsp;..&nbsp;999999999]&nbsp;*/
+};
+
+
+<P>
+
+<I>clockid</I> 引き数で、停止期間をどのクロックに対して計測するかを指定する。 この引き数には以下の値のいずれか一つを指定できる。
+
+
+<DL COMPACT>
+<DT><B>CLOCK_REALTIME</B><DD>
+システム全体で使われる実時間クロック。 このクロックは変更可能である。
+<DT>
+<DD>
+<B>CLOCK_TAI</B> (Linux 3.10 以降)
+
+
+実際の経過時間 (wall-clock time) から派生した設定できないシステム全体のクロック。
+閏秒は無視する。
+<DT><B>CLOCK_MONOTONIC</B><DD>
+
+過去のある時点からの時間を計測する、単調増加のクロック。 起点となる時点はシステム起動後には変更されない。 このクロックは変更することができない。
+<DT><B>CLOCK_BOOTIME</B> (since Linux 2.6.39)
+
+<DD>
+
+
+
+<B>CLOCK_MONOTONIC</B>
+
+と同じだが、システムがサスペンドされている時間も含まれる点が異なる。
+<DT><B>CLOCK_PROCESS_CPUTIME_ID</B><DD>
+
+
+そのプロセスの全スレッドで消費される CPU 時間を計測するプロセス単位の クロック。このクロックは設定可能である。
+</DL>
+<P>
+
+これらのクロックの詳細は <B><A HREF="../man2/clock_getres.2.html">clock_getres</A></B>(2) を参照。 また、 <B><A HREF="../man3/clock_getcpuclockid.3.html">clock_getcpuclockid</A></B>(3) と
+<B><A HREF="../man3/pthread_getcpuclockid.3.html">pthread_getcpuclockid</A></B>(3) が返す CPU クロック ID は <I>clockid</I> に渡すこともできる。
+
+
+
+<P>
+
+<I>flags</I> が 0 の場合、 <I>request</I> に指定された値は <I>clockid</I>
+で指定されたクロックの現在の値からの相対的な期間と解釈される。
+<P>
+
+<I>flags</I> が <B>TIMER_ABSTIME</B> の場合、 <I>request</I> は指定されたクロックで計測される絶対時刻と解釈される。
+<I>request</I> が指定されたクロックの現在の値以下の場合、 <B>clock_nanosleep</B>()
+は、呼び出したスレッドの停止を行わず、すぐに返る。
+<P>
+
+<B>clock_nanosleep</B>()  は、少なくとも <I>request</I> で指定された時間が経過するまで、呼び出したスレッドの実行を停止する。
+シグナルハンドラーが呼び出されたり、そのプロセスを終了させるような シグナルが配送されたりした場合にも、スレッドの実行停止は終了する。
+<P>
+
+呼び出しがシグナルハンドラーによって割り込まれた場合、 <B>clock_nanosleep</B>()  はエラー <B>EINTR</B> で失敗する。さらに、
+<I>remain</I> が NULL でなく、かつ <I>flags</I> が <B>TIMER_ABSTIME</B> でない場合には、 <I>remain</I>
+に残りの停止時間が返される。 この値を使って <B>clock_nanosleep</B>()  を再度呼び出すことで、(相対的な期間の)
+停止を完了することができる。
+<A NAME="lbAE">&nbsp;</A>
+<H2>返り値</H2>
+
+要求された期間の停止に成功すると、 <B>clock_nanosleep</B>()  は 0 を返す。
+シグナルハンドラーで割り込まれたり、エラーが発生したりした場合、 「エラー」の節のリストにある正のエラー番号のいずれか一つを返す。
+<A NAME="lbAF">&nbsp;</A>
+<H2>エラー</H2>
+
+<DL COMPACT>
+<DT><B>EFAULT</B><DD>
+<I>request</I> や <I>remain</I> に無効なアドレスが指定された。
+<DT><B>EINTR</B><DD>
+
+
+停止がシグナルハンドラーにより割り込まれた。
+<B><A HREF="../man7/signal.7.html">signal</A></B>(7)
+
+を参照すること。
+<DT><B>EINVAL</B><DD>
+<I>tv_nsec</I> フィールドの値が 0 から 999999999 の範囲でないか、 <I>tv_sec</I> の値が負であった。
+<DT><B>EINVAL</B><DD>
+<I>clockid</I> が無効であった (<B>CLOCK_THREAD_CPUTIME_ID</B> が <I>clockid</I> として有効な値ではない)。
+<DT><B>ENOTSUP</B>
+
+<DD>
+
+
+この
+<I>clockid</I>
+
+に対して、カーネルが停止をサポートしていない。
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>バージョン</H2>
+
+<B>clock_nanosleep</B>()  システムコールは Linux 2.6 で初めて登場した。 glibc ではバージョン 2.1
+以降でサポートされている。
+<A NAME="lbAH">&nbsp;</A>
+<H2>準拠</H2>
+
+POSIX.1-2001, POSIX.1-2008.
+<A NAME="lbAI">&nbsp;</A>
+<H2>注意</H2>
+
+<I>request</I> で指定された停止期間が、時間の計測に使用されるクロック (<B><A HREF="../man7/time.7.html">time</A></B>(7)  参照)
+の精度の倍数ちょうどでない場合、停止期間は一番近い次の倍数に 切り上げられる。さらに、停止が完了した後に、CPU が呼び出したスレッドを
+もう一度実行できるようになるまでには、遅延が入る可能性がある。
+<P>
+
+絶対値指定のタイマーを使うのは、 <B><A HREF="../man2/nanosleep.2.html">nanosleep</A></B>(2)  に書かれている類のタイマーのずれの問題を防止するのに役立つ
+(この種の問題は、シグナルに割り込まれた際に相対指定の停止を 繰り返し再開しようとするプログラムでは、かえって悪化する)。
+これらの問題を回避して相対指定の停止を実行するには、 希望するクロックで <B><A HREF="../man2/clock_gettime.2.html">clock_gettime</A></B>(2)
+を呼び出し、その返り値の時刻値に希望する期間を加算してから、 <B>TIMER_ABSTIME</B> フラグを指定して
+<B>clock_nanosleep</B>()  を呼び出す。
+<P>
+
+<B><A HREF="../man2/sigaction.2.html">sigaction</A></B>(2) で <B>SA_RESTART</B> フラグが指定されているかに関わらず、シグナルハンドラーにより割り込まれた後に
+<B>clock_nanosleep</B>() が再開されることは決してない。
+<P>
+
+<I>flags</I> が <B>TIMER_ABSTIME</B> の場合、 <I>remain</I> 引き数は使用されず、不要である (絶対値での停止では、同じ
+<I>request</I> 引き数を使って再度呼び出すことができる)。
+<P>
+
+POSIX.1 の規定では、 <B>clock_nanosleep</B>()  はシグナルの処理方法やシグナルマスクに影響を与えない、とされている。
+<P>
+
+POSIX.1 の規定では、 <B><A HREF="../man2/clock_settime.2.html">clock_settime</A></B>(2)  で <B>CLOCK_REALTIME</B> クロックの値を変更した後は、絶対値指定の
+<B>clock_nanosleep</B>()  で停止しているスレッドを起動させる時刻の判定は、 新しいクロック値を使って行われる、とされている。
+新しいクロック値において停止期間の終了時刻が過去になってしまった場合には、 <B>clock_nanosleep</B>()  はすぐに返ることになる。
+<P>
+
+POSIX.1 の規定では、 <B><A HREF="../man2/clock_settime.2.html">clock_settime</A></B>(2)  で <B>CLOCK_REALTIME</B> クロックの値を変更しても、相対値指定の
+<B>clock_nanosleep</B>()  で停止しているスレッドには影響を与えない、とされている。
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/clock_getres.2.html">clock_getres</A></B>(2), <B><A HREF="../man2/nanosleep.2.html">nanosleep</A></B>(2), <B><A HREF="../man2/restart_syscall.2.html">restart_syscall</A></B>(2),
+<B><A HREF="../man2/timer_create.2.html">timer_create</A></B>(2), <B><A HREF="../man3/sleep.3.html">sleep</A></B>(3), <B><A HREF="../man3/usleep.3.html">usleep</A></B>(3), <B><A HREF="../man7/time.7.html">time</A></B>(7)
+<A NAME="lbAK">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">返り値</A><DD>
+<DT><A HREF="#lbAF">エラー</A><DD>
+<DT><A HREF="#lbAG">バージョン</A><DD>
+<DT><A HREF="#lbAH">準拠</A><DD>
+<DT><A HREF="#lbAI">注意</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 12:01:51 GMT, January 13, 2021
+</BODY>
+</HTML>
