@@ -1,0 +1,606 @@
+.\" Copyright (c) 2003 Nick Clifford (zaf@nrc.co.nz), Jan 25, 2003
+.\" Copyright (c) 2003 Andries Brouwer (aeb@cwi.nl), Aug 24, 2003
+.\" Copyright (c) 2020 Michael Kerrisk <mtk.manpages@gmail.com>
+.\"
+.\" %%%LICENSE_START(VERBATIM)
+.\" Permission is granted to make and distribute verbatim copies of this
+.\" manual provided the copyright notice and this permission notice are
+.\" preserved on all copies.
+.\"
+.\" Permission is granted to copy and distribute modified versions of this
+.\" manual under the conditions for verbatim copying, provided that the
+.\" entire resulting derived work is distributed under the terms of a
+.\" permission notice identical to this one.
+.\"
+.\" Since the Linux kernel and libraries are constantly changing, this
+.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+.\" responsibility for errors or omissions, or for damages resulting from
+.\" the use of the information contained herein.  The author(s) may not
+.\" have taken the same level of care in the production of this manual,
+.\" which is licensed free of charge, as they might when working
+.\" professionally.
+.\"
+.\" Formatted or processed versions of this manual, if unaccompanied by
+.\" the source, must acknowledge the copyright and authors of this work.
+.\" %%%LICENSE_END
+.\"
+.\" 2003-08-23 Martin Schulze <joey@infodrom.org> improvements
+.\" 2003-08-24 aeb, large parts rewritten
+.\" 2004-08-06 Christoph Lameter <clameter@sgi.com>, SMP note
+.\"
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.\"
+.\" Japanese Version Copyright (c) 2004-2005 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated 2004-07-19, Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated & Modified 2005-01-10, Yuichi SATO
+.\" Updated 2010-04-11, Akihiro MOTOKI <amotoki@dd.iij4u.or.jp>
+.\" Updated 2012-04-27, Akihiro MOTOKI <amotoki@gmail.com>
+.\" Updated 2012-05-08, Akihiro MOTOKI <amotoki@gmail.com>
+.\" Updated 2012-05-29, Akihiro MOTOKI <amotoki@gmail.com>
+.\" Updated 2013-05-06, Akihiro MOTOKI <amotoki@gmail.com>
+.\" Updated & Modified Wed Jan 13 20:12:36 JST 2021
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH CLOCK_GETRES 2 2020-04-11 "" "Linux Programmer's Manual"
+.SH 名前
+clock_getres, clock_gettime, clock_settime \- クロックと時間の関数
+.SH 書式
+\fB#include <time.h>\fP
+.PP
+.BI "int clock_getres(clockid_t " clockid ", struct timespec *" res );
+.PP
+.BI "int clock_gettime(clockid_t " clockid ", struct timespec *" tp );
+.PP
+.BI "int clock_settime(clockid_t " clockid ", const struct timespec *" tp );
+.PP
+\fI\-lrt\fP とリンクする (バージョン 2.17 より前の glibc のみ)
+.PP
+.in -4n
+glibc 向けの機能検査マクロの要件 (\fBfeature_test_macros\fP(7)  参照):
+.in
+.PP
+.ad l
+\fBclock_getres\fP(), \fBclock_gettime\fP(), \fBclock_settime\fP():
+.RS
+_POSIX_C_SOURCE\ >=\ 199309L
+.RE
+.ad b
+.SH 説明
+関数 \fBclock_getres\fP()  は 指定されたクロック \fIclockid\fP の分解能 (精度) を探し出す。 \fIres\fP が NULL
+でない場合、その分解能を \fIres\fP で指される \fIstruct timespec\fP に格納する。 クロックの分解能は実装に依存し、
+特定のプロセスによって設定することはできない。 \fBclock_settime\fP()  の引き数 \fItp\fP で指される時間の値が \fIres\fP
+の倍数でない場合、 \fIres\fP の倍数に切り詰められる。
+.PP
+関数 \fBclock_gettime\fP()  と \fBclock_settime\fP()  は、指定されたクロック \fIclockid\fP
+の時間を取得または設定する。
+.PP
+\fIres\fP と \fItp\fP 引き数は \fItimespec\fP 構造体であり、 \fI<time.h>\fP で以下のように規定されている:
+.PP
+.in +4n
+.EX
+struct timespec {
+    time_t   tv_sec;        /* seconds */
+    long     tv_nsec;       /* nanoseconds */
+};
+.EE
+.in
+.PP
+\fIclockid\fP 引き数は特定のクロックの識別子であり、そのクロックで動作する。 クロックはシステム全体に適用することもでき、
+その場合は全てのプロセスから見ることができる。 また 1 つのプロセス内でのみ時間を計測する場合は、 プロセス毎に適用することもできる。
+.PP
+全ての実装においてシステム全体のリアルタイムクロックがサポートされ、 \fBCLOCK_REALTIME\fP で識別される。 時間は紀元 (the
+Epoch) からの秒とナノ秒で表される。 時間が変更された場合、相対的な時間間隔のタイマーは影響を受けないが、 絶対的な時点のタイマーは影響を受ける。
+.PP
+さらにいくつかのクロックが実装されているかもしれない。 対応する時間の値を解釈する方法とタイマーへの影響は、定められていない。
+.PP
+glibc と Linux カーネルの最新のバージョンでは、
+以下のクロックがサポートされている。
+.TP 
+\fBCLOCK_REALTIME\fP
+実時間を計測する設定可能なシステム全体で一意な時間。
+このクロックを設定するには適切な特権が必要である。
+このクロックは、システム時間の不連続な変化 (例えば、システム管理者が
+システム時間を手動で変更した場合など) や \fBadjtime\fP や NTP が行う
+段階的な調整の影響を受ける。
+.TP 
+.\"O .BR CLOCK_REALTIME_ALARM " (since Linux 3.0; Linux-specific)"
+.BR CLOCK_REALTIME_ALARM " (Linux 3.0 以降; Linux 特有)"
+.\"O Like
+.\"O .BR CLOCK_REALTIME ,
+.\"O but not settable.
+.B CLOCK_REALTIME
+と似ているが、設定可能でない。
+.\"O See
+.\"O .BR timer_create (2)
+.\"O for further details.
+より詳細は
+.BR timer_create (2)
+を参照すること。
+.TP
+\fBCLOCK_REALTIME_COARSE\fP (Linux 2.6.32 以降; Linux 特有)
+.\" Added in commit da15cfdae03351c689736f8d142618592e3cebc3
+高速だが精度が低い \fBCLOCK_REALTIME\fP。速度が非常に必要で、かつ高精度のタイムスタンプが不要な場合に使用するとよい。
+.\"O Requires per-architecture support,
+.\"O and probably also architecture support for this flag in the
+.\"O .BR vdso (7).
+アーキテクチャー毎のサポートが必要で、
+.BR vdso (7)
+において、このフラグのアーキテクチャーのサポートも多分必要である。
+.TP 
+.\"O .BR CLOCK_TAI " (since Linux 3.10; Linux-specific)"
+.BR CLOCK_TAI " (Linux 3.10 以降; Linux 特有)"
+.\" commit 1ff3c9677bff7e468e0c487d0ffefe4e901d33f4
+.\"O A nonsettable system-wide clock derived from wall-clock time
+.\"O but ignoring leap seconds.
+実際の経過時間 (wall-clock time) から派生した
+設定できないシステム全体のクロック。
+閏秒は無視する。
+.\"O This clock does
+.\"O not experience discontinuities and backwards jumps caused by NTP
+.\"O inserting leap seconds as
+.\"O .BR CLOCK_REALTIME
+.\"O does.
+このクロックでは、
+.B CLOCK_REALTIME
+で発生するような、NTP での閏秒の追加による、
+不連続や巻き戻しが起こらない。
+.IP
+.\"O The acronym TAI refers to International Atomic Time.
+頭字語 TAI は International Atomic Time から来ている。
+.TP 
+\fBCLOCK_MONOTONIC\fP
+.\"O A nonsettable system-wide clock that
+.\"O represents monotonic time since\(emas described
+.\"O by POSIX\(em"some unspecified point in the past".
+設定することができないシステム全体のクロックで、
+\(emPOSIX での記載では\(em「特に規定されない過去の時点」からの
+単調増加の時間で表現されるクロック。
+.\"O On Linux, that point corresponds to the number of seconds that the system
+.\"O has been running since it was booted.
+Linux では、この時点は、システムがブートしてから稼働秒数に対応する。
+.IP
+.\"O The
+.\"O .B CLOCK_MONOTONIC
+.\"O clock is not affected by discontinuous jumps in the system time
+.\"O (e.g., if the system administrator manually changes the clock),
+.\"O but is affected by the incremental adjustments performed by
+.\"O .BR adjtime (3)
+.\"O and NTP.
+.B CLOCK_MONOTONIC
+クロックは、システム時間の不連続な変化 (例えば、システム管理者がシステム
+時間を手動で変更した場合など) の影響を受けないが、
+\fBadjtime\fP(3) や NTP が行う段階的な調整の影響を受ける。
+.\"O This clock does not count time that the system is suspended.
+このクロックは、システムがサスペンドしている時間をカウントしない。
+.\"O All
+.\"O .B CLOCK_MONOTONIC
+.\"O variants guarantee that the time returned by consecutive calls will not go
+.\"O backwards, but successive calls may\(emdepending on the architecture\(emreturn
+.\"O identical (not-increased) time values.
+.B CLOCK_MONOTONIC
+とその派生では、連続した呼び出しで返される時間が巻き戻らないことを
+保証しているが、連続した呼び出しでは\(emアーキテクチャによっては\(em
+同じ (増加していない) 時間を返すかもしれない。
+.TP 
+\fBCLOCK_MONOTONIC_COARSE\fP (Linux 2.6.32 以降; Linux 特有)
+.\" Added in commit da15cfdae03351c689736f8d142618592e3cebc3
+高速だが精度が低い \fBCLOCK_MONOTONIC\fP。
+.\"O This clock is not settable.
+このクロックは設定可能ではない。
+.\"O Use when you need very fast, but not fine-grained timestamps.
+速度が非常に必要で、かつ高精度のタイムスタンプが不要な場合に使用するとよい。
+.\"O Requires per-architecture support,
+.\"O and probably also architecture support for this flag in the
+.\"O .BR vdso (7).
+アーキテクチャー毎のサポートが必要で、
+.BR vdso (7)
+において、このフラグのアーキテクチャーのサポートも多分必要である。
+.TP
+\fBCLOCK_MONOTONIC_RAW\fP (Linux 2.6.28 以降; Linux 特有)
+.\" Added in commit 2d42244ae71d6c7b0884b5664cf2eda30fb2ae68, John Stultz
+\fBCLOCK_MONOTONIC\fP と同様だが、NTP による調整や \fBadjtime\fP(3) が行う
+段階的な調整の影響を受けない、ハードウェアによる生の時刻へのアクセス
+ができる。
+.\"O This clock does not count time that the system is suspended.
+このクロックは、システムがサスペンドしている時間をカウントしない。
+.TP 
+\fBCLOCK_BOOTTIME\fP (Linux 2.6.39 以降; Linux 固有)
+.\" commit 7fdd7f89006dd5a4c702fa0ce0c272345fa44ae0
+.\" commit 70a08cca1227dc31c784ec930099a4417a06e7d0
+.\"O A nonsettable system-wide clock that is identical to
+.\"O .BR CLOCK_MONOTONIC ,
+.\"O except that it also includes any time that the system is suspended.
+設定できないシステム全体のクロックで、
+\fBCLOCK_MONOTONIC\fP と同じだが、システムがサスペンドされている時間も含まれる点が異なる。
+.\"O This allows applications to get a suspend-aware monotonic clock
+.\"O without having to deal with the complications of
+.\"O .BR CLOCK_REALTIME ,
+.\"O which may have discontinuities if the time is changed using
+.\"O .BR settimeofday (2)
+.\"O or similar.
+これを使うと、アプリケーションはサスペンド状態も扱える "monotonic" なクロックを得ることができる。 しかも、
+\fBCLOCK_REALTIME\fP における複雑な処理を行う必要もなくなる。 \fBCLOCK_REALTIME\fP では、
+\fBsettimeofday\fP(2) などを使って時刻を変更した場合、時刻に不連続な変化が発生するからだ。
+.TP
+.\"O .BR CLOCK_BOOTTIME_ALARM " (since Linux 3.0; Linux-specific)"
+.BR CLOCK_BOOTTIME_ALARM " (Linux 3.0 以降; Linux 特有)"
+.\"O Like
+.\"O .BR CLOCK_BOOTTIME .
+.B CLOCK_BOOTTIME
+と似ている。
+.\"O See
+.\"O .BR timer_create (2)
+.\"O for further details.
+より詳細は
+.BR timer_create (2)
+を参照すること。
+.TP 
+\fBCLOCK_PROCESS_CPUTIME_ID\fP (Linux 2.6.12 以降)
+.\"O This is a clock that measures CPU time consumed by this process
+.\"O (i.e., CPU time consumed by all threads in the process).
+プロセスで消費される CPU 時間 (そのプロセスの全スレッドで消費される CPU 時間) を
+計測するクロック。
+.\"O On Linux, this clock is not settable.
+Linux では、このクロックは設定できない。
+.TP 
+\fBCLOCK_THREAD_CPUTIME_ID\fP (Linux 2.6.12 以降)
+.\"O This is a clock that measures CPU time consumed by this thread.
+スレッドで消費される CPU 時間を計測するクロック。
+.\"O On Linux, this clock is not settable.
+Linux では、このクロックは設定できない。
+.PP
+.\"O Linux also implements dynamic clock instances as described below.
+Linux では、下記の動的クロックインスタンスも実装している。
+.\"O .SS Dynamic clocks
+.SS 動的クロック
+.\"O In addition to the hard-coded System-V style clock IDs described above,
+.\"O Linux also supports
+.\"O POSIX clock operations on certain character devices.
+上記のハードコードされた System-V スタイルのクロックに加え、
+Linux は POSIX クロックの操作を特定のキャラクターデバイスでサポートしている。
+.\"O Such devices are
+.\"O called "dynamic" clocks, and are supported since Linux 2.6.39.
+これらのデバイスは「動的」クロックと呼ばれ、Linux 2.6.39 からサポートされている。
+.PP
+.\"O Using the appropriate macros, open file
+.\"O descriptors may be converted into clock IDs and passed to
+.\"O .BR clock_gettime (),
+.\"O .BR clock_settime (),
+.\"O and
+.\"O .BR clock_adjtime (2).
+適切なマクロを使うことで、オープンファイルディスクリプターを
+クロック ID に変換することができ、
+.BR clock_gettime (),
+.BR clock_settime (),
+.BR clock_adjtime (2)
+に渡すことができる。
+.\"O The following example shows how to convert a file descriptor into a
+.\"O dynamic clock ID.
+以下の例では、ファイルディスクリプターを動的クロック ID に変換する方法を示している。
+.PP
+.in +4n
+.EX
+#define CLOCKFD 3
+#define FD_TO_CLOCKID(fd)   ((~(clockid_t) (fd) << 3) | CLOCKFD)
+#define CLOCKID_TO_FD(clk)  ((unsigned int) ~((clk) >> 3))
+
+struct timeval tv;
+clockid_t clkid;
+int fd;
+
+fd = open("/dev/ptp0", O_RDWR);
+clkid = FD_TO_CLOCKID(fd);
+clock_gettime(clkid, &tv);
+.EE
+.in
+.SH 返り値
+\fBclock_gettime\fP(), \fBclock_settime\fP(), \fBclock_getres\fP()  は成功した場合に 0
+を返し、失敗した場合に \-1 を返す (失敗した場合、 \fIerrno\fP が適切に設定される)。
+.SH エラー
+.TP 
+\fBEFAULT\fP
+\fItp\fP がアクセス可能なアドレス空間の外を指した。
+.TP 
+\fBEINVAL\fP
+.\"O .I clockid
+.\"O specified is invalid for one of two reasons.
+指定された
+.I clockid
+が、以下のいずれかの理由で無効である。
+.\"O Either the System-V style
+.\"O hard coded positive value is out of range, or the dynamic clock ID
+.\"O does not refer to a valid instance of a clock object.
+System-V スタイルのハードコードされた正の値が範囲外である。
+または、動的クロック ID が有効なクロックオブジェクトのインスタンスを参照していない。
+.\" Linux also gives this error on attempts to set CLOCK_PROCESS_CPUTIME_ID
+.\" and CLOCK_THREAD_CPUTIME_ID, when probably the proper error should be
+.\" EPERM.
+.TP 
+.B EINVAL
+.RB ( clock_settime ()):
+.\"O .I tp.tv_sec
+.\"O is negative or
+.\"O .I tp.tv_nsec
+.\"O is outside the range [0..999,999,999].
+.I tp.tv_sec
+が負である。または、
+.I tp.tv_nsec
+が範囲 [0..999,999,999] の外である。
+.TP
+.B EINVAL
+.\"O The
+.\"O .I clockid
+.\"O specified in a call to
+.\"O .BR clock_settime ()
+.\"O is not a settable clock.
+.BR clock_settime ()
+の呼び出しに指定された
+.I clockid
+が設定可能なクロックでない。
+.TP
+.B ENOTSUP
+.\"O The operation is not supported by the dynamic POSIX clock device
+.\"O specified.
+指定された動的 POSIX クロックデバイスで、操作がサポートされていない。
+.TP
+.\"O .BR EINVAL " (since Linux 4.3)"
+.BR EINVAL " (Linux 4.3 以降)"
+.\" commit e1d7ba8735551ed79c7a0463a042353574b96da3
+.\"O A call to
+.\"O .BR clock_settime ()
+.\"O with a
+.\"O .I clockid
+.\"O of
+.\"O .B CLOCK_REALTIME
+.\"O attempted to set the time to a value less than
+.\"O the current value of the
+.\"O .B CLOCK_MONOTONIC
+.\"O clock.
+.B CLOCK_REALTIME
+の
+.I clockid
+を指定して呼び出された
+.BR clock_settime ()
+で、
+.B CLOCK_MONOTONIC
+クロックの現在の値よりも小さい値の時間を設定しようとした。
+.TP
+.B ENODEV
+.\"O The hot-pluggable device (like USB for example) represented by a
+.\"O dynamic
+.\"O .I clk_id
+.\"O has disappeared after its character device was opened.
+動的な
+.I clockid
+で表される (例えば USB のような) ホットプラグデバイスが、
+キャラクターデバイスのオープン後になくなった。
+.TP
+\fBEPERM\fP
+指示されたクロックを設定する権限が \fBclock_settime\fP()  にない。
+.TP
+.B EACCES
+.\"O .BR clock_settime ()
+.\"O does not have write permission for the dynamic POSIX
+.\"O clock device indicated.
+.BR clock_settime ()
+が指定された動的 POSIX クロックデバイスに対して書き込み権限がない。
+.SH バージョン
+これらのシステムコールは Linux 2.6 で初めて登場した。
+.\"O .SH ATTRIBUTES
+.SH 属性
+.\"O For an explanation of the terms used in this section, see
+.\"O .BR attributes (7).
+このセクションで使われる用語の説明は、
+.BR attributes (7)
+を参照すること。
+.TS
+allbox;
+lbw32 lb lb
+l l l.
+.\"O Interface	Attribute	Value
+インタフェース	属性	値
+T{
+.BR clock_getres (),
+.BR clock_gettime (),
+.BR clock_settime ()
+.\"O T}	Thread safety	MT-Safe
+T}	スレッドセーフ性	MT セーフ
+.TE
+.sp 1
+.SH 準拠
+POSIX.1-2001, POSIX.1-2008, SUSv2.
+.PP
+.SH 可用性
+これらの関数が利用可能な POSIX システムでは、\fI<unistd.h>\fP においてシンボル \fB_POSIX_TIMERS\fP が
+0 より大きい値に定義されている。 シンボル \fB_POSIX_MONOTONIC_CLOCK\fP, \fB_POSIX_CPUTIME\fP,
+\fB_POSIX_THREAD_CPUTIME\fP は \fBCLOCK_MONOTONIC\fP, \fBCLOCK_PROCESS_CPUTIME_ID\fP,
+\fBCLOCK_THREAD_CPUTIME_ID\fP が利用可能なことを示す。 (\fBsysconf\fP(3)  も参照すること。)
+.SH 注意
+.\"O POSIX.1 specifies the following:
+POSIX.1 では以下のように規定されている:
+.RS
+.PP
+.\"O Setting the value of the
+.\"O .B CLOCK_REALTIME
+.\"O clock via
+.\"O .BR clock_settime ()
+.\"O shall have no effect on threads that are blocked waiting for a relative time
+.\"O service based upon this clock, including the
+.\"O .BR nanosleep ()
+.\"O function; nor on the expiration of relative timers based upon this clock.
+.B CLOCK_REALTIME
+クロックの値を
+.BR clock_settime ()
+を使って設定する場合、
+.BR nanosleep ()
+を含む、このクロックに基づいた相対 (relative) タイムサービスの待ちで
+ブロックしているスレッドや、
+このクロックに基づいた相対 (relative) タイマーの期限切れの影響を受けない。
+.\"O Consequently, these time services shall expire when the requested relative
+.\"O interval elapses, independently of the new or old value of the clock.
+結果として、これらのタイムサービスは、クロックの新しい値や
+古い値とは関係なく、要求された相対時間が経過した場合に、
+期限切れとなる。
+.RE
+.PP
+.\"O According to POSIX.1-2001, a process with "appropriate privileges" may set the
+.\"O .B CLOCK_PROCESS_CPUTIME_ID
+.\"O and
+.\"O .B CLOCK_THREAD_CPUTIME_ID
+.\"O clocks using
+.\"O .BR clock_settime ().
+.\"O On Linux, these clocks are not settable
+.\"O (i.e., no process has "appropriate privileges").
+POSIX.1\-2001 では、 「適切な特権 (appropriate privileges)」を持ったプロセスは、
+\fBclock_settime\fP()  を使って、クロック \fBCLOCK_PROCESS_CPUTIME_ID\fP と
+\fBCLOCK_THREAD_CPUTIME_ID\fP を設定することができるとされている。 Linux では、これらのクロックは設定可能ではない
+(すなわち、どのプロセスも「適切な特権」を持たない)。
+.\" See http://bugzilla.kernel.org/show_bug.cgi?id=11972
+.\"
+.\"O .SS C library/kernel differences
+.SS C ライブラリ/カーネルの違い
+.\"O On some architectures, an implementation of
+.\"O .BR clock_gettime ()
+.\"O is provided in the
+.\"O .BR vdso (7).
+アーキテクチャによっては、
+.BR clock_gettime ()
+の実装は、
+.BR vdso (7)
+で提供されている。
+.\"
+.SS "SMP システムに関する歴史的な注意事項"
+Linux が \fBCLOCK_PROCESS_CPUTIME_ID\fP と \fBCLOCK_THREAD_CPUTIME_ID\fP
+クロックのカーネルによるサポートを追加する前は、 glibc はこれらのクロックは多くのプラットフォームで CPU のタイマーレジスター (i386
+上の TSC、Itanium 上の AR.ITC) を用いて実現されていた。 これらのレジスターは CPU 間で異なる可能性があり、 プロセスが他の
+CPU に移動させられた場合、 結果としてこれらのクロックが\fB偽の結果\fP (bogus results) を返すかもしれない。
+.PP
+SMP システムの各 CPU が別々のクロック源を持つ場合、 タイマーレジスター間の相互関係を管理する方法はない。 これは各 CPU
+が微妙に異なる周波数で動作するためである。 これが真実の場合 (訳註: 各 CPU が別々のクロック源を持つ場合)、
+\fIclock_getcpuclockid(0)\fP は \fBENOENT\fP を返して、その状況を表す。 2 つのクロックは、プロセスが特定の CPU
+上に留まっていることが 保証できる場合にのみ有効である。
+.PP
+SMP システムの各プロセッサは全く同じ時刻に起動する訳ではないので、 各タイマーレジスターは通常はあるオフセットで動作している。
+オフセットをブート時に制限するコードが含まれるアーキテクチャーもある。 しかし、このコードがオフセットを正確に調整することは保証できない。 glibc
+は (Linux カーネルとは異なり) オフセットを扱うためのコードを提供しない。
+通常はこれらのオフセットが小さいので、多くの場合でその影響は無視できる。
+
+glibc 2.4 以降では、 このページで説明したシステムコールのラッパー関数は、 \fBCLOCK_PROCESS_CPUTIME_ID\fP と
+\fBCLOCK_THREAD_CPUTIME_ID\fP のカーネル実装が利用できるシステム (すなわち Linux 2.6.12 以降)
+ではカーネル実装を利用することで、 上述の問題を回避している。
+.\"O .SH EXAMPLES
+.SH 例
+.\"O The program below demonstrates the use of
+.\"O .BR clock_gettime ()
+.\"O and
+.\"O .BR clock_getres ()
+.\"O with various clocks.
+以下のプログラムは、
+.BR clock_gettime ()
+と
+.BR clock_getres ()
+のいろいろなクロックでの使い方を示している。
+.\"O This is an example of what we might see when running the program:
+プログラムを実行する際に、見たい例になっているだろう。
+.PP
+.in +4n
+.EX
+$ \fB./clock_times x\fP
+CLOCK_REALTIME : 1585985459.446 (18356 days +  7h 30m 59s)
+     resolution:          0.000000001
+CLOCK_TAI      : 1585985496.447 (18356 days +  7h 31m 36s)
+     resolution:          0.000000001
+CLOCK_MONOTONIC:      52395.722 (14h 33m 15s)
+     resolution:          0.000000001
+CLOCK_BOOTTIME :      72691.019 (20h 11m 31s)
+     resolution:          0.000000001
+.EE
+.in
+.\"O .SS Program source
+.SS プログラムのソース
+\&
+.EX
+/* clock_times.c
+
+   Licensed under GNU General Public License v2 or later.
+*/
+#define _XOPEN_SOURCE 600
+#include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <unistd.h>
+
+#define SECS_IN_DAY (24 * 60 * 60)
+
+static void
+displayClock(clockid_t clock, char *name, bool showRes)
+{
+    struct timespec ts;
+
+    if (clock_gettime(clock, &ts) == \-1) {
+        perror("clock_gettime");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("%\-15s: %10ld.%03ld (", name,
+            (long) ts.tv_sec, ts.tv_nsec / 1000000);
+
+    long days = ts.tv_sec / SECS_IN_DAY;
+    if (days > 0)
+        printf("%ld days + ", days);
+
+    printf("%2ldh %2ldm %2lds", (ts.tv_sec % SECS_IN_DAY) / 3600,
+            (ts.tv_sec % 3600) / 60, ts.tv_sec % 60);
+    printf(")\en");
+
+    if (clock_getres(clock, &ts) == \-1) {
+        perror("clock_getres");
+        exit(EXIT_FAILURE);
+    }
+
+    if (showRes)
+        printf("     resolution: %10ld.%09ld\en",
+                (long) ts.tv_sec, ts.tv_nsec);
+}
+
+int
+main(int argc, char *argv[])
+{
+    bool showRes = argc > 1;
+
+    displayClock(CLOCK_REALTIME, "CLOCK_REALTIME", showRes);
+#ifdef CLOCK_TAI
+    displayClock(CLOCK_TAI, "CLOCK_TAI", showRes);
+#endif
+    displayClock(CLOCK_MONOTONIC, "CLOCK_MONOTONIC", showRes);
+#ifdef CLOCK_BOOTTIME
+    displayClock(CLOCK_BOOTTIME, "CLOCK_BOOTTIME", showRes);
+#endif
+    exit(EXIT_SUCCESS);
+}
+.EE
+.SH 関連項目
+.BR date (1),
+.BR gettimeofday (2),
+.BR settimeofday (2),
+.BR time (2),
+.BR adjtime (3),
+.BR clock_getcpuclockid (3),
+.BR ctime (3),
+.BR ftime (3),
+.BR pthread_getcpuclockid (3),
+.BR sysconf (3),
+.BR time (7),
+.BR time_namespaces (7),
+.BR vdso (7),
+.BR hwclock (8)
+.SH この文書について
+この man ページは Linux \fIman\-pages\fP プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+http://www.kernel.org/doc/man\-pages/ に書かれている。
