@@ -1,0 +1,714 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of CLOCK_GETRES</TITLE>
+</HEAD><BODY>
+<H1>CLOCK_GETRES</H1>
+Section: Linux Programmer's Manual (2)<BR>Updated: 2020-04-11<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+clock_getres, clock_gettime, clock_settime - クロックと時間の関数
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>#include &lt;<A HREF="file:///usr/include/time.h">time.h</A>&gt;</B>
+<P>
+
+<B>int clock_getres(clockid_t </B><I>clockid</I><B>, struct timespec *</B><I>res</I><B>);</B>
+
+<P>
+
+<B>int clock_gettime(clockid_t </B><I>clockid</I><B>, struct timespec *</B><I>tp</I><B>);</B>
+
+<P>
+
+<B>int clock_settime(clockid_t </B><I>clockid</I><B>, const struct timespec *</B><I>tp</I><B>);</B>
+
+<P>
+
+<I>-lrt</I> とリンクする (バージョン 2.17 より前の glibc のみ)
+<P>
+
+
+glibc 向けの機能検査マクロの要件 (<B><A HREF="../man7/feature_test_macros.7.html">feature_test_macros</A></B>(7)  参照):
+
+<P>
+
+
+<B>clock_getres</B>(), <B>clock_gettime</B>(), <B>clock_settime</B>():
+<DL COMPACT><DT><DD>
+_POSIX_C_SOURCE&nbsp;&gt;=&nbsp;199309L
+</DL>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+関数 <B>clock_getres</B>()  は 指定されたクロック <I>clockid</I> の分解能 (精度) を探し出す。 <I>res</I> が NULL
+でない場合、その分解能を <I>res</I> で指される <I>struct timespec</I> に格納する。 クロックの分解能は実装に依存し、
+特定のプロセスによって設定することはできない。 <B>clock_settime</B>()  の引き数 <I>tp</I> で指される時間の値が <I>res</I>
+の倍数でない場合、 <I>res</I> の倍数に切り詰められる。
+<P>
+
+関数 <B>clock_gettime</B>()  と <B>clock_settime</B>()  は、指定されたクロック <I>clockid</I>
+の時間を取得または設定する。
+<P>
+
+<I>res</I> と <I>tp</I> 引き数は <I>timespec</I> 構造体であり、 <I>&lt;<A HREF="file:///usr/include/time.h">time.h</A>&gt;</I> で以下のように規定されている:
+<P>
+
+
+
+struct timespec {
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;time_t&nbsp;&nbsp;&nbsp;tv_sec;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;seconds&nbsp;*/
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tv_nsec;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;nanoseconds&nbsp;*/
+};
+
+
+<P>
+
+<I>clockid</I> 引き数は特定のクロックの識別子であり、そのクロックで動作する。 クロックはシステム全体に適用することもでき、
+その場合は全てのプロセスから見ることができる。 また 1 つのプロセス内でのみ時間を計測する場合は、 プロセス毎に適用することもできる。
+<P>
+
+全ての実装においてシステム全体のリアルタイムクロックがサポートされ、 <B>CLOCK_REALTIME</B> で識別される。 時間は紀元 (the
+Epoch) からの秒とナノ秒で表される。 時間が変更された場合、相対的な時間間隔のタイマーは影響を受けないが、 絶対的な時点のタイマーは影響を受ける。
+<P>
+
+さらにいくつかのクロックが実装されているかもしれない。 対応する時間の値を解釈する方法とタイマーへの影響は、定められていない。
+<P>
+
+glibc と Linux カーネルの最新のバージョンでは、
+以下のクロックがサポートされている。
+<DL COMPACT>
+<DT><B>CLOCK_REALTIME</B><DD>
+実時間を計測する設定可能なシステム全体で一意な時間。
+このクロックを設定するには適切な特権が必要である。
+このクロックは、システム時間の不連続な変化 (例えば、システム管理者が
+システム時間を手動で変更した場合など) や <B>adjtime</B> や NTP が行う
+段階的な調整の影響を受ける。
+<DT>
+<DD>
+<B>CLOCK_REALTIME_ALARM</B> (Linux 3.0 以降; Linux 特有)
+
+
+
+
+<B>CLOCK_REALTIME</B>
+
+と似ているが、設定可能でない。
+
+
+
+より詳細は
+<B><A HREF="../man2/timer_create.2.html">timer_create</A></B>(2)
+
+を参照すること。
+<DT><B>CLOCK_REALTIME_COARSE</B> (Linux 2.6.32 以降; Linux 特有)<DD>
+
+高速だが精度が低い <B>CLOCK_REALTIME</B>。速度が非常に必要で、かつ高精度のタイムスタンプが不要な場合に使用するとよい。
+
+
+
+アーキテクチャー毎のサポートが必要で、
+<B><A HREF="../man7/vdso.7.html">vdso</A></B>(7)
+
+において、このフラグのアーキテクチャーのサポートも多分必要である。
+<DT>
+<DD>
+<B>CLOCK_TAI</B> (Linux 3.10 以降; Linux 特有)
+
+
+
+
+実際の経過時間 (wall-clock time) から派生した
+設定できないシステム全体のクロック。
+閏秒は無視する。
+
+
+
+
+
+このクロックでは、
+<B>CLOCK_REALTIME</B>
+
+で発生するような、NTP での閏秒の追加による、
+不連続や巻き戻しが起こらない。
+<DT><DD>
+
+頭字語 TAI は International Atomic Time から来ている。
+<DT><B>CLOCK_MONOTONIC</B><DD>
+
+
+
+設定することができないシステム全体のクロックで、
+---POSIX での記載では---「特に規定されない過去の時点」からの
+単調増加の時間で表現されるクロック。
+
+
+Linux では、この時点は、システムがブートしてから稼働秒数に対応する。
+<DT><DD>
+
+
+
+
+
+
+
+<B>CLOCK_MONOTONIC</B>
+
+クロックは、システム時間の不連続な変化 (例えば、システム管理者がシステム
+時間を手動で変更した場合など) の影響を受けないが、
+<B><A HREF="../man3/adjtime.3.html">adjtime</A></B>(3) や NTP が行う段階的な調整の影響を受ける。
+
+このクロックは、システムがサスペンドしている時間をカウントしない。
+
+
+
+
+
+<B>CLOCK_MONOTONIC</B>
+
+とその派生では、連続した呼び出しで返される時間が巻き戻らないことを
+保証しているが、連続した呼び出しでは---アーキテクチャによっては---
+同じ (増加していない) 時間を返すかもしれない。
+<DT><B>CLOCK_MONOTONIC_COARSE</B> (Linux 2.6.32 以降; Linux 特有)<DD>
+
+高速だが精度が低い <B>CLOCK_MONOTONIC</B>。
+
+このクロックは設定可能ではない。
+
+速度が非常に必要で、かつ高精度のタイムスタンプが不要な場合に使用するとよい。
+
+
+
+アーキテクチャー毎のサポートが必要で、
+<B><A HREF="../man7/vdso.7.html">vdso</A></B>(7)
+
+において、このフラグのアーキテクチャーのサポートも多分必要である。
+<DT><B>CLOCK_MONOTONIC_RAW</B> (Linux 2.6.28 以降; Linux 特有)<DD>
+
+<B>CLOCK_MONOTONIC</B> と同様だが、NTP による調整や <B><A HREF="../man3/adjtime.3.html">adjtime</A></B>(3) が行う
+段階的な調整の影響を受けない、ハードウェアによる生の時刻へのアクセス
+ができる。
+
+このクロックは、システムがサスペンドしている時間をカウントしない。
+<DT><B>CLOCK_BOOTTIME</B> (Linux 2.6.39 以降; Linux 固有)<DD>
+
+
+
+
+
+設定できないシステム全体のクロックで、
+<B>CLOCK_MONOTONIC</B> と同じだが、システムがサスペンドされている時間も含まれる点が異なる。
+
+
+
+
+
+
+これを使うと、アプリケーションはサスペンド状態も扱える &quot;monotonic&quot; なクロックを得ることができる。 しかも、
+<B>CLOCK_REALTIME</B> における複雑な処理を行う必要もなくなる。 <B>CLOCK_REALTIME</B> では、
+<B><A HREF="../man2/settimeofday.2.html">settimeofday</A></B>(2) などを使って時刻を変更した場合、時刻に不連続な変化が発生するからだ。
+<DT>
+<DD>
+<B>CLOCK_BOOTTIME_ALARM</B> (Linux 3.0 以降; Linux 特有)
+
+
+
+<B>CLOCK_BOOTTIME</B>
+
+と似ている。
+
+
+
+より詳細は
+<B><A HREF="../man2/timer_create.2.html">timer_create</A></B>(2)
+
+を参照すること。
+<DT><B>CLOCK_PROCESS_CPUTIME_ID</B> (Linux 2.6.12 以降)<DD>
+
+
+プロセスで消費される CPU 時間 (そのプロセスの全スレッドで消費される CPU 時間) を
+計測するクロック。
+
+Linux では、このクロックは設定できない。
+<DT><B>CLOCK_THREAD_CPUTIME_ID</B> (Linux 2.6.12 以降)<DD>
+
+スレッドで消費される CPU 時間を計測するクロック。
+
+Linux では、このクロックは設定できない。
+</DL>
+<P>
+
+
+Linux では、下記の動的クロックインスタンスも実装している。
+
+<A NAME="lbAE">&nbsp;</A>
+<H3>動的クロック</H3>
+
+
+
+
+上記のハードコードされた System-V スタイルのクロックに加え、
+Linux は POSIX クロックの操作を特定のキャラクターデバイスでサポートしている。
+
+
+これらのデバイスは「動的」クロックと呼ばれ、Linux 2.6.39 からサポートされている。
+<P>
+
+
+
+
+
+
+
+適切なマクロを使うことで、オープンファイルディスクリプターを
+クロック ID に変換することができ、
+<B>clock_gettime</B>(),
+
+<B>clock_settime</B>(),
+
+<B><A HREF="../man2/clock_adjtime.2.html">clock_adjtime</A></B>(2)
+
+に渡すことができる。
+
+
+以下の例では、ファイルディスクリプターを動的クロック ID に変換する方法を示している。
+<P>
+
+
+
+#define CLOCKFD 3
+#define FD_TO_CLOCKID(fd)   ((~(clockid_t) (fd) &lt;&lt; 3) | CLOCKFD)
+#define CLOCKID_TO_FD(clk)  ((unsigned int) ~((clk) &gt;&gt; 3))
+<P>
+struct timeval tv;
+clockid_t clkid;
+int fd;
+<P>
+fd = open(&quot;/dev/ptp0&quot;, O_RDWR);
+clkid = FD_TO_CLOCKID(fd);
+clock_gettime(clkid, &amp;tv);
+
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+<B>clock_gettime</B>(), <B>clock_settime</B>(), <B>clock_getres</B>()  は成功した場合に 0
+を返し、失敗した場合に -1 を返す (失敗した場合、 <I>errno</I> が適切に設定される)。
+<A NAME="lbAG">&nbsp;</A>
+<H2>エラー</H2>
+
+<DL COMPACT>
+<DT><B>EFAULT</B><DD>
+<I>tp</I> がアクセス可能なアドレス空間の外を指した。
+<DT><B>EINVAL</B><DD>
+
+
+指定された
+<I>clockid</I>
+
+が、以下のいずれかの理由で無効である。
+
+
+
+System-V スタイルのハードコードされた正の値が範囲外である。
+または、動的クロック ID が有効なクロックオブジェクトのインスタンスを参照していない。
+
+
+
+<DT><B>EINVAL</B>
+
+<DD>
+(<B>clock_settime</B>()):
+
+
+
+
+
+<I>tp.tv_sec</I>
+
+が負である。または、
+<I>tp.tv_nsec</I>
+
+が範囲 [0..999,999,999] の外である。
+<DT><B>EINVAL</B>
+
+<DD>
+
+
+
+
+
+<B>clock_settime</B>()
+
+の呼び出しに指定された
+<I>clockid</I>
+
+が設定可能なクロックでない。
+<DT><B>ENOTSUP</B>
+
+<DD>
+
+
+指定された動的 POSIX クロックデバイスで、操作がサポートされていない。
+<DT>
+<DD>
+<B>EINVAL</B> (Linux 4.3 以降)
+
+
+
+
+
+
+
+
+
+
+
+
+<B>CLOCK_REALTIME</B>
+
+の
+<I>clockid</I>
+
+を指定して呼び出された
+<B>clock_settime</B>()
+
+で、
+<B>CLOCK_MONOTONIC</B>
+
+クロックの現在の値よりも小さい値の時間を設定しようとした。
+<DT><B>ENODEV</B>
+
+<DD>
+
+
+
+
+動的な
+<I>clockid</I>
+
+で表される (例えば USB のような) ホットプラグデバイスが、
+キャラクターデバイスのオープン後になくなった。
+<DT><B>EPERM</B><DD>
+指示されたクロックを設定する権限が <B>clock_settime</B>()  にない。
+<DT><B>EACCES</B>
+
+<DD>
+
+
+
+<B>clock_settime</B>()
+
+が指定された動的 POSIX クロックデバイスに対して書き込み権限がない。
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>バージョン</H2>
+
+これらのシステムコールは Linux 2.6 で初めて登場した。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>属性</H2>
+
+
+
+このセクションで使われる用語の説明は、
+<B><A HREF="../man7/attributes.7.html">attributes</A></B>(7)
+
+を参照すること。
+<TABLE BORDER>
+<TR VALIGN=top><TD><B>インタフェース</B></TD><TD><B>属性</B></TD><TD><B>値</B><BR></TD></TR>
+<TR VALIGN=top><TD>
+<B>clock_getres</B>(),
+
+<B>clock_gettime</B>(),
+
+<B>clock_settime</B>()
+
+
+</TD><TD>スレッドセーフ性</TD><TD>MT セーフ<BR></TD></TR>
+</TABLE>
+
+<P>
+<A NAME="lbAJ">&nbsp;</A>
+<H2>準拠</H2>
+
+POSIX.1-2001, POSIX.1-2008, SUSv2.
+<P>
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>可用性</H2>
+
+これらの関数が利用可能な POSIX システムでは、<I>&lt;<A HREF="file:///usr/include/unistd.h">unistd.h</A>&gt;</I> においてシンボル <B>_POSIX_TIMERS</B> が
+0 より大きい値に定義されている。 シンボル <B>_POSIX_MONOTONIC_CLOCK</B>, <B>_POSIX_CPUTIME</B>,
+<B>_POSIX_THREAD_CPUTIME</B> は <B>CLOCK_MONOTONIC</B>, <B>CLOCK_PROCESS_CPUTIME_ID</B>,
+<B>CLOCK_THREAD_CPUTIME_ID</B> が利用可能なことを示す。 (<B><A HREF="../man3/sysconf.3.html">sysconf</A></B>(3)  も参照すること。)
+<A NAME="lbAL">&nbsp;</A>
+<H2>注意</H2>
+
+
+POSIX.1 では以下のように規定されている:
+<DL COMPACT><DT><DD>
+<P>
+
+
+
+
+
+
+
+
+
+<B>CLOCK_REALTIME</B>
+
+クロックの値を
+<B>clock_settime</B>()
+
+を使って設定する場合、
+<B>nanosleep</B>()
+
+を含む、このクロックに基づいた相対 (relative) タイムサービスの待ちで
+ブロックしているスレッドや、
+このクロックに基づいた相対 (relative) タイマーの期限切れの影響を受けない。
+
+
+結果として、これらのタイムサービスは、クロックの新しい値や
+古い値とは関係なく、要求された相対時間が経過した場合に、
+期限切れとなる。
+</DL>
+
+<P>
+
+
+
+
+
+
+
+
+
+POSIX.1-2001 では、 「適切な特権 (appropriate privileges)」を持ったプロセスは、
+<B>clock_settime</B>()  を使って、クロック <B>CLOCK_PROCESS_CPUTIME_ID</B> と
+<B>CLOCK_THREAD_CPUTIME_ID</B> を設定することができるとされている。 Linux では、これらのクロックは設定可能ではない
+(すなわち、どのプロセスも「適切な特権」を持たない)。
+
+
+
+<A NAME="lbAM">&nbsp;</A>
+<H3>C ライブラリ/カーネルの違い</H3>
+
+
+
+
+
+アーキテクチャによっては、
+<B>clock_gettime</B>()
+
+の実装は、
+<B><A HREF="../man7/vdso.7.html">vdso</A></B>(7)
+
+で提供されている。
+
+<A NAME="lbAN">&nbsp;</A>
+<H3>SMP システムに関する歴史的な注意事項</H3>
+
+Linux が <B>CLOCK_PROCESS_CPUTIME_ID</B> と <B>CLOCK_THREAD_CPUTIME_ID</B>
+クロックのカーネルによるサポートを追加する前は、 glibc はこれらのクロックは多くのプラットフォームで CPU のタイマーレジスター (i386
+上の TSC、Itanium 上の AR.ITC) を用いて実現されていた。 これらのレジスターは CPU 間で異なる可能性があり、 プロセスが他の
+CPU に移動させられた場合、 結果としてこれらのクロックが<B>偽の結果</B> (bogus results) を返すかもしれない。
+<P>
+
+SMP システムの各 CPU が別々のクロック源を持つ場合、 タイマーレジスター間の相互関係を管理する方法はない。 これは各 CPU
+が微妙に異なる周波数で動作するためである。 これが真実の場合 (訳註: 各 CPU が別々のクロック源を持つ場合)、
+<I>clock_getcpuclockid(0)</I> は <B>ENOENT</B> を返して、その状況を表す。 2 つのクロックは、プロセスが特定の CPU
+上に留まっていることが 保証できる場合にのみ有効である。
+<P>
+
+SMP システムの各プロセッサは全く同じ時刻に起動する訳ではないので、 各タイマーレジスターは通常はあるオフセットで動作している。
+オフセットをブート時に制限するコードが含まれるアーキテクチャーもある。 しかし、このコードがオフセットを正確に調整することは保証できない。 glibc
+は (Linux カーネルとは異なり) オフセットを扱うためのコードを提供しない。
+通常はこれらのオフセットが小さいので、多くの場合でその影響は無視できる。
+<P>
+glibc 2.4 以降では、 このページで説明したシステムコールのラッパー関数は、 <B>CLOCK_PROCESS_CPUTIME_ID</B> と
+<B>CLOCK_THREAD_CPUTIME_ID</B> のカーネル実装が利用できるシステム (すなわち Linux 2.6.12 以降)
+ではカーネル実装を利用することで、 上述の問題を回避している。
+
+<A NAME="lbAO">&nbsp;</A>
+<H2>例</H2>
+
+
+
+
+
+
+以下のプログラムは、
+<B>clock_gettime</B>()
+
+と
+<B>clock_getres</B>()
+
+のいろいろなクロックでの使い方を示している。
+
+プログラムを実行する際に、見たい例になっているだろう。
+<P>
+
+
+
+$ <B>./clock_times x</B>
+CLOCK_REALTIME : 1585985459.446 (18356 days +  7h 30m 59s)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resolution:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.000000001
+CLOCK_TAI      : 1585985496.447 (18356 days +  7h 31m 36s)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resolution:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.000000001
+CLOCK_MONOTONIC:      52395.722 (14h 33m 15s)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resolution:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.000000001
+CLOCK_BOOTTIME :      72691.019 (20h 11m 31s)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resolution:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.000000001
+
+
+
+<A NAME="lbAP">&nbsp;</A>
+<H3>プログラムのソース</H3>
+
+
+
+/* clock_times.c
+<P>
+<BR>&nbsp;&nbsp;&nbsp;Licensed&nbsp;under&nbsp;GNU&nbsp;General&nbsp;Public&nbsp;License&nbsp;v2&nbsp;or&nbsp;later.
+*/
+#define _XOPEN_SOURCE 600
+#include &lt;<A HREF="file:///usr/include/time.h">time.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/stdio.h">stdio.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/stdlib.h">stdlib.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/stdbool.h">stdbool.h</A>&gt;
+#include &lt;<A HREF="file:///usr/include/unistd.h">unistd.h</A>&gt;
+<P>
+#define SECS_IN_DAY (24 * 60 * 60)
+<P>
+static void
+displayClock(clockid_t clock, char *name, bool showRes)
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;struct&nbsp;timespec&nbsp;ts;
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(clock_gettime(clock,&nbsp;&amp;ts)&nbsp;==&nbsp;-1)&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;perror(&quot;clock_gettime&quot;);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exit(EXIT_FAILURE);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;}
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;printf(&quot;%-15s:&nbsp;%10ld.%03ld&nbsp;(&quot;,&nbsp;name,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(long)&nbsp;ts.tv_sec,&nbsp;ts.tv_nsec&nbsp;/&nbsp;1000000);
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;days&nbsp;=&nbsp;ts.tv_sec&nbsp;/&nbsp;SECS_IN_DAY;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(days&nbsp;&gt;&nbsp;0)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf(&quot;%ld&nbsp;days&nbsp;+&nbsp;&quot;,&nbsp;days);
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;printf(&quot;%2ldh&nbsp;%2ldm&nbsp;%2lds&quot;,&nbsp;(ts.tv_sec&nbsp;%&nbsp;SECS_IN_DAY)&nbsp;/&nbsp;3600,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ts.tv_sec&nbsp;%&nbsp;3600)&nbsp;/&nbsp;60,&nbsp;ts.tv_sec&nbsp;%&nbsp;60);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;printf(&quot;)\n&quot;);
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(clock_getres(clock,&nbsp;&amp;ts)&nbsp;==&nbsp;-1)&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;perror(&quot;clock_getres&quot;);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exit(EXIT_FAILURE);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;}
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(showRes)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf(&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resolution:&nbsp;%10ld.%09ld\n&quot;,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(long)&nbsp;ts.tv_sec,&nbsp;ts.tv_nsec);
+}
+<P>
+int
+main(int argc, char *argv[])
+{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;bool&nbsp;showRes&nbsp;=&nbsp;argc&nbsp;&gt;&nbsp;1;
+<P>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;displayClock(CLOCK_REALTIME,&nbsp;&quot;CLOCK_REALTIME&quot;,&nbsp;showRes);
+#ifdef CLOCK_TAI
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;displayClock(CLOCK_TAI,&nbsp;&quot;CLOCK_TAI&quot;,&nbsp;showRes);
+#endif
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;displayClock(CLOCK_MONOTONIC,&nbsp;&quot;CLOCK_MONOTONIC&quot;,&nbsp;showRes);
+#ifdef CLOCK_BOOTTIME
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;displayClock(CLOCK_BOOTTIME,&nbsp;&quot;CLOCK_BOOTTIME&quot;,&nbsp;showRes);
+#endif
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;exit(EXIT_SUCCESS);
+}
+
+<A NAME="lbAQ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/date.1.html">date</A></B>(1),
+
+<B><A HREF="../man2/gettimeofday.2.html">gettimeofday</A></B>(2),
+
+<B><A HREF="../man2/settimeofday.2.html">settimeofday</A></B>(2),
+
+<B><A HREF="../man2/time.2.html">time</A></B>(2),
+
+<B><A HREF="../man3/adjtime.3.html">adjtime</A></B>(3),
+
+<B><A HREF="../man3/clock_getcpuclockid.3.html">clock_getcpuclockid</A></B>(3),
+
+<B><A HREF="../man3/ctime.3.html">ctime</A></B>(3),
+
+<B><A HREF="../man3/ftime.3.html">ftime</A></B>(3),
+
+<B><A HREF="../man3/pthread_getcpuclockid.3.html">pthread_getcpuclockid</A></B>(3),
+
+<B><A HREF="../man3/sysconf.3.html">sysconf</A></B>(3),
+
+<B><A HREF="../man7/time.7.html">time</A></B>(7),
+
+<B><A HREF="../man7/time_namespaces.7.html">time_namespaces</A></B>(7),
+
+<B><A HREF="../man7/vdso.7.html">vdso</A></B>(7),
+
+<B><A HREF="../man8/hwclock.8.html">hwclock</A></B>(8)
+
+<A NAME="lbAR">&nbsp;</A>
+<H2>この文書について</H2>
+
+この man ページは Linux <I>man-pages</I> プロジェクトのリリース 5.07 の一部である。
+プロジェクトの説明、バグ報告に関する情報、このページの最新版は、
+<A HREF="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</A> に書かれている。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DL>
+<DT><A HREF="#lbAE">動的クロック</A><DD>
+</DL>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">エラー</A><DD>
+<DT><A HREF="#lbAH">バージョン</A><DD>
+<DT><A HREF="#lbAI">属性</A><DD>
+<DT><A HREF="#lbAJ">準拠</A><DD>
+<DT><A HREF="#lbAK">可用性</A><DD>
+<DT><A HREF="#lbAL">注意</A><DD>
+<DL>
+<DT><A HREF="#lbAM">C ライブラリ/カーネルの違い</A><DD>
+<DT><A HREF="#lbAN">SMP システムに関する歴史的な注意事項</A><DD>
+</DL>
+<DT><A HREF="#lbAO">例</A><DD>
+<DL>
+<DT><A HREF="#lbAP">プログラムのソース</A><DD>
+</DL>
+<DT><A HREF="#lbAQ">関連項目</A><DD>
+<DT><A HREF="#lbAR">この文書について</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:24:18 GMT, January 13, 2021
+</BODY>
+</HTML>
