@@ -1,0 +1,188 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of IRQTOP</TITLE>
+</HEAD><BODY>
+<H1>IRQTOP</H1>
+Section: User Commands (1)<BR>Updated: February 2020<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+irqtop - カーネルの割り込み情報を表示するユーティリティ
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>irqtop</B>
+
+[options]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+カーネルの割り込みカウンター情報を
+<B><A HREF="../man1/top.1.html">top</A></B>(1)
+
+形式のビューで表示する。
+<P>
+
+
+
+
+
+デフォルトの出力は変更される可能性がある。
+そのため、可能な限り、スクリプト中ではデフォルトの出力を使うのは
+避けること。
+必要なカラムは、常に
+<B>--output</B>
+
+を使って明示的に定義すること。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-o</B>,<B> --output </B><I>list</I>
+
+<DD>
+
+
+
+
+
+表示する出力カラムを指定する。
+すべてのサポートされるカラムのリストを取得するには、
+<B>--help</B>
+
+を使うこと。
+リストを
+<I>+list</I>
+
+形式で指定した場合、カラムのデフォルトのリストに追加される。
+<DT><B>-d</B>,<B> --delay </B><I>seconds</I>
+
+<DD>
+
+
+
+出力を
+<I>seconds</I>
+
+秒間隔で更新する。
+<DT><B>-s</B>,<B> --sort </B><I>column</I>
+
+<DD>
+
+
+
+
+ソート条件をカラム名で指定する。
+カラム名を取得するには、
+<B>--help</B>
+
+の出力を参照すること。
+ソート条件は、対話モードで変更できる。
+<DT><B>-V</B>, <B>--version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,&nbsp;<B>--help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>対話モードのキーコマンド</H2>
+
+
+<DL COMPACT>
+<DT><B>i</B>
+
+<DD>
+
+短い irq 名、または数値フィールドでソートする。
+<DT><B>t</B>
+
+<DD>
+
+割り込みの総数でソートする (デフォルト)。
+<DT><B>d</B>
+
+<DD>
+
+割り込みの差分 (delta) 数でソートする。
+<DT><B>n</B>
+
+<DD>
+
+長い説明のフィールドでソートする。
+<DT><B>q Q</B>
+
+<DD>
+
+更新を停止し、プログラムを終了する。
+
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>著者</H2>
+
+
+Zhenwei Pi
+
+<BR>
+
+
+Sami Kerola
+
+<BR>
+
+
+Karel Zak
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+irqtop コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">対話モードのキーコマンド</A><DD>
+<DT><A HREF="#lbAG">著者</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:32:40 GMT, January 14, 2021
+</BODY>
+</HTML>
