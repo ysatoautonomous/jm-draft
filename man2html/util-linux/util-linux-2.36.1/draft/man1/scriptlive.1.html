@@ -1,0 +1,253 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SCRIPTLIVE</TITLE>
+</HEAD><BODY>
+<H1>SCRIPTLIVE</H1>
+Section: User Commands (1)<BR>Updated: October 2019<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+scriptlive - タイミング情報を使ってセッションの写し (typescript) を再実行する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>scriptlive</B>
+
+[options]
+[<B>-t</B>]
+
+<I>timingfile</I>
+
+[<B>-I|-B</B>]
+
+<I>typescript</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+このプログラムは、typescript を再実行する。
+標準入力の typescript と、タイミング情報を使い、
+元々 script が記録したときと同じリズムで入力されることを保証する。
+<P>
+
+
+
+
+新しく作成された疑似端末でユーザーの $SHELL (または、デフォルトでは /bin/bash) を使って、
+<B>セッションが実行される</B>。
+<P>
+
+
+<B>注意!</B>
+
+
+typescript にどんなコマンドが含まれているか分からない点を忘れてはならない。
+
+
+
+
+
+
+
+<B>&quot;scriptreplay --stream in --log-in typescript&quot;</B> を使うことが推奨される
+(または
+<B>--log-in</B>
+
+の代わりに
+<B>--log-io</B>
+
+を使うこと)。
+これにより、
+<B><A HREF="../man1/scriptlive.1.html">scriptlive</A></B>(1)
+
+で実行する前に typescript を検証できる。
+<P>
+
+
+
+
+
+タイミング情報は、
+<B><A HREF="../man1/script.1.html">script</A></B>(1)
+
+が
+<B>--log-timing</B>
+
+で指定されたファイルに出力したものである。
+
+
+
+
+
+
+typescript は標準入力の情報を含んでいる必要があり、
+<B><A HREF="../man1/script.1.html">script</A></B>(1)
+
+が
+<B>--log-in</B>
+
+または
+<B>--log-io</B>
+
+で指定されたファイルに出力したものである。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-I</B>,<B> --log-in </B><I>file</I>
+
+<DD>
+
+<B>script</B> の端末入力を含むファイルを指定する。
+<DT><B>-B</B>,<B> --log-io </B><I>file</I>
+
+<DD>
+
+<B>script</B> の端末入出力を含むファイルを指定する。
+<DT><B>-t</B>,<B> --timing </B><I>file</I>
+
+<DD>
+
+<B>script</B> のタイミング出力を含むファイルを指定する。
+このオプションは以前の形式の引き数を上書きする。
+<DT><B>-T</B>,<B> --log-timing </B><I>file</I>
+
+<DD>
+
+
+
+<B>-t</B> のエイリアス (別名)。
+<B><A HREF="../man1/script.1.html">script</A></B>(1)
+
+のコマンドラインオプションとの互換性のために保守されている。
+<DT><B>-d</B>,<B> --divisor </B><I>number</I>
+
+<DD>
+
+
+
+
+表示の再生を
+<I>number</I>
+
+倍で行う。
+引き数は、浮動小数点小数である。
+この数値でタイミングを割り算するので、除数 (divisor) と呼ばれる。
+このオプションは以前の形式の引き数を上書きする。
+<DT><B>-m</B>,<B> --maxdelay </B><I>number</I>
+
+<DD>
+
+
+
+
+更新の間の遅延を、最大
+<I>number</I>
+
+秒にする。
+引き数は、浮動小数点小数である。
+これは、typescript の再生で、長い停止を避けるために使われる。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>例</H2>
+
+<PRE>
+% script --log-timing file.tm --log-in script.in
+Script started, file is script.out
+% date
+&lt;etc, etc&gt;
+% exit
+Script done, file is script.out
+% scriptlive --log-timing file.tm --log-in script.in
+</PRE>
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>著者</H2>
+
+
+Karel Zak
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>著作権</H2>
+
+Copyright &#169; 2019 Karel Zak
+<P>
+
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
+<P>
+
+Released under the GNU General Public License version 2 or later.
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/script.1.html">script</A></B>(1),
+
+<B><A HREF="../man1/scriptreplay.1.html">scriptreplay</A></B>(1)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+scriptlive コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">例</A><DD>
+<DT><A HREF="#lbAG">著者</A><DD>
+<DT><A HREF="#lbAH">著作権</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:24:17 GMT, January 14, 2021
+</BODY>
+</HTML>
