@@ -1,0 +1,141 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Apr  4 23:17:58 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Fri Jan 15 01:17:36 JST 2021 by Yuichi SATO
+.\"
+.TH CHOOM 1 "April 2018" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O choom \- display and adjust OOM-killer score.
+choom \- OOM キラーのスコアーの表示と調整を行う
+.\"O .SH SYNOPSIS
+.SH 書式
+.B choom
+.B \-p
+.I pid
+.sp
+.B choom
+.B \-p
+.I pid
+.B \-n
+.I number
+.sp
+.B choom
+.B \-n
+.I number
+.B [\-\-]
+.IR command\  [ argument ...]
+
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The \fBchoom\fP command displays and adjusts Out-Of-Memory killer score setting.
+\fBchoom\fP コマンドは、Out-Of-Memory キラーのスコア設定の表示と調整を行う。
+
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-p ", " \-\-pid " \fIpid\fP"
+.\"O Specifies process ID.
+プロセス ID を指定する。
+.TP
+.BR \-n , " \-\-adjust " \fIvalue\fP
+.\"O Specify the adjust score value.
+調整するスコア値を指定する。
+.TP
+.BR \-h ", " \-\-help
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+.BR \-V ", " \-\-version
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.\"O .SH NOTES
+.SH 注意
+.\"O Linux kernel uses the badness heuristic to select which process gets killed in
+.\"O out of memory conditions.
+Linux カーネルはメモリ不足 (out of memory) の状況で、
+どのプロセスを kill するかを選択するために、不良 (badness) ヒューリスティックを使う。
+
+.\"O The badness heuristic assigns a value to each candidate task ranging from 0
+.\"O (never kill) to 1000 (always kill) to determine which process is targeted.  The
+.\"O units are roughly a proportion along that range of allowed memory the process
+.\"O may allocate from based on an estimation of its current memory and swap use.
+.\"O For example, if a task is using all allowed memory, its badness score will be
+.\"O 1000.  If it is using half of its allowed memory, its score will be 500.
+不良ヒューリスティックは、どのプロセスを対象にするかを決定するために、
+0 (決して kill されない) から 1000 (常に kill される) までの範囲で、
+各候補のタスクに値を設定する。
+現在のメモリとスワップ使用量の評価に基づいて、プロセスが確保するのに
+許可されたメモリの範囲で、単位は大まかな割合に設定される。
+例えば、タスクが全ての許可されたメモリを使っている場合、不良スコアは 1000 になる。
+タスクが全ての許可されたメモリの半分を使っている場合、不良スコアは 500 になる。
+
+.\"O There is an additional factor included in the badness score: the current memory
+.\"O and swap usage is discounted by 3% for root processes.
+不良スコアに含まれる追加の要素がある。
+現在のメモリとスワップ使用量は、root プロセスでは 3% 差し引かれる。
+
+.\"O The amount of "allowed" memory depends on the context in which the oom killer
+.\"O was called.  If it is due to the memory assigned to the allocating task's cpuset
+.\"O being exhausted, the allowed memory represents the set of mems assigned to that
+.\"O cpuset.  If it is due to a mempolicy's node(s) being exhausted, the allowed
+.\"O memory represents the set of mempolicy nodes.  If it is due to a memory
+.\"O limit (or swap limit) being reached, the allowed memory is that configured
+.\"O limit.  Finally, if it is due to the entire system being out of memory, the
+.\"O allowed memory represents all allocatable resources.
+「許可された」メモリの総量は、oom キラーが呼ばれるコンテキストに依存する。
+確保されたタスクの CPU セットに割り当てられたメモリが使い果たされると、
+許可されたメモリは、CPU セットに割り当てられたメモリを表すようになる。
+メモリポリシー (mempolicy) のノードが使い果たされると、
+許可されたメモリは、メモリポリシーノードのセットになる。
+メモリ制限 (またはスワップ制限) に到達した場合、
+許可されたメモリは、設定された制限になる。
+最後に、全体システムがメモリ不足になると、許可されたメモリは、
+全ての確保されたリソースを表すようになる。
+
+.\"O The adjust score value is added to the badness score before it is used to
+.\"O determine which task to kill.  Acceptable values range from -1000 to +1000.
+.\"O This allows userspace to polarize the preference for oom killing either by
+.\"O always preferring a certain task or completely disabling it.  The lowest
+.\"O possible value, -1000, is equivalent to disabling oom killing entirely for that
+.\"O task since it will always report a badness score of 0.
+不良スコアがどのタスクを kill するかを決定するかに使われる前に、
+調整スコア値が不良スコアに追加される。
+受け入れられる値の範囲は、-1000 から +1000 である。
+oom キラーが常にあるタスクを選ぶか、全く選ばないかのいずれかに、
+ユーザ空間の指向を二極化できる。
+利用可能な下限値 -1000 の場合、常に不良スコアを 0 にするので、
+そのタスクについて oom キラーを完全に無効化する。
+
+.\"O Setting an adjust score value of +500, for example, is roughly equivalent to
+.\"O allowing the remainder of tasks sharing the same system, cpuset, mempolicy, or
+.\"O memory controller resources to use at least 50% more memory.  A value of -500,
+.\"O on the other hand, would be roughly equivalent to discounting 50% of the task's
+.\"O allowed memory from being considered as scoring against the task.
+調整スコアの値を +500 に設定されると、例えば、
+同じシステム、CPU セット、メモリポリシー、メモリコントローラリソースを共有する
+残りのタスクが、50% 以上のメモリを使うことを許可するのと大まかに同じである。
+一方で、調整スコアの値を -500 に設定すると、
+タスクのスコアとして考慮されたメモリを、50% 差し引くのと大まかに同じである。
+
+.\"O .SH AUTHORS
+.SH 著者
+.nf
+Karel Zak <kzak@redhat.com>
+.fi
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR proc (5)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The \fBchoom\fP command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+\fBchoom\fP コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
