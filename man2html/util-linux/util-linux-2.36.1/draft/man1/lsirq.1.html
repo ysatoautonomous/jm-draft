@@ -1,0 +1,155 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of IRQTOP</TITLE>
+</HEAD><BODY>
+<H1>IRQTOP</H1>
+Section: User Commands (1)<BR>Updated: February 2020<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+lsirq - カーネルの割り込み情報を表示するユーティリティ
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>lsirq</B>
+
+[options]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+カーネルの割り込みカウンター情報を表示する。
+<P>
+
+
+
+
+
+デフォルトの出力は変更される可能性がある。
+そのため、可能な限り、スクリプト中ではデフォルトの出力を使うのは
+避けること。
+必要なカラムは、常に
+<B>--output</B>
+
+を使って明示的に定義すること。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-n</B>, <B>--noheadings</B>
+
+<DD>
+
+ヘッダを表示しない。
+<DT><B>-o</B>,<B> --output </B><I>list</I>
+
+<DD>
+
+
+
+
+
+表示する出力カラムを指定する。
+すべてのサポートされるカラムのリストを取得するには、
+<B>--help</B>
+
+を使うこと。
+リストを
+<I>+list</I>
+
+形式で指定した場合、カラムのデフォルトのリストに追加される。
+<DT><B>-s</B>,<B> --sort </B><I>column</I>
+
+<DD>
+
+
+
+ソート条件をカラム名で指定する。
+カラム名を取得するには、
+<B>--help</B>
+
+の出力を参照すること。
+<DT><B>-J</B>, <B>--json</B>
+
+<DD>
+
+JSON 出力形式を使う。
+<DT><B>-P</B>, <B>--pairs</B>
+
+<DD>
+
+
+キー=&quot;値&quot; のペアの形式で出力する。
+安全でない可能性のあるすべての文字は、16 進数エスケープ (\x&lt;code&gt;) される。
+<DT><B>-V</B>, <B>--version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,&nbsp;<B>--help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>著者</H2>
+
+
+Zhenwei Pi
+
+<BR>
+
+
+Sami Kerola
+
+<BR>
+
+
+Karel Zak
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+lsirq コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">著者</A><DD>
+<DT><A HREF="#lbAG">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:06:46 GMT, January 14, 2021
+</BODY>
+</HTML>
