@@ -1,0 +1,125 @@
+.\"
+.\" Japanese Version Copyright (c) 2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Thu Jan 14 22:22:58 JST 2021
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH IRQTOP "1" "February 2020" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O irqtop \- utility to display kernel interrupt information
+irqtop \- カーネルの割り込み情報を表示するユーティリティ
+.\"O .SH SYNOPSIS
+.SH 書式
+.B irqtop
+[options]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O Display kernel interrupt counter information in
+.\"O .BR top (1)
+.\"O style view.
+カーネルの割り込みカウンター情報を
+.BR top (1)
+形式のビューで表示する。
+.PP
+.\"O The default output is subject to change.  So whenever possible, you should
+.\"O avoid using default outputs in your scripts.  Always explicitly define
+.\"O expected columns by using
+.\"O .BR \-\-output .
+デフォルトの出力は変更される可能性がある。
+そのため、可能な限り、スクリプト中ではデフォルトの出力を使うのは
+避けること。
+必要なカラムは、常に
+.B \-\-output
+を使って明示的に定義すること。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-o , " \-\-output " \fIlist\fP
+.\"O Specify which output columns to print.  Use
+.\"O .B \-\-help
+.\"O to get a list of all supported columns.  The default list of columns may be
+.\"O extended if list is specified in the format
+.\"O .IR +list .
+表示する出力カラムを指定する。
+すべてのサポートされるカラムのリストを取得するには、
+.B \-\-help
+を使うこと。
+リストを
+.I +list
+形式で指定した場合、カラムのデフォルトのリストに追加される。
+.TP
+.BR \-d , " \-\-delay " \fIseconds\fP
+.\"O Update interrupt output every
+.\"O .I seconds
+.\"O intervals.
+出力を
+.I seconds
+秒間隔で更新する。
+.TP
+.BR \-s , " \-\-sort " \fIcolumn\fP
+.\"O Specify sort criteria by column name.  See
+.\"O .B \-\-help
+.\"O output to get column names.  The sort criteria may be changes in interactive
+.\"O mode.
+ソート条件をカラム名で指定する。
+カラム名を取得するには、
+.B \-\-help
+の出力を参照すること。
+ソート条件は、対話モードで変更できる。
+.TP
+.BR \-V ", " \-\-version
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h ,\  \-\-help
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH INTERACTIVE MODE KEY COMMANDS
+.SH 対話モードのキーコマンド
+.PD 0
+.TP
+.B i
+.\"O sort by short irq name or number field
+短い irq 名、または数値フィールドでソートする。
+.TP
+.B t
+.\"O sort by total count of interrupts (the default)
+割り込みの総数でソートする (デフォルト)。
+.TP
+.B d
+.\"O sort by delta count of interrupts
+割り込みの差分 (delta) 数でソートする。
+.TP
+.B n
+.\"O sort by long descriptive name field
+長い説明のフィールドでソートする。
+.TP
+.B q Q
+.\"O stop updates and exit program
+更新を停止し、プログラムを終了する。
+.PD 1
+.\"O .SH AUTHORS
+.SH 著者
+.MT pizhenwei@\:bytedance.com
+Zhenwei Pi
+.ME
+.br
+.MT kerolasa@\:iki.fi
+Sami Kerola
+.ME
+.br
+.MT kzak@\:redhat.com
+Karel Zak
+.ME
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The irqtop command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+irqtop コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
