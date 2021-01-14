@@ -1,0 +1,173 @@
+.\"
+.\" Japanese Version Copyright (c) 2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Fri Jan 15 00:21:31 JST 2021
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH SCRIPTLIVE 1 "October 2019" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O scriptlive \- re-run session typescripts, using timing information
+scriptlive \- タイミング情報を使ってセッションの写し (typescript) を再実行する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B scriptlive
+[options]
+.RB [ \-t ]
+.I timingfile
+.RB [ \-I|\-B ]
+.I typescript
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O This program re-runs a typescript,
+.\"O using stdin typescript and timing information to ensure that
+.\"O input happens in the same rhythm as it originally appeared when the script
+.\"O was recorded.
+このプログラムは、typescript を再実行する。
+標準入力の typescript と、タイミング情報を使い、
+元々 script が記録したときと同じリズムで入力されることを保証する。
+.PP
+.\"O The \fBsession is executed\fR in a newly created pseudoterminal with
+.\"O the user's $SHELL
+.\"O (or defaults to /bin/bash).
+新しく作成された疑似端末でユーザーの $SHELL (または、デフォルトでは /bin/bash) を使って、
+\fBセッションが実行される\fR。
+.PP
+.\"O .B Be careful!
+.B 注意!
+.\"O Do not forget that the typescript may contains arbitrary commands.
+typescript にどんなコマンドが含まれているか分からない点を忘れてはならない。
+.\"O It is recommended to use \fB"scriptreplay \-\-stream in \-\-log\-in typescript"\fR
+.\"O (or with
+.\"O .B \-\-log\-io
+.\"O instead of
+.\"O .BR \-\-log\-in\)
+.\"O to verify the typescript before it is executed by
+.\"O .BR scriptlive (1).
+\fB"scriptreplay \-\-stream in \-\-log\-in typescript"\fR を使うことが推奨される
+(または
+.B \-\-log\-in
+の代わりに
+.B \-\-log\-io
+を使うこと)。
+これにより、
+.BR scriptlive (1)
+で実行する前に typescript を検証できる。
+.PP
+.\"O The timing information is what
+.\"O .BR script (1)
+.\"O outputs to file specified by
+.\"O .BR \-\-log\-timing .
+タイミング情報は、
+.BR script (1)
+が
+.B \-\-log\-timing
+で指定されたファイルに出力したものである。
+.\"O The typescript has to contain stdin information and it is what
+.\"O .BR script (1)
+.\"O outputs to file specified by
+.\"O .B \-\-log-in
+.\"O or
+.\"O .BR \-\-log\-io .
+typescript は標準入力の情報を含んでいる必要があり、
+.BR script (1)
+が
+.B \-\-log-in
+または
+.B \-\-log\-io
+で指定されたファイルに出力したものである。
+
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-I , " \-\-log-in " \fIfile\fR
+.\"O File containing \fBscript\fR's terminal input.
+\fBscript\fR の端末入力を含むファイルを指定する。
+.TP
+.BR \-B , " \-\-log-io " \fIfile\fR
+.\"O File containing \fBscript\fR's terminal output and input.
+\fBscript\fR の端末入出力を含むファイルを指定する。
+.TP
+.BR \-t , " \-\-timing " \fIfile\fR
+.\"O File containing \fBscript\fR's timing output.  This option overrides old-style arguments.
+\fBscript\fR のタイミング出力を含むファイルを指定する。
+このオプションは以前の形式の引き数を上書きする。
+.TP
+.BR \-T , " \-\-log\-timing " \fIfile\fR
+.\"O Aliased to \fB\-t\fR, maintained for compatibility with
+.\"O .BR script (1)
+.\"O command-line options.
+\fB\-t\fR のエイリアス (別名)。
+.BR script (1)
+のコマンドラインオプションとの互換性のために保守されている。
+.TP
+.BR \-d , " \-\-divisor " \fInumber\fR
+.\"O Speed up the replay displaying this
+.\"O .I number
+.\"O of times.  The argument is a floating-point number.  It's called divisor
+.\"O because it divides the timings by this factor.  This option overrides old-style arguments.
+表示の再生を
+.I number
+倍で行う。
+引き数は、浮動小数点小数である。
+この数値でタイミングを割り算するので、除数 (divisor) と呼ばれる。
+このオプションは以前の形式の引き数を上書きする。
+.TP
+.BR \-m , " \-\-maxdelay " \fInumber\fR
+.\"O Set the maximum delay between updates to
+.\"O .I number
+.\"O of seconds.  The argument is a floating-point number.  This can be used to
+.\"O avoid long pauses in the typescript replay.
+更新の間の遅延を、最大
+.I number
+秒にする。
+引き数は、浮動小数点小数である。
+これは、typescript の再生で、長い停止を避けるために使われる。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH EXAMPLES
+.SH 例
+.nf
+% script --log-timing file.tm --log-in script.in
+Script started, file is script.out
+% date
+<etc, etc>
+% exit
+Script done, file is script.out
+% scriptlive --log-timing file.tm --log-in script.in
+.fi
+.\"O .SH AUTHORS
+.SH 著者
+.MT kzak@\:redhat.com
+Karel Zak
+.ME .
+.\"O .SH COPYRIGHT
+.SH 著作権
+Copyright \(co 2019 Karel Zak
+.PP
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
+.PP
+Released under the GNU General Public License version 2 or later.
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR script (1),
+.BR scriptreplay (1)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The scriptlive command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+scriptlive コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
