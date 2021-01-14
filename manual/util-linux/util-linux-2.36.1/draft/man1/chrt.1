@@ -1,0 +1,267 @@
+.\" chrt(1) manpage
+.\"
+.\" Copyright (C) 2004 Robert Love
+.\" Copyright (C) 2015 Karel Zak <kzak@redhat.com>
+.\"
+.\" This is free documentation; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License,
+.\" version 2, as published by the Free Software Foundation.
+.\"
+.\" The GNU General Public License's references to "object code"
+.\" and "executables" are to be interpreted as the output of any
+.\" document formatting or typesetting system, including
+.\" intermediate and printed output.
+.\"
+.\" This manual is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program; if not, write to the Free Software Foundation, Inc.,
+.\" 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun Apr  5 00:45:54 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Fri Jan 15 01:29:07 JST 2021 by Yuichi SATO
+.\"
+.TH CHRT 1 "January 2016" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O chrt \- manipulate the real-time attributes of a process
+chrt \- プロセスのリアルタイム属性を操作する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B chrt
+[options]
+.IR priority\ command\  [ argument ...]
+.br
+.B chrt
+[options]
+.B \-p
+.RI [ priority ]\  pid
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B chrt
+.\"O sets or retrieves the real-time scheduling attributes of an existing \fIpid\fR,
+.\"O or runs \fIcommand\fR with the given attributes.
+.B chrt
+は既存の \fIpid\fR のリアルタイムスケジューリング属性の設定または取得を行い、
+指定した属性で \fIcommand\fR を実行する。
+
+.\"O .SH POLICIES
+.SH ポリシー
+.TP
+\fB\-o\fR, \fB\-\-other\fR
+.\"O Set scheduling policy to
+.\"O .BR SCHED_OTHER .
+.\"O This is the default Linux scheduling policy.
+スケジューリングポリシーを
+.B SCHED_OTHER
+にする。
+これがデフォルトの Linux のスケジューリングポリシーである。
+.TP
+\fB\-f\fR, \fB\-\-fifo\fR
+.\"O Set scheduling policy to \fBSCHED_FIFO\fR.
+スケジューリングポリシーを \fBSCHED_FIFO\fR にする。
+.TP
+\fB\-r\fR, \fB\-\-rr\fR
+.\"O Set scheduling policy to
+.\"O .BR SCHED_RR .
+.\"O When no policy is defined, the
+.\"O .B SCHED_RR
+.\"O is used as the default.
+スケジューリングポリシーを
+.B SCHED_RR
+にする。
+ポリシーが定義されていない場合、
+.B SCHED_RR
+がデフォルトとして使われる。
+.TP
+\fB\-b\fR, \fB\-\-batch\fR
+.\"O Set scheduling policy to
+.\"O .B SCHED_BATCH
+.\"O (Linux-specific, supported since 2.6.16).  The priority argument has to be set to zero.
+スケジューリングポリシーを
+.B SCHED_BATCH
+(Linux 固有で、2.6.16 以降でサポートされる) にする。
+priority 引き数は 0 に設定される必要がある。
+.TP
+\fB\-i\fR, \fB\-\-idle\fR
+.\"O Set scheduling policy to
+.\"O .B SCHED_IDLE
+.\"O (Linux-specific, supported since 2.6.23).  The priority argument has to be set to zero.
+スケジューリングポリシーを
+.B SCHED_IDLE
+(Linux 固有で、2.6.23 以降でサポートされる) にする。
+priority 引き数は 0 に設定される必要がある。
+.TP
+.BR \-d ,\  \-\-deadline
+.\"O Set scheduling policy to
+.\"O .B SCHED_DEADLINE
+.\"O (Linux-specific, supported since 3.14).  The priority argument has to be set to zero.
+スケジューリングポリシーを
+.B SCHED_DEADLINE
+(Linux 固有で、2.6.23 以降でサポートされる) にする。
+priority 引き数は 0 に設定される必要がある。
+.\"O See also \fB\-\-sched\-runtime\fR, \fB\-\-sched\-deadline\fR and
+.\"O \fB\-\-sched\-period\fR.  The relation between the options required by the kernel is
+.\"O runtime <= deadline <= period.
+\fB\-\-sched\-runtime\fR, \fB\-\-sched\-deadline\fR,
+\fB\-\-sched\-period\fR も参照すること。
+カーネルに必要とされるオプションとの関係は、
+runtime <= deadline <= period である。
+.\"O .B chrt
+.\"O copies \fIperiod\fR to \fIdeadline\fR if \fB\-\-sched\-deadline\fR is not specified and
+.\"O \fIdeadline\fR to \fIruntime\fR if \fB\-\-sched\-runtime\fR is not specified.
+.B chrt
+は、\fB\-\-sched\-deadline\fR が指定されない場合、
+\fIperiod\fR を \fIdeadline\fR にコピーする。
+\fB\-\-sched\-runtime\fR が指定されない場合、
+\fIdeadline\fR を \fIruntime\fR にコピーする。
+.\"O It means that at least \fB\-\-sched\-period\fR has to be specified.  See
+.\"O .BR sched (7)
+.\"O for more details.
+これは、少なくとも \fB\-\-sched\-period\fR が指定されなければならないことを意味する。
+より詳細は
+.BR sched (7)
+を参照すること。
+
+.\"O .SH SCHEDULING OPTIONS
+.SH スケジューリングオプション
+.TP
+\fB\-T\fR, \fB\-\-sched\-runtime\fR \fInanoseconds\fR
+.\"O Specifies runtime parameter for SCHED_DEADLINE policy (Linux-specific).
+SCHED_DEADLINE ポリシーの runtime パラメータを指定する (Linux 固有)。
+.TP
+\fB\-P\fR, \fB\-\-sched\-period\fR \fInanoseconds\fR
+.\"O Specifies period parameter for SCHED_DEADLINE policy (Linux-specific).
+SCHED_DEADLINE ポリシーの period パラメータを指定する (Linux 固有)。
+.TP
+\fB\-D\fR, \fB\-\-sched\-deadline\fR \fInanoseconds\fR
+.\"O Specifies deadline parameter for SCHED_DEADLINE policy (Linux-specific).
+SCHED_DEADLINE ポリシーの deadline パラメータを指定する (Linux 固有)。
+.TP
+\fB\-R\fR, \fB\-\-reset-on-fork\fR
+.\"O Add
+.\"O .B SCHED_RESET_ON_FORK
+.\"O flag to the
+.\"O .B SCHED_FIFO
+.\"O or
+.\"O .B SCHED_RR
+.\"O scheduling policy (Linux-specific, supported since 2.6.31).
+.B SCHED_FIFO
+または
+.B SCHED_RR
+スケジューリングポリシーに、
+.B SCHED_RESET_ON_FORK
+フラグを追加する (Linux 固有で、2.6.31 以降でサポートされる)。
+
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-a ,\  \-\-all-tasks
+.\"O Set or retrieve the scheduling attributes of all the tasks (threads) for a
+.\"O given PID.
+指定された PID の全てのタスク (スレッド) のスケジューリング属性を、
+設定または取得する。
+.TP
+.BR \-m ,\  \-\-max
+.\"O Show minimum and maximum valid priorities, then exit.
+有効な priority の最小値と最大値を表示して、終了する。
+.TP
+.BR \-p ,\  \-\-pid
+.\"O Operate on an existing PID and do not launch a new task.
+既存の PID に対して操作を行い、新しいタスクを起動しない。
+.TP
+.BR \-v ,\  \-\-verbose
+.\"O Show status information.
+ステータス情報を表示する。
+.TP
+.BR \-V ,\  \-\-version
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h ,\  \-\-help
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH USAGE
+.SH 使用法
+.TP
+.\"O The default behavior is to run a new command:
+デフォルトの挙動は、新しいコマンドを実行することである:
+.B chrt
+.I priority
+.IR command\  [ arguments ]
+.TP
+.\"O You can also retrieve the real-time attributes of an existing task:
+既存のタスクのリアルタイム属性を取得することもできる:
+.B chrt \-p
+.I pid
+.TP
+.\"O Or set them:
+または、リアルタイム属性の設定を行う:
+.B chrt \-r \-p
+.I priority pid
+.\"O .SH PERMISSIONS
+.SH 権限
+.\"O A user must possess
+.\"O .B CAP_SYS_NICE
+.\"O to change the scheduling attributes of a process.  Any user can retrieve the
+.\"O scheduling information.
+ユーザーは、プロセスのスケジューリング属性を変更するために、
+.B CAP_SYS_NICE
+権限を持っている必要がある。
+どのようなユーザーでも、スケジューリング情報を取得できる。
+
+.\"O .SH NOTES
+.SH 注意
+.\"O Only
+.\"O .BR SCHED_FIFO ,
+.\"O .B SCHED_OTHER
+.\"O and
+.\"O .B SCHED_RR
+.\"O are part of POSIX 1003.1b Process Scheduling.  The other scheduling attributes
+.\"O may be ignored on some systems.
+.BR SCHED_FIFO ,
+.BR SCHED_OTHER ,
+.B SCHED_RR
+のみが、POSIX 1003.1b プロセススケジューリングの一部である。
+システムによっては、他のスケジューリング属性は無視されるかもしれない。
+.P
+.\"O Linux' default scheduling policy is
+.\"O .BR SCHED_OTHER .
+Linux のデフォルトのスケジューリングポリシーは
+.B SCHED_OTHER
+である。
+.\"O .SH AUTHORS
+.SH 著者
+.UR rml@tech9.net
+Robert Love
+.UE
+.br
+.UR kzak@redhat.com
+Karel Zak
+.UE
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR nice (1),
+.BR renice (1),
+.BR taskset (1),
+.BR sched (7)
+.sp
+.\"O See
+.\"O .BR sched_setscheduler (2)
+.\"O for a description of the Linux scheduling scheme.
+Linux のスケジューリングの概要説明は、
+.BR sched_setscheduler (2)
+を参照すること。
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The chrt command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+chrt コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
