@@ -1,0 +1,341 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of CHRT</TITLE>
+</HEAD><BODY>
+<H1>CHRT</H1>
+Section: User Commands (1)<BR>Updated: January 2016<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+chrt - プロセスのリアルタイム属性を操作する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>chrt</B>
+
+[options]
+<I>priority&nbsp;command&nbsp;</I>[<I>argument</I>...]
+
+<BR>
+
+<B>chrt</B>
+
+[options]
+<B>-p</B>
+
+[<I>priority</I>]&nbsp;<I>pid</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>chrt</B>
+
+は既存の <I>pid</I> のリアルタイムスケジューリング属性の設定または取得を行い、
+指定した属性で <I>command</I> を実行する。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>ポリシー</H2>
+
+<DL COMPACT>
+<DT><B>-o</B>, <B>--other</B><DD>
+
+
+
+スケジューリングポリシーを
+<B>SCHED_OTHER</B>
+
+にする。
+これがデフォルトの Linux のスケジューリングポリシーである。
+<DT><B>-f</B>, <B>--fifo</B><DD>
+
+スケジューリングポリシーを <B>SCHED_FIFO</B> にする。
+<DT><B>-r</B>, <B>--rr</B><DD>
+
+
+
+
+
+スケジューリングポリシーを
+<B>SCHED_RR</B>
+
+にする。
+ポリシーが定義されていない場合、
+<B>SCHED_RR</B>
+
+がデフォルトとして使われる。
+<DT><B>-b</B>, <B>--batch</B><DD>
+
+
+
+スケジューリングポリシーを
+<B>SCHED_BATCH</B>
+
+(Linux 固有で、2.6.16 以降でサポートされる) にする。
+priority 引き数は 0 に設定される必要がある。
+<DT><B>-i</B>, <B>--idle</B><DD>
+
+
+
+スケジューリングポリシーを
+<B>SCHED_IDLE</B>
+
+(Linux 固有で、2.6.23 以降でサポートされる) にする。
+priority 引き数は 0 に設定される必要がある。
+<DT><B>-d</B>,&nbsp;<B>--deadline</B>
+
+<DD>
+
+
+
+スケジューリングポリシーを
+<B>SCHED_DEADLINE</B>
+
+(Linux 固有で、2.6.23 以降でサポートされる) にする。
+priority 引き数は 0 に設定される必要がある。
+
+
+
+<B>--sched-runtime</B>, <B>--sched-deadline</B>,
+<B>--sched-period</B> も参照すること。
+カーネルに必要とされるオプションとの関係は、
+runtime &lt;= deadline &lt;= period である。
+
+
+
+<B>chrt</B>
+
+は、<B>--sched-deadline</B> が指定されない場合、
+<I>period</I> を <I>deadline</I> にコピーする。
+<B>--sched-runtime</B> が指定されない場合、
+<I>deadline</I> を <I>runtime</I> にコピーする。
+
+
+
+これは、少なくとも <B>--sched-period</B> が指定されなければならないことを意味する。
+より詳細は
+<B><A HREF="../man7/sched.7.html">sched</A></B>(7)
+
+を参照すること。
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>スケジューリングオプション</H2>
+
+<DL COMPACT>
+<DT><B>-T</B>, <B>--sched-runtime</B> <I>nanoseconds</I><DD>
+
+SCHED_DEADLINE ポリシーの runtime パラメータを指定する (Linux 固有)。
+<DT><B>-P</B>, <B>--sched-period</B> <I>nanoseconds</I><DD>
+
+SCHED_DEADLINE ポリシーの period パラメータを指定する (Linux 固有)。
+<DT><B>-D</B>, <B>--sched-deadline</B> <I>nanoseconds</I><DD>
+
+SCHED_DEADLINE ポリシーの deadline パラメータを指定する (Linux 固有)。
+<DT><B>-R</B>, <B>--reset-on-fork</B><DD>
+
+
+
+
+
+
+
+<B>SCHED_FIFO</B>
+
+または
+<B>SCHED_RR</B>
+
+スケジューリングポリシーに、
+<B>SCHED_RESET_ON_FORK</B>
+
+フラグを追加する (Linux 固有で、2.6.31 以降でサポートされる)。
+<P>
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-a</B>,&nbsp;<B>--all-tasks</B>
+
+<DD>
+
+
+指定された PID の全てのタスク (スレッド) のスケジューリング属性を、
+設定または取得する。
+<DT><B>-m</B>,&nbsp;<B>--max</B>
+
+<DD>
+
+有効な priority の最小値と最大値を表示して、終了する。
+<DT><B>-p</B>,&nbsp;<B>--pid</B>
+
+<DD>
+
+既存の PID に対して操作を行い、新しいタスクを起動しない。
+<DT><B>-v</B>,&nbsp;<B>--verbose</B>
+
+<DD>
+
+ステータス情報を表示する。
+<DT><B>-V</B>,&nbsp;<B>--version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,&nbsp;<B>--help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>使用法</H2>
+
+<DL COMPACT>
+<DT>
+<DD>
+デフォルトの挙動は、新しいコマンドを実行することである:
+<B>chrt</B>
+
+<I>priority</I>
+
+<I>command&nbsp;</I>[<I>arguments</I>]
+
+<DT>
+<DD>
+既存のタスクのリアルタイム属性を取得することもできる:
+<B>chrt -p</B>
+
+<I>pid</I>
+
+<DT>
+<DD>
+または、リアルタイム属性の設定を行う:
+<B>chrt -r -p</B>
+
+<I>priority pid</I>
+
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>権限</H2>
+
+
+
+
+
+ユーザーは、プロセスのスケジューリング属性を変更するために、
+<B>CAP_SYS_NICE</B>
+
+権限を持っている必要がある。
+どのようなユーザーでも、スケジューリング情報を取得できる。
+<P>
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+
+
+
+<B>SCHED_FIFO</B>,
+
+<B>SCHED_OTHER</B>,
+
+<B>SCHED_RR</B>
+
+のみが、POSIX 1003.1b プロセススケジューリングの一部である。
+システムによっては、他のスケジューリング属性は無視されるかもしれない。
+<P>
+
+
+
+Linux のデフォルトのスケジューリングポリシーは
+<B>SCHED_OTHER</B>
+
+である。
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>著者</H2>
+
+
+Robert Love
+
+<BR>
+
+
+Karel Zak
+
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/nice.1.html">nice</A></B>(1),
+
+<B><A HREF="../man1/renice.1.html">renice</A></B>(1),
+
+<B><A HREF="../man1/taskset.1.html">taskset</A></B>(1),
+
+<B><A HREF="../man7/sched.7.html">sched</A></B>(7)
+
+<P>
+
+
+
+Linux のスケジューリングの概要説明は、
+<B><A HREF="../man2/sched_setscheduler.2.html">sched_setscheduler</A></B>(2)
+
+を参照すること。
+
+<A NAME="lbAM">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+chrt コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">ポリシー</A><DD>
+<DT><A HREF="#lbAF">スケジューリングオプション</A><DD>
+<DT><A HREF="#lbAG">オプション</A><DD>
+<DT><A HREF="#lbAH">使用法</A><DD>
+<DT><A HREF="#lbAI">権限</A><DD>
+<DT><A HREF="#lbAJ">注意</A><DD>
+<DT><A HREF="#lbAK">著者</A><DD>
+<DT><A HREF="#lbAL">関連項目</A><DD>
+<DT><A HREF="#lbAM">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:31:40 GMT, January 14, 2021
+</BODY>
+</HTML>
