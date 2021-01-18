@@ -1,0 +1,189 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of COLCRT</TITLE>
+</HEAD><BODY>
+<H1>COLCRT</H1>
+Section: User Commands (1)<BR>Updated: September 2011<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+colcrt - nroff の出力を CRT で表示するためのフィルタ
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>colcrt</B>
+
+[options]
+[<I>file</I>...]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+<B>colcrt</B>
+
+は、半改行、逆改行の能力を持たず、重ね打ちで表示が壊れる端末に、
+仮想的にその機能を提供する。
+半改行文字と下線 (ダッシュ`-' に置換される) は、通常の出力行の間に
+新しい行をもうけて出力する。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-</B>, <B>--no-underlining</B><DD>
+
+
+
+
+下線を出力しない。
+このオプションは特に
+<B><A HREF="../man1/tbl.1.html">tbl</A></B>(1)
+
+の
+<I>allbox</I>
+
+で描かれた表を表示するのに便利である。
+<DT><B>-2</B>, <B>--half-lines</B><DD>
+
+
+
+すべての行に半改行があるように出力する。
+実質的には、1 行おきに出力されることになる。
+通常は半改行のない行で余分な改行を出力しない。
+ただし、二つの連続した空行は省略されない。
+
+
+
+
+<B>-2</B>
+
+オプションは上付き、あるいは下付き文字が含まれていて、
+それらを印字できないラインプリンタに対して出力する時に便利である。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+<B>colcrt</B>
+
+は 3.0BSD から登場した。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+<B>'-'</B>
+
+オプションが指定されたときにも、空白部分の下線文字を書き、
+下線文字を表示すべきである。
+<P>
+
+
+102 行以上の行を遡って処理できない。
+<P>
+
+
+
+一般に、重ね打ちの効果は失われる。
+特殊なケースとして、'|' が '-' や下線と重ね打ちされる場合には、'+' になる。
+<P>
+
+
+各行は 132 文字で切り捨てられる。
+<P>
+
+
+
+すでに 1 行おきになっている文書では、上付き、下付き文字に対する対処が必要である。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>使用例</H2>
+
+
+
+
+<B>colcrt</B>
+
+の典型的な利用法は、以下のとおりである。
+<P>
+
+<DL COMPACT><DT><DD>
+<B>tbl exum2.n | nroff -ms | colcrt - | more</B>
+
+</DL>
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/col.1.html">col</A></B>(1),
+
+<B><A HREF="../man1/more.1.html">more</A></B>(1),
+
+<B><A HREF="../man1/nroff.1.html">nroff</A></B>(1),
+
+<B><A HREF="../man1/troff.1.html">troff</A></B>(1),
+
+<B><A HREF="../man1/ul.1.html">ul</A></B>(1)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+colcrt コマンドは、util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">履歴</A><DD>
+<DT><A HREF="#lbAG">バグ</A><DD>
+<DT><A HREF="#lbAH">使用例</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:41:52 GMT, January 18, 2021
+</BODY>
+</HTML>
