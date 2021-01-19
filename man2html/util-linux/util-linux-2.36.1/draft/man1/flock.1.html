@@ -1,0 +1,412 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of FLOCK</TITLE>
+</HEAD><BODY>
+<H1>FLOCK</H1>
+Section: User Commands (1)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+flock - シェルスクリプトからロックを管理する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>flock</B>
+
+[options]
+<I>file</I>|<I>directory command </I>[<I>arguments</I>]
+
+<BR>
+
+<B>flock</B>
+
+[options]
+<I>file</I>|<I>directory</I>
+
+<B>-c</B><I> command</I>
+
+<BR>
+
+<B>flock</B>
+
+[options]<I> number</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+このユーティリティは
+<B><A HREF="../man2/flock.2.html">flock</A></B>(2)
+
+のロックをシェルスクリプト内、またはコマンドラインから管理する。
+<P>
+
+
+
+
+
+
+
+上記の 1 番目と 2 番目の形式は、
+<B><A HREF="../man1/su.1.html">su</A></B>(1)
+
+または
+<B><A HREF="../man1/newgrp.1.html">newgrp</A></B>(1)
+
+と同じような方式で、
+<I>command</I>
+
+実行時のロックの取得をラップする。
+
+
+
+
+
+これらのコマンドは指定された <I>file</I> または <I>directory</I> を、
+もし存在しない場合は (適切な権限があれば) 作成を行ってから、ロックする。
+デフォルトでは、
+<B>flock</B>
+
+はロックを即時に取得するのではなく、ロックが可能になるまで待つ。
+<P>
+
+
+3 番目の形式では、ファイルディスクリプター <I>number</I> の
+オープンされたファイルを使う。
+
+どのように使うかは、下記の例を参照すること。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-c</B>,<B> --command </B><I>command</I>
+
+<DD>
+
+
+引き数なしの 1 つの <I>command</I> を、シェルに
+<B>-c</B>
+
+オプションを付けて渡す。
+<DT><B>-E</B>,<B> --conflict-exit-code </B><I>number</I>
+
+<DD>
+
+
+
+
+<B>-n</B> オプションが使われて、ロック競合が起こった場合、
+または、<B>-w</B> オプションが使われて、タイムアウトに達した場合、
+指定した返り値を使う。
+デフォルトの値は <B>1</B> である。
+<I>number</I> は 0 から 255 の範囲でなればならない。
+<DT><B>-F</B>,<B> --no-fork</B>
+
+<DD>
+
+
+<I>command</I>
+
+を実行する前にフォークしない。
+
+
+
+
+実行時に、flock プロセスは
+<I>command</I>
+
+に置き換えられて、
+<I>command</I>
+
+がロックの保持を継続する。
+このオプションは、ロックを保持するものが何も残らない
+<B>--close</B> とは互換性がない。
+<DT><B>-e</B>,<B> -x</B>,<B> --exclusive</B>
+
+<DD>
+
+
+排他ロック (書き込みロックとも呼ばれる) を取得する。
+これがデフォルトである。
+<DT><B>-n</B>,<B> --nb</B>,<B> --nonblock</B>
+
+<DD>
+
+
+ロックが即時に取得できない場合、待たずに失敗する。
+
+
+
+使用される返り値は、
+<B>-E</B>
+
+オプションを参照すること。
+<DT><B>-o</B>,<B> --close</B>
+
+<DD>
+
+
+<I>command</I>
+
+を実行する前に、ロックを保持するファイルディスクリプターを
+クローズする。
+
+
+
+これは、ロックを保持させたくない子プロセスを、
+<I>command</I>
+
+が生成する場合に役立つ。
+<DT><B>-s</B>,<B> --shared</B>
+
+<DD>
+
+共有ロック (読み込みロックとも呼ばれる) を取得する。
+<DT><B>-u</B>,<B> --unlock</B>
+
+<DD>
+
+
+
+
+ロックを解放する。
+ロックはファイルがクローズされるときに自動的に解放されるので、
+通常は必要ない。
+しかし、例えばコマンドグループがロックを保持させたくない
+バックグランドプロセスをフォークさせるといった、特別なケースで
+必要となることがある。
+<DT><B>-w</B>,<B> --wait</B>,<B> --timeout </B><I>seconds</I>
+
+<DD>
+
+
+<I>seconds</I>
+
+以内にロックが取得できない場合、失敗する。
+
+小数値を指定することができる。
+
+
+
+
+
+使用される返り値は
+<B>-E</B>
+
+オプションを参照すること。
+<I>seconds</I>
+
+を 0 に指定すると、<B>--nonblock</B> と解釈される。
+<DT><B>--verbose</B>
+
+<DD>
+
+
+ロックを取得するのにかかった時間、またはロックが取得できなかった
+理由をレポートする。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+
+
+
+
+
+
+
+
+このコマンドは
+<B>sysexits.h</B>
+
+の返り値をすべてにおいて使用する。
+ただし、オプション
+<B>-n</B>
+
+または
+<B>-w</B>
+
+が使われた場合は、ロックの取得の失敗を
+<B>-E</B>
+
+オプションで指定された返り値 (デフォルトは 1) を使ってレポートする。
+<B>-E</B>
+
+で指定される返り値は、0 から 255 の範囲でなければならない。
+<P>
+
+
+
+<I>command</I> 引き数が使われて、かつ子のコマンドが実行された場合、
+返り値は子のコマンドの返り値となる。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+
+例にある &quot;shell&gt; &quot; は、コマンドラインプロンプトである。
+<DL COMPACT>
+<DT>shell1&gt; flock /tmp -c cat<DD>
+
+shell2&gt; flock -w .007 /tmp -c echo; /bin/echo $?
+
+ディレクトリ /tmp の排他ロックを設定し、2 番目のコマンドは失敗する。
+<DT>shell1&gt; flock -s /tmp -c cat<DD>
+
+shell2&gt; flock -s -w .007 /tmp -c echo; /bin/echo $?
+
+ディレクトリ /tmp の共有ロックを設定し、2 番目のコマンドは失敗しない。
+
+共有ロックを取得しようとすると、2 番目のコマンドは失敗する点に注意すること。
+<DT>shell&gt; flock -x local-lock-file echo 'a b c'<DD>
+
+'a b c' を echo する前に、排他ロック &quot;local-lock-file&quot; を取得する。
+<DT>(<DD>
+
+<BR>&nbsp;&nbsp;flock&nbsp;-n&nbsp;9&nbsp;||&nbsp;exit&nbsp;1
+
+
+<BR>&nbsp;&nbsp;#&nbsp;...&nbsp;ロックの元で実行するコマンド&nbsp;...
+
+) 9&gt;/var/lock/mylockfile
+
+
+
+
+
+
+
+
+
+
+
+この形式はシェルスクリプト内で使うのに便利である。
+ファイルをオープンするモードは、
+<B>flock</B>
+
+には関係しない。
+<I>&gt;</I>
+
+または
+<I>&gt;&gt;</I>
+
+を使うと、ロックファイルが存在しない場合に、
+ロックファイルを作成することができる。
+ただし、書き込み許可が必要である。
+<I>&lt;</I>
+
+を使う場合、ファイルは既に存在している必要があるが、
+読み込み許可だけが必要である。
+<DT>[ &quot;${FLOCKER}&quot; != &quot;$0&quot; ] &amp;&amp; exec env FLOCKER=&quot;$0&quot; flock -en &quot;$0&quot; &quot;$0&quot; &quot;$@&quot; || :<DD>
+
+
+
+
+
+
+
+
+
+これはシェルスクリプトの有用な定型コードである。
+これをロックしたいシェルスクリプトの先頭に置くと、
+最初の実行時に自動的にロックが行われる。
+実行されるシェルスクリプトに環境変数 $FLOCKER が設定されていない場合、
+右側の引き数で再実行する前に、
+flock を実行して排他的なブロックされないロックを取得する
+(スクリプト自体をロックファイルとして使う)。
+これは、環境変数 FLOCKER を右側の値として設定するので、再度実行されない。
+<DT>shell&gt; exec 4&lt;&gt;/var/lock/mylockfile<DD>
+
+shell&gt; flock -n 4
+
+この形式は、サブプロセスを生成せずに、ファイルをロックするのに
+便利である。
+
+
+シェルが、ファイルディスクリプター 4 で読み書き用にロックファイルをオープンし、
+そのディスクリプターをロックするために flock が使われる。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>著者</H2>
+
+
+H. Peter Anvin
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著作権</H2>
+
+Copyright &#169; 2003-2006 H. Peter Anvin.
+<BR>
+
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/flock.2.html">flock</A></B>(2)
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+flock コマンドは、util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+<DT><A HREF="#lbAI">著作権</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:35:56 GMT, January 19, 2021
+</BODY>
+</HTML>
