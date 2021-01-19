@@ -1,0 +1,107 @@
+.\" Copyright 2017 Red Hat, Inc.
+.\"
+.\" This file may be copied under the terms of the GNU Public License.
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Tue Apr  7 23:07:20 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Tue Jan 19 21:57:57 JST 2021 by Yuichi SATO
+.\"
+.TH FINCORE 1 "March 2017" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O fincore \- count pages of file contents in core
+fincore \- コアにあるファイルの内容のページ数をカウントする。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B fincore
+[options]
+.I file ...
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B fincore
+.\"O counts pages of file contents being resident in memory (in core), and reports
+.\"O the numbers.  If an error occurs during counting, then an error message is
+.\"O printed to the stderr and
+.\"O .B fincore
+.\"O continues processing the rest of files listed in a command line.
+.B fincore
+はメモリ (コア) に存在するファイルの内容のページ数をカウントし、
+ページ数を表示する。
+カウント中にエラーが起こった場合、標準エラー出力にエラーメッセージが
+表示され、
+.B fincore
+はコマンドラインにリストされた残りのファイルの処理を継続する。
+
+.\"O The default output is subject to change.  So whenever possible, you should
+.\"O avoid using default outputs in your scripts.  Always explicitly define expected
+.\"O columns by using
+.\"O .B \-\-output
+.\"O .I columns-list
+.\"O in environments where a stable output is required.
+デフォルト出力は、変更される可能性が高い。
+いつでも使えるように、スクリプト内ではデフォルト出力を使わない方がよい。
+固定の出力が必要な環境では、
+.B \-\-output
+.I columns-list
+を使って必要なカラムを常に明示的に定義するべきである。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-n , " \-\-noheadings"
+.\"O Do not print a header line in status output.
+ステータス出力のヘッダ行を表示しない。
+.TP
+.BR \-b , " \-\-bytes"
+.\"O Print the SIZE column in bytes rather than in a human-readable format.
+SIZE カラムを人が読みやすい形式ではなく、バイト単位で表示する。
+.TP
+.BR \-o , " \-\-output \fIlist\fP"
+.\"O Define output columns.  See the \fB\-\-help\fP output to get a list of the
+.\"O currently supported columns. The default list of columns may be extended if \fIlist\fP is
+.\"O specified in the format \fI+list\fP.
+カラム出力を定義する。
+現在サポートされているカラムのリストを取得するには、
+\fB\-\-help\fP を参照すること。
+\fIlist\fP を \fI+list\fP という形式で指定することで、
+カラムのデフォルトのリストを拡張できる。
+.TP
+.BR \-r , " \-\-raw"
+.\"O Produce output in raw format.  All potentially unsafe characters are hex-escaped
+.\"O (\\x<code>).
+出力を生の (raw) 形式にする。
+潜在的に安全でない文字は 16 進数でエスケープされる (\\x<code>)。
+.TP
+.BR \-J , " \-\-json"
+.\"O Use JSON output format.
+JSON 出力形式を使う。
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH AUTHORS
+.SH 著者
+.MT yamato@\:redhat.com
+Masatake YAMATO
+.ME
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR mincore (2),
+.BR getpagesize (2),
+.BR getconf (1p)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The fincore command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+fincore コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
