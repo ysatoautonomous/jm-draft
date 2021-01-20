@@ -1,0 +1,198 @@
+.\" Copyright 2002 Andre C. Mazzone (linuxdev@karagee.com)
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Fri Apr 10 15:21:27 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Wed Jan 20 21:22:26 JST 2021 by Yuichi SATO
+.\"
+.TH IPCRM "1" "July 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O ipcrm \- remove certain IPC resources
+ipcrm \- 特定の IPC リソースを削除する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B ipcrm
+[options]
+.sp
+.B ipcrm
+.RB { shm | msg | sem }
+.IR id ...
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B ipcrm
+.\"O removes System V inter-process communication (IPC) objects
+.\"O and associated data structures from the system.
+.\"O In order to delete such objects, you must be superuser, or
+.\"O the creator or owner of the object.
+.B ipcrm
+は System V プロセス間通信 (inter-process communication, IPC) オブジェクトと、
+関連するデータ構造をシステムから削除する。
+このようなオブジェクトを削除するためには、スーパーユーザーか、
+オブジェクトの作成者か、所有者でなければならない。
+.PP
+.\"O System V IPC objects are of three types: shared memory,
+.\"O message queues, and semaphores.
+System V IPC オブジェクトは 3 つのタイプがある: 共有メモリ、メッセージキュー、
+セマフォである。
+.\"O Deletion of a message queue or semaphore object is immediate
+.\"O (regardless of whether any process still holds an IPC
+.\"O identifier for the object).
+メッセージキューとセマフォオブジェクトの削除は、
+(プロセスがオブジェクトの IPC 識別子をまだ持っているかに関わらず) 即時に行われる。
+.\"O A shared memory object is only removed
+.\"O after all currently attached processes have detached
+.\"O .RB ( shmdt (2))
+.\"O the object from their virtual address space.
+共有メモリオブジェクトは、仮想アドレス空間でそのオブジェクトを
+付加　(attach) した現状の全てのプロセスが、
+.RB ( shmdt (2))
+で分離 (detach) した後でのみ削除される。
+.PP
+.\"O Two syntax styles are supported.  The old Linux historical syntax specifies
+.\"O a three-letter keyword indicating which class of object is to be deleted,
+.\"O followed by one or more IPC identifiers for objects of this type.
+2 つの書式がサポートされている。
+古い Linux の歴史的な書式では、どのクラスのオブジェクトを削除するかを示す
+3 文字のキーワードの後に、そのタイプのオブジェクトの 1 つ以上の IPC 識別子を続ける。
+.PP
+.\"O The SUS-compliant syntax allows the specification of
+.\"O zero or more objects of all three types in a single command line,
+.\"O with objects specified either by key or by identifier (see below).
+SUS 互換の書式では、1 つのコマンドラインで、
+3 つ全てのタイプの 0 個以上のオブジェクトを指定できる。
+ここでオブジェクトはキーまたは識別子で指定できる (下記を参照)。
+.\"O Both keys and identifiers may be specified in decimal, hexadecimal
+.\"O (specified with an initial '0x' or '0X'), or octal (specified with
+.\"O an initial '0').
+キーと識別子は、10 進数、(先頭に '0x' または '0X' を付けた) 16 進数、
+(先頭に '0' を付けた) 8 進数で指定できる。
+.PP
+.\"O The details of the removes are described in
+.\"O .BR shmctl (2),
+.\"O .BR msgctl (2),
+.\"O and
+.\"O .BR semctl (2).
+削除の詳細は
+.BR shmctl (2),
+.BR msgctl (2),
+.BR semctl (2)
+に記載されている。
+.\"O The identifiers and keys can be found by using
+.\"O .BR ipcs (1).
+識別子とキーは
+.BR ipcs (1)
+を使って知ることができる。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+\fB\-a\fR, \fB\-\-all\fR [\fBshm\fR] [\fBmsg\fR] [\fBsem\fR]
+.\"O Remove all resources.  When an option argument is provided, the removal is
+.\"O performed only for the specified resource types.  \fIWarning!\fR  Do not use
+.\"O .B \-a
+.\"O if you are unsure how the software using the resources might react to missing
+.\"O objects.  Some programs create these resources at startup and may not have
+.\"O any code to deal with an unexpected disappearance.
+全てのリソースを削除する。
+オプションの引き数を指定すると、指定されたリソースタイプのみが
+削除される。
+\fI警告!\fR そのリソースを使っているソフトウェアが、オブジェクトを失った際に
+どのように動作するかが分からないなら、
+.B \-a
+を使わないこと。
+.TP
+.BR \-M , " \-\-shmem\-key " \fIshmkey
+.\"O Remove the shared memory segment created with
+.\"O .I shmkey
+.\"O after the last detach is performed.
+.I shmkey
+で作成された共有メモリセグメントを、最後の分離が終わった後に
+削除する。
+.TP
+.BR \-m , " \-\-shmem\-id " \fIshmid
+.\"O Remove the shared memory segment identified by
+.\"O .I shmid
+.\"O after the last detach is performed.
+.I shmid
+で識別される共有メモリセグメントを、最後の分離が終わった後に
+削除する。
+.TP
+.BR \-Q , " \-\-queue\-key " \fImsgkey
+.\"O Remove the message queue created with
+.\"O .IR msgkey .
+.I msgkey
+で作成されたメッセージキューを削除する。
+.TP
+.BR \-q , " \-\-queue\-id " \fImsgid
+.\"O Remove the message queue identified by
+.\"O .IR msgid .
+.I msgid
+で識別されるメッセージキューを削除する。
+.TP
+.BR \-S , " \-\-semaphore\-key " \fIsemkey
+.\"O Remove the semaphore created with
+.\"O .IR semkey .
+.I semkey
+で作成されたセマフォを削除する。
+.TP
+.BR \-s , " \-\-semaphore\-id " \fIsemid
+.\"O Remove the semaphore identified by
+.\"O .IR semid .
+.I semid
+で識別されるセマフォを削除する。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH NOTES
+.SH 注意
+.\"O In its first Linux implementation, \fBipcrm\fR used the deprecated syntax
+.\"O shown in the second line of the
+.\"O .BR SYNOPSIS .
+最初の Linux での実装では、\fBipcrm\fR は
+.B 書式
+の 2 行目に示した推奨されない書式を使っていた。
+.\"O Functionality present in other *nix implementations of \fBipcrm\fR has since
+.\"O been added, namely the ability to delete resources by key (not just
+.\"O identifier), and to respect the same command-line syntax.  For backward
+.\"O compatibility the previous syntax is still supported.
+それから、他の *nix での \fBipcrm\fR の実装に存在する機能が追加された。
+つまり、(単に識別子だけでなく) キーを指定してリソースを削除する機能と、同じコマンドライン書式に
+従う機能が追加された。
+後方互換のため、以前の書式もまだサポートされている。
+.\"O .\" .SH AUTHORS
+.\" .SH 著者
+.\" Andre C. Mazzone (linuxdev@karagee.com)
+.\" .br
+.\" Krishna Balasubramanian (balasub@cis.ohio-state.edu)
+.\"O .SH SEE ALSO
+.SH 関連項目
+.nh
+.BR ipcmk (1),
+.BR ipcs (1),
+.BR msgctl (2),
+.BR msgget (2),
+.BR semctl (2),
+.BR semget (2),
+.BR shmctl (2),
+.BR shmdt (2),
+.BR shmget (2),
+.BR ftok (3),
+.BR sysvipc (7)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The ipcrm command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+ipcrm コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
