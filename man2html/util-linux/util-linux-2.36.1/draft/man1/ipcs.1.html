@@ -1,0 +1,322 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of IPCS</TITLE>
+</HEAD><BODY>
+<H1>IPCS</H1>
+Section: User Commands (1)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+ipcs - IPC 機能 (facilities) の情報を表示する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>ipcs</B>
+
+[options]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>ipcs</B>
+
+は、System V プロセス間通信 (inter-process communication) 機能の
+情報を表示する。
+デフォルトでは、3 つのリソース全ての情報を表示する:
+共有メモリセグメント、メッセージキュー、セマフォ配列。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-i</B>, <B>--id</B> <I>id</I><DD>
+
+
+<I>id</I>
+
+で識別される 1 つのリソースについて、完全な詳細を表示する。
+
+
+
+
+このオプションは、以下の 3 つのリソースオプションのいずれか 1 つと組み合わせる必要がある:
+<B>-m</B>,
+
+<B>-q</B>,
+
+<B>-s</B>.
+
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H3>リソースオプション</H3>
+
+<DL COMPACT>
+<DT><B>-m</B>, <B>--shmems</B><DD>
+
+アクティブな共有メモリセグメントの情報を書き出す。
+<DT><B>-q</B>, <B>--queues</B><DD>
+
+アクティブなメッセージキューの情報を書き出す。
+<DT><B>-s</B>, <B>--semaphores</B><DD>
+
+アクティブなセマフォセットの情報を書き出す。
+<DT><B>-a</B>, <B>--all</B><DD>
+
+3 つリソース全ての情報を書き出す (デフォルト)。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H3>出力フォーマット</H3>
+
+
+これらのオプションは、最後に指定された 1 つのみが効果を持つ。
+<DL COMPACT>
+<DT><B>-c</B>, <B>--creator</B><DD>
+
+作成者と所有者を表示する。
+<DT><B>-l</B>, <B>--limits</B><DD>
+
+リソースの制限を表示する。
+<DT><B>-p</B>, <B>--pid</B><DD>
+
+作成者と最後に操作したユーザの PID を表示する。
+<DT><B>-t</B>, <B>--time</B><DD>
+
+
+
+
+
+
+
+
+
+
+
+
+時刻情報を書き出す。
+全ての機能についてのアクセス権限の変更の操作時刻、
+メッセージキューについての最後の
+<B><A HREF="../man2/msgsnd.2.html">msgsnd</A></B>(2)
+
+と
+<B><A HREF="../man2/msgrcv.2.html">msgrcv</A></B>(2)
+
+操作の時刻、
+共有メモリについての最後の
+<B><A HREF="../man2/shmat.2.html">shmat</A></B>(2)
+
+と
+<B><A HREF="../man2/shmdt.2.html">shmdt</A></B>(2)
+
+操作の時刻、
+セマフォについての最後の
+<B><A HREF="../man2/semop.2.html">semop</A></B>(2)
+
+操作の時刻である。
+<DT><B>-u</B>, <B>--summary</B><DD>
+
+状態のサマリを表示する。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H3>表示</H3>
+
+
+これらのオプションは <B>-l</B> (<B>--limits</B>) オプションにのみ効果がある。
+<DL COMPACT>
+<DT><B>-b</B>, <B>--bytes</B><DD>
+
+サイズをバイト単位で表示する。
+<DT><B>--human</B>
+
+<DD>
+
+サイズを人が読みやすい形式で表示する。
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>準拠</H2>
+
+
+Linux ipcs ユーティリティは、POSIX ipcs ユーティリティと完全互換ではない。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Linux 版は、POSIX の
+<B>-a</B>,
+
+<B>-b</B>,
+
+<B>-o</B>
+
+オプションをサポートしないが、POSIX で定義されていない
+<B>-l</B>,
+
+<B>-u</B>
+
+オプションをサポートする。
+移植性を考えたアプリケーションでは、
+<B>-a</B>,
+
+<B>-b</B>,
+
+<B>-o</B>,
+
+<B>-l</B>,
+
+<B>-u</B>
+
+オプションを使うべきではない。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+現在の
+<B>ipcs</B>
+
+の実装では、利用可能な IPC リソースの情報を、
+<I>/proc/sysvipc</I>
+
+のファイルを解析して取得している。
+
+
+
+
+
+
+
+util-linux バージョン v2.23 以前では、
+<B><A HREF="../man2/msgctl.2.html">msgctl</A></B>(2),
+
+<B><A HREF="../man2/semctl.2.html">semctl</A></B>(2),
+
+<B><A HREF="../man2/shmctl.2.html">shmctl</A></B>(2)
+
+の
+<B>IPC_STAT</B>
+
+コマンドを使った別の仕組みが使われていた。
+
+
+
+以降の util-linux のバージョンでも、
+<I>/proc</I>
+
+が利用可能でない場合、この仕組みが使われる。
+
+
+
+
+<B>IPC_STAT</B>
+
+を使う仕組みの制限は、ユーザーが読み取り権限を持つ IPC リソースについての情報しか
+取得できないことである。
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>著者</H2>
+
+
+Krishna Balasubramanian
+
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/ipcmk.1.html">ipcmk</A></B>(1),
+
+<B><A HREF="../man1/ipcrm.1.html">ipcrm</A></B>(1),
+
+<B><A HREF="../man2/msgrcv.2.html">msgrcv</A></B>(2),
+
+<B><A HREF="../man2/msgsnd.2.html">msgsnd</A></B>(2),
+
+<B><A HREF="../man2/semget.2.html">semget</A></B>(2),
+
+<B><A HREF="../man2/semop.2.html">semop</A></B>(2),
+
+<B><A HREF="../man2/shmat.2.html">shmat</A></B>(2),
+
+<B><A HREF="../man2/shmdt.2.html">shmdt</A></B>(2),
+
+<B><A HREF="../man2/shmget.2.html">shmget</A></B>(2),
+
+<B><A HREF="../man7/sysvipc.7.html">sysvipc</A></B>(7)
+
+
+<A NAME="lbAM">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+ipcs コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DL>
+<DT><A HREF="#lbAF">リソースオプション</A><DD>
+<DT><A HREF="#lbAG">出力フォーマット</A><DD>
+<DT><A HREF="#lbAH">表示</A><DD>
+</DL>
+<DT><A HREF="#lbAI">準拠</A><DD>
+<DT><A HREF="#lbAJ">注意</A><DD>
+<DT><A HREF="#lbAK">著者</A><DD>
+<DT><A HREF="#lbAL">関連項目</A><DD>
+<DT><A HREF="#lbAM">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 12:48:46 GMT, January 20, 2021
+</BODY>
+</HTML>
