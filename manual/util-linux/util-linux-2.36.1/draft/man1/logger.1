@@ -1,0 +1,619 @@
+.\" Copyright (c) 1983, 1990, 1993
+.\"	The Regents of the University of California.  All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by the University of
+.\"	California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"	@(#)logger.1	8.1 (Berkeley) 6/6/93
+.\"
+.\" Translated Sat Aug 28 JST 1993 by NetBSD jman proj. <jman@spa.is.uec.ac.jp>
+.\" Updated Sun Jun 18 JST 2000 by Kentaro Shirakata <argrath@ub32.org>
+.\" Updated Tue Jan  9 13:53:03 JST 2001
+.\"      by Yuichi SATO <sato@complex.eng.hokudai.ac.jp>
+.\" Updated Sat Nov 17 15:05:36 JST 2001
+.\"      by Yuichi SATO <ysato@h4.dion.ne.jp>
+.\" Updated & Modified Sun Mar  2 16:39:57 JST 2003 by Yuichi SATO
+.\" Updated & Modified Sun Jul 28 14:58:25 JST 2019
+.\"      by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Wed Jan 20 23:23:28 JST 2021 by Yuichi SATO
+.\"
+.TH LOGGER "1" "November 2015" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O logger \- enter messages into the system log
+logger \- システムログにメッセージを記録する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B logger
+[options]
+.RI [ message ]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B logger
+.\"O makes entries in the system log.
+.B logger
+はシステムログにエントリを作成する。
+.sp
+.\"O When the optional \fImessage\fR argument is present, it is written
+.\"O to the log.  If it is not present, and the \fB\-f\fR option is not
+.\"O given either, then standard input is logged.
+オプションの \fImessage\fR 引き数が指定されると、
+ログに書き込まれる。
+\fImessage\fR 引き数が指定されない場合、
+かつ \fB\-f\fR オプションも指定されない場合、
+標準入力がログに書き込まれる。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-d , " \-\-udp"
+.\"O Use datagrams (UDP) only.  By default the connection is tried to the
+.\"O syslog port defined in /etc/services, which is often 514 .
+データグラム (UDP) のみを使う。
+デフォルトでは、接続は /etc/services に定義された
+syslog ポート (多くの場合 514) に行われる。
+.sp
+.\"O See also \fB\-\-server\fR and \fB\-\-socket\fR to specify where to connect.
+どこに接続するかの指定は、\fB\-\-server\fR と \fB\-\-socket\fR も参照すること。
+.TP
+.BR \-e , " \-\-skip-empty"
+.\"O Ignore empty lines when processing files.  An empty line
+.\"O is defined to be a line without any characters.  Thus a line consisting
+.\"O only of whitespace is NOT considered empty.
+ファイルを処理する際に空行を無視する。
+空行は何も文字がない行と定義される。
+よって、空白のみを含む行は空とは「判断されない」。
+.\"O Note that when the \fB\-\-prio\-prefix\fR option is specified, the priority
+.\"O is not part of the line.  Thus an empty line in this mode is a line that does
+.\"O not have any characters after the priority prefix (e.g., \fB<13>\fR).
+\fB\-\-prio\-prefix\fR オプションが指定された場合、
+優先度は行の一部としては判断されない点に注意すること。
+よって、このモードでの空行は、
+優先度のプレフィックス (つまり \fB<13>\fR) の後の、
+何も文字を含まない行である。
+.TP
+.BR \-f , " \-\-file " \fIfile
+.\"O Log the contents of the specified \fIfile\fR.
+.\"O This option cannot be combined with a command-line message.
+指定した \fIfile\fR の内容を記録する。
+このオプションはコマンドラインメッセージと組み合わせて
+使うことはできない。
+.TP
+.B \-i
+.\"O Log the PID of the logger process with each line.
+各行に logger プロセスの PID を記録する。
+.TP
+.BR "\-\-id" [ =\fIid ]
+.\"O Log the PID of the logger process with each line.  When the optional
+.\"O argument \fIid\fR is specified, then it is used instead of the logger
+.\"O command's PID.  The use of \fB\-\-id=$$\fR
+.\"O (PPID) is recommended in scripts that send several messages.
+各行に logger プロセスの PID を記録する。
+オプションの引き数 \fIid\fR が指定された場合、
+logger コマンドの PID の代わりに使われる。
+メッセージを送るスクリプトでは、
+\fB\-\-id=$$\fR (PPID) を使うことが推奨される。
+
+.\"O Note that the system logging infrastructure (for example \fBsystemd\fR when
+.\"O listening on /dev/log) may follow local socket credentials to overwrite the
+.\"O PID specified in the message.
+システムロギングの基盤 (例えば \fBsystemd\fR が /dev/log をリッスンする場合) は、
+メッセージに指定された PID をローカルソケットのクレデンシャルで
+上書きするようにしなければならない点に注意すること。
+.\"O .BR logger (1)
+.\"O is able to set those socket credentials to the given \fIid\fR, but only if you
+.\"O have root permissions and a process with the specified PID exists, otherwise
+.\"O the socket credentials are not modified and the problem is silently ignored.
+root の権限があり、指定された PID のプロセスが存在する場合にのみ、
+.BR logger (1)
+は指定された \fIid\fR でソケットのクレデンシャルを設定できる。
+そうでない場合、ソケットのクレデンシャルは修正されず、
+暗黙裡に無視される。
+.TP
+.BR \-\-journald [ =\fIfile ]
+.\"O Write a systemd journal entry.  The entry is read from the given \fIfile\fR,
+.\"O when specified, otherwise from standard input.
+systemd ジャーナルエントリを書き込む。
+エントリは \fIfile\fR が指定された場合は、ファイルから読み込まれる。
+指定されない場合は、標準入力から読み込まれる。
+.\"O Each line must begin with a field that is accepted by journald; see
+.\"O .BR systemd.journal-fields (7)
+.\"O for details.  The use of a MESSAGE_ID field is generally a good idea, as it
+.\"O makes finding entries easy.  Examples:
+各行は journald が受け付けるフィールドで始める必要がある。
+詳細は
+.BR systemd.journal-fields (7)
+を参照すること。
+MESSAGE_ID フィールドを使うのが一般にはよい考えである。
+これによりエントリを見つけやすくなる。
+例:
+.IP
+.nf
+\fB    logger \-\-journald <<end
+\fB    MESSAGE_ID=67feb6ffbaf24c5cbec13c008dd72309
+\fB    MESSAGE=The dogs bark, but the caravan goes on.
+\fB    DOGS=bark
+\fB    CARAVAN=goes on
+\fB    end
+.IP
+\fB    logger \-\-journald=entry.txt
+.fi
+.IP
+.\"O Notice that
+.\"O .B \-\-journald
+.\"O will ignore values of other options, such as priority.  If priority is
+.\"O needed it must be within input, and use PRIORITY field.  The simple
+.\"O execution of
+.\"O .B journalctl
+.\"O will display MESSAGE field.  Use
+.\"O .B journalctl \-\-output json-pretty
+.\"O to see rest of the fields.
+.B \-\-journald
+は優先度のような他のオプションを無視する点に注意すること。
+優先度が必要な場合、入力に含める必要があり、
+PRIORITY フィールドを使うこと。
+.B journalctl
+を単純に実行すると、MESSAGE フィールドを表示する。
+残りのフィールドを見るには、
+.B journalctl \-\-output json-pretty
+を使うこと。
+.sp
+.\"O To include newlines in MESSAGE, specify MESSAGE several times.  This is
+.\"O handled as a special case, other fields will be stored as an array in
+.\"O the journal if they appear multiple times.
+MESSAGE に改行を入れるためには、MESSAGE を複数回指定すること。
+これは特殊なケースとして扱われ、他のフィールドが複数回指定されると、
+ジャーナル内の配列として格納される。
+.TP
+.BI \-\-msgid " msgid"
+.\"O Sets the RFC5424 MSGID field.  Note that the space character is not permitted
+.\"O inside of \fImsgid\fR.  This option is only used if \fB\-\-rfc5424\fR is
+.\"O specified as well; otherwise, it is silently ignored.
+RFC5424 MSGID フィールドを設定する。
+\fImsgid\fR 内に特殊文字は許可されていない点に注意すること。
+このオプションは、\fB\-\-rfc5424\fR も指定された場合にのみ使われる。
+指定されない場合は、暗黙裡に無視される。
+.TP
+.BR \-n , " \-\-server " \fIserver
+.\"O Write to the specified remote syslog \fIserver\fR
+.\"O instead of to the system log socket.  Unless
+.\"O \fB\-\-udp\fR or \fB\-\-tcp\fR
+.\"O is specified, \fBlogger\fR will first try to use UDP,
+.\"O but if this fails a TCP connection is attempted.
+システムログソケットではなく、
+指定したリモートの syslog \fIserver\fR に書き込む。
+\fB\-\-udp\fR または \fB\-\-tcp\fR が
+指定されない場合、\fBlogger\fR は最初に UDP を使おうとする。
+UDP が失敗した場合、TCP 接続を試みる。
+.TP
+.B \-\-no\-act
+.\"O Causes everything to be done except for writing the log message to the system
+.\"O log, and removing the connection or the journal.  This option can be used
+.\"O together with \fB\-\-stderr\fR for testing purposes.
+システムログにログメッセージを書き込み、接続またはジャーナルを
+削除する以外は、すべてを実行する。
+このオプションは、テストの目的で、\fB\-\-stderr\fR とともに使うことができる。
+.TP
+.B \-\-octet\-count
+.\"O Use the RFC 6587 octet counting framing method for sending messages.
+.\"O When this option is not used, the default is no framing on UDP, and
+.\"O RFC6587 non-transparent framing (also known as octet stuffing) on TCP.
+メッセージの送信に RFC 6587 オクテットカウンティングフレーミングの方法を使う。
+このオプションを使わない場合、デフォルトでは UDP ではフレーミングなし、
+TCP では RFC6587 非トランスペアレントフレーミング
+(オクテットスタッフィング (stuffing) とも呼ばれる) を使う。 
+.TP
+.BR \-P , " \-\-port " \fIport
+.\"O Use the specified \fIport\fR.  When this option is not specified, the
+.\"O port defaults to syslog for udp and to syslog-conn for tcp connections.
+指定した \fIport\fR を使う。
+このオプションを指定しない場合、ポートのデフォルトは、
+udp では syslog、tcp 接続では syslog-conn となる。
+.TP
+.BR \-p , " \-\-priority " \fIpriority
+.\"O Enter the message into the log with the specified \fIpriority\fR.
+.\"O The priority may be specified numerically or as a
+.\"O .IR facility . level
+.\"O pair.
+メッセージを指定した優先度 (\fIpriority\fR) で登録する。
+湯鮮度は数値もしくは
+.IR 機能分類 . 重要度
+の組で指定する。
+.\"O For example, \fB\-p local3.info\fR
+.\"O logs the message as informational in the local3 facility.
+.\"O The default is \fBuser.notice\fR.
+例えば、\fB\-p local3.info\fR は、重要度 informational
+機能分類 local3 としてメッセージを記録する。
+デフォルトは \fBuser.notice\fR である。
+.TP
+.B \-\-prio\-prefix
+.\"O Look for a syslog prefix on every line read from standard input.
+.\"O This prefix is a decimal number within angle brackets that encodes both
+.\"O the facility and the level.  The number is constructed by multiplying the
+.\"O facility by 8 and then adding the level.  For example, \fBlocal0.info\fR,
+.\"O meaning facility=16 and level=6, becomes \fB<134>\fR.
+標準入力を読み込むときに各行で syslog プレフィックスを探す。
+プレフィックスは機能分類と重要度をエンコードした数値を山括弧の
+中に書く。
+数値は、機能分類に 8 を掛けて、重要度を足して作る。
+例えば、\fBlocal0.info\fR は、機能分類=16 重要度=6 なので、\fB<134>\fR となる。
+.sp
+.\"O If the prefix contains no facility, the facility defaults to what is
+.\"O specified by the \fB\-p\fR option.  Similarly, if no prefix is provided,
+.\"O the line is logged using the \fIpriority\fR given with \fB\-p\fR.
+プレフィックスに機能分類が含まれない場合、
+機能分類は \fB\-p\fR オプションで指定した値が使われる。
+同様に、プレフィックスが指定されない場合、
+その行は \fB\-p\fR オプションで指定された重要度 \fIpriority\fR で記録される。
+.sp
+.\"O This option doesn't affect a command-line message.
+このオプションはコマンドラインメッセージには影響しない。
+.TP
+.B \-\-rfc3164
+.\"O Use the RFC 3164 BSD syslog protocol to submit messages to a remote server.
+リモートサーバーにメッセージを送信するために、RFC 3164 BSD syslog プロトコルを使う。
+.TP
+.BR \-\-rfc5424 [ =\fIwithout ]
+.\"O Use the RFC 5424 syslog protocol to submit messages to a remote server.
+.\"O The optional \fIwithout\fR argument can be a comma-separated list of
+.\"O the following values: \fBnotq\fR, \fBnotime\fR, \fBnohost\fR.
+リモートサーバーにメッセージを送信するために、RFC 5424 syslog プロトコルを使う。
+オプションの \fIwithout\fR 引き数は、以下の値のカンマ区切りのリストである:
+\fBnotq\fR, \fBnotime\fR, \fBnohost\fR.
+
+.\"O The \fBnotq\fR value suppresses the time-quality structured data
+.\"O from the submitted message.  The time-quality information shows whether
+.\"O the local clock was synchronized plus the maximum number of microseconds
+.\"O the timestamp might be off.  The time quality is also automatically
+.\"O suppressed when \fB\-\-sd\-id timeQuality\fR is specified.
+値 \fBnotq\fR を指定すると、送信されるメッセージから
+時間品質 (time-quality) 構造データを抑止する。
+時間品質情報は、ローカルクロックが同期しているかと、
+タイムスタンプのマイクロ秒の最大値がオフにされているかを表す。
+時間品質は、\fB\-\-sd\-id timeQuality\fR が指定されていると、
+自動的に抑止される。
+
+.\"O The \fBnotime\fR value (which implies \fBnotq\fR)
+.\"O suppresses the complete sender timestamp that is in
+.\"O ISO-8601 format, including microseconds and timezone.
+値 \fBnotime\fR を指定すると (\fBnotq\fR が暗黙裡に指定され)、
+マイクロ秒とタイムゾーンを含む ISO-8601 形式での
+完了時の送信者タイムスタンプ (complete sender timestamp) を抑止する。
+
+.\"O The \fBnohost\fR value suppresses
+.\"O .BR gethostname (2)
+.\"O information from the message header.
+値 \fBnohost\fR を指定すると、
+.BR gethostname (2)
+情報をメッセージヘッダから抑止する。
+.IP
+.\"O The RFC 5424 protocol has been the default for
+.\"O .B logger
+.\"O since version 2.26.
+RFC 5424 プロトコルはバージョン 2.26 以降で
+.B logger
+のデフォルトになった。
+.TP
+.BR \-s , " \-\-stderr"
+.\"O Output the message to standard error as well as to the system log.
+システムログに記録したメッセージを標準エラー出力にも出力する。
+.TP
+.BR "\-\-sd\-id \fIname" [ @\fIdigits ]
+.\"O Specifies a structured data element ID for an RFC 5424 message header.  The
+.\"O option has to be used before \fB\-\-sd\-param\fR to introduce a new element.
+RFC 5424 メッセージヘッダの構造データ要素 ID を指定する。
+このオプションは、\fB\-\-sd\-param\fR で新しい要素を導入する前に指定する必要がある。
+.\"O The number of structured data elements is unlimited.  The ID (\fIname\fR plus
+.\"O possibly \fB@\fIdigits\fR) is case-sensitive and uniquely identifies the type
+.\"O and purpose of the element.  The same ID must not exist more than once in
+.\"O a message.  The \fB@\fIdigits\fR part is required for user-defined
+.\"O non-standardized IDs.
+構造データ要素の数は限定されていない。
+ID (\fIname\fR とオプションの \fB@\fIdigits\fR) は、
+大文字小文字が関係あり、要素のタイプと目的を一意に識別する。
+同じ ID はメッセージに 1 回しか存在できない。
+\fB@\fIdigits\fR パートは、ユーザ定義の標準ではない ID で必要とされる。
+
+.\"O \fBlogger\fR currently generates the \fBtimeQuality\fR standardized element
+.\"O only.  RFC 5424 also describes the elements \fBorigin\fR (with parameters
+.\"O ip, enterpriseId, software and swVersion) and \fBmeta\fR (with parameters
+.\"O sequenceId, sysUpTime and language).
+.\"O These element IDs may be specified without the \fB@\fIdigits\fR suffix.
+\fBlogger\fR は現在のところ \fBtimeQuality\fR 標準要素のみを生成する。
+RFC 5424 には要素 \fBorigin\fR
+(ip, enterpriseId, software, swVersion パラメータ付き) と
+\fBmeta\fR (sequenceId, sysUpTime, language パラメータ付き) についても
+記述されている。
+これらの要素 ID は \fB@\fIdigits\fR 拡張子なしで指定できる。
+
+.TP
+.BR "\-\-sd\-param " \fIname ="\fIvalue\fB"
+.\"O Specifies a structured data element parameter, a name and value pair.
+.\"O The option has to be used after \fB\-\-sd\-id\fR and may be specified more
+.\"O than once for the same element.  Note that the quotation marks around
+.\"O \fIvalue\fR are required and must be escaped on the command line.
+構造データ要素のパラメータ (名前と値の組) を指定する。
+このオプションは \fB\-\-sd\-id\fR の後に使わなければならず、
+同じ要素に対して 1 回以上指定できる。
+\fIvalue\fR を囲むクォーテーションが必要で、
+かつコマンドラインをエスケープする必要がある点に注意すること。
+.IP
+.nf
+\fB    logger \-\-rfc5424 \-\-sd-id zoo@123               \\
+\fB                     \-\-sd-param tiger=\\"hungry\\"   \\
+\fB                     \-\-sd-param zebra=\\"running\\"  \\
+\fB                     \-\-sd-id manager@123           \\
+\fB                     \-\-sd-param onMeeting=\\"yes\\"  \\
+\fB                     "this is message"
+.fi
+.IP
+.\"O produces:
+により、以下が生成される:
+.IP
+.\".nf
+.\" this long line gets cut of in the output of "troff", and wraps
+.\" in "nroff"
+\fB  <13>1 2015-10-01T14:07:59.168662+02:00 ws kzak - - [timeQuality tzKnown="1" isSynced="1" syncAccuracy="218616"][zoo@123 tiger="hungry" zebra="running"][manager@123 onMeeting="yes"] this is message
+.\".fi
+.TP
+.BR \-S , " \-\-size " \fIsize
+.\"O Sets the maximum permitted message size to \fIsize\fR.  The default
+.\"O is 1KiB characters, which is the limit traditionally used and specified
+.\"O in RFC 3164.  With RFC 5424, this limit has become flexible.  A good assumption
+.\"O is that RFC 5424 receivers can at least process 4KiB messages.
+メッセージの最大許可サイズを \fIsize\fR にする。
+デフォルトは 1KiB 文字である。これは、昔から制限として使われており、
+RFC 3164 で指定されている。
+RFC 5424 で制限は融通が効くようになった。
+RFC 5424 では少なくとも 4KiB のメッセージを受信できるので、
+これを仮定に置いておくのがよい。
+
+.\"O Most receivers accept messages larger than 1KiB over any type of syslog
+.\"O protocol.  As such, the \fB\-\-size\fR option affects logger in
+.\"O all cases (not only when \fB\-\-rfc5424\fR was used).
+多くの受信プログラムは、syslog プロトコルのタイプによらず、
+1KiB 以上のメッセージを受け付ける。
+(\fB\-\-rfc5424\fR が指定された時に限らず)
+\fB\-\-size\fR オプションは logger に影響を与える。
+
+.\"O Note: the message-size limit limits the overall message size, including
+.\"O the syslog header.  Header sizes vary depending on the selected options and
+.\"O the hostname length.  As a rule of thumb, headers are usually not longer than
+.\"O 50 to 80 characters.  When selecting a maximum message size, it is important
+.\"O to ensure that the receiver supports the max size as well, otherwise messages
+.\"O may become truncated.  Again, as a rule of thumb two to four KiB message size
+.\"O should generally be OK, whereas anything larger should be verified to work.
+注意: メッセージサイズの制限は、syslog ヘッダーを含むメッセージ全体の制限である。
+ヘッダーサイズは選択したオプションとホスト名の長さによって変わる。
+経験則として、ヘッダーは 50 から 80 文字以下である。
+最大メッセージサイズを選択する場合、受信プログラムが最大サイズを
+サポートしているかを確認するのが重要である。
+そうしないと、メッセージが切り詰められる。
+また、経験則であるが、2 から 4 KiB のメッセージサイズが一般には問題ないが、
+大きなメッセージについては動作するかを確かめた方がよい。
+.TP
+.BR \-\-socket\-errors [ =\fImode ]
+.\"O Print errors about Unix socket connections.  The \fImode\fR can be a value of
+.\"O \fBoff\fR, \fBon\fR, or \fBauto\fR.  When the mode is auto logger will detect
+.\"O if the init process is systemd, and if so assumption is made /dev/log can be
+.\"O used early at boot.  Other init systems lack of /dev/log will not cause errors
+.\"O that is identical with messaging using
+.\"O .BR openlog (3)
+.\"O system call.  The
+.\"O .BR logger (1)
+.\"O before version 2.26 used openlog, and hence was unable to detected loss of
+.\"O messages sent to Unix sockets.
+Unix ソケット接続のエラーを表示する。
+\fImode\fR の値は、\fBoff\fR, \fBon\fR, \fBauto\fR のいずれかである。
+mode が auto の場合、logger は init プロセスが systemd であるかを検知し、
+もしそうであれば、ブートの早い段階で /dev/log が使えるという仮定をする。
+/dev/log が存在しない他の init システムは、
+.BR openlog (3)
+システムコールを使って同様のメッセージングをするので、
+エラーにならない。
+openlog を使うバージョン 2.26 以前の
+.BR logger (1)
+は、Unix ソケットを使って送ったメッセージの消失を検知できない。
+.IP
+.\"O The default mode is \fBauto\fR.  When errors are not enabled lost messages are
+.\"O not communicated and will result to successful exit status of
+.\"O .BR logger (1)
+.\"O invocation.
+デフォルトの mode は \fBauto\fR である。
+エラー表示が有効になっていない場合、消失したメッセージは通信されず、
+.BR logger (1)
+の起動で成功した返り値が返される。
+.TP
+.BR \-T , " \-\-tcp"
+.\"O Use stream (TCP) only.  By default the connection is tried to the
+.\"O .I syslog-conn
+.\"O port defined in /etc/services, which is often
+.\"O .IR 601 .
+ストリーム (TCP) のみを使う。
+デフォルトでは、接続は /etc/services に定義された
+.I syslog-conn
+ポート (多くの場合
+.IR 601 )
+に行われる。
+.sp
+.\"O See also \fB\-\-server\fR and \fB\-\-socket\fR to specify where to connect.
+どこに接続するかの指定は、\fB\-\-server\fR と \fB\-\-socket\fR も参照すること。
+.TP
+.BR \-t , " \-\-tag " \fItag
+.\"O Mark every line to be logged with the specified
+.\"O .IR tag .
+ログを出力する各行に、指定した
+.I tag
+を共に記録する。
+.\"O The default tag is the name of the user logged in on the terminal (or a user
+.\"O name based on effective user ID).
+デフォルトのタグは、端末にログインしているユーザの名前
+(または、実効ユーザ ID に基づくユーザ名) である。
+.TP
+.BR \-u , " \-\-socket " \fIsocket
+.\"O Write to the specified
+.\"O .I socket
+.\"O instead of to the system log socket.
+システムログのソケットではなく、指定した
+.I socket
+に書き込む。
+.TP
+.B \-\-
+.\"O End the argument list.  This allows the \fImessage\fR
+.\"O to start with a hyphen (\-).
+引き数の終わり。
+\fImessage\fR をハイフン (\-) で始められるようにする。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH EXIT STATUS
+.SH 返り値
+.\"O The
+.\"O .B logger
+.\"O utility exits 0 on success, and >0 if an error occurs.
+.B logger
+ユーティリティは成功した場合 0 を返し、エラーの場合は 0 より大きい値を返す。
+.\"O .SH FACILITIES AND LEVELS
+.SH 機能分類と重要度
+.\"O Valid facility names are:
+有効な機能分類は以下のとおり:
+.IP
+.nr WI \n(.lu-\n(.iu-\w'\fBauthpriv\fR'u-3n
+.TS
+tab(:);
+l lw(\n(WIu).
+\fBauth
+.\"O \fBauthpriv\fR:for security information of a sensitive nature
+\fBauthpriv\fR:機密に関わる種類のセキュリティ情報
+\fBcron
+\fBdaemon
+\fBftp
+.\"O \fBkern\fR:T{
+.\"O cannot be generated from userspace process, automatically converted to \fBuser
+.\"O T}
+\fBkern\fR:T{
+ユーザ空間プロセスでは生成されない。自動的に \fBuser\fR に変換される。
+T}
+\fBlpr
+\fBmail
+\fBnews
+\fBsyslog
+\fBuser
+\fBuucp
+\fBlocal0
+.\"O   to:
+  〜:
+\fBlocal7
+.\"O \fBsecurity\fR:deprecated synonym for \fBauth
+\fBsecurity\fR:\fBauth\fR の同義語。使わない方が良い。
+.TE
+.PP
+.\"O Valid level names are:
+有効な重要度は以下のとおり:
+.IP
+.TS
+tab(:);
+l l.
+\fBemerg
+\fBalert
+\fBcrit
+\fBerr
+\fBwarning
+\fBnotice
+\fBinfo
+\fBdebug
+.\"O \fBpanic\fR:deprecated synonym for \fBemerg
+\fBpanic\fR:\fBemerg\fR の同義語。使わない方が良い。
+.\"O \fBerror\fR:deprecated synonym for \fBerr
+\fBerror\fR:\fBerr\fR の同義語。使わない方が良い。
+.\"O \fBwarn\fR:deprecated synonym for \fBwarning
+\fBwarn\fR:\fBwarning\fR の同義語。使わない方が良い。
+.TE
+.PP
+.\"O For the priority order and intended purposes of these facilities and levels, see
+.\"O .BR syslog (3).
+これらの機能分類と重要度の優先順位と意図する目的については、
+.BR syslog (3)
+を参照すること。
+.\"O .SH CONFORMING TO
+.SH 準拠
+.\"O The
+.\"O .B logger
+.\"O command is expected to be IEEE Std 1003.2 ("POSIX.2") compatible.
+.B logger
+コマンドは IEEE Std 1003.2 ("POSIX.2") 互換のはずである。
+.\"O .SH EXAMPLES
+.SH 例
+.B logger System rebooted
+.br
+.B logger \-p local0.notice \-t HOSTIDM \-f /dev/idmc
+.br
+.B logger \-n loghost.example.com System rebooted
+.\"O .SH AUTHORS
+.SH 著者
+.\"O The
+.\"O .B logger
+.\"O command
+.\"O was originally written by University of California in 1983-1993 and later
+.\"O rewritten by
+.B logger
+コマンドは元々カリフォルニア大学で 1983-1993 年に書かれた。
+その後
+.MT kzak@redhat.com
+Karel Zak
+.ME ,
+.MT rgerhards@adiscon.com
+Rainer Gerhards
+.\"O .ME
+.\"O and
+.ME ,
+.MT kerolasa@iki.fi
+Sami Kerola
+.\"O .ME .
+.ME
+によって書き直された。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR journalctl (1),
+.BR syslog (3),
+.BR systemd.journal-fields (7)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The logger command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+logger コマンドは、util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
