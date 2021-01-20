@@ -1,0 +1,145 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of IPCMK</TITLE>
+</HEAD><BODY>
+<H1>IPCMK</H1>
+Section: User Commands (1)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+ipcmk - さまざまな IPC リソースを作成する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>ipcmk</B>
+
+[options]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>ipcmk</B>
+
+により、System V プロセス間通信 (inter-process communication, IPC) オブジェクト:
+共有メモリセグメント、メッセージキュー、セマフォ配列を作成できる。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT>
+<DD>
+リソースは下記のオプションで指定できる。
+<DT><B>-M</B>,<B> --shmem </B><I>size</I>
+
+<DD>
+
+
+
+<I>size</I>
+
+バイトの共有メモリセグメントを作成する。
+
+
+<I>size</I> 引き数は、倍数のサフィックス KiB (=1024), MiB (=1024*1024), GiB
+などを付けることをできる (&quot;iB&quot; はオプションであり、&quot;K&quot; は &quot;KiB&quot; と同じ意味である)。
+また、サフィックス KB (=1000), MB (=1000*1000), GB などを付けることもできる。
+<DT><B>-Q</B>,<B> --queue</B>
+
+<DD>
+
+メッセージキューを作成する。
+<DT><B>-S</B>,<B> --semaphore </B><I>number</I>
+
+<DD>
+
+
+
+<I>number</I>
+
+個の要素のセマフォ配列を作成する。
+</DL>
+<P>
+
+
+他のオプションは以下の通り:
+<DL COMPACT>
+<DT><B>-p</B>,<B> --mode </B><I>mode</I>
+
+<DD>
+
+リソースのアクセス権限。デフォルトは 0644 である。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>著者</H2>
+
+
+Hayden A. James
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/ipcrm.1.html">ipcrm</A></B>(1),
+
+<B><A HREF="../man1/ipcs.1.html">ipcs</A></B>(1),
+
+<B><A HREF="../man7/sysvipc.7.html">sysvipc</A></B>(7)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+ipcmk コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">著者</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 12:18:12 GMT, January 20, 2021
+</BODY>
+</HTML>
