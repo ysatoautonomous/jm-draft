@@ -1,0 +1,323 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of IONICE</TITLE>
+</HEAD><BODY>
+<H1>IONICE</H1>
+Section: User Commands (1)<BR>Updated: July 2011<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+ionice - プロセス I/O のスケジューリングクラスと優先度を設定または取得する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>ionice</B>
+
+[<B>-c</B>
+
+<I>class</I>]
+
+[<B>-n</B>
+
+<I>level</I>]
+
+[<B>-t</B>]
+
+<B>-p</B>
+
+<I>PID</I>...
+
+<BR>
+
+<B>ionice</B>
+
+[<B>-c</B>
+
+<I>class</I>]
+
+[<B>-n</B>
+
+<I>level</I>]
+
+[<B>-t</B>]
+
+<B>-P</B>
+
+<I>PGID</I>...
+
+<BR>
+
+<B>ionice</B>
+
+[<B>-c</B>
+
+<I>class</I>]
+
+[<B>-n</B>
+
+<I>level</I>]
+
+[<B>-t</B>]
+
+<B>-u</B>
+
+<I>UID</I>...
+
+<BR>
+
+<B>ionice</B>
+
+[<B>-c</B>
+
+<I>class</I>]
+
+[<B>-n</B>
+
+<I>level</I>]
+
+[<B>-t</B>]
+
+<I>command </I>[<I>argument</I>...]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+このプログラムは、対象プログラムの I/O スケジューリングクラスと優先度を設定または取得する。
+引き数が指定されない場合、または単に <B>-p</B> が指定された場合、
+<B>ionice</B> はそのプロセスの、現在の I/O スケジューリングクラスと
+優先度を取得する。
+<P>
+
+
+
+
+
+
+
+<I>command</I> が指定された場合、
+<B>ionice</B>
+
+はコマンドを指定した引き数で実行する。
+<I>class</I> が指定されない場合、
+<I>command</I>
+
+は &quot;best-effort&quot; スケジューリングクラスで実行される。
+デフォルトの優先度レベルは 4 である。
+<P>
+
+これを書いている時点では、プロセスは 3 つのスケジューリングクラスのうちの 1 つである。
+
+<DL COMPACT>
+<DT><B>idle</B><DD>
+
+
+
+
+
+アイドル I/O 優先度で実行されているプログラムは、
+定義された猶予期間に他のプログラムがディスク I/O を要求しなかった場合にのみ、
+ディスク時間を取得する。
+通常のシステムアクティビティについての、
+アイドル I/O プロセスの影響は 0 になるだろう。
+このスケジューリングクラスは優先度の引き数をとらない。
+現在のところ、(カーネル 2.6.25 以降で) このスケジューリングクラスは、
+通常ユーザーに許可されている。
+
+<DT><B>best-effort</B><DD>
+
+
+
+
+
+これは効率的なスケジューリングクラスで、特定の I/O 優先度を要求しない
+プロセスのためのものである。
+このクラスは優先度の引き数 <I>0-7</I> をとり、小さい数ほど高い優先度になる。
+同じベストエフォート優先度で実行されているプログラムは、
+ラウンドロビン方式で I/O が提供される。
+<P>
+
+
+
+
+
+カーネル 2.6.26 以前では、I/O 優先度を要求しないプロセスは、
+正式にはスケジューリングクラスとして &quot;<B>none</B>&quot; を使うが、
+I/O スケジューラはこのようなプロセスをベストエフォートクラスに
+あるかのように扱う点に注意すること。
+ベストエフォートクラスでの優先度は、プロセスの CPU nice レベルから
+動的に計算される: io_priority = (cpu_nice + 20) / 5.
+<P>
+
+
+
+CFQ I/O スケジューラを持つカーネル 2.6.26 以降では、
+I/O 優先度を要求しないプロセスは、その CPU スケジューリングクラスを継承する。
+I/O 優先度はプロセスの CPU nice レベルから計算される
+(カーネル 2.6.26 以前と同じ)。
+<P>
+
+<DT><B>realtime</B><DD>
+リアルタイムスケジューリングクラスが指定されると、
+システムで何が行われているかに関わらず、ディスクに最初に
+アクセスする。
+リアルタイムクラスは、他のプロセスをに飢餓状態 (starve) にしてしまうので、
+注意して使う必要がある。
+ベストエフォートクラスと同様に、指定されたプロセスが、
+各スケジューリングウィンドウにおいて、どれだけのタイムスライスを
+受けとるかについて、8 つの優先度レベルが定義される。
+このスケジューリングクラスは、通常ユーザー (つまり、root 以外) には許可されていない。
+
+</DL>
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-c</B>,<B> --class </B><I>class</I>
+
+<DD>
+
+
+使用するスケジューリングクラスの名前、または番号を指定する:
+<I>0</I> は none、<I>1</I> は realtime、<I>2</I> は best-effort、
+<I>3</I> は idle である。
+<DT><B>-n</B>,<B> --classdata </B><I>level</I>
+
+<DD>
+
+
+
+スケジューリングクラスのデータを指定する。
+これはクラスが引き数を受け付ける場合にのみ有効である。
+realtime と best-effort クラスでは、<I>0-7</I> が有効なデータ
+(優先度レベル) であり、<I>0</I> が最高の優先度レベルを表す。
+<DT><B>-p</B>,<B> --pid </B><I>PID</I>...
+
+<DD>
+
+
+スケジューリングパラメータを取得または設定する実行中プロセスの
+プロセス ID を指定する。
+<DT><B>-P</B>,<B> --pgid </B><I>PGID</I>...
+
+<DD>
+
+
+スケジューリングパラメータを取得または設定する実行中プロセスの
+プロセスグループ ID を指定する。
+<DT><B>-t</B>,<B> --ignore</B>
+
+<DD>
+
+
+
+要求された優先度の設定に失敗した場合に無視する。
+<I>command</I> が指定されている場合、
+要求したスケジューリング優先度に設定できない場合でも、コマンドを
+実行する。
+これは、権限が不十分な場合や、カーネルバージョンが古い場合に
+起こる可能性がある。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-u</B>,<B> --uid </B><I>UID</I>...
+
+<DD>
+
+
+スケジューリングパラメータを取得または設定する実行中プロセスの
+ユーザー ID を指定する。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+Linux は、2.6.13 以降の CFQ I/O スケジューラで、
+I/O スケジューリングの優先度とクラスをサポートしている。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+<P>
+
+<DL COMPACT>
+<DT># <B>ionice</B> -c 3 -p 89<DD>
+<DT>
+<DD>
+PID 89 のプロセスを、idle I/O プロセスに設定する。
+<DT># <B>ionice</B> -c 2 -n 0 bash<DD>
+<DT>
+<DD>
+'bash' を最高優先度の best-effort プログラムとして実行する。
+<DT># <B>ionice</B> -p 89 91<DD>
+<DT>
+<DD>
+PID 89 と 91 のプロセスのクラスと優先度を表示する。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>著者</H2>
+
+<PRE>
+Jens Axboe &lt;<A HREF="mailto:jens@axboe.dk">jens@axboe.dk</A>&gt;
+Karel Zak &lt;<A HREF="mailto:kzak@redhat.com">kzak@redhat.com</A>&gt;
+</PRE>
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/ioprio_set.2.html">ioprio_set</A></B>(2)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+ionice コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">注意</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 12:06:14 GMT, January 20, 2021
+</BODY>
+</HTML>
