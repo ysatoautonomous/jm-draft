@@ -1,0 +1,91 @@
+.\" Copyright 2008 Hayden A. James (hayden.james@gmail.com)
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Fri Apr 10 08:32:13 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Wed Jan 20 21:15:58 JST 2021 by Yuichi SATO
+.\"
+.TH IPCMK "1" "July 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O ipcmk \- make various IPC resources
+ipcmk \- さまざまな IPC リソースを作成する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B ipcmk
+[options]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B ipcmk
+.\"O allows you to create System V inter-process communication (IPC) objects:
+.\"O shared memory segments, message queues,
+.\"O and semaphore arrays.
+.B ipcmk
+により、System V プロセス間通信 (inter-process communication, IPC) オブジェクト:
+共有メモリセグメント、メッセージキュー、セマフォ配列を作成できる。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.\"O Resources can be specified with these options:
+リソースは下記のオプションで指定できる。
+.TP
+.BR \-M , " \-\-shmem " \fIsize
+.\"O Create a shared memory segment of
+.\"O .I size
+.\"O bytes.
+.I size
+バイトの共有メモリセグメントを作成する。
+.\"O The \fIsize\fR argument may be followed by the multiplicative suffixes KiB (=1024), MiB (=1024*1024), and so on for GiB, etc. (the
+.\"O "iB" is optional, e.g., "K" has the same meaning as "KiB") or the suffixes KB (=1000), MB (=1000*1000), and so on for GB, etc.
+\fIsize\fR 引き数は、倍数のサフィックス KiB (=1024), MiB (=1024*1024), GiB
+などを付けることをできる ("iB" はオプションであり、"K" は "KiB" と同じ意味である)。
+また、サフィックス KB (=1000), MB (=1000*1000), GB などを付けることもできる。
+.TP
+.BR \-Q , " \-\-queue"
+.\"O Create a message queue.
+メッセージキューを作成する。
+.TP
+.BR \-S , " \-\-semaphore " \fInumber
+.\"O Create a semaphore array with
+.\"O .I number
+.\"O of elements.
+.I number
+個の要素のセマフォ配列を作成する。
+.PP
+.\"O Other options are:
+他のオプションは以下の通り:
+.TP
+.BR \-p , " \-\-mode " \fImode
+.\"O Access permissions for the resource.  Default is 0644.
+リソースのアクセス権限。デフォルトは 0644 である。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH "AUTHOR"
+.SH 著者
+.MT hayden.james@gmail.com
+Hayden A. James
+.ME
+.\"O ..SH SEE ALSO
+.SH 関連項目
+.BR ipcrm (1),
+.BR ipcs (1),
+.BR sysvipc (7)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The ipcmk command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+ipcmk コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
