@@ -1,0 +1,513 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of KILL</TITLE>
+</HEAD><BODY>
+<H1>KILL</H1>
+Section: User Commands (1)<BR>Updated: November 2019<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+kill - プロセスを終了させる
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>kill</B>
+
+[<B>-</B><I>signal</I>|<B>-s</B>
+
+<I>signal</I>|<I></I><B>-p</B>]
+
+[<B>-q</B>
+
+<I>value</I>]
+
+[<B>-a</B>]
+
+[<B>--timeout </B><I>milliseconds signal</I>]
+[<B>--</B>]
+
+<I>pid</I>|<I>name</I>...
+
+<BR>
+
+<B>kill -l</B>
+
+[<I>number</I>]
+
+| <B>-L</B>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>kill</B>
+
+コマンドは、指定した <I>signal</I> を指定したプロセスまたはプロセスグループへ送る。
+<P>
+
+
+シグナルが指定されない場合、TERMシグナルを送る。
+
+このシグナルのデフォルトの挙動は、プロセスの終了である。
+
+
+
+
+このシグナルは、Kill シグナル (数値 9) より優先して使うべきである。
+なぜなら、プロセスは TERM シグナルに対するハンドラーを実装しており、
+通常のやり方では、終了の前にクリーンアップのステップを実行するためである。
+
+
+
+
+TERM シグナルを送った後にプロセスが終了しない場合、
+KILL シグナルを使うことができる。
+KILL シグナルはキャッチされないので、対象プロセスの終了前に
+クリーンアップを実行する機会を与えない点に注意すること。
+<P>
+
+
+
+
+
+
+
+
+
+最近のシェルのほとんどには、組み込みの
+<B>kill</B>
+
+コマンドがあり、
+ここで説明しているコマンドと同じような使い方をする。
+<B>--all</B>,
+
+<B>--pid</B>,
+
+<B>--queue</B>
+
+オプション、そしてコマンド名で PID を指定する方法はローカルな拡張である。
+<P>
+
+
+<I>signal</I> が 0 の場合、実際のシグナルは送られないが、
+エラーチェックは実行される。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>引き数</H2>
+
+
+シグナルを送るプロセスのリストは、
+名前と PID を混ぜることができる。
+<DL COMPACT>
+<DT><I>pid</I>
+
+<DD>
+
+
+
+各
+<I>pid</I>
+
+は以下のいずれかである:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><I>n</I>
+
+<DD>
+
+
+
+
+
+<I>n</I>
+
+が 0 より大きい場合、PID
+<I>n</I>
+
+にシグナルが送られる。
+<DT><B>0</B>
+
+<DD>
+
+現在のプロセスグループのすべてのプロセスにシグナルが
+送られる。
+<DT><B>-1</B>
+
+<DD>
+
+PID が 1 より大きいすべてのプロセスにシグナルが送られる。
+<DT><B>-</B><I>n</I>
+
+<DD>
+
+
+
+
+
+
+
+
+<I>n</I>
+
+が 1 より大きい場合、プロセスグループ
+<I>n</I>
+
+のすべてのプロセスにシグナルが送られる。
+シグナルを最初に指定した場合、または、この引き数の前に '--' オプションを指定した場合、
+引き数を '-n' の形式で指定すると、プロセスグループを使うことを意味する。
+そのようにしない場合、送るシグナルとして解釈される。
+</DL>
+</DL>
+
+<DT><I>name</I>
+
+<DD>
+
+この <I>name</I> を使って起動されたすべてのプロセスにシグナルが送られる。
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-s</B>, <B>--signal</B> <I>signal</I><DD>
+
+送るシグナルを指定する。
+シグナルは名前か、または番号で指定する。
+<DT><B>-l</B>, <B>--list</B> [<I>number</I>]<DD>
+
+
+
+シグナル名のリスト、または指定した数値を変換した名前を表示する。
+シグナルは
+<I>/usr/:include/:linux/:signal.h</I>
+
+の中で定義されている。
+<DT><B>-L</B>, <B>--table</B><DD>
+
+
+<B>-l</B> と同様であるが、シグナル名と対応する数値を表示する。
+<DT><B>-a</B>, <B>--all</B><DD>
+
+
+デフォルトでは、コマンド名から PID への変換は
+現在のプロセスと同じ UID を持つものに制限されているが、
+その制限を外す。
+<DT><B>-p</B>, <B>--pid</B><DD>
+
+
+指定したプロセスのプロセスID (PID) の表示のみをさせる。
+何のシグナルも送らない。
+<DT><B>--verbose</B><DD>
+
+
+
+<B>kill</B>
+
+でシグナルが送られる PID を表示する。
+<DT><B>-q</B>, <B>--queue</B> <I>value</I><DD>
+
+
+
+
+<B><A HREF="../man2/kill.2.html">kill</A></B>(2)
+
+ではなく
+<B><A HREF="../man3/sigqueue.3.html">sigqueue</A></B>(3)
+
+を使ってシグナルを送る。
+
+
+
+
+
+
+
+
+
+
+
+
+<I>value</I>
+
+引き数は、シグナルとして送られる整数値である。
+シグナルを受け取るプロセスが、
+<B><A HREF="../man2/sigaction.2.html">sigaction</A></B>(2)
+
+に対する
+<B>SA_SIGINFO</B>
+
+フラグを使ってシグナルに対するハンドラーを実装している場合、
+<I>siginfo_t</I>
+
+構造体の
+<I>si_sigval</I>
+
+フィールドを使ってデータを取得できる。
+<DT><B>--timeout</B> <I>milliseconds signal</I><DD>
+
+
+プロセスに対して通常の方法でシグナルを送り、
+続いて、指定された時間後に追加のシグナルを送る。
+
+
+
+
+
+
+
+
+
+<B>--timeout</B>
+
+オプションを指定すると、
+<B>kill</B>
+
+は後続の
+<I>signal</I>
+
+をプロセスに送るまで、
+<I>milliseconds</I>
+
+で指定された期間待つ。
+
+
+
+この機能は、Linux カーネルの PID ファイルディスクリプターを使って実装されており、
+後続のシグナルを同じプロセスに送るか、
+プロセスが既に存在しない場合にシグナルを送らないかを保証している。
+<DT><DD>
+
+
+
+
+
+
+
+オペレーティングシステムは PID を再利用するので、
+同様の機能をシェルで
+<B>kill</B>
+
+と
+<B>sleep</B>
+
+を使って実装すると、再利用された PID の別のプロセスに
+後続のシグナルが送られて、競合になる場合がある。
+<DT><DD>
+
+
+
+
+
+
+
+
+<B>--timeout</B>
+
+オプションは複数回指定できる。
+シグナルは、指定されたタイムアウトで順番に送られる。
+<B>--timeout</B>
+
+オプションは
+<B>--queue</B>
+
+オプションと組み合わせて使うことができる。
+<DT><DD>
+
+
+
+例えば、以下のコマンドは、1000 ミリ秒間隔で
+シグナルを QUIT, TERM, KILL を順番に送る。
+<DT><DD>
+
+
+kill --verbose --timeout 1000 TERM --timeout 1000 KILL \
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--signal&nbsp;QUIT&nbsp;12345
+
+
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+<B>kill</B>
+
+には以下の返り値がある:
+<P>
+
+<DL COMPACT><DT><DD>
+
+<DL COMPACT>
+<DT><B>0</B>
+
+<DD>
+
+成功
+<DT><B>1</B>
+
+<DD>
+
+失敗
+<DT><B>64</B>
+
+<DD>
+
+部分的に成功 (2 個以上のプロセスが指定された場合)
+
+</DL>
+</DL>
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+
+
+マルチスレッドプロセスの 1 つのスレッドの TID (スレッド ID
+<B><A HREF="../man2/gettid.2.html">gettid</A></B>(2)
+
+を参照) を
+<B>kill</B>
+
+の引き数として指定することができるにも関わらず、
+シグナルはプロセス (つまり、スレッドグループ全体) に向けられる。
+
+
+言い換えると、マルチスレッドプロセスの明示的に選択したスレッドには
+シグナルを送ることはできない。
+
+
+シグナルは、対象プロセスの中のシグナルをブロックしない
+任意の選択されたスレッドに送られる。
+
+
+
+
+
+
+より詳細は、
+<B><A HREF="../man7/signal.7.html">signal</A></B>(7)
+
+と
+<B><A HREF="../man2/clone.2.html">clone</A></B>(2)
+
+の
+<B>CLONE_THREAD</B>
+
+の説明を参照すること。
+<P>
+
+
+
+
+
+
+
+さまざまなシェルに組み込みの
+<B>kill</B>
+
+コマンドがあり、このマニュアルで説明している実行ファイル
+<B><A HREF="../man1/kill.1.html">kill</A></B>(1)
+
+より、優先される場合がある。
+
+
+
+このページで説明しているコマンドを実行する最も簡単な方法は、
+コマンドを呼び出す際にフルパスを使うことである。
+例えば
+<B>/bin/kill --version</B>
+
+のように呼び出す。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+
+Salvatore Valente
+
+<BR>
+
+
+Karel Zak
+
+<BR>
+
+<P>
+
+
+オリジナルバージョンは、BSD 4.4 から入手した。
+<P>
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/bash.1.html">bash</A></B>(1),
+
+<B><A HREF="../man1/tcsh.1.html">tcsh</A></B>(1),
+
+<B><A HREF="../man2/sigaction.2.html">sigaction</A></B>(2),
+
+<B><A HREF="../man2/kill.2.html">kill</A></B>(2),
+
+<B><A HREF="../man3/sigqueue.3.html">sigqueue</A></B>(3),
+
+<B><A HREF="../man7/signal.7.html">signal</A></B>(7)
+
+<P>
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+kill コマンドは、util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">引き数</A><DD>
+<DT><A HREF="#lbAF">オプション</A><DD>
+<DT><A HREF="#lbAG">返り値</A><DD>
+<DT><A HREF="#lbAH">注意</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:53:00 GMT, January 20, 2021
+</BODY>
+</HTML>
