@@ -1,0 +1,125 @@
+.\" mcookie.1 --
+.\" Public Domain 1995 Rickard E. Faith (faith@cs.unc.edu)
+.\"
+.\" Japanese Version Copyright (c) 2001-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Mon Jan  8 15:18:44 JST 2001
+.\"         by Yuichi SATO <sato@complex.eng.hokudai.ac.jp>
+.\" Updated & Modified Sun Jul 28 22:37:06 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Thu Jan 21 21:45:54 JST 2021 by Yuichi SATO
+.\"
+.\"WORD:	X authority	X 認可
+.\"
+.TH MCOOKIE 1 "December 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O mcookie \- generate magic cookies for xauth
+mcookie \- xauth のためのマジッククッキーを生成する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B mcookie
+[options]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B mcookie
+.\"O generates a 128-bit random hexadecimal number for use with the X authority
+.\"O system.  Typical usage:
+.B mcookie
+は X 認可システムで使われる 128 ビットの 16 進数の乱数を生成する。
+典型的な使い方は以下の通りである:
+.sp
+.RS
+.B xauth add :0 . `mcookie`
+.RE
+.PP
+.\"O The "random" number generated is actually the MD5 message
+.\"O digest of random information coming from one of the sources
+.\"O .IR getrandom ()
+.\"O system call,
+.\"O .IR /dev/urandom ,
+.\"O .IR /dev/random ,
+.\"O or the
+.\"O .IR "libc pseudo-random functions" ,
+.\"O in this preference order. See also the option \fB\-\-file\fR.
+生成される「乱数」は MD5 メッセージダイジェストである。
+これは
+.IR getrandom ()
+システムコール、
+.IR /dev/urandom 、
+.IR /dev/random 、
+.I "libc 疑似乱数"
+の順にいずれかのソースを元にした乱数情報である。
+オプション \fB\-\-file\fR も参照すること。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-f , " \-\-file " \fIfile
+.\"O Use this \fIfile\fR as an additional source of randomness (for example /dev/urandom).
+.\"O When \fIfile\fR is '-', characters are read from standard input.
+\fIfile\fR を追加の乱数元とする (例 /dev/urandom)。
+\fIfile\fR が '-' の場合、文字列を標準入力から読み取る。
+.TP
+.BR \-m , " \-\-max\-size " \fInumber
+.\"O Read from \fIfile\fR only this \fInumber\fR of bytes.
+.\"O This option is meant to be used when reading additional
+.\"O randomness from a file or device.
+\fIfile\fR から \fInumber\fR バイトのみを読み取る。
+このオプションは追加の乱数元をファイルまたはデバイスから
+読み取る時に使うことを意図している。
+.IP
+.\"O The
+.\"O .I number
+.\"O argument may be followed by the multiplicative suffixes KiB=1024,
+.\"O MiB=1024*1024, and so on for GiB, TiB, PiB, EiB, ZiB and YiB (the "iB" is
+.\"O optional, e.g., "K" has the same meaning as "KiB") or the suffixes
+.\"O KB=1000, MB=1000*1000, and so on for GB, TB, PB, EB, ZB and YB.
+.I number
+引き数の後ろに倍数の拡張子
+KiB (=1024), MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB を
+付けることができる
+("iB" はオプションであり、つまり "K" は "KiB" と同じ意味である)。
+また、拡張子
+KB (=1000), MB (=1000*1000), GB, TB, PB, EB, ZB, YB
+を付けることもできる。
+.TP
+.BR \-v , " \-\-verbose"
+.\"O Inform where randomness originated, with amount of entropy read from each
+.\"O source.
+乱数元がどこであるかと、各乱数元から読み取ったエントロピーを
+表示する。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH FILES
+.SH ファイル
+.I /dev/urandom
+.br
+.I /dev/random
+.\"O .SH BUGS
+.SH バグ
+.\"O It is assumed that none of the randomness sources will block.
+このコマンドは、オープンされたデバイスがブロックされていないことを
+仮定している。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR md5sum (1),
+.BR X (7),
+.BR xauth (1),
+.BR rand (3)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The mcookie command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+mcookie コマンドは、util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
