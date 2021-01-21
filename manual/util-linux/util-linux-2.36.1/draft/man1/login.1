@@ -1,0 +1,735 @@
+.\" Copyright 1993 Rickard E. Faith (faith@cs.unc.edu)
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 1997 Kazuyoshi Furutaka
+.\"         all rights reserved.
+.\" Translated Fri Feb 14 23:06:00 JST 1997
+.\"         by Kazuyoshi Furutaka <furutaka@Flux.tokai.jaeri.go.jp>
+.\" Updated Fri Jan 12 04:05:44 JST 2001
+.\"         by Kentaro Shirakata <argrath@ub32.org>
+.\" Modified Tue 16 Sep 2002 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Fri Apr 10 22:46:32 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Thu Jan 21 20:10:50 JST 2021 by Yuichi SATO
+.\"
+.TH LOGIN "1" "June 2012" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O login \- begin session on the system
+login \- システム上でセッションを開く
+.\"O .SH SYNOPSIS
+.SH 書式
+.B login
+[
+.B \-p
+] [
+.B \-h
+.I host
+] [
+.B \-H
+] [
+.B \-f
+.I username
+|
+.I username
+]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B login
+.\"O is used when signing onto a system.  If no argument is given,
+.\"O .B login
+.\"O prompts for the username.
+.B login
+はシステムにサインインするために使われる。
+引き数が指定されない場合、
+.B login
+はユーザ名を入力するプロンプトを出す。
+.PP
+.\"O The user is then prompted for a password, where appropriate.  Echoing
+.\"O is disabled to prevent revealing the password.  Only a small number
+.\"O of password failures are permitted before
+.\"O .B login
+.\"O exits and the communications link is severed.
+次いで、必要な場合には、ユーザはパスワードを入力するよう促される。
+パスワードを表示してしまわないよう、エコーは行われない。
+数回以上パスワード入力に失敗すると
+.B login
+は終了し、通信の接続は切断されてしまう。
+.PP
+.\"O If password aging has been enabled for the account, the user may be
+.\"O prompted for a new password before proceeding.  He will be forced to
+.\"O provide his old password and the new password before continuing.
+.\"O Please refer to
+.\"O .BR passwd (1)
+.\"O for more information.
+アカウントに対してパスワードの有効期限が設定されている場合は、
+先に進む前に新しいパスワードの設定を促されることもある。
+セッションを続けるためには古いパスワードと
+新しいパスワードを入力しなくてはならない。
+詳しい情報は
+.BR passwd (1)
+を参照すること。
+.PP
+.\"O The user and group ID will be set according to their values in the
+.\"O .I /etc/passwd
+.\"O file.  There is one exception if the user ID is zero: in this case,
+.\"O only the primary group ID of the account is set.  This should allow
+.\"O the system administrator to login even in case of network problems.
+ユーザ ID とグループの ID は
+.I /etc/passwd
+ファイル中に記載されている値に従って設定される。
+ユーザ ID が 0 の場合、1 つの例外がある。
+この場合、アカウントのプライマリグループ ID のみが設定される。
+これにより、ネットワーク問題の場合にもシステム管理者がログインすることが
+可能になる。
+.\"O The value for
+.\"O .BR $HOME ,
+.\"O .BR $USER ,
+.\"O .BR $SHELL ,
+.\"O .BR $PATH ,
+.\"O .BR $LOGNAME ,
+.\"O and
+.\"O .B $MAIL
+.\"O are set according to the appropriate fields in the password entry.
+.BR $HOME ,
+.BR $USER ,
+.BR $SHELL ,
+.BR $PATH ,
+.BR $LOGNAME ,
+.B $MAIL
+の値は、パスワードエントリのそれぞれのフィールドに従って設定される。
+.\"O .B $PATH
+.\"O defaults to
+.\"O .I /usr\:/local\:/bin:\:/bin:\:/usr\:/bin
+.\"O for normal users, and to
+.\"O .I /usr\:/local\:/sbin:\:/usr\:/local\:/bin:\:/sbin:\:/bin:\:/usr\:/sbin:\:/usr\:/bin
+.\"O for root, if not otherwise configured.
+.B $PATH
+のデフォルトは、通常ユーザでは
+.I /usr\:/local\:/bin:\:/bin:\:/usr\:/bin
+であり、root では
+.I /usr\:/local\:/sbin:\:/usr\:/local\:/bin:\:/sbin:\:/bin:\:/usr\:/sbin:\:/usr\:/bin
+であり、そうでない場合は設定がされている。
+.P
+.\"O The environment variable
+.\"O .B $TERM
+.\"O will be preserved, if it exists (other environment variables are
+.\"O preserved if the
+.\"O .B \-p
+.\"O option is given), else it will be initialized to the terminal type on your tty.
+環境変数
+.B $TERM
+が存在する場合は、保持される
+(他の環境変数は、
+.B \-p
+オプションが指定された場合に保持される)。
+存在しない場合は、tty の端末の型 (terminal type) に初期化される。
+.PP
+.\"O Then the user's shell is started.  If no shell is specified for the
+.\"O user in
+.\"O .IR /etc\:/passwd ,
+.\"O then
+.\"O .I /bin\:/sh
+.\"O is used.  If there is no directory specified in
+.\"O .IR /etc\:/passwd ,
+.\"O then
+.\"O .I /
+.\"O is used (the home directory is checked for the
+.\"O .I .hushlogin
+.\"O file described below).
+そして、ユーザのシェルが開始される。
+そのユーザのシェルが
+.I /etc\:/passwd
+で指定されていない場合、
+.I /bin\:/sh
+が使われる。
+ディレクトリが
+.I /etc\:/passwd
+で指定されていない場合、
+.I /
+が使われる
+(ホームディレクトリは、下記で説明されている
+.I .hushlogin
+ファイルでチェックされる)。
+.PP
+.\"O If the file
+.\"O .I .hushlogin
+.\"O exists, then a "quiet" login is performed (this disables the checking
+.\"O of mail and the printing of the last login time and message of the
+.\"O day).  Otherwise, if
+.\"O .I /var\:/log\:/lastlog
+.\"O exists, the last login time is printed (and the current login is
+.\"O recorded).
+ファイル
+.I .hushlogin
+が存在する場合、「静に」ログインが行われる
+(メールのチェック、最後のログイン時刻の表示、その日のメッセージの表示が
+無効化される)。
+ファイルが存在しない場合で、
+.I /var\:/log\:/lastlog
+が存在する場合、最後のログイン時刻が表示される (そして、現在のログインが記録される)。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.B \-p
+.\"O Used by
+.\"O .BR getty (8)
+.\"O to tell
+.\"O .B login
+.\"O not to destroy the environment.
+.BR getty (8)
+によって使われ、
+.B login
+が環境変数を破棄しないようにする。
+.TP
+.B \-f
+.\"O Used to skip a login authentication.  This option is usually
+.\"O used by the
+.\"O .BR getty (8)
+.\"O autologin feature.
+ログイン認証をスキップするのに使われる。
+このオプションは、
+.BR getty (8)
+の自動ログイン機能でよく使われる。
+.TP
+.B \-h
+.\"O Used by other servers (i.e.,
+.\"O .BR telnetd (8))
+.\"O to pass the name of the remote host to
+.\"O .B login
+.\"O so that it may be placed in utmp and wtmp.  Only the superuser may
+.\"O use this option.
+他のサーバ (つまり、
+.BR telnetd (8)
+など) によって使用され、リモートホストの名前を
+.B login
+に渡すために使われて、utmp と wtmp に格納される。
+スーパーユーザのみがこのオプションを使用できる。
+.IP
+.\"O Note that the
+.\"O .B \-h
+.\"O option has an impact on the
+.\"O .B PAM service
+.\"O .BR name .
+.B \-h
+オプションは
+.B PAM サービス名
+に影響がある点に注意すること。
+.\"O The standard service name is
+.\"O .IR login ,
+.\"O but with the
+.\"O .B \-h
+.\"O option, the name is
+.\"O .IR remote .
+標準のサービス名は
+.I login
+であるが、
+.B \-h
+オプションを指定すると、
+.I remote
+になる。
+.\"O It is necessary to create proper PAM config files (e.g.,
+.\"O .I /etc\:/pam.d\:/login
+.\"O and
+.\"O .IR /etc\:/pam.d\:/remote ).
+正式な PAM 設定ファイル (例えば、
+.I /etc\:/pam.d\:/login
+と
+.IR /etc\:/pam.d\:/remote )
+を作成することが必要である。
+.TP
+.B \-H
+.\"O Used by other servers (i.e.,
+.\"O .BR telnetd (8))
+.\"O to tell
+.\"O .B login
+.\"O that printing the hostname should be suppressed in the login: prompt.
+他のサーバ (つまり、
+.BR telnetd (8)
+など) によって使用され、
+.B login
+は login: プロンプトでのホスト名の表示を抑制する。
+.\"O See also
+.\"O .B LOGIN_PLAIN_PROMPT
+.\"O below if your server does not allow the
+.\"O .B login
+.\"O command line to be configured.
+サーバが
+.B login
+コマンドラインの設定を許可していない場合、下記の
+.B LOGIN_PLAIN_PROMPT
+も参照すること。
+.TP
+\fB\-\-help\fR
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.\"O .SH CONFIG FILE ITEMS
+.SH 設定ファイルのアイテム
+.\"O .B login
+.\"O reads the
+.\"O .IR /etc\:/login.defs (5)
+.\"O configuration file.  Note that the configuration file could be
+.\"O distributed with another package (e.g., shadow-utils).  The following
+.\"O configuration items are relevant for
+.\"O .BR login :
+.B login
+は設定ファイル
+.IR /etc\:/login.defs (5)
+を読み込む。
+この設定ファイルは他のパッケージ (例えば、shadow-utils) で配布される
+可能性がある点に注意すること。
+以下の設定アイテムが
+.B login
+に関連する:
+.PP
+.B MOTD_FILE
+.\"O (string)
+(文字列)
+.RS 4
+.\"O Specifies a ":" delimited list of "message of the day" files and directories
+.\"O to be displayed upon login.  If the specified path is a directory then displays
+.\"O all files with .motd file extension in version-sort order from the directory.
+ログイン時に表示される、
+":" 区切りの「その日のメッセージ (message of the day)」を格納する
+ファイルまたはディレクトリのリストを指定する。
+指定されたパスがディレクトリの場合、そのディレクトリ内の
+ファイル拡張子が .motd のファイルが、バージョンの若い順にすべて表示される。
+.PP
+.\"O The default value is
+.\"O .IR "/usr/share/misc/motd:/run/motd:/etc/motd" .
+デフォルトの値は
+.I "/usr/share/misc/motd:/run/motd:/etc/motd"
+である。
+.\"O If the
+.\"O .B MOTD_FILE
+.\"O item is empty or a quiet login is enabled, then the message of the day
+.\"O is not displayed.  Note that the same functionality is also provided
+.\"O by the
+.\"O .BR pam_motd (8)
+.\"O PAM module.
+.B MOTD_FILE
+アイテムが空、または静かなログインが有効にされている場合、
+その日のメッセージは表示されない。
+同様な機能は
+.BR pam_motd (8)
+PAM モジュールで提供される点に注意すること。
+.PP
+.\"O The directories in the
+.\"O .B MOTD_FILE
+.\"O are supported since version 2.36.
+.B MOTD_FILE
+でのディレクトリのサポートは、バージョン 2.36 以降である。
+.PP
+.\"O Note that
+.\"O .B login
+.\"O does not implement any filenames overriding behavior like pam_motd
+.\"O (see also
+.\"O .BR MOTD_FIRSTONLY ),
+.\"O but all content from all files is displayed.  It is
+.\"O recommended to keep extra logic in content generators and use
+.\"O .I /run/motd.d
+.\"O rather
+.\"O than rely on overriding behavior hardcoded in system tools.
+.B login
+は pam_motd
+.RB ( MOTD_FIRSTONLY
+を参照) のようなファイル名の上書きを実装してしないが、
+ファイルのすべての内容を表示する点に注意すること。
+システムツールにハードコードされた上書きの挙動に頼るより、
+(メッセージの) 内容の生成器に追加のロジックを保持したり、
+.I /run/motd.d
+を使うことを推奨する。
+.RE
+.PP
+.B MOTD_FIRSTONLY
+.\"O (boolean)
+(ブール値)
+.RS 4
+.\"O Forces
+.\"O .B login
+.\"O to stop display content specified by
+.\"O .B MOTD_FILE
+.\"O after the first accessible item in the list.
+リスト内に最初にアクセス可能なアイテムがあった場合、
+.B MOTD_FILE
+で指定された内容の表示を
+.B login
+に止めさせる。
+.\"O Note that a directory is one item in this case.
+ディレクトリは、このアイテムの 1 つである点に注意すること。
+.\"O This option allows
+.\"O .B login
+.\"O semantics to be configured to be more compatible with pam_motd.
+このオプションにより、
+.B login
+の挙動を、より pam_motd と互換性が高く設定できる。
+.RE
+.PP
+.B LOGIN_PLAIN_PROMPT
+.\"O (boolean)
+(ブール値)
+.RS 4
+.\"O Tell
+.\"O .B login
+.\"O that printing the hostname should be suppressed in the login:
+.\"O prompt.
+.\"O This is an alternative to the \fB\-H\fR command line option.  The default
+.\"O value is
+.\"O .IR no .
+.B login
+に login: プロンプトでのホスト名の表示を抑制させる。
+これは \fB\-H\fR コマンドラインオプションの代替である。
+デフォルトの値は、
+.I no
+である。
+.RE
+.PP
+.B LOGIN_TIMEOUT
+.\"O (number)
+(数値)
+.RS 4
+.\"O Maximum time in seconds for login.  The default value is
+.\"O .IR 60 .
+login を待つ最大時間 (秒)。
+デフォルトの値は、
+.I 60
+である。
+.RE
+.PP
+.B LOGIN_RETRIES
+.\"O (number)
+(数値)
+.RS 4
+.\"O Maximum number of login retries in case of a bad password.  The default
+.\"O value is
+.\"O .IR 3 .
+パスワードを間違えた場合に、ログインがリトライする最大回数。
+デフォルトの値は、
+.I 3
+である。
+.RE
+.PP
+.B FAIL_DELAY
+.\"O (number)
+(数値)
+.RS 4
+.\"O Delay in seconds before being allowed another three tries after a
+.\"O login failure.  The default value is
+.\"O .IR 5 .
+ログインが 3 回失敗した場合に、再度ログインを許可するまでの遅延時間 (秒)。
+デフォルトの値は、
+.I 5
+である。
+.RE
+.PP
+.B TTYPERM
+.\"O (string)
+(文字列)
+.RS 4
+.\"O The terminal permissions.  The default value is
+.\"O .I 0600
+.\"O or
+.\"O .I 0620
+.\"O if tty group is used.
+端末の権限。
+デフォルトの値は、
+.I 0600
+である。
+tty グループが使われている場合、デフォルトの値は、
+.I 0620
+である。
+.RE
+.PP
+.B TTYGROUP
+.\"O (string)
+(文字列)
+.RS 4
+.\"O The login tty will be owned by the
+.\"O .BR TTYGROUP .
+ログイン tty は、
+.B TTYGROUP
+に所有される。
+.\"O The default value is
+.\"O .IR tty .
+デフォルト値は
+.I tty
+である。
+.\"O If the
+.\"O .B TTYGROUP
+.\"O does not exist, then the ownership of the terminal is set to the
+.\"O user\'s primary group.
+.B TTYGROUP
+が存在しない場合、端末の所有権はユーザのプライマリグループに
+設定される。
+.PP
+.\"O The
+.\"O .B TTYGROUP
+.\"O can be either the name of a group or a numeric group identifier.
+.B TTYGROUP
+はグループ名、または数値のグループ識別子である。
+.RE
+.PP
+.B HUSHLOGIN_FILE
+.\"O (string)
+(文字列)
+.RS 4
+.\"O If defined, this file can inhibit all the usual chatter during the
+.\"O login sequence.  If a full pathname (e.g.,
+.\"O .IR /etc\:/hushlogins )
+.\"O is specified, then hushed mode will be enabled if the user\'s name or
+.\"O shell are found in the file.  If this global hush login file is empty
+.\"O then the hushed mode will be enabled for all users.
+このファイルが定義された場合、通常のログインシーケンスでのいろいろな
+表示が抑制される。
+フルパス名 (例えば、
+.IR /etc\:/hushlogins )
+が指定された場合、このファイルがユーザの名前やシェルがあると、
+ハッシュモードが有効化される。
+このグローバルのハッシュログインファイルが空の場合、全てのユーザで
+ハッシュモードが有効化される。
+.PP
+.\"O If a full pathname is not specified, then hushed mode will be enabled
+.\"O if the file exists in the user\'s home directory.
+フルパス名が指定されない場合、かつファイルがユーザのホーム
+ディレクトリにある場合、ハッシュモードが有効化される。
+.PP
+.\"O The default is to check
+.\"O .I /etc\:/hushlogins
+.\"O and if it does not exist then
+.\"O .I ~/.hushlogin
+デフォルトでは、
+.I /etc\:/hushlogins
+をチェックし、存在しない場合は、
+.I ~/.hushlogin
+をチェックする。
+.PP
+.\"O If the
+.\"O .B HUSHLOGIN_FILE
+.\"O item is empty, then all the checks are disabled.
+.B HUSHLOGIN_FILE
+アイテムが空の場合、全てのチェックが無効化される。
+.RE
+.PP
+.B DEFAULT_HOME
+.\"O (boolean)
+(ブール値)
+.RS 4
+.\"O Indicate if login is allowed if we cannot change directory to the
+.\"O home directory.  If set to
+.\"O .IR yes ,
+.\"O the user will login in the root (/) directory if it is not possible
+.\"O to change directory to her home.  The default value is
+.\"O .IR yes .
+ホームディレクトリに移動できない場合に、ログインを許可するかを
+指定する。
+.I yes
+に設定すると、ユーザがホームディレクトリに移動できない場合、
+ルート (/) ディレクトリでログインする。
+デフォルトの値は、
+.I yes
+である。
+.RE
+.PP
+.B LASTLOG_UID_MAX
+.\"O (unsigned number)
+(符号なし数値)
+.RS 4
+.\"O Highest user ID number for which the
+.\"O .I lastlog
+.\"O entries should be
+.\"O updated.  As higher user IDs are usually tracked by remote user
+.\"O identity and authentication services there is no need to create
+.\"O a huge sparse
+.\"O .I lastlog
+.\"O file for them.  No LASTLOG_UID_MAX option
+.\"O present in the configuration means that there is no user ID limit
+.\"O for writing
+.\"O .I lastlog
+.\"O entries.
+.I lastlog
+エントリを更新するユーザの、最大のユーザ ID 番号。
+大きいユーザ ID をリモートユーザの識別と認証サービスで常に追跡すると、
+大きく疎らな
+.I lastlog
+ファイルを作成することになる。
+設定に LASTLOG_UID_MAX オプションが存在しない場合、
+.I lastlog
+エントリを書き込むユーザ ID の制限はなくなる。
+.RE
+.PP
+.B LOG_UNKFAIL_ENAB
+.\"O (boolean)
+(ブール値)
+.RS 4
+.\"O Enable display of unknown usernames when login failures are recorded.
+.\"O The default value is
+.\"O .IR no .
+ログインの失敗が記録される場合、不明なユーザ名の表示を有効化する。
+デフォルト値は、
+.I no
+である。
+.PP
+.\"O Note that logging unknown usernames may be a security issue if a
+.\"O user enters her password instead of her login name.
+ユーザがログイン名ではなく、パスワードを入力してしまった場合、
+不明やユーザ名をログに記録することで、セキュリティ問題になる
+可能性がある点に注意すること。
+.RE
+.PP
+.B ENV_PATH
+.\"O (string)
+(文字列)
+.RS 4
+.\"O If set, it will be used to define the
+.\"O .B PATH
+.\"O environment variable when
+.\"O a regular user logs in.  The default value is
+.\"O .I /usr\:/local\:/bin:\:/bin:\:/usr\:/bin
+この値が設定されると、通常ユーザがログインする際の
+.B PATH
+環境変数を定義するために使われる。
+デフォルト値は、
+.I /usr\:/local\:/bin:\:/bin:\:/usr\:/bin
+である。
+.RE
+.PP
+.B ENV_ROOTPATH
+.\"O (string)
+(文字列)
+.br
+.B ENV_SUPATH
+.\"O (string)
+(文字列)
+.RS 4
+.\"O If set, it will be used to define the PATH environment variable when
+.\"O the superuser logs in.  ENV_ROOTPATH takes precedence.  The default value is
+.\"O .I /usr\:/local\:/sbin:\:/usr\:/local\:/bin:\:/sbin:\:/bin:\:/usr\:/sbin:\:/usr\:/bin
+この値が設定されると、スーパーユーザがログインする際の
+PATH 環境変数を定義するために使われる。
+ENV_ROOTPATH が優先される。
+デフォルト値は、
+.I /usr\:/local\:/sbin:\:/usr\:/local\:/bin:\:/sbin:\:/bin:\:/usr\:/sbin:\:/usr\:/bin
+である。
+.RE
+.\"O .SH FILES
+.SH ファイル
+.nf
+.I /var/run/utmp
+.I /var/log/wtmp
+.I /var/log/lastlog
+.I /var/spool/mail/*
+.I /etc/motd
+.I /etc/passwd
+.I /etc/nologin
+.I /etc/pam.d/login
+.I /etc/pam.d/remote
+.I /etc/hushlogins
+.I .hushlogin
+.fi
+.\"O .SH BUGS
+.SH バグ
+.\"O The undocumented BSD
+.\"O .B \-r
+.\"O option is not supported.  This may be required by some
+.\"O .BR rlogind (8)
+.\"O programs.
+ドキュメント化されていない BSD
+.B \-r
+オプションはサポートされていない。
+このオプションは、いくつかの
+.BR rlogind (8)
+プログラムで必要とされている場合がある。
+.PP
+.\"O A recursive login, as used to be possible in the good old days, no
+.\"O longer works; for most purposes
+.\"O .BR su (1)
+.\"O is a satisfactory substitute.  Indeed, for security reasons,
+.\"O .B login
+.\"O does a
+.\"O .BR vhangup (2)
+.\"O system call to remove any possible listening
+.\"O processes on the tty.  This is to avoid password sniffing.  If one
+.\"O uses the command
+.\"O .BR login ,
+.\"O then the surrounding shell gets killed by
+.\"O .BR vhangup (2)
+.\"O because it's no
+.\"O longer the true owner of the tty.  This can be avoided by using
+.\"O .B exec login
+.\"O in a top-level shell or xterm.
+古き良き時代に可能であった再帰ログインは、もはや動作しない。
+大部分の目的には、
+.BR su (1)
+が代替として要件を満たすことができる。
+実際、セキュリティ上の理由で、
+.B login
+は
+.BR vhangup (2)
+システムコールを使って、
+tty 上でリッスンしているプロセスを削除する。
+これはパスワードの盗み見 (sniffing) を防止する。
+あるユーザがコマンド
+.B login
+を使った場合、そのユーザは、もはや tty の本当の所有者ではなくなるので、
+それを行っているシェルは
+.BR vhangup (2)
+で kill される。
+これは、トップレベルシェル、または xterm で
+.B exec login
+を使うことで回避できる。
+.\"O .SH AUTHORS
+.SH 著者
+.\"O Derived from BSD login 5.40 (5/9/89) by
+.\"O .MT glad@\:daimi.\:dk
+.\"O Michael Glad
+.\"O .ME
+.\"O for HP-UX
+.MT glad@\:daimi.\:dk
+Michael Glad
+.ME
+が HP-UX のために、BSD login 5.40 (5/9/89) から派生させた。
+.br
+.\"O Ported to Linux 0.12:
+.\"O .MT poe@\:daimi.\:aau.\:dk
+.\"O Peter Orbaek
+.\"O .ME
+.MT poe@\:daimi.\:aau.\:dk
+Peter Orbaek
+.ME
+が Linux 0.12 に移植した。
+.br
+.\"O Rewritten to a PAM-only version by
+.\"O .MT kzak@\:redhat.\:com
+.\"O Karel Zak
+.\"O .ME
+.MT kzak@\:redhat.\:com
+Karel Zak
+.ME
+が PAM のみのバージョンに書き直した。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR mail (1),
+.BR passwd (1),
+.BR passwd (5),
+.BR utmp (5),
+.BR environ (7),
+.BR getty (8),
+.BR init (8),
+.BR lastlog (8)
+.BR shutdown (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The login command is part of the util-linux package and is
+.\"O available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+login コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
