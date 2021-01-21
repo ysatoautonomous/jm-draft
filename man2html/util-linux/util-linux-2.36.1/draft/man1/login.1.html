@@ -1,0 +1,942 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LOGIN</TITLE>
+</HEAD><BODY>
+<H1>LOGIN</H1>
+Section: User Commands (1)<BR>Updated: June 2012<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+login - システム上でセッションを開く
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>login</B>
+
+[
+<B>-p</B>
+
+] [
+<B>-h</B>
+
+<I>host</I>
+
+] [
+<B>-H</B>
+
+] [
+<B>-f</B>
+
+<I>username</I>
+
+|
+<I>username</I>
+
+]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+<B>login</B>
+
+はシステムにサインインするために使われる。
+引き数が指定されない場合、
+<B>login</B>
+
+はユーザ名を入力するプロンプトを出す。
+<P>
+
+
+
+
+
+
+次いで、必要な場合には、ユーザはパスワードを入力するよう促される。
+パスワードを表示してしまわないよう、エコーは行われない。
+数回以上パスワード入力に失敗すると
+<B>login</B>
+
+は終了し、通信の接続は切断されてしまう。
+<P>
+
+
+
+
+
+
+
+アカウントに対してパスワードの有効期限が設定されている場合は、
+先に進む前に新しいパスワードの設定を促されることもある。
+セッションを続けるためには古いパスワードと
+新しいパスワードを入力しなくてはならない。
+詳しい情報は
+<B><A HREF="../man1/passwd.1.html">passwd</A></B>(1)
+
+を参照すること。
+<P>
+
+
+
+
+
+
+ユーザ ID とグループの ID は
+<I>/etc/passwd</I>
+
+ファイル中に記載されている値に従って設定される。
+ユーザ ID が 0 の場合、1 つの例外がある。
+この場合、アカウントのプライマリグループ ID のみが設定される。
+これにより、ネットワーク問題の場合にもシステム管理者がログインすることが
+可能になる。
+
+
+
+
+
+
+
+
+
+<B>$HOME</B>,
+
+<B>$USER</B>,
+
+<B>$SHELL</B>,
+
+<B>$PATH</B>,
+
+<B>$LOGNAME</B>,
+
+<B>$MAIL</B>
+
+の値は、パスワードエントリのそれぞれのフィールドに従って設定される。
+
+
+
+
+
+
+<B>$PATH</B>
+
+のデフォルトは、通常ユーザでは
+<I>/usr:/local:/bin::/bin::/usr:/bin</I>
+
+であり、root では
+<I>/usr:/local:/sbin::/usr:/local:/bin::/sbin::/bin::/usr:/sbin::/usr:/bin</I>
+
+であり、そうでない場合は設定がされている。
+<P>
+
+
+
+
+
+
+
+環境変数
+<B>$TERM</B>
+
+が存在する場合は、保持される
+(他の環境変数は、
+<B>-p</B>
+
+オプションが指定された場合に保持される)。
+存在しない場合は、tty の端末の型 (terminal type) に初期化される。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+そして、ユーザのシェルが開始される。
+そのユーザのシェルが
+<I>/etc:/passwd</I>
+
+で指定されていない場合、
+<I>/bin:/sh</I>
+
+が使われる。
+ディレクトリが
+<I>/etc:/passwd</I>
+
+で指定されていない場合、
+<I>/</I>
+
+が使われる
+(ホームディレクトリは、下記で説明されている
+<I>.hushlogin</I>
+
+ファイルでチェックされる)。
+<P>
+
+
+
+
+
+
+
+
+
+ファイル
+<I>.hushlogin</I>
+
+が存在する場合、「静に」ログインが行われる
+(メールのチェック、最後のログイン時刻の表示、その日のメッセージの表示が
+無効化される)。
+ファイルが存在しない場合で、
+<I>/var:/log:/lastlog</I>
+
+が存在する場合、最後のログイン時刻が表示される (そして、現在のログインが記録される)。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-p</B>
+
+<DD>
+
+
+
+
+
+<B><A HREF="../man8/getty.8.html">getty</A></B>(8)
+
+によって使われ、
+<B>login</B>
+
+が環境変数を破棄しないようにする。
+<DT><B>-f</B>
+
+<DD>
+
+
+
+
+ログイン認証をスキップするのに使われる。
+このオプションは、
+<B><A HREF="../man8/getty.8.html">getty</A></B>(8)
+
+の自動ログイン機能でよく使われる。
+<DT><B>-h</B>
+
+<DD>
+
+
+
+
+
+
+他のサーバ (つまり、
+<B><A HREF="../man8/telnetd.8.html">telnetd</A></B>(8)
+
+など) によって使用され、リモートホストの名前を
+<B>login</B>
+
+に渡すために使われて、utmp と wtmp に格納される。
+スーパーユーザのみがこのオプションを使用できる。
+<DT><DD>
+
+
+
+
+
+<B>-h</B>
+
+オプションは
+<B>PAM サービス名</B>
+
+に影響がある点に注意すること。
+
+
+
+
+
+
+標準のサービス名は
+<I>login</I>
+
+であるが、
+<B>-h</B>
+
+オプションを指定すると、
+<I>remote</I>
+
+になる。
+
+
+
+
+正式な PAM 設定ファイル (例えば、
+<I>/etc:/pam.d:/login</I>
+
+と
+<I>/etc:/pam.d:/remote</I>)
+
+を作成することが必要である。
+<DT><B>-H</B>
+
+<DD>
+
+
+
+
+
+他のサーバ (つまり、
+<B><A HREF="../man8/telnetd.8.html">telnetd</A></B>(8)
+
+など) によって使用され、
+<B>login</B>
+
+は login: プロンプトでのホスト名の表示を抑制する。
+
+
+
+
+
+サーバが
+<B>login</B>
+
+コマンドラインの設定を許可していない場合、下記の
+<B>LOGIN_PLAIN_PROMPT</B>
+
+も参照すること。
+<DT><B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>設定ファイルのアイテム</H2>
+
+
+
+
+
+
+
+
+<B>login</B>
+
+は設定ファイル
+<I>/etc:/<A HREF="../man5/login.defs.5.html">login.defs</A></I>(5)
+
+を読み込む。
+この設定ファイルは他のパッケージ (例えば、shadow-utils) で配布される
+可能性がある点に注意すること。
+以下の設定アイテムが
+<B>login</B>
+
+に関連する:
+<P>
+
+<B>MOTD_FILE</B>
+
+
+(文字列)
+<DL COMPACT><DT><DD>
+
+
+
+ログイン時に表示される、
+&quot;:&quot; 区切りの「その日のメッセージ (message of the day)」を格納する
+ファイルまたはディレクトリのリストを指定する。
+指定されたパスがディレクトリの場合、そのディレクトリ内の
+ファイル拡張子が .motd のファイルが、バージョンの若い順にすべて表示される。
+<P>
+
+
+
+デフォルトの値は
+<I>/usr/share/misc/motd:/run/motd:/etc/motd</I>
+
+である。
+
+
+
+
+
+
+
+<B>MOTD_FILE</B>
+
+アイテムが空、または静かなログインが有効にされている場合、
+その日のメッセージは表示されない。
+同様な機能は
+<B><A HREF="../man8/pam_motd.8.html">pam_motd</A></B>(8)
+
+PAM モジュールで提供される点に注意すること。
+<P>
+
+
+
+
+<B>MOTD_FILE</B>
+
+でのディレクトリのサポートは、バージョン 2.36 以降である。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+<B>login</B>
+
+は pam_motd
+(<B>MOTD_FIRSTONLY</B>
+
+を参照) のようなファイル名の上書きを実装してしないが、
+ファイルのすべての内容を表示する点に注意すること。
+システムツールにハードコードされた上書きの挙動に頼るより、
+(メッセージの) 内容の生成器に追加のロジックを保持したり、
+<I>/run/motd.d</I>
+
+を使うことを推奨する。
+</DL>
+
+<P>
+
+<B>MOTD_FIRSTONLY</B>
+
+
+(ブール値)
+<DL COMPACT><DT><DD>
+
+
+
+
+
+リスト内に最初にアクセス可能なアイテムがあった場合、
+<B>MOTD_FILE</B>
+
+で指定された内容の表示を
+<B>login</B>
+
+に止めさせる。
+
+ディレクトリは、このアイテムの 1 つである点に注意すること。
+
+
+
+このオプションにより、
+<B>login</B>
+
+の挙動を、より pam_motd と互換性が高く設定できる。
+</DL>
+
+<P>
+
+<B>LOGIN_PLAIN_PROMPT</B>
+
+
+(ブール値)
+<DL COMPACT><DT><DD>
+
+
+
+
+
+
+
+<B>login</B>
+
+に login: プロンプトでのホスト名の表示を抑制させる。
+これは <B>-H</B> コマンドラインオプションの代替である。
+デフォルトの値は、
+<I>no</I>
+
+である。
+</DL>
+
+<P>
+
+<B>LOGIN_TIMEOUT</B>
+
+
+(数値)
+<DL COMPACT><DT><DD>
+
+
+login を待つ最大時間 (秒)。
+デフォルトの値は、
+<I>60</I>
+
+である。
+</DL>
+
+<P>
+
+<B>LOGIN_RETRIES</B>
+
+
+(数値)
+<DL COMPACT><DT><DD>
+
+
+
+パスワードを間違えた場合に、ログインがリトライする最大回数。
+デフォルトの値は、
+<I>3</I>
+
+である。
+</DL>
+
+<P>
+
+<B>FAIL_DELAY</B>
+
+
+(数値)
+<DL COMPACT><DT><DD>
+
+
+
+ログインが 3 回失敗した場合に、再度ログインを許可するまでの遅延時間 (秒)。
+デフォルトの値は、
+<I>5</I>
+
+である。
+</DL>
+
+<P>
+
+<B>TTYPERM</B>
+
+
+(文字列)
+<DL COMPACT><DT><DD>
+
+
+
+
+
+端末の権限。
+デフォルトの値は、
+<I>0600</I>
+
+である。
+tty グループが使われている場合、デフォルトの値は、
+<I>0620</I>
+
+である。
+</DL>
+
+<P>
+
+<B>TTYGROUP</B>
+
+
+(文字列)
+<DL COMPACT><DT><DD>
+
+
+ログイン tty は、
+<B>TTYGROUP</B>
+
+に所有される。
+
+
+デフォルト値は
+<I>tty</I>
+
+である。
+
+
+
+
+<B>TTYGROUP</B>
+
+が存在しない場合、端末の所有権はユーザのプライマリグループに
+設定される。
+<P>
+
+
+
+
+<B>TTYGROUP</B>
+
+はグループ名、または数値のグループ識別子である。
+</DL>
+
+<P>
+
+<B>HUSHLOGIN_FILE</B>
+
+
+(文字列)
+<DL COMPACT><DT><DD>
+
+
+
+
+
+
+このファイルが定義された場合、通常のログインシーケンスでのいろいろな
+表示が抑制される。
+フルパス名 (例えば、
+<I>/etc:/hushlogins</I>)
+
+が指定された場合、このファイルがユーザの名前やシェルがあると、
+ハッシュモードが有効化される。
+このグローバルのハッシュログインファイルが空の場合、全てのユーザで
+ハッシュモードが有効化される。
+<P>
+
+
+
+フルパス名が指定されない場合、かつファイルがユーザのホーム
+ディレクトリにある場合、ハッシュモードが有効化される。
+<P>
+
+
+
+
+
+デフォルトでは、
+<I>/etc:/hushlogins</I>
+
+をチェックし、存在しない場合は、
+<I>~/.hushlogin</I>
+
+をチェックする。
+<P>
+
+
+
+
+<B>HUSHLOGIN_FILE</B>
+
+アイテムが空の場合、全てのチェックが無効化される。
+</DL>
+
+<P>
+
+<B>DEFAULT_HOME</B>
+
+
+(ブール値)
+<DL COMPACT><DT><DD>
+
+
+
+
+
+
+ホームディレクトリに移動できない場合に、ログインを許可するかを
+指定する。
+<I>yes</I>
+
+に設定すると、ユーザがホームディレクトリに移動できない場合、
+ルート (/) ディレクトリでログインする。
+デフォルトの値は、
+<I>yes</I>
+
+である。
+</DL>
+
+<P>
+
+<B>LASTLOG_UID_MAX</B>
+
+
+(符号なし数値)
+<DL COMPACT><DT><DD>
+
+
+
+
+
+
+
+
+
+
+
+
+<I>lastlog</I>
+
+エントリを更新するユーザの、最大のユーザ ID 番号。
+大きいユーザ ID をリモートユーザの識別と認証サービスで常に追跡すると、
+大きく疎らな
+<I>lastlog</I>
+
+ファイルを作成することになる。
+設定に LASTLOG_UID_MAX オプションが存在しない場合、
+<I>lastlog</I>
+
+エントリを書き込むユーザ ID の制限はなくなる。
+</DL>
+
+<P>
+
+<B>LOG_UNKFAIL_ENAB</B>
+
+
+(ブール値)
+<DL COMPACT><DT><DD>
+
+
+
+ログインの失敗が記録される場合、不明なユーザ名の表示を有効化する。
+デフォルト値は、
+<I>no</I>
+
+である。
+<P>
+
+
+
+ユーザがログイン名ではなく、パスワードを入力してしまった場合、
+不明やユーザ名をログに記録することで、セキュリティ問題になる
+可能性がある点に注意すること。
+</DL>
+
+<P>
+
+<B>ENV_PATH</B>
+
+
+(文字列)
+<DL COMPACT><DT><DD>
+
+
+
+
+
+この値が設定されると、通常ユーザがログインする際の
+<B>PATH</B>
+
+環境変数を定義するために使われる。
+デフォルト値は、
+<I>/usr:/local:/bin::/bin::/usr:/bin</I>
+
+である。
+</DL>
+
+<P>
+
+<B>ENV_ROOTPATH</B>
+
+
+(文字列)
+<BR>
+
+<B>ENV_SUPATH</B>
+
+
+(文字列)
+<DL COMPACT><DT><DD>
+
+
+
+この値が設定されると、スーパーユーザがログインする際の
+PATH 環境変数を定義するために使われる。
+ENV_ROOTPATH が優先される。
+デフォルト値は、
+<I>/usr:/local:/sbin::/usr:/local:/bin::/sbin::/bin::/usr:/sbin::/usr:/bin</I>
+
+である。
+</DL>
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>ファイル</H2>
+
+<PRE>
+<I>/var/run/utmp</I>
+<I>/var/log/wtmp</I>
+<I>/var/log/lastlog</I>
+<I>/var/spool/mail/*</I>
+<I>/etc/motd</I>
+<I>/etc/passwd</I>
+<I>/etc/nologin</I>
+<I>/etc/pam.d/login</I>
+<I>/etc/pam.d/remote</I>
+<I>/etc/hushlogins</I>
+<I>.hushlogin</I>
+</PRE>
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+
+
+ドキュメント化されていない BSD
+<B>-r</B>
+
+オプションはサポートされていない。
+このオプションは、いくつかの
+<B><A HREF="../man8/rlogind.8.html">rlogind</A></B>(8)
+
+プログラムで必要とされている場合がある。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+古き良き時代に可能であった再帰ログインは、もはや動作しない。
+大部分の目的には、
+<B><A HREF="../man1/su.1.html">su</A></B>(1)
+
+が代替として要件を満たすことができる。
+実際、セキュリティ上の理由で、
+<B>login</B>
+
+は
+<B><A HREF="../man2/vhangup.2.html">vhangup</A></B>(2)
+
+システムコールを使って、
+tty 上でリッスンしているプロセスを削除する。
+これはパスワードの盗み見 (sniffing) を防止する。
+あるユーザがコマンド
+<B>login</B>
+
+を使った場合、そのユーザは、もはや tty の本当の所有者ではなくなるので、
+それを行っているシェルは
+<B><A HREF="../man2/vhangup.2.html">vhangup</A></B>(2)
+
+で kill される。
+これは、トップレベルシェル、または xterm で
+<B>exec login</B>
+
+を使うことで回避できる。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+
+
+
+
+
+
+Michael Glad
+
+が HP-UX のために、BSD login 5.40 (5/9/89) から派生させた。
+<BR>
+
+
+
+
+
+
+Peter Orbaek
+
+が Linux 0.12 に移植した。
+<BR>
+
+
+
+
+
+
+Karel Zak
+
+が PAM のみのバージョンに書き直した。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/mail.1.html">mail</A></B>(1),
+
+<B><A HREF="../man1/passwd.1.html">passwd</A></B>(1),
+
+<B><A HREF="../man5/passwd.5.html">passwd</A></B>(5),
+
+<B><A HREF="../man5/utmp.5.html">utmp</A></B>(5),
+
+<B><A HREF="../man7/environ.7.html">environ</A></B>(7),
+
+<B><A HREF="../man8/getty.8.html">getty</A></B>(8),
+
+<B><A HREF="../man8/init.8.html">init</A></B>(8),
+
+<B><A HREF="../man8/lastlog.8.html">lastlog</A></B>(8)
+
+<B><A HREF="../man8/shutdown.8.html">shutdown</A></B>(8)
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+
+login コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">設定ファイルのアイテム</A><DD>
+<DT><A HREF="#lbAG">ファイル</A><DD>
+<DT><A HREF="#lbAH">バグ</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:14:17 GMT, January 21, 2021
+</BODY>
+</HTML>
