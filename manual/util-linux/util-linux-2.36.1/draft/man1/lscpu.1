@@ -1,0 +1,339 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Apr 11 02:31:57 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Thu Jan 21 20:53:20 JST 2021 by Yuichi SATO
+.\"
+.TH LSCPU 1 "March 2019" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O lscpu \- display information about the CPU architecture
+lscpu \- CPU アーキテクチャの情報を表示する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B lscpu
+[options]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B lscpu
+.\"O gathers CPU architecture information from sysfs, /proc/cpuinfo and any
+.\"O applicable architecture-specific libraries (e.g.\& librtas on Powerpc).  The
+.\"O command output can be optimized for parsing or for easy readability by humans.
+.B lscpu
+は CPU アーキテクチャ情報を sysfs, /proc/cpuinfo と
+利用可能なアーキテクチャ固有のライブラリ (例えば、Powerpc の librtas) から収集する。
+コマンドの出力は、解析しやすいように最適化したり、
+人が読みやすいように最適化できる。
+.\"O The information includes, for example, the number of CPUs, threads, cores,
+.\"O sockets, and Non-Uniform Memory Access (NUMA) nodes.  There is also information
+.\"O about the CPU caches and cache sharing, family, model, bogoMIPS, byte order,
+.\"O and stepping.
+この情報には、例えば、CPU、スレッド、コア、ソケット、
+Non-Uniform Memory Access (NUMA) ノードの数などが含まれる。
+また、CPU のキャッシュ、キャッシュ共有、ファミリー、モデル、
+bogoMIPS、バイト順序、ステッピングなどの情報も含まれる。
+.sp
+.\"O In virtualized environments, the CPU architecture information displayed
+.\"O reflects the configuration of the guest operating system which is
+.\"O typically different from the physical (host) system.  On architectures that
+.\"O support retrieving physical topology information,
+.\"O .B lscpu
+.\"O also displays the number of physical sockets, chips, cores in the host system.
+仮想化環境では、表示される CPU アーキテクチャ情報は、
+ゲスト OS の設定を反映しており、物理 (ホスト) システムとは特に異なる。
+物理トポロジー情報の取得をサポートしているアーキテクチャでは、
+.B lscpu
+はホストシステム上の物理ソケット、チップ、コアの数も表示する。
+.sp
+.\"O Options that result in an output table have a \fIlist\fP argument.  Use this
+.\"O argument to customize the command output.  Specify a comma-separated list of
+.\"O column labels to limit the output table to only the specified columns, arranged
+.\"O in the specified order.  See \fBCOLUMNS\fP for a list of valid column labels.  The
+.\"O column labels are not case sensitive.
+出力テーブルに影響するオプションには、\fIlist\fP 引き数がある。
+コマンド出力をカスタマイズするためには、この引き数を使うこと。
+カンマ区切りのカラムラベルを指定すると、出力テーブルは指定されたカラム
+のみに限定され、指定された順番に表示される。
+有効なカラムラベルのリストは、\fBカラム\fP を参照すること。
+カラムラベルは大文字小文字を無視する。
+.sp
+.\"O Not all columns are supported on all architectures.  If an unsupported column is
+.\"O specified, \fBlscpu\fP prints the column but does not provide any data for it.
+全てのアーキテクチャで、全てのカラムがサポートされているわけではない。
+サポートされていないカラムが指定された場合、\fBlscpu\fP はカラム名を表示するが、
+データは提供しない。
+.sp
+.\"O The default output formatting on terminal maybe optimized for better
+.\"O readability.  The output for non-terminals (e.g., pipes) is never affected by
+.\"O this optimization and it is always in "Field: data\\n" format.
+端末上でのデフォルトの出力形式は、より読みやすいように最適化されている。
+端末以外 (例えば、パイプ) での出力は、この最適化の影響を受けず、
+常に "Field: data\\n" 形式である。
+.sp
+.\"O The cache sizes are reported as summary from all CPUs.  The versions before
+.\"O v2.34 reported per-core sizes, but this output was confusing due to complicated
+.\"O CPUs topology and the way how caches are shared between CPUs. For more details
+.\"O about caches see \fB\-\-cache\fP.
+キャッシュサイズは、すべての CPU のサマリーとして表示される。
+v2.34 以前のバージョンでは、コアあたりのサイズが表示されていたが、
+複雑な CPU トポロジーや、キャッシュが CPU 間で共有される方法によっては、
+この出力は混乱を招いていた。
+キャッシュについての、より詳細は \fB\-\-cache\fP を参照すること。
+.\"O .SS COLUMNS
+.SS カラム
+.\"O Note that topology elements (core, socket, etc.) use a sequential unique ID
+.\"O starting from zero, but CPU logical numbers follow the kernel where there is
+.\"O no guarantee of sequential numbering.
+トポロジー要素 (コア、ソケットなど) は、0 で始まる連続した一意の ID を使う。
+しかし、CPU の論理番号はカーネルに従い、連続した番号である保証はない。
+.TP
+.B CPU
+.\"O The logical CPU number of a CPU as used by the Linux kernel.
+Linux カーネルが使う CPU の論理 CPU 数。
+.TP
+.B CORE
+.\"O The logical core number.  A core can contain several CPUs.
+論理コア数。コアは複数の CPU を持つ。
+.TP
+.B SOCKET
+.\"O The logical socket number.  A socket can contain several cores.
+論理ソケット数。ソケットは複数のコアを持つ。
+.TP
+.B BOOK
+.\"O The logical book number.  A book can contain several sockets.
+論理ブック数。ブックは複数のソケットを持つ。
+.TP
+.B DRAWER
+.\"O The logical drawer number.  A drawer can contain several books.
+論理ドロワー数。ドロワーは複数のブックを持つ。
+.TP
+.B NODE
+.\"O The logical NUMA node number.  A node can contain several drawers.
+論理 NUMA ノード数。ノードは複数のドロワーを持つ。
+.TP
+.B CACHE
+.\"O Information about how caches are shared between CPUs.
+キャッシュがどのように CPU で共有されているかの情報。
+.TP
+.B ADDRESS
+.\"O The physical address of a CPU.
+CPU の物理アドレス。
+.TP
+.B ONLINE
+.\"O Indicator that shows whether the Linux instance currently makes use of the CPU.
+この指標は、Linux インスタンスが CPU を現在使用しているかを表す。
+.TP
+.B CONFIGURED
+.\"O Indicator that shows if the hypervisor has allocated the CPU to the virtual
+.\"O hardware on which the Linux instance runs.  CPUs that are configured can be set
+.\"O online by the Linux instance.
+.\"O This column contains data only if your hardware system and hypervisor support
+.\"O dynamic CPU resource allocation.
+この指標は、Linux インスタンスが稼働する仮想ハードウェアに、
+ハイパーバイザーが CPU を割り当てたかを表す。
+設定された CPU は、Linux インスタンスによってオンラインにできる。
+このカラムには、ハードウェアシステムとハイパーバイザーが
+動的 CPU リソース割り当てをサポートしている場合にのみ、データが含まれる。
+.TP
+.B POLARIZATION
+.\"O This column contains data for Linux instances that run on virtual hardware with
+.\"O a hypervisor that can switch the CPU dispatching mode (polarization).  The
+.\"O polarization can be:
+このカラムには、CPU の分配モード (分極化: polarization) を切り替えられる
+ハイパーバイザーを持つ仮想ハードウェア上で実行される Linux インスタンスのデータが含まれる。
+分極化は以下のいずれかである:
+.RS
+.TP 12
+.B horizontal\fP
+.\"O The workload is spread across all available CPUs.
+負荷を利用可能な全ての CPU に分散する。
+.TP 12
+.B vertical
+.\"O The workload is concentrated on few CPUs.
+負荷を特定の CPU に集中させる。
+.P
+.\"O For vertical polarization, the column also shows the degree of concentration,
+.\"O high, medium, or low.  This column contains data only if your hardware system
+.\"O and hypervisor support CPU polarization.
+垂直分極化 (vertical polarization) では、
+集中の度合いが high, medium, low　でカラムに表示される。
+ハードウェアシステムとハイパーバイザーが CPU の分極化をサポートしている場合にのみ、
+このカラムにはデータが含まれる。
+.RE
+.TP
+.B MAXMHZ
+.\"O Maximum megahertz value for the CPU. Useful when \fBlscpu\fP is used as hardware
+.\"O inventory information gathering tool.  Notice that the megahertz value is
+.\"O dynamic, and driven by CPU governor depending on current resource need.
+CPU の最大 MHz の値。
+これは \fBlscpu\fP をハードウェアの明細情報の収集ツールとして使う場合に有用である。
+この MHz の値は、動的であり、現在のリソースの必要性に応じて
+CPU の調整装置で変更される。
+.TP
+.B MINMHZ
+.\"O Minimum megahertz value for the CPU.
+CPU の最小 MHz の値。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-a , " \-\-all"
+.\"O Include lines for online and offline CPUs in the output (default for \fB\-e\fR).
+.\"O This option may only be specified together with option \fB\-e\fR or \fB\-p\fR.
+オンラインとオフラインの CPU の情報を出力に含める (\fB\-e\fR のデフォルト)。
+このオプションは、オプション \fB\-e\fR または \fB\-p\fR とのみ一緒に指定できる。
+.TP
+.BR \-B , " \-\-bytes"
+.\"O Print the sizes in bytes rather than in a human-readable format.
+人が読みやすい形式ではなく、バイト単位でサイズを表示する。
+.TP
+.BR \-b , " \-\-online"
+.\"O Limit the output to online CPUs (default for \fB\-p\fR).
+.\"O This option may only be specified together with option \fB\-e\fR or \fB\-p\fR.
+出力をオンラインの CPU に限定する (\fB\-p\fR のデフォルト)。
+このオプションは、オプション \fB\-e\fR または \fB\-p\fR とのみ一緒に指定できる。
+.TP
+.BR \-C , " \-\-caches" [=\fIlist\fP]
+.\"O Display details about CPU caches.  For details about available information see \fB\-\-help\fR
+.\"O output.
+CPU キャッシュの詳細を表示する。
+利用可能な情報の詳細は、\fB\-\-help\fR の出力を参照すること。
+
+.\"O If the \fIlist\fP argument is omitted, all columns for which data is available
+.\"O are included in the command output.
+\fIlist\fP 引き数が省略された場合、データが利用可能な全てのカラムが、
+コマンド出力に含まれる。
+
+.\"O When specifying the \fIlist\fP argument, the string of option, equal sign (=), and
+.\"O \fIlist\fP must not contain any blanks or other whitespace.
+.\"O Examples: '\fB\-C=NAME,ONE-SIZE\fP' or '\fB\-\-caches=NAME,ONE-SIZE\fP'.
+\fIlist\fP 引き数を指定する場合、オプションの文字列とイコール (=) を指定する。
+\fIlist\fP には、ブランクまたは他の空白文字を含んではならない。
+例: '\fB\-C=NAME,ONE-SIZE\fP' または '\fB\-\-caches=NAME,ONE-SIZE\fP'。
+.TP
+.BR \-c , " \-\-offline"
+.\"O Limit the output to offline CPUs.
+.\"O This option may only be specified together with option \fB\-e\fR or \fB\-p\fR.
+出力をオフラインの CPU に限定する。
+このオプションは、オプション \fB\-e\fR または \fB\-p\fR とのみ一緒に指定できる。
+.TP
+.BR \-e , " \-\-extended" [=\fIlist\fP]
+.\"O Display the CPU information in human-readable format.
+CPU 情報を人が読みやすい形式で表示する。
+
+.\"O If the \fIlist\fP argument is omitted, all columns for which data is available
+.\"O are included in the command output.
+\fIlist\fP 引き数が省略された場合、データが取得可能な全てのカラムが、
+コマンド出力に含まれる。
+
+.\"O When specifying the \fIlist\fP argument, the string of option, equal sign (=), and
+.\"O \fIlist\fP must not contain any blanks or other whitespace.
+.\"O Examples: '\fB\-e=cpu,node\fP' or '\fB\-\-extended=cpu,node\fP'.
+\fIlist\fP 引き数を指定する場合、オプションの文字列とイコール (=) を指定する。
+\fIlist\fP には、ブランクまたは他の空白文字を含んではならない。
+例: '\fB\-e=cpu,node\fP' または '\fB\-\-extended=cpu,node\fP'。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+.BR \-J , " \-\-json"
+.\"O Use JSON output format for the default summary or extended output (see \fB\-\-extended\fP).
+デフォルトのサマリと拡張出力 (\fB\-\-extended\fP を参照) について、
+JSON 出力形式を使う。
+.TP
+.BR \-p , " \-\-parse" [=\fIlist\fP]
+.\"O Optimize the command output for easy parsing.
+コマンド出力を解析しやすいように最適化する。
+
+.\"O If the \fIlist\fP argument is omitted, the command output is compatible with earlier
+.\"O versions of \fBlscpu\fP.  In this compatible format, two commas are used to separate
+.\"O CPU cache columns.  If no CPU caches are identified the cache column is omitted.
+\fIlist\fP 引き数が省略された場合、コマンド出力は以前の \fBlscpu\fP バージョンと
+互換性がある。
+この互換形式では、CPU キャッシュカラムを区切るのに、2 つのカンマが使われる。
+CPU キャッシュが確認できない場合、キャッシュカラムは省略される。
+.br
+.\"O If the \fIlist\fP argument is used, cache columns are separated with a colon (:).
+\fIlist\fP 引き数が使われた場合、キャッシュカラムはコロン (:) で区切られる。
+
+.\"O When specifying the \fIlist\fP argument, the string of option, equal sign (=), and
+.\"O \fIlist\fP must not contain any blanks or other whitespace.
+.\"O Examples: '\fB\-p=cpu,node\fP' or '\fB\-\-parse=cpu,node\fP'.
+\fIlist\fP 引き数を指定する場合、オプションの文字列とイコール (=) を指定する。
+\fIlist\fP には、ブランクまたは他の空白文字を含んではならない。
+例: '\fB\-p=cpu,node\fP' または '\fB\-\-parse=cpu,node\fP'。
+.TP
+.BR \-s , " \-\-sysroot " \fIdirectory\fP
+.\"O Gather CPU data for a Linux instance other than the instance from which the
+.\"O \fBlscpu\fP command is issued.  The specified \fIdirectory\fP is the system root
+.\"O of the Linux instance to be inspected.
+\fBlscpu\fP コマンドが発行された Linux インスタンス以外の、
+インスタンスの CPU データを収集する。
+指定された \fIdirectory\fP は、調査する Linux インスタンスのシステムルートである。
+.TP
+.BR \-x , " \-\-hex"
+.\"O Use hexadecimal masks for CPU sets (for example "ff").  The default is to print
+.\"O the sets in list format (for example 0,1).  Note that before version 2.30 the mask
+.\"O has been printed with 0x prefix.
+CPU セットに対して 16 進数のマスクを使う (例えば "ff")。
+デフォルトは、リスト形式のセットを表示する (例えば 0,1)。
+バージョン 2.30 以前では、マスクはプレフィックス 0x を付けて表示されていた点に注意すること。
+.TP
+.BR \-y , " \-\-physical"
+.\"O Display physical IDs for all columns with topology elements (core, socket, etc.).
+.\"O Other than logical IDs, which are assigned by \fBlscpu\fP, physical IDs are
+.\"O platform-specific values that are provided by the kernel. Physical IDs are not
+.\"O necessarily unique and they might not be arranged sequentially.
+.\"O If the kernel could not retrieve a physical ID for an element \fBlscpu\fP prints
+.\"O the dash (-) character.
+トポロジー要素 (コア、ソケットなど) の全てのカラムに対して、
+論理 ID ではなく、物理 ID を表示する。
+論理 ID は \fBlscpu\fP によって割り当てられたものであり、
+物理 ID はカーネルによって提供されるプラットフォーム固有の値である。
+物理 ID は一意である必要はなく、順番に割り当てられていない可能性がある。
+カーネルがトポロジー要素の物理 ID を取得できない場合、
+\fBlscpu\fP はダッシュ (-) 文字を表示する。
+
+.\"O The CPU logical numbers are not affected by this option.
+CPU の論理番号は、このオプションに影響されない。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.B \-\-output\-all
+.\"O Output all available columns.  This option must be combined with either
+.\"O .BR \-\-extended ", " \-\-parse " or " \-\-caches .
+全ての利用可能なカラムを出力する。
+このオプションは、
+.BR \-\-extended ", " \-\-parse ", " \-\-caches
+のいずれかと組み合わせなければならない。
+.\"O .SH BUGS
+.SH バグ
+.\"O The basic overview of CPU family, model, etc. is always based on the first
+.\"O CPU only.
+CPU のファミリー、モデルなどの概要は、常に最初の CPU にのみ基づいている。
+
+.\"O Sometimes in Xen Dom0 the kernel reports wrong data.
+Xen Dom0 では時折、カーネルが間違ったデータを報告することがある。
+
+.\"O On virtual hardware the number of cores per socket, etc. can be wrong.
+仮想ハードウェアでは、ソケットあたりのコア数などが正しくない場合がある。
+.\"O .SH AUTHORS
+.SH 著者
+.nf
+Cai Qian <qcai@redhat.com>
+Karel Zak <kzak@redhat.com>
+Heiko Carstens <heiko.carstens@de.ibm.com>
+.fi
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR chcpu (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The lscpu command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+lscpu コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
