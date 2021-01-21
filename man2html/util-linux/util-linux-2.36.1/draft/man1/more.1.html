@@ -1,0 +1,508 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MORE</TITLE>
+</HEAD><BODY>
+<H1>MORE</H1>
+Section: User Commands (1)<BR>Updated: March 2020<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+more - CRT でファイルを閲覧するためのフィルター
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>more</B>
+
+[options]
+<I>file</I>...
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+<B>more</B>
+
+は、テキストを一画面ずつ表示するフィルターである。
+本コマンドは基本的な機能だけを備えている。
+<B><A HREF="../man1/less.1.html">less</A></B>(1)
+
+は
+<B><A HREF="../man1/more.1.html">more</A></B>(1)
+
+をエミュレートし、さらに拡張機能を有する。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+
+
+
+
+オプションは環境変数
+<B>MORE</B>
+
+によっても指定される (必ず
+(<B>-</B>)
+
+(ダッシュ) を前につけること) が、
+コマンドラインオプションが優先される。
+<DL COMPACT>
+<DT><B>-d</B>,<B> --silent</B>
+
+<DD>
+
+
+
+&quot;[スペースキーを押すと続き、'q' で終了。]&quot; とユーザーに促し、
+不適切なキー入力に対しては、
+ビープ音を鳴らす代わりに &quot;['h' キーで操作方法]&quot; と表示する。
+<DT><B>-l</B>,<B> --logical</B>
+
+<DD>
+
+
+
+<B>^L</B>
+
+(改頁) を含む行で停止しない。
+<DT><B>-f</B>,<B> --no-pause</B>
+
+<DD>
+
+画面行数の代わりに、論理行をカウントする。
+(すなわち、長い行が折り返されない。)
+<DT><B>-p</B>,<B> --print-over</B>
+
+<DD>
+
+スクロールしない。
+その代わりに、全画面消去してからテキストを表示する。
+
+
+
+このオプションは、実行ファイルが
+<B>page</B>
+
+という名前の場合、自動的に有効にされる。
+<DT><B>-c</B>,<B> --clean-print</B>
+
+<DD>
+
+
+スクロールしない。
+その代わりに、表示されたままの行を消しながら、上端から各画面を
+表示する。
+<DT><B>-s</B>,<B> --squeeze</B>
+
+<DD>
+
+複数の空行を一行にする。
+<DT><B>-u</B>,<B> --plain</B>
+
+<DD>
+
+
+下線を付けない。
+このオプションは、後方互換性のため、黙って無視される。
+<DT><B>-n</B>, <B>--lines </B><I>number</I><DD>
+
+
+
+
+
+
+
+
+スクリーンサイズを
+<I>number</I>
+
+行に指定する。
+<I>number</I>
+
+引き数は正の整数である。
+<B>--lines</B>
+
+オプションは、端末によって返される行数といった、
+他から得られる値を上書きする。
+<DT><B>-</B><I>number</I>
+
+<DD>
+
+
+
+数値のオプションは、
+<B>--lines</B>
+
+オプションの引き数と同じ意味である。
+<DT><B>+</B><I>number</I>
+
+<DD>
+
+
+各ファイルを
+<I>number</I>
+
+行目から表示する。
+<DT><B>+/</B><I>string</I>
+
+<DD>
+
+
+
+各ファイルが表示される前に
+<I>string</I>
+
+を検索する。
+<DT><B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>コマンド</H2>
+
+
+
+
+
+<B>more</B>
+
+の対話的コマンドは、
+<B><A HREF="../man1/vi.1.html">vi</A></B>(1)
+
+をベースにしている。
+
+
+幾つかのコマンドは、10 進数値を前につけることができる。
+下記の説明においてはその数値は k と表されている。
+
+
+
+<B>^X</B>
+
+は
+<B>control-X</B>
+
+を表す。
+<P>
+
+<DL COMPACT><DT><DD>
+
+<DL COMPACT>
+<DT>
+<DD>
+<B>h</B>&nbsp;または<B>&nbsp;?</B>
+
+
+
+ヘルプ。これらのコマンドのまとめを表示する。
+もし他のコマンドをすっかり忘れたのなら、
+これを思い出すと良い。
+<DT><B>SPACE</B>
+
+<DD>
+
+k 行先を表示する。
+デフォルトは現在の画面行数。
+<DT><B>z</B>
+
+<DD>
+
+
+k 行先を表示する。
+デフォルトは、現在の画面行数。
+引き数が新たなデフォルトとなる。
+<DT><B>RETURN</B>
+
+<DD>
+
+k 行先を表示する。
+デフォルトは 1。
+引き数が新たなデフォルトとなる。
+<DT>
+<DD>
+<B>d</B>&nbsp;または<B>&nbsp;^D</B>
+
+
+
+k 行スクロールする。
+デフォルトは現在のスクロールサイズ、最初は 11。
+引き数が新たなデフォルトとなる。
+<DT>
+<DD>
+<B>q</B>&nbsp;または<B>&nbsp;Q</B>&nbsp;または<B>&nbsp;INTERRUPT</B>
+
+
+終了する。
+<DT><B>s</B>
+
+<DD>
+
+k 行先にスキップする。
+デフォルトは 1。
+<DT><B>f</B>
+
+<DD>
+
+k 回画面をスクロールする。
+デフォルトは 1。
+<DT>
+<DD>
+<B>b</B>&nbsp;または<B>&nbsp;^B</B>
+
+
+
+k 回画面をバックスクロールする。
+デフォルトは 1。
+ファイルに対してのみ動作する。パイプに対しては動作しない。
+<DT><B>'</B>
+
+<DD>
+
+前回検索を開始した場所に戻る。
+<DT><B>=</B>
+
+<DD>
+
+現在の行数を表示する。
+<DT><B>/pattern</B>
+
+<DD>
+
+正規表現に k 回目に合致する文字列を検索する。
+デフォルトは 1。
+<DT><B>n</B>
+
+<DD>
+
+前回指定した正規表現に k 回目に合致する文字列を検索する。
+デフォルトは 1。
+<DT>
+<DD>
+<B>!command</B>&nbsp;または<B>&nbsp;:!command</B>
+
+
+
+
+<I>command</I>
+
+をサブシェルで実行する。
+<DT><B>v</B>
+
+<DD>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+現在の行でエディタを起動する。
+エディタは、環境変数
+<B>VISUAL</B>
+
+が定義されていれば
+<B>VISUAL</B>
+
+から、
+<B>VISUAL</B>
+
+が未定義で、
+<B>EDITOR</B>
+
+が定義されていれば
+<B>EDITOR</B>
+
+で指定されているものを起動する。
+どちらも未定義ならデフォルトとして
+<B>vi</B>
+
+を起動する。
+<DT><B>^L</B>
+
+<DD>
+
+画面を再描画する。
+<DT><B>:n</B>
+
+<DD>
+
+k 個目のファイルに移動する。
+デフォルトは 1。
+<DT><B>:p</B>
+
+<DD>
+
+k 個前のファイルに移動する。
+デフォルトは 1。
+<DT><B>:f</B>
+
+<DD>
+
+ファイル名と行数を表示する。
+<DT><B>.</B>
+
+<DD>
+
+前回のコマンドを繰り返す。
+</DL>
+</DL>
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>環境変数</H2>
+
+
+
+
+<B>more</B>
+
+コマンドは、下記の環境変数があれば適用する。
+<DL COMPACT>
+<DT><B>MORE</B>
+
+<DD>
+
+
+<B>more</B>
+
+に対する好みのオプションをセットする。
+<DT><B>SHELL</B>
+
+<DD>
+
+使用中のシェル (通常ログイン時にシェルによってセットされる)。
+<DT><B>TERM</B>
+
+<DD>
+
+
+<B>more</B> が使用するターミナルタイプ。
+スクリーン操作に必要なターミナルの特徴を得るために利用される。
+<DT><B>VISUAL</B>
+
+<DD>
+
+
+
+ユーザが使用したいエディタ。
+コマンドキー
+<I>v</I>
+
+が押された場合に起動される。
+<DT><B>EDITOR</B>
+
+<DD>
+
+
+
+<B>VISUAL</B>
+
+が指定されていない場合のエディタの選択肢。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+
+
+
+
+<B>more</B>
+
+コマンドは 3.0BSD に登場した。
+この man ページは
+現在 Linux コミュニティで利用されている
+<B>more</B>
+
+バージョン 5.19 (Berkeley 6/29/88) について書かれている。
+ドキュメントの作成に当っては、他の数種類のバージョンの man ページを利用し、
+ソースコードの徹底的なチェックを行った。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+Eric Shienbrood, UC Berkeley
+<BR>
+
+
+Geoff Peck, UCB が下線と 1 つ空白にする修正を行った。
+<BR>
+
+
+John Foderaro, UCB が -c と MORE 環境変数の追加を行った。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/less.1.html">less</A></B>(1),
+
+<B><A HREF="../man1/vi.1.html">vi</A></B>(1)
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+more コマンドは、util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">コマンド</A><DD>
+<DT><A HREF="#lbAG">環境変数</A><DD>
+<DT><A HREF="#lbAH">履歴</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:21:40 GMT, January 21, 2021
+</BODY>
+</HTML>
