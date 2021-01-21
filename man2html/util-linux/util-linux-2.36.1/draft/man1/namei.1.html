@@ -1,0 +1,196 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of NAMEI</TITLE>
+</HEAD><BODY>
+<H1>NAMEI</H1>
+Section: User Commands (1)<BR>Updated: June 2011<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+namei - 終端が見つかるまでパス名を辿る
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>namei</B>
+
+[options]
+<I>pathname</I>...
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>namei</B>
+
+は、引き数を (シンボリックリンク・ファイル・ディレクトリなどの)
+任意タイプの Unix ファイルへのパス名として解釈する。 
+
+
+
+<B>namei</B>
+
+は、(ファイル・ディレクトリ・キャラクタデバイスなどの)
+終端が見つかるまでパス名を辿る。
+
+
+シンボリックリンクが見つかった場合、
+リンクを表示して、内容をインデントしながら出力してリンクを辿り始める。
+<P>
+
+
+
+このプログラムは
+「シンボリックリンクのレベルが深すぎる」という問題を
+見付けるために役立つ。
+<P>
+
+
+
+
+出力の各行について、
+<B>namei</B>
+
+は見つかったファイルタイプを識別するための以下の文字を出力する:
+<P>
+
+<PRE>
+   f: = 解決するために入力したバス名
+    d = ディレクトリ
+    l = シンボリックリンク (リンクとリンクの内容の両方を出力する)
+    s = ソケット
+    b = ブロックデバイス
+    c = キャラクタデバイス
+    - = 通常のファイル
+    ? = 何かのエラー
+</PRE>
+
+<P>
+
+
+
+
+<B>namei</B>
+
+は、システムで許容されているシンボリックリンクの最大数を超えている場合、
+情報メッセージを表示する。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-l</B>,<B> --long</B>
+
+<DD>
+
+長いリスト形式を使う (<B>-m -o -v</B> と同じ)。
+<DT><B>-m</B>,<B> --modes</B>
+
+<DD>
+
+
+各ファイルタイプのモードを
+'rwxr-xr-x' のような <A HREF="../man1/ls.1.html">ls</A>(1) の形式で表示する。
+<DT><B>-n</B>,<B> --nosymlinks</B>
+
+<DD>
+
+シンボリックリンクを辿らない。
+<DT><B>-o</B>,<B> --owners</B>
+
+<DD>
+
+各ファイルの所有者名とグループ名を表示する。
+<DT><B>-v</B>,<B> --vertical</B>
+
+<DD>
+
+モードと所有者を縦に揃えて表示する。
+<DT><B>-x</B>,<B> --mountpoints</B>
+
+<DD>
+
+マウントポイントになっているディレクトリを
+'d' ではなく 'D' を使って示す。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>バグ</H2>
+
+
+見つかるだろう。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>著者</H2>
+
+
+
+
+元々の
+<B>namei</B>
+
+プログラムは Roger Southwick &lt;<A HREF="mailto:rogers@amadeus.wr.tek.com">rogers@amadeus.wr.tek.com</A>&gt; によって書かれた。
+<P>
+
+このプログラムは Karel Zak &lt;<A HREF="mailto:kzak@redhat.com">kzak@redhat.com</A>&gt; によって書き直された。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/ls.1.html">ls</A></B>(1),
+
+<B><A HREF="../man1/stat.1.html">stat</A></B>(1),
+
+<B><A HREF="../man7/symlink.7.html">symlink</A></B>(7)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+namei コマンドは、util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">バグ</A><DD>
+<DT><A HREF="#lbAG">著者</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:43:37 GMT, January 21, 2021
+</BODY>
+</HTML>
