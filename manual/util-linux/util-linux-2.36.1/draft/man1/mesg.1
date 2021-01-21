@@ -1,0 +1,179 @@
+.\" Copyright (c) 1987, 1990, 1993
+.\"	The Regents of the University of California.  All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by the University of
+.\"	California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"	@(#)mesg.1	8.1 (Berkeley) 6/6/93
+.\"
+.\" %FreeBSD: src/usr.bin/mesg/mesg.1,v 1.7 1999/08/28 01:03:59 peter Exp %
+.\" $FreeBSD: doc/ja_JP.eucJP/man/man1/mesg.1,v 1.6 2001/05/14 01:07:26 horikawa Exp $
+.\" Updated Wed May 11 JST 2005 by Kentaro Shirakata <argrath@ub32.org>
+.\" Updated & Modified Sun Jul 28 23:22:24 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Thu Jan 21 21:53:06 JST 2021 by Yuichi SATO
+.\"
+.TH MESG 1 "July 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O mesg \- display (or do not display) messages from other users
+mesg \- 他ユーザからのメッセージを表示する (表示しない)
+.\"O .SH SYNOPSIS
+.SH 書式
+.B mesg
+[option]
+.RB [ n | y ]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The
+.\"O .B mesg
+.\"O utility is invoked by a user to control write access others have to the
+.\"O terminal device associated with standard error output.  If write access
+.\"O is allowed, then programs such as
+.\"O .BR talk (1)
+.\"O and
+.\"O .BR write (1)
+.\"O may display messages on the terminal.
+.B mesg
+は、他ユーザからのメッセージの書き込みを許すかどうかを
+決めるためのユーティリティである。
+メッセージは、標準エラー出力と結びついている端末デバイスに出力される。
+書き込みが許可されていれば、
+.BR talk (1)
+や
+.BR write (1)
+などのプログラムを使って端末にメッセージを送ることができる。
+.PP
+.\"O Traditionally, write access is allowed by default.  However, as users
+.\"O become more conscious of various security risks, there is a trend to remove
+.\"O write access by default, at least for the primary login shell.  To make
+.\"O sure your ttys are set the way you want them to be set,
+.\"O .B mesg
+.\"O should be executed in your login scripts.
+伝統的に、デフォルトでは書き込みは許可されている。
+しかし、ユーザーが様々なセキュリティリスクに敏感になるにつれ、
+少なくとも最初のログインシェルではデフォルトでは書き込みを許可しない
+傾向がある。
+自分の端末の設定を確実に行うためには、
+.B mesg
+をログインスクリプトで実行するべきである。
+.PP
+.\"O The
+.\"O .B mesg
+.\"O utility silently exits with error status 2 if not executed on terminal.  In this
+.\"O case execute
+.\"O .B mesg
+.\"O is pointless.  The command line option \fB\-\-verbose\fR forces
+.\"O mesg to print a warning in this situation.  This behaviour has been introduced
+.\"O in version 2.33.
+.B mesg
+ユーティリティは、端末で実行されない場合、エラーステータス 2 で黙って終了する。
+この場合、
+.B mesg
+の実行は意味がない。
+コマンドラインオプション \fB\-\-verbose\fR を指定すると、
+このような状況で、mesg に警告を出させる。
+この挙動は、バージョン 2.33 で導入された。
+.\"O .SH ARGUMENTS
+.SH 引き数
+.TP
+.B n
+.\"O Disallow messages.
+メッセージを表示しない。
+.TP
+.B y
+.\"O Allow messages to be displayed.
+メッセージを表示する。
+.PP
+.\"O If no arguments are given,
+.\"O .B mesg
+.\"O shows the current message status on standard error output.
+引き数なしで起動された場合、
+.B mesg
+は現在のメッセージ表示の許可・不許可についての設定を、
+標準エラー出力に出力する。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-v , " \-\-verbose"
+.\"O Explain what is being done.
+実行していることを表示する。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH EXIT STATUS
+.SH 返り値
+.\"O The
+.\"O .B mesg
+.\"O utility exits with one of the following values:
+.B mesg
+は以下のうちのいずれかを返り値として返す。
+.RS 4
+.TP
+.B "\ 0"
+.\"O Messages are allowed.
+メッセージを表示する。
+.TP
+.B "\ 1"
+.\"O Messages are not allowed.
+メッセージを表示しない。
+.TP
+.B ">1"
+.\"O An error has occurred.
+エラーが発生した。
+.RE
+.\"O .SH FILES
+.SH ファイル
+.I /dev/[pt]ty[pq]?
+.\"O .SH HISTORY
+.SH 履歴
+.\"O A
+.\"O .B mesg
+.\"O command appeared in Version 6 AT&T UNIX.
+.B mesg
+コマンドは Version 6 AT&T UNIX から登場した。
+
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR login (1),
+.BR talk (1),
+.BR write (1),
+.BR wall (1),
+.BR xterm (1)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The mesg command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+mesg コマンドは、util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
