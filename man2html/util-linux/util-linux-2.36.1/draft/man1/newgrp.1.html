@@ -1,0 +1,112 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of NEWGRP</TITLE>
+</HEAD><BODY>
+<H1>NEWGRP</H1>
+Section: User Commands (1)<BR>Updated: October 1993<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+newgrp -　新たなグループへのログイン
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>newgrp</B>
+
+[<I>group</I>]
+
+
+
+
+
+
+
+
+
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+<B>newgrp</B>
+
+は呼出し側のグループ ID を変更する、
+<B><A HREF="../man1/login.1.html">login</A></B>(1)
+
+に類似している。
+同じ人がログイン状態のままであり、またカレントディレクトリも変わらない。
+しかしファイルのアクセス権の計算は新しいグループ ID について実行される。
+<P>
+
+グループが指定されなかった場合、GID はログイン時の GID を変更する。
+
+
+
+
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/etc/group</I>
+
+<BR>
+
+<I>/etc/passwd</I>
+
+<P>
+
+
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>著者</H2>
+
+原文は Michael Haardt による。
+現在のメンテナンスは Peter Orbaek (<A HREF="mailto:poe@daimi.aau.dk">poe@daimi.aau.dk</A>) による。
+<P>
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/login.1.html">login</A></B>(1),
+
+<B><A HREF="../man5/group.5.html">group</A></B>(5)
+
+<P>
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+newgrp コマンドは、util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">ファイル</A><DD>
+<DT><A HREF="#lbAF">著者</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:52:14 GMT, January 21, 2021
+</BODY>
+</HTML>
