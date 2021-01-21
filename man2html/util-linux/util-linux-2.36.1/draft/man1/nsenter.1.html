@@ -1,0 +1,567 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of NSENTER</TITLE>
+</HEAD><BODY>
+<H1>NSENTER</H1>
+Section: User Commands (1)<BR>Updated: June 2013<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+nsenter - 別の名前空間でプログラムを実行する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>nsenter</B>
+
+[options]
+[<I>program</I>
+
+[<I>arguments</I>]]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+<B>nsenter</B>
+
+コマンドは、
+<I>program</I>
+
+を (下記で説明する) コマンドラインオプションで指定された名前空間で実行する。
+
+<I>program</I> が指定されない場合、``${SHELL}'' が実行される (デフォルト: /bin:/sh)。
+<P>
+
+
+入ることができる名前空間は以下の通り:
+<DL COMPACT>
+<DT><B>マウント名前空間</B>
+
+<DD>
+
+
+
+
+
+ファイルシステムのマウントとアンマウントが、他のファイルシステムに
+影響しない。
+ただし、明示的に共有 (shared) とマークされているファイルシステムは除く
+(共有は <B>mount --make-:shared</B> で行われる;
+<I>/proc:/self:/mountinfo</I> の <B>shared</B> フラグを参照すること)。
+
+
+
+
+
+
+より詳細は、
+<B><A HREF="../man7/mount_namespaces.7.html">mount_namespaces</A></B>(7)
+
+と、
+<B><A HREF="../man2/clone.2.html">clone</A></B>(2)
+
+の
+<B>CLONE_NEWNS</B>
+
+フラグの議論を参照すること。
+<DT><B>UTS 名前空間</B>
+
+<DD>
+
+
+ホスト名とドメイン名の設定が、システムの他の部分に影響しない。
+
+
+より詳細は、
+<B><A HREF="../man7/uts_namespaces.7.html">uts_namespaces</A></B>(7)
+
+を参照すること。
+<DT><B>IPC 名前空間</B>
+
+<DD>
+
+
+
+
+POSIX メッセージキューと、System V メッセージキュー、
+セマフォセット、共有メモリセグメントについて、プロセスは独立した
+名前空間を持つ。
+
+
+
+
+
+
+
+より詳細は、
+<B><A HREF="../man7/ipc_namespaces.7.html">ipc_namespaces</A></B>(7)
+
+を参照すること。
+<DT><B>ネットワーク名前空間</B>
+
+<DD>
+
+
+
+
+
+
+
+プロセスが独立した IPv4 と IPv6 スタック、IP ルーティングテーブル、
+ファイアウォールルール、
+<I>/proc:/net</I>
+
+と
+<I>/sys:/class:/net</I>
+
+のディレクトリツリー、ソケットなどを持つ。
+
+
+より詳細は、
+<B><A HREF="../man7/network_namespaces.7.html">network_namespaces</A></B>(7)
+
+を参照すること。
+<DT><B>PID 名前空間</B>
+
+<DD>
+
+
+
+
+<B>nsenter</B>
+
+プロセスとは別に、子プロセスがプロセスマッピングをするための PID セットを持つ。
+
+
+
+PID 名前空間を変更する場合、デフォルトでは
+<B>nsenter</B>
+
+は fork を行う。
+そのため、新しいプログラムとその子プロセスは、同じ PID 名前空間を共有し、
+お互いに見えるようになる。
+
+<B>--no-fork</B> が使われた場合、新しいプログラムは fork なしで exec される。
+
+
+より詳細は、
+<B><A HREF="../man7/pid_namespaces.7.html">pid_namespaces</A></B>(7)
+
+を参照すること。
+<DT><B>ユーザー名前空間</B>
+
+<DD>
+
+
+プロセスが個別の UID、GID、ケーパビリティ (capabilities) のセットを持つ。
+
+
+より詳細は、
+<B><A HREF="../man7/user_namespaces.7.html">user_namespaces</A></B>(7)
+
+を参照すること。
+<DT><B>コントロールグループ (cgroup) 名前空間</B>
+
+<DD>
+
+
+
+プロセスが <I>/proc:/self:/cgroup</I> の仮想化されたビューを持ち、
+新しい cgroup マウントで名前空間の cgroup ルートがルートにされる。
+
+
+より詳細は、
+<B><A HREF="../man7/cgroup_namespaces.7.html">cgroup_namespaces</A></B>(7)
+
+を参照すること。
+<DT><B>時間 (time) 名前空間</B>
+
+<DD>
+
+
+
+
+
+
+プロセスが
+<B>CLOCK_MONOTONIC</B>
+
+かつ/または
+<B>CLOCK_BOOTTIME</B>
+
+の異なるビューを持ち、<I>/proc/self/timens_offsets</I> で変更できる。
+
+
+より詳細は、
+<B><A HREF="../man7/time_namespaces.7.html">time_namespaces</A></B>(7)
+
+を参照すること。
+
+</DL>
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+
+
+下記の名前空間に関連したいろいろなオプションが、オプションとして
+<I>file</I>
+
+引き数をとる。
+
+
+
+
+
+ファイルは
+<B><A HREF="../man7/namespaces.7.html">namespaces</A></B>(7)
+
+に記載されている
+<I>/proc/[pid]/ns/*</I>
+
+ファイルのうちの 1 つ、または、これらのファイルの上に作られた
+bind マウントのパス名でなければならない。
+<DL COMPACT>
+<DT><B>-a</B>, <B>--all</B><DD>
+
+
+
+
+対象プロセスの全ての名前空間を、デフォルトの
+<I>/proc/[pid]/ns/*</I>
+
+名前空間パスに入れる。
+対象プロセスの名前空間のデフォルトパスは、名前空間固有の
+オプションで上書きできる (例えば --all --mount=[path])。
+<P>
+
+
+
+
+
+呼び出し元の現在のユーザー名前空間と同じ場合、ユーザー名前空間は
+無視される。
+これは、ケーパビリティを削除した呼び出し元が、
+setns() を呼び出して、そのケーパビリティを再取得することを防ぐ。
+より詳細は
+<B><A HREF="../man2/setns.2.html">setns</A></B>(2)
+
+を参照すること。
+<DT><B>-t</B>, <B>--target</B> <I>pid</I><DD>
+
+
+
+
+コンテキストを取得する対象プロセスを指定する。
+<I>pid</I>
+
+で指定されるコンテキストのパスは以下の通り:
+<DL COMPACT><DT><DD>
+
+<DL COMPACT>
+<DT><DD>
+<DT>/proc/<I>pid</I>/ns/mnt<DD>
+
+マウント名前空間
+<DT>/proc/<I>pid</I>/ns/uts<DD>
+
+UTS 名前空間
+<DT>/proc/<I>pid</I>/ns/ipc<DD>
+
+IPC 名前空間
+<DT>/proc/<I>pid</I>/ns/net<DD>
+
+ネットワーク名前空間
+<DT>/proc/<I>pid</I>/ns/pid<DD>
+
+PID 名前空間
+<DT>/proc/<I>pid</I>/ns/user<DD>
+
+ユーザー名前空間
+<DT>/proc/<I>pid</I>/ns/cgroup<DD>
+
+cgroup 名前空間
+<DT>/proc/<I>pid</I>/ns/time<DD>
+
+時間名前空間
+<DT>/proc/<I>pid</I>/root<DD>
+
+ルートディレクトリ
+<DT>/proc/<I>pid</I>/cwd<DD>
+
+ワーキングディレクトリ
+
+</DL>
+</DL>
+
+<DT><B>-m</B>, <B>--mount</B>[=<I>file</I>]<DD>
+
+
+マウント名前空間に入れる。
+<I>file</I>
+
+が指定されない場合、対象プロセスのマウント名前空間に入れる。
+
+
+
+
+
+<I>file</I>
+
+が指定された場合、
+<I>file</I>
+
+で指定されたマウント名前空間に入れる。
+<DT><B>-u</B>, <B>--uts</B>[=<I>file</I>]<DD>
+
+
+UTS 名前空間に入れる。
+<I>file</I>
+
+が指定されない場合、対象プロセスの UTS 名前空間に入れる。
+
+
+
+
+<I>file</I>
+
+が指定された場合、
+<I>file</I>
+
+で指定された UTS 名前空間に入れる。
+<DT><B>-i</B>, <B>--ipc</B>[=<I>file</I>]<DD>
+
+
+IPC 名前空間に入れる。
+<I>file</I>
+
+が指定されない場合、対象プロセスの IPC 名前空間に入れる。
+
+
+
+
+<I>file</I>
+
+が指定された場合、
+<I>file</I>
+
+で指定された IPC 名前空間に入れる。
+<DT><B>-n</B>, <B>--net</B>[=<I>file</I>]<DD>
+
+
+ネットワーク名前空間に入れる。
+<I>file</I>
+
+が指定されない場合、対象プロセスのネットワーク名前空間に入れる。
+
+
+
+
+<I>file</I>
+
+が指定された場合、
+<I>file</I>
+
+で指定されたネットワーク名前空間に入れる。
+<DT><B>-p</B>, <B>--pid</B>[=<I>file</I>]<DD>
+
+
+PID 名前空間に入れる。
+<I>file</I>
+
+が指定されない場合、対象プロセスの PID 名前空間に入れる。
+
+
+
+
+<I>file</I>
+
+が指定された場合、
+<I>file</I>
+
+で指定された PID 名前空間に入れる。
+<DT><B>-U</B>, <B>--user</B>[=<I>file</I>]<DD>
+
+
+ユーザー名前空間に入れる。
+<I>file</I>
+
+が指定されない場合、対象プロセスのユーザー名前空間に入れる。
+
+
+
+
+<I>file</I>
+
+が指定された場合、
+<I>file</I>
+
+で指定されたユーザー名前空間に入れる。
+
+<B>--setuid</B> と <B>--setgid</B> オプションも参照すること。
+<DT><B>-C</B>, <B>--cgroup</B>[=<I>file</I>]<DD>
+
+
+cgroup 名前空間に入れる。
+<I>file</I>
+
+が指定されない場合、対象プロセスの cgroup 名前空間に入れる。
+
+
+
+
+<I>file</I>
+
+が指定された場合、
+<I>file</I>
+
+で指定された cgroup 名前空間に入れる。
+<DT><B>-T</B>, <B>--time</B>[=<I>file</I>]<DD>
+
+
+時間名前空間に入れる。
+ファイルが指定されない場合、対象プロセスの時間名前空間に入れる。
+
+
+
+
+<I>file</I>
+
+が指定された場合、
+<I>file</I>
+
+で指定された時間名前空間に入れる。
+<DT><B>-G</B>, <B>--setgid</B> <I>gid</I><DD>
+
+
+入った名前空間で使われるグループ ID を設定する。
+補助 (supplementary) グループは落とされる。
+
+
+<B><A HREF="../man1/nsenter.1.html">nsenter</A></B>(1)
+
+は常にユーザー名前空間で GID を設定し、デフォルトは 0 である。
+<DT><B>-S</B>, <B>--setuid</B> <I>uid</I><DD>
+
+入った名前空間で使われるユーザー ID を設定する。
+
+
+<B><A HREF="../man1/nsenter.1.html">nsenter</A></B>(1)
+
+は常にユーザー名前空間で UID を設定し、デフォルトは 0 である。
+<DT><B>--preserve-credentials</B><DD>
+
+
+ユーザー名前空間に入ったときに、UID と GID を変更しない。
+デフォルトでは、補助グループを落とし、GID と UID を 0 にする。
+<DT><B>-r</B>, <B>--root</B>[=<I>directory</I>]<DD>
+
+
+
+ルートディレクトリを設定する。
+ディレクトリが指定されない場合、ルートディレクトリは、
+対象プロセスのルートディレクトリに設定される。
+ディレクトリが指定された場合、ルートディレクトリは、指定された
+ルートディレクトリに設定される。
+<DT><B>-w</B>, <B>--wd</B>[=<I>directory</I>]<DD>
+
+
+
+ワーキングディレクトリを設定する。
+ディレクトリが指定されない場合、ワーキングディレクトリは、
+対象プロセスのワーキングディレクトリに設定される。
+ディレクトリが指定された場合、ワーキングディレクトリは、指定された
+ワーキングディレクトリに設定される。
+<DT><B>-F</B>, <B>--no-fork</B><DD>
+
+
+
+指定されたプログラムを exec する前に、fork しない。
+デフォルトでは、PID 名前空間に入る際、
+<B>nsenter</B> は <B>exec</B> を呼ぶ前に <B>fork</B> を呼ぶので、
+新しく入った PID 名前空間に子プロセスも入る。
+<DT><B>-Z</B>, <B>--follow-context</B><DD>
+
+
+
+<B>--target</B> PID で指定された既存の実行中プロセスに基づいて、
+新しいプロセスを実行するのに使う SELinux セキュリティコンテキストを設定する。
+<BR>&nbsp;(util-linux&nbsp;が&nbsp;SELinux&nbsp;をサポートするようにコンパイルされている必要がある。
+さもなければ、このオプションは利用できない。)
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>著者</H2>
+
+
+Eric Biederman
+
+<BR>
+
+
+Karel Zak
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/clone.2.html">clone</A></B>(2),
+
+<B><A HREF="../man2/setns.2.html">setns</A></B>(2),
+
+<B><A HREF="../man7/namespaces.7.html">namespaces</A></B>(7)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+nsenter コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">著者</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:24:37 GMT, January 21, 2021
+</BODY>
+</HTML>
