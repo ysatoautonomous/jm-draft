@@ -1,0 +1,253 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LOOK</TITLE>
+</HEAD><BODY>
+<H1>LOOK</H1>
+Section: User Commands (1)<BR>Updated: June 2011<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+look - 指定した文字列で始まる行を表示する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>look</B>
+
+[options]
+<I>string </I>[<I>file</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+<B>look</B>
+
+ユーティリティは、
+<I>file</I>
+
+の各行のうち、
+<I>string</I>
+
+で指定された文字列で始まっている行を表示する。
+
+
+
+
+
+
+
+
+
+
+<B>look</B>
+
+は二分検索を使っているため、
+<I>file</I>
+
+で指定するファイルはソートしておかなければならない
+(<B>look</B>
+
+で
+<B>-d</B>
+
+オプションを使うときにはソートするときの
+<B><A HREF="../man1/sort.1.html">sort</A></B>(1)
+
+にも
+<B>-d</B>
+
+を使い、
+<B>-f</B>
+
+オプションを使うときは
+<B><A HREF="../man1/sort.1.html">sort</A></B>(1)
+
+でも
+<B>-f</B>
+
+を使うこと)。
+<P>
+
+
+
+
+
+
+
+<I>file</I>
+
+が指定されなかった場合は
+<I>/usr/share/dict/words</I>
+
+が使用され、
+アルファベットと数字だけで比較され、
+アルファベットの大文字小文字の違いは無視される。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-a</B>,<B> --alternative</B>
+
+<DD>
+
+別の辞書を使用する。
+<DT><B>-d</B>,<B> --alphanum</B>
+
+<DD>
+
+
+
+通常の辞書で使用されている空白とアルファベットと数字だけを
+比較対象とする。
+これはファイルが指定されていない場合のデフォルトである。
+<P>
+
+
+バージョン 2.28 以降で、<B>sort -d</B> との互換性を持たせるため、
+空白が辞書の文字セットに追加された点に注意すること。
+<DT><B>-f</B>,<B> --ignore-case</B>
+
+<DD>
+
+
+アルファベットの大文字、小文字を区別しない。
+これはファイルが指定されていない場合のデフォルトである。
+<DT><B>-t</B>,<B> --terminate </B><I>character</I>
+
+<DD>
+
+
+
+文字列の終端文字を指定する。
+つまり、<I>string</I> のうち　<I>character</I>　が最初に出てくるところまで
+(<I>character</I> を含む) が比較の対象となる。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+</DL>
+<P>
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+
+
+<B>look</B>
+
+ユーティリティは、
+指定の文字列で始まる行が見つかった場合は 0 を、
+見つからなかった場合は 1 を、エラーが起きた場合は 2 以上の値を返す。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT><B>WORDLIST</B>
+
+<DD>
+
+
+単語ファイルのパス。
+環境変数は「ファイル」セクションで定義される単語ファイルより
+優先される。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>ファイル</H2>
+
+<DL COMPACT>
+<DT><B>/usr/share/dict/words</B><DD>
+
+デフォルトで使用される単語ファイル
+<DT><B>/usr/share/dict/web2</B><DD>
+
+もう一つの単語ファイル
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+<B>look</B>
+
+ユーティリティは Version 7 AT&amp;T Unix から登場した。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>例</H2>
+
+<DL COMPACT><DT><DD>
+<PRE>
+sort -d /etc/passwd -o /tmp/look.dict
+look -t: root:foobar /tmp/look.dict
+</PRE>
+
+</DL>
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/grep.1.html">grep</A></B>(1),
+
+<B><A HREF="../man1/sort.1.html">sort</A></B>(1)
+
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+look コマンドは、util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">環境変数</A><DD>
+<DT><A HREF="#lbAH">ファイル</A><DD>
+<DT><A HREF="#lbAI">履歴</A><DD>
+<DT><A HREF="#lbAJ">例</A><DD>
+<DT><A HREF="#lbAK">関連項目</A><DD>
+<DT><A HREF="#lbAL">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:33:39 GMT, January 21, 2021
+</BODY>
+</HTML>
