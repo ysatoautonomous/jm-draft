@@ -1,0 +1,223 @@
+.\" Copyright 2015 Ondrej Oprala(ooprala@redhat.com)
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Apr 11 14:19:10 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Thu Jan 21 21:04:25 JST 2021 by Yuichi SATO
+.\" 
+.TH LSIPC "1" "November 2015" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O lsipc \- show information on IPC facilities currently employed in the system
+lsipc \- システムで現在利用されている IPC 機能 (facilities) の情報を表示する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B lsipc
+[options]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B lsipc
+.\"O shows information on the System V inter-process communication facilities
+.\"O for which the calling process has read access.
+.B lsipc
+は、呼び出しプロセスが読み込みアクセスを持つ、System V
+プロセス間通信 (inter-process communication) 機能の情報を表示する。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+\fB\-i\fR, \fB\-\-id\fR \fIid\fR
+.\"O Show full details on just the one resource element identified by
+.\"O .IR id .
+.I id
+で識別される 1 つのリソース要素の完全な詳細を表示する。
+.\"O This option needs to be combined with one of the three resource options:
+.\"O .BR \-m ,
+.\"O .BR \-q " or"
+.\"O .BR \-s .
+このオプションは、以下の 3 つのリソースオプションのうちの 1 つと組み合わせる必要がある:
+.BR \-m ,
+.BR \-q ,
+.BR \-s .
+.\"O It is possible to override the default output format for this option with the
+.\"O \fB\-\-list\fR, \fB\-\-raw\fR, \fB\-\-json\fR or \fB\-\-export\fR option.
+このオプションのデフォルトの出力形式は、
+\fB\-\-list\fR, \fB\-\-raw\fR, \fB\-\-json\fR,  \fB\-\-export\fR
+オプションで上書きできる。
+.TP
+\fB\-g\fR, \fB\-\-global\fR
+.\"O Show system-wide usage and limits of IPC resources.
+IPC リソースのシステム全体での使用量と制限を表示する。
+.\"O This option may be combined with one of the three resource options:
+.\"O .BR \-m ,
+.\"O .BR \-q " or"
+.\"O .BR \-s .
+このオプションは、以下の 3 つのリソースオプションのうちの 1 つと組み合わせることができる:
+.BR \-m ,
+.BR \-q ,
+.BR \-s .
+.\"O The default is to show information about all resources.
+デフォルトでは全てのリソースの情報を表示する。
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.\"O .SS "Resource options"
+.SS リソースオプション
+.TP
+\fB\-m\fR, \fB\-\-shmems\fR
+.\"O Write information about active shared memory segments.
+アクティブな共有メモリセグメントの情報を書き出す。
+.TP
+\fB\-q\fR, \fB\-\-queues\fR
+.\"O Write information about active message queues.
+アクティブなメッセージキューの情報を書き出す。
+.TP
+\fB\-s\fR, \fB\-\-semaphores\fR
+.\"O Write information about active semaphore sets.
+アクティブなセマフォセットの情報を書き出す。
+.\"O .SS "Output formatting"
+.SS 出力形式
+.TP
+\fB\-c\fR, \fB\-\-creator\fR
+.\"O Show creator and owner.
+作成者と所有者を表示する。
+.TP
+\fB\-e\fR, \fB\-\-export\fR
+.\"O Output data in the format of NAME=VALUE.
+データを NAME=VALUE の形式で出力する。
+.TP
+\fB\-J\fR, \fB\-\-json\fR
+.\"O Use the JSON output format.
+JSON 出力形式を使う。
+.TP
+\fB\-l\fR, \fB\-\-list\fR
+.\"O Use the list output format.  This is the default, except when \fB\-\-id\fR
+.\"O is used.
+リスト出力形式を使う。
+\fB\-\-id\fR が指定されているとき以外は、これがデフォルトである。
+.TP
+\fB\-n\fR, \fB\-\-newline\fR
+.\"O Display each piece of information on a separate line.
+各情報の塊を各行に書き出す。
+.TP
+\fB\-\-noheadings\fR
+.\"O Do not print a header line.
+ヘッダ行を表示しない。
+.TP
+\fB\-\-notruncate\fR
+.\"O Don't truncate output.
+出力を切り詰めない。
+.TP
+\fB\-o\fR, \fB\-\-output \fIlist\fP
+.\"O Specify which output columns to print.  Use
+.\"O .B \-\-help
+.\"O to get a list of all supported columns.
+表示する出力カラムを指定する。
+サポートされる全てのカラムのリストは、
+.B \-\-help
+で取得できる。
+.TP
+\fB\-b\fR, \fB\-\-bytes\fR
+.\"O Print size in bytes rather than in human readable format.
+人が読みやすい形式ではなく、サイズをバイト単位で表示する。
+.TP
+\fB\-r\fR, \fB\-\-raw\fR
+.\"O Raw output (no columnation).
+(カラム揃えをしない) 生の出力。
+.TP
+\fB\-t\fR, \fB\-\-time\fR
+.\"O Write time information.  The time of the last control operation that changed
+.\"O the access permissions for all facilities, the time of the last
+.\"O .BR msgsnd (2)
+.\"O and
+.\"O .BR msgrcv (2)
+.\"O operations on message queues, the time of the last
+.\"O .BR shmat (2)
+.\"O and
+.\"O .BR shmdt (2)
+.\"O operations on shared memory, and the time of the last
+.\"O .BR semop (2)
+.\"O operation on semaphores.
+時刻情報を書き出す。
+全ての機能についてのアクセス権限の変更の操作時刻、
+メッセージキューについての最後の
+.BR msgsnd (2)
+と
+.BR msgrcv (2)
+操作の時刻、
+共有メモリについての最後の
+.BR shmat (2)
+と
+.BR shmdt (2)
+操作の時刻、
+セマフォについての最後の
+.BR semop (2)
+操作の時刻である。
+.TP
+\fB\-\-time\-format\fR \fItype\fP
+.\"O Display dates in short, full or iso format.  The default is short, this time
+.\"O format is designed to be space efficient and human readable.
+時間を short, full, iso 形式で表示する。
+デフォルトは short で、この時間形式はスペースを使わず、人が読みやすいように設計
+されている。
+.TP
+\fB\-P\fR, \fB\-\-numeric\-perms\fR
+.\"O Print numeric permissions in PERMS column.
+PERMS カラムに権限を数値で表示する。
+.\"O .SH EXIT STATUS
+.SH 返り値
+.TP
+0
+.\"O if OK,
+OK である。
+.TP
+1
+.\"O if incorrect arguments specified,
+不正な引き数が指定された。
+.TP
+2
+.\"O if a serious error occurs.
+致命的なエラーが起こった。
+.\"O .SH HISTORY
+.SH 履歴
+.\"O The \fBlsipc\fP utility is inspired by the \fBipcs\fP utility.
+\fBlsipc\fP ユーティリティは \fBipcs\fP ユーティリティに触発されて作成された。
+.\"O .SH AUTHORS
+.SH 著者
+.MT ooprala@redhat.com
+Ondrej Oprala
+.ME
+.br
+.MT kzak@redhat.com
+Karel Zak
+.ME
+
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR ipcmk (1),
+.BR ipcrm (1),
+.BR msgrcv (2),
+.BR msgsnd (2),
+.BR semget (2),
+.BR semop (2),
+.BR shmat (2),
+.BR shmdt (2),
+.BR shmget (2),
+.BR sysvipc (7)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The lsipc command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+lsipc コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
