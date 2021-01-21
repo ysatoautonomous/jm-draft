@@ -1,0 +1,276 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of LSLOGINS</TITLE>
+</HEAD><BODY>
+<H1>LSLOGINS</H1>
+Section: User Commands (1)<BR>Updated: April 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+lslogins - システム上の既知のユーザーの情報を表示する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>lslogins</B>
+
+[options]
+[<B>-s</B>|<B>-u</B>[<B>=</B><I>UID</I>]]
+
+[<B>-g</B> <I>groups</I>]
+
+[<B>-l</B> <I>logins</I>]
+
+[<I>username</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+wtmp ログ、btmp ログ、/etc/shadow (必要な場合) 、/etc/passwd を調べ、
+必要なデータを出力する。
+<P>
+
+
+
+
+
+オプションの引き数 <I>username</I> を指定すると、
+<B>lslogins</B>
+
+は指定されたユーザーのみの入手可能な全ての情報を表示する。
+この場合、出力形式は <B>-l</B> または <B>-g</B> の場合と異なる。
+<I>username</I> が不明な場合、エラーを返す。
+<P>
+<P>
+
+
+デフォルトの動作では、システム上の全てのユーザーの情報を表示する。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+長い形式のオプションで必須な引き数は、短い形式のオプションでも必須である。
+<DL COMPACT>
+<DT><B>-a</B>, <B>--acc-expiration</B><DD>
+
+
+パスワードの最終更新日と、アカウントの失効日の情報を表示する
+(より詳細は <B><A HREF="../man5/shadow.5.html">shadow</A></B>(5) を参照すること)。
+(root 権限が必要である。)
+<DT><B>--btmp-file </B><I>path</I><DD>
+
+btmp の別のパス名。
+<DT><B>-c</B>, <B>--colon-separate</B><DD>
+
+各ユーザの情報を改行ではなくコロンで区切る。
+<DT><B>-e</B>, <B>--export</B><DD>
+
+データを NAME=VALUE の形式で出力する。
+<DT><B>-f</B>, <B>--failed</B><DD>
+
+<P>
+<DT><B>-G</B>, <B>--supp-groups</B><DD>
+
+補助 (supplementary) グループの情報を表示する。
+<DT><B>-g</B>, <B>--groups</B>=<I>groups</I><DD>
+
+
+
+<I>groups</I> に所属するユーザーの情報のみを表示する。
+1 つ以上のグループを指定できる。この場合、リストはカンマで区切る。
+不明なグループ名は無視される。
+<P>
+
+
+
+
+ユーザーが明示的にグループメンバー　(例えば、/etc/group) として指定されていない場合、
+プライマリグループについて、ユーザーとグループの関係が分からない
+点に注意すること。
+コマンド lslogins は、グループデータベースのみを使うのではなく、グループを
+スキャンするので、プライマリ GID を持つユーザーデータベースは全く使われない。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプ情報を表示して、終了する。
+<DT><B>-L</B>, <B>--last</B><DD>
+
+ユーザーの最終ログインセッションの情報を含むデータを表示する。
+<DT><B>-l</B>, <B>--logins</B>=<I>logins</I><DD>
+
+
+
+<I>logins</I> に指定されたログイン情報 (ユーザー名またはユーザー ID) の
+ユーザーの情報のみを表示する。
+1 つ以上のログイン情報を指定できる。
+リストはカンマ区切りの必要がある。
+不明なログイン名は無視される。
+<DT><B>-n</B>, <B>--newline</B><DD>
+
+各情報の塊を各行に書き出す。
+<DT><B>--noheadings</B><DD>
+
+ヘッダ行を表示しない。
+<DT><B>--notruncate</B><DD>
+
+出力を切り詰めない。
+<DT><B>-o</B>, <B>--output </B><I>list</I><DD>
+
+
+
+どの出力カラムを表示するかを指定する。
+<I>list</I> を <I>+list</I> の形式で指定することで、
+デフォルトのカラムのリストを拡張できる。
+<DT><B>--output-all</B>
+
+<DD>
+
+
+
+利用可能な全てのカラムを出力する。
+サポートされる全てのカラムのリストは、
+<B>--help</B>
+
+で取得できる。
+<DT><B>-p</B>, <B>--pwd</B><DD>
+
+パスワードでのログインに関連した情報を表示する (<B>-afL</B> も参照すること)。
+<DT><B>-r</B>, <B>--raw</B><DD>
+
+(カラム揃えをしない) 生の出力。
+<DT><B>-s</B>, <B>--system-accs</B><DD>
+
+
+
+
+システムアカウントを表示する。
+UID が 101 から 999 (を含む) の全てのアカウントがデフォルトである。
+nobody と nfsnobody (UID 65534) は除外される。
+このハードコードされたデフォルトは /etc/login.defs ファイルの
+パラメータ SYS_UID_MIN と SYS_UID_MAX で上書きできる。
+<DT><B>--time-format</B> <I>type</I><DD>
+
+
+時間を short, full, iso 形式で表示する。
+デフォルトは short で、この時間形式はスペースを使わず、人が読みやすいように設計
+されている。
+<DT><B>-u</B>, <B>--user-accs</B><DD>
+
+
+
+
+UID が 1000 以上の全てのアカウントがデフォルトである。
+nobody と nfsnobody (UID 65534) は除外される。
+このハードコードされたデフォルトは /etc/login.defs ファイルの
+パラメータ UID_MIN と UID_MAX で上書きできる。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>--wtmp-file </B><I>path</I><DD>
+
+wtmp の別のパス名。
+<DT><B>--lastlog </B><I>path</I><DD>
+
+lastlog の別のパス名。
+<DT><B>-Z</B>, <B>--context</B><DD>
+
+ユーザーのセキュリティコンテキストを表示する。
+<DT><B>-z</B>, <B>--print0</B><DD>
+
+ユーザーのエントリを、改行ではなく、nul 文字で区切る。
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+<DL COMPACT>
+<DT>0<DD>
+
+OK である。
+<DT>1<DD>
+
+不正な引き数が指定された。
+<DT>2<DD>
+
+致命的なエラーが起こった (例えば、ログが破損していた)。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>注意</H2>
+
+
+UID の閾値のデフォルトは、/etc/login.defs から読み込まれる。
+<P>
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>履歴</H2>
+
+
+<B>lslogins</B> ユーティリティは、<B>logins</B> ユーティリティによって触発され、
+FreeBSD 4.10 で登場した。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+
+Ondrej Oprala
+
+<BR>
+
+
+Karel Zak
+
+<P>
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man5/group.5.html">group</A></B>(5), <B><A HREF="../man5/passwd.5.html">passwd</A></B>(5), <B><A HREF="../man5/shadow.5.html">shadow</A></B>(5), <B><A HREF="../man5/utmp.5.html">utmp</A></B>(5)
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+lslogins コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">注意</A><DD>
+<DT><A HREF="#lbAH">履歴</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 12:21:14 GMT, January 21, 2021
+</BODY>
+</HTML>
