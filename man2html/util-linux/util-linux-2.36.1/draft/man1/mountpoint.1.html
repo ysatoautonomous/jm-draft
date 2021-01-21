@@ -1,0 +1,174 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MOUNTPOINT</TITLE>
+</HEAD><BODY>
+<H1>MOUNTPOINT</H1>
+Section: User Commands (1)<BR>Updated: August 2019<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+mountpoint - ディレクトリまたはファイルがマウントポイントかを見分ける。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>mountpoint</B>
+
+[<B>-d</B>|<B>-q</B>]
+
+<I>directory</I>
+
+|
+<I>file</I>
+
+<P>
+<B>mountpoint</B>
+
+<B>-x</B>
+
+<I>device</I>
+
+<P>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+<B>mountpoint</B>
+
+は、指定された
+<I>directory</I>
+
+または
+<I>file</I>
+
+が /proc/self/mountinfo に記載されているかをチェックする。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-d</B>,<B> --fs-devno</B>
+
+<DD>
+
+
+指定されたディレクトリにマウントされてるデバイスの
+メジャー/マイナー番号を表示する。
+<DT><B>-q</B>,<B> --quiet</B>
+
+<DD>
+
+静かにする - 何も表示しない。
+<DT><B>--nofollow</B>
+
+<DD>
+
+
+
+<I>directory</I>
+
+パスの最後の要素がシンボリックリンクである場合に辿らない。
+<DT><B>-x</B>,<B> --devno</B>
+
+<DD>
+
+指定されたブロックデバイスのメジャー/マイナー番号を表示出力に
+書き出す。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+
+ディレクトリまたはファイルがマウントポイントの場合、0 を返す。
+マウントポイントでない場合、0 以外を返す。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT>LIBMOUNT_DEBUG=all<DD>
+
+libmount のデバッグ出力を有効にする。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+util-linux の
+<B>mountpoint</B>
+
+実装は、libmount のためにスクラッチで書かれた。
+sysvinit スイートの元々のバージョンは、Miquel van Smoorenburg によって書かれた。
+<P>
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+Karel Zak &lt;<A HREF="mailto:kzak@redhat.com">kzak@redhat.com</A>&gt;
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+mountpoint コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">環境変数</A><DD>
+<DT><A HREF="#lbAH">注意</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:34:08 GMT, January 21, 2021
+</BODY>
+</HTML>
