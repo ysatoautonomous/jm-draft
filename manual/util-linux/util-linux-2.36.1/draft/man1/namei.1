@@ -1,0 +1,141 @@
+.\"
+.\" Japanese Version Copyright (c) 2001-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Mon Jan  8 16:42:28 JST 2001
+.\"         by Yuichi SATO <sato@complex.eng.hokudai.ac.jp>
+.\" Updated & Modified Tue Jul 30 14:49:48 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Thu Jan 21 22:41:34 JST 2021 by Yuichi SATO
+.\"
+.TH NAMEI 1 "June 2011" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O namei \- follow a pathname until a terminal point is found
+namei \- 終端が見つかるまでパス名を辿る
+.\"O .SH SYNOPSIS
+.SH 書式
+.B namei
+[options]
+.IR pathname ...
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B namei
+.\"O interprets its arguments as pathnames to any type
+.\"O of Unix file (symlinks, files, directories, and so forth).
+.B namei
+は、引き数を (シンボリックリンク・ファイル・ディレクトリなどの)
+任意タイプの Unix ファイルへのパス名として解釈する。 
+.\"O .B namei
+.\"O then follows each pathname until an endpoint
+.\"O is found (a file, a directory, a device node, etc).
+.B namei
+は、(ファイル・ディレクトリ・キャラクタデバイスなどの)
+終端が見つかるまでパス名を辿る。
+.\"O If it finds a symbolic link, it shows the link, and starts
+.\"O following it, indenting the output to show the context.
+シンボリックリンクが見つかった場合、
+リンクを表示して、内容をインデントしながら出力してリンクを辿り始める。
+.PP
+.\"O This program is useful for finding "too many levels of
+.\"O symbolic links" problems.
+このプログラムは
+「シンボリックリンクのレベルが深すぎる」という問題を
+見付けるために役立つ。
+.PP
+.\"O For each line of output,
+.\"O .B namei
+.\"O uses the following characters to identify the file type found:
+出力の各行について、
+.B namei
+は見つかったファイルタイプを識別するための以下の文字を出力する:
+.LP
+.nf
+.\"O    f: = the pathname currently being resolved
+.\"O     d = directory
+.\"O     l = symbolic link (both the link and its contents are output)
+.\"O     s = socket
+.\"O     b = block device
+.\"O     c = character device
+.\"O     p = FIFO (named pipe)
+.\"O     - = regular file
+.\"O     ? = an error of some kind
+   f: = 解決するために入力したバス名
+    d = ディレクトリ
+    l = シンボリックリンク (リンクとリンクの内容の両方を出力する)
+    s = ソケット
+    b = ブロックデバイス
+    c = キャラクタデバイス
+    - = 通常のファイル
+    ? = 何かのエラー
+.fi
+.PP
+.\"O .B namei
+.\"O prints an informative message when
+.\"O the maximum number of symbolic links this system can have has been exceeded.
+.B namei
+は、システムで許容されているシンボリックリンクの最大数を超えている場合、
+情報メッセージを表示する。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-l , " \-\-long"
+.\"O Use the long listing format (same as \fB\-m \-o \-v\fR).
+長いリスト形式を使う (\fB\-m \-o \-v\fR と同じ)。
+.TP
+.BR \-m , " \-\-modes"
+.\"O Show the mode bits of each file type in the style of ls(1),
+.\"O for example 'rwxr-xr-x'.
+各ファイルタイプのモードを
+\&'rwxr-xr-x' のような ls(1) の形式で表示する。
+.TP
+.BR \-n , " \-\-nosymlinks"
+.\"O Don't follow symlinks.
+シンボリックリンクを辿らない。
+.TP
+.BR \-o , " \-\-owners"
+.\"O Show owner and group name of each file.
+各ファイルの所有者名とグループ名を表示する。
+.TP
+.BR \-v , " \-\-vertical"
+.\"O Vertically align the modes and owners.
+モードと所有者を縦に揃えて表示する。
+.TP
+.BR \-x , " \-\-mountpoints"
+.\"O Show mountpoint directories with a 'D' rather than a 'd'.
+マウントポイントになっているディレクトリを
+\&'d' ではなく 'D' を使って示す。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH BUGS
+.SH バグ
+.\"O To be discovered.
+見つかるだろう。
+.\"O .SH AUTHORS
+.SH 著者
+.\"O The original
+.\"O .B namei
+.\"O program was written by Roger Southwick <rogers@amadeus.wr.tek.com>.
+元々の
+.B namei
+プログラムは Roger Southwick <rogers@amadeus.wr.tek.com> によって書かれた。
+.sp
+.\"O The program was rewritten by Karel Zak <kzak@redhat.com>.
+このプログラムは Karel Zak <kzak@redhat.com> によって書き直された。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR ls (1),
+.BR stat (1),
+.BR symlink (7)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The namei command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+namei コマンドは、util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
