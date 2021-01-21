@@ -1,0 +1,179 @@
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Apr 11 18:08:26 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Thu Jan 21 21:38:18 JST 2021 by Yuichi SATO
+.\"
+.TH LSMEM 1 "October 2016" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O lsmem \- list the ranges of available memory with their online status
+lsmem \- オンライン状態になっている利用可能なメモリの範囲をリスト表示する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B lsmem
+[options]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The \fBlsmem\fP command lists the ranges of available memory with their online
+.\"O status. The listed memory blocks correspond to the memory block representation
+.\"O in sysfs. The command also shows the memory block size and the amount of memory
+.\"O in online and offline state.
+\fBlsmem\fP コマンドは、オンライン状態になっている利用可能なメモリの範囲を
+リスト表示する。
+リストされたメモリブロックは、sysfs におけるメモリブロックの表現に対応する。
+このコマンドは、メモリブロックサイズと、オンラインとオフライン状態の
+メモリの総量も表示する。
+
+.\"O The default output compatible with original implementation from s390-tools, but
+.\"O it's strongly recommended to avoid using default outputs in your scripts.
+.\"O Always explicitly define expected columns by using the \fB\-\-output\fR option
+.\"O together with a columns list in environments where a stable output is required.
+デフォルトの出力は、元々の s390-tools の実装と互換性があるが、
+スクリプトの中ではデフォルトの出力を避けることを強く推奨する。
+一定の出力が必要な場合、環境変数のカラムリストとともに
+\fB\-\-output\fR オプションを使って、期待するカラムを明示的に常に定義すべきである。
+
+.\"O The \fBlsmem\fP command lists a new memory range always when the current memory
+.\"O block distinguish from the previous block by some output column.  This default
+.\"O behavior is possible to override by the \fB\-\-split\fR option (e.g., \fBlsmem
+.\"O \-\-split=ZONES\fR).  The special word "none" may be used to ignore all
+.\"O differences between memory blocks and to create as large as possible continuous
+.\"O ranges.  The opposite semantic is \fB\-\-all\fR to list individual memory
+.\"O blocks.
+\fBlsmem\fP は、ある出力カラムについて、前のメモリブロックが現在のメモリブロックと
+区別される場合、新たなメモリ範囲としてリスト表示する。
+このデフォルトの挙動は、\fB\-\-split\fR オプション
+(例えば \fBlsmem \-\-split=ZONES\fR) で上書きできる。
+特別なワード "none" を使うと、メモリブロックの全ての違いを無視して、
+可能か限り大きな連続した範囲を作成する。
+\fB\-\-all\fR は反対の意味で、個々のメモリブロックをリスト表示する。
+
+.\"O Note that some output columns may provide inaccurate information if a split policy
+.\"O forces \fBlsmem\fP to ignore differences in some attributes. For example if you
+.\"O merge removable and non-removable memory blocks to the one range than all
+.\"O the range will be marked as non-removable on \fBlsmem\fP output.
+分割ポリシーより、ある属性の違いを \fBlsmem\fP に強制的に無視させた場合、
+出力カラムに不正確な情報が表示されることがある点に注意すること。
+例えば、リムーバブルなメモリブロックとリムーバブルでないメモリブロックを
+1 つの範囲にマージしてしまった場合、\fBlsmem\fP の出力では、
+リムーバブルでないメモリとしてマークされる。
+
+.\"O Not all columns are supported on all systems.  If an unsupported column is
+.\"O specified, \fBlsmem\fP prints the column but does not provide any data for it.
+全てのシステムで全てのカラムがサポートされているわけではない。
+サポートされていないカラムが指定された場合、\fBlsmem\fP はカラム名を表示するが、
+データは表示しない。
+
+.\"O Use the \fB\-\-help\fR option to see the columns description.
+カラムの説明を参照するには、\fB\-\-help\fR オプションを使うこと。
+
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-a ", " \-\-all
+.\"O List each individual memory block, instead of combining memory blocks with
+.\"O similar attributes.
+同じ属性でメモリブロックを結合するのではなく、個々のメモリ
+ブロックをリスト表示する。
+.TP
+.BR \-b , " \-\-bytes"
+.\"O Print the SIZE column in bytes rather than in a human-readable format.
+SIZE カラムを、人が読みやすい形式ではなく、バイト単位で表示する。
+.TP
+.BR \-h ", " \-\-help
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+.BR \-J , " \-\-json"
+.\"O Use JSON output format.
+JSON 出力形式を使う。
+.TP
+.BR \-n , " \-\-noheadings"
+.\"O Do not print a header line.
+ヘッダ行を表示しない。
+.TP
+.BR \-o , " \-\-output " \fIlist\fP
+.\"O Specify which output columns to print.  Use \fB\-\-help\fR
+.\"O to get a list of all supported columns.
+.\"O The default list of columns may be extended if \fIlist\fP is
+.\"O specified in the format \fB+\fIlist\fP (e.g., \fBlsmem \-o +NODE\fP).
+どの出力カラムを表示するかを指定する。
+サポートされる全てのカラムのリストを取得するには、\fB\-\-help\fR を使うこと。
+\fIlist\fP を \fI+list\fP の形式で指定することで、
+デフォルトのカラムのリストを拡張できる
+(例えば、\fBlsmem \-o +NODE\fP)。
+.TP
+.B \-\-output\-all
+.\"O Output all available columns.
+利用可能なカラムを全て出力する。
+.TP
+.BR \-P , " \-\-pairs"
+.\"O Produce output in the form of key="value" pairs.
+.\"O All potentially unsafe characters are hex-escaped (\\x<code>).
+出力を key="value" ペアの形式にする。
+潜在的に安全でない全ての文字は、(\\x<code> のように) 16 進数にエスケープされる。
+.TP
+.BR \-r , " \-\-raw"
+.\"O Produce output in raw format.  All potentially unsafe characters are hex-escaped
+.\"O (\\x<code>).
+出力を生の形式にする。
+潜在的に安全でない全ての文字は、(\\x<code> のように) 16 進数にエスケープされる。
+.TP
+.BR \-S , " \-\-split " \fIlist\fP
+.\"O Specify which columns (attributes) use to split memory blocks to ranges.  The
+.\"O supported columns are STATE, REMOVABLE, NODE and ZONES, or "none".
+.\"O The other columns are
+.\"O silently ignored. For more details see DESCRIPTION above.
+どのカラム (属性) を使ってメモリブロックを範囲に分割するかを指定する。
+サポートされるカラムは、STATE, REMOVABLE, NODE, ZONES、もしくは "none" である。
+他のカラムは黙って無視される。
+より詳細は上記の「説明」セクションを参照すること。
+.TP
+.BR \-s , " \-\-sysroot " \fIdirectory\fP
+.\"O Gather memory data for a Linux instance other than the instance from which the
+.\"O \fBlsmem\fP command is issued.  The specified \fIdirectory\fP is the system
+.\"O root of the Linux instance to be inspected.
+\fBlsmem\fP コマンドが発行された Linux インスタンスではなく、
+別のインスタンスのメモリデータを取得する。
+指定する \fIdirectory\fP は、調査を行う Linux インスタンスのシステムルートである。
+.TP
+.BR \-V ", " \-\-version
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+\fB\-\-summary\fR[=\fIwhen\fR]
+.\"O This option controls summary lines output.  The optional argument \fIwhen\fP can be
+.\"O \fBnever\fR, \fBalways\fR or \fBonly\fR.  If the \fIwhen\fR argument is
+.\"O omitted, it defaults to \fB"only"\fR. The summary output is suppressed for
+.\"O \fB\-\-raw\fR, \fB\-\-pairs\fR and \fB\-\-json\fR.
+このオプションはサマリ行の表示を制御する。
+オプションの引き数 \fIwhen\fP は、\fBnever\fR, \fBalways\fR,
+\fBonly\fR のいずれかである。
+\fIwhen\fR 引き数が省略された場合、デフォルトは \fB"only"\fR である。
+\fB\-\-raw\fR, \fB\-\-pairs\fR, \fB\-\-json\fR が指定された場合、
+サマリ行は出力されない。
+.\"O .SH AUTHORS
+.SH 著者
+.\"O .B lsmem
+.\"O was originally written by Gerald Schaefer for s390-tools in Perl. The C version
+.\"O for util-linux was written by Clemens von Mann, Heiko Carstens and Karel Zak.
+.B lsmem
+は元々 Gerald Schaefer によって s390-tools で Perl で書かれた。
+util-linux の C バージョンは、Clemens von Mann, Heiko Carstens,
+Karel Zak によって書かれた。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR chmem (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The \fBlsmem\fP command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+\fBlsmem\fP コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
