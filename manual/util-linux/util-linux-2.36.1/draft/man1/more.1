@@ -1,0 +1,424 @@
+.\" Copyright (c) 1988, 1990 The Regents of the University of California.
+.\" Copyright (c) 1988 Mark Nudleman
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by the University of
+.\"	California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"	@(#)more.1	5.15 (Berkeley) 7/29/91
+.\"
+.\" Copyright (c) 1992 Rik Faith (faith@cs.unc.edu)
+.\"
+.\" Japanese Version Copyright (c) 1998 Shinji Orito all rights reserved.
+.\"     Translated Sun Jul  5 18:55:01 JST 1998
+.\"             by Shinji Orito <shinji@os.gulf.or.jp>
+.\" Updated Mon Aug 20 JST 2001 by Kentaro Shirakata <argrath@ub32.org>
+.\" Updated & Modified Mon Jul 29 17:17:28 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Thu Jan 21 22:18:42 JST 2021 by Yuichi SATO
+.\"
+.\"WORD:	logical	論理行
+.\"
+.TH MORE "1" "March 2020" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O more \- file perusal filter for crt viewing
+more \- CRT でファイルを閲覧するためのフィルター
+.\"O .SH SYNOPSIS
+.SH 書式
+.B more
+[options]
+.IR file ...
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B more
+.\"O is a filter for paging through text one screenful at a time.  This version is
+.\"O especially primitive.  Users should realize that
+.\"O .BR less (1)
+.\"O provides
+.\"O .BR more (1)
+.\"O emulation plus extensive enhancements.
+.B more
+は、テキストを一画面ずつ表示するフィルターである。
+本コマンドは基本的な機能だけを備えている。
+.BR less (1)
+は
+.BR more (1)
+をエミュレートし、さらに拡張機能を有する。
+.\"O .SH OPTIONS
+.SH オプション
+.\"O Options are also taken from the environment variable
+.\"O .B MORE
+.\"O (make sure to precede them with a dash
+.\"O .RB ( \- ))
+.\"O but command-line options will override those.
+オプションは環境変数
+.B MORE
+によっても指定される (必ず
+.RB ( \- )
+(ダッシュ) を前につけること) が、
+コマンドラインオプションが優先される。
+.TP
+.BR \-d , " \-\-silent"
+.\"O Prompt with "[Press space to continue, 'q' to quit.]",
+.\"O and display "[Press 'h' for instructions.]" instead of ringing
+.\"O the bell when an illegal key is pressed.
+"[スペースキーを押すと続き、'q' で終了。]" とユーザーに促し、
+不適切なキー入力に対しては、
+ビープ音を鳴らす代わりに "['h' キーで操作方法]" と表示する。
+.TP
+.BR \-l , " \-\-logical"
+.\"O Do not pause after any line containing a
+.\"O .B \&^L
+.\"O (form feed).
+.B \&^L
+(改頁) を含む行で停止しない。
+.TP
+.BR \-f , " \-\-no\-pause"
+.\"O Count logical lines, rather than screen lines (i.e., long lines are not folded).
+画面行数の代わりに、論理行をカウントする。
+(すなわち、長い行が折り返されない。)
+.TP
+.BR \-p , " \-\-print\-over"
+.\"O Do not scroll.  Instead, clear the whole screen and then display the text.
+スクロールしない。
+その代わりに、全画面消去してからテキストを表示する。
+.\"O Notice that this option is switched on automatically if the executable is
+.\"O named
+.\"O .BR page .
+このオプションは、実行ファイルが
+.B page
+という名前の場合、自動的に有効にされる。
+.TP
+.BR \-c , " \-\-clean\-print"
+.\"O Do not scroll.  Instead, paint each screen from the top, clearing the
+.\"O remainder of each line as it is displayed.
+スクロールしない。
+その代わりに、表示されたままの行を消しながら、上端から各画面を
+表示する。
+.TP
+.BR \-s , " \-\-squeeze"
+.\"O Squeeze multiple blank lines into one.
+複数の空行を一行にする。
+.TP
+.BR \-u , " \-\-plain"
+.\"O Suppress underlining.  This option is silently ignored as backwards
+.\"O compatibility.
+下線を付けない。
+このオプションは、後方互換性のため、黙って無視される。
+.TP
+\fB\-n\fR, \fB\-\-lines \fInumber\fR
+.\"O Specify the
+.\"O .I number
+.\"O of lines per screenful.  The
+.\"O .I number
+.\"O argument is a positive decimal integer.  The
+.\"O .B \-\-lines
+.\"O option shall override any values obtained from any other source, such as
+.\"O number of lines reported by terminal.
+スクリーンサイズを
+.I number
+行に指定する。
+.I number
+引き数は正の整数である。
+.B \-\-lines
+オプションは、端末によって返される行数といった、
+他から得られる値を上書きする。
+.TP
+.BI \- number
+.\"O A numeric option means the same as
+.\"O .B \-\-lines
+.\"O option argument.
+数値のオプションは、
+.B \-\-lines
+オプションの引き数と同じ意味である。
+.TP
+.BI + number
+.\"O Start displaying each file at line
+.\"O .IR number .
+各ファイルを
+.I number
+行目から表示する。
+.TP
+.BI +/ string
+.\"O The
+.\"O .I string
+.\"O to be searched in each file before starting to display it.
+各ファイルが表示される前に
+.I string
+を検索する。
+.TP
+\fB\-\-help\fR
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.\"O .SH COMMANDS
+.SH コマンド
+.\"O Interactive commands for
+.\"O .B more
+.\"O are based on
+.\"O .BR vi (1).
+.B more
+の対話的コマンドは、
+.BR vi (1)
+をベースにしている。
+.\"O Some commands may be preceded by a decimal number, called k in the
+.\"O descriptions below.  In the following descriptions,
+幾つかのコマンドは、10 進数値を前につけることができる。
+下記の説明においてはその数値は k と表されている。
+.\"O .B ^X
+.\"O means
+.\"O .BR control-X .
+.B ^X
+は
+.B control-X
+を表す。
+.PP
+.RS
+.PD 1
+.TP 10
+.\"O .BR h \ or \ ?
+.BR h \ または \ ?
+.\"O Help; display a summary of these commands.  If you forget all other
+.\"O commands, remember this one.
+ヘルプ。これらのコマンドのまとめを表示する。
+もし他のコマンドをすっかり忘れたのなら、
+これを思い出すと良い。
+.TP
+.B SPACE
+.\"O Display next k lines of text.  Defaults to current screen size.
+k 行先を表示する。
+デフォルトは現在の画面行数。
+.TP
+.B z
+.\"O Display next k lines of text.  Defaults to current screen size.  Argument
+.\"O becomes new default.
+k 行先を表示する。
+デフォルトは、現在の画面行数。
+引き数が新たなデフォルトとなる。
+.TP
+.B RETURN
+.\"O Display next k lines of text.  Defaults to 1.  Argument becomes new default.
+k 行先を表示する。
+デフォルトは 1。
+引き数が新たなデフォルトとなる。
+.TP
+.\"O .BR d \ or \ \&^D
+.BR d \ または \ \&^D
+.\"O Scroll k lines.  Default is current scroll size, initially 11.  Argument
+.\"O becomes new default.
+k 行スクロールする。
+デフォルトは現在のスクロールサイズ、最初は 11。
+引き数が新たなデフォルトとなる。
+.TP
+.\"O .BR q \ or \ Q \ or \ INTERRUPT
+.BR q \ または \ Q \ または \ INTERRUPT
+.\"O Exit.
+終了する。
+.TP
+.B s
+.\"O Skip forward k lines of text.  Defaults to 1.
+k 行先にスキップする。
+デフォルトは 1。
+.TP
+.B f
+.\"O Skip forward k screenfuls of text.  Defaults to 1.
+k 回画面をスクロールする。
+デフォルトは 1。
+.TP
+.\"O .BR b \ or \ \&^B
+.BR b \ または \ \&^B
+.\"O Skip backwards k screenfuls of text.  Defaults to 1.  Only works with files,
+.\"O not pipes.
+k 回画面をバックスクロールする。
+デフォルトは 1。
+ファイルに対してのみ動作する。パイプに対しては動作しない。
+.TP
+.B '
+.\"O Go to the place where the last search started.
+前回検索を開始した場所に戻る。
+.TP
+.B =
+.\"O Display current line number.
+現在の行数を表示する。
+.TP
+.B \&/pattern
+.\"O Search for kth occurrence of regular expression.  Defaults to 1.
+正規表現に k 回目に合致する文字列を検索する。
+デフォルトは 1。
+.TP
+.B n
+.\"O Search for kth occurrence of last regular expression.  Defaults to 1.
+前回指定した正規表現に k 回目に合致する文字列を検索する。
+デフォルトは 1。
+.TP
+.\"O .BR !command \ or \ :!command
+.BR !command \ または \ :!command
+.\"O Execute
+.\"O .I command
+.\"O in a subshell.
+.I command
+をサブシェルで実行する。
+.TP
+.B v
+.\"O Start up an editor at current line.  The editor is taken from the environment
+.\"O variable
+.\"O .B VISUAL
+.\"O if defined, or
+.\"O .B EDITOR
+.\"O if
+.\"O .B VISUAL
+.\"O is not defined, or defaults
+.\"O to
+.\"O .B vi
+.\"O if neither
+.\"O .B VISUAL
+.\"O nor
+.\"O .B EDITOR
+.\"O is defined.
+現在の行でエディタを起動する。
+エディタは、環境変数
+.B VISUAL
+が定義されていれば
+.B VISUAL
+から、
+.B VISUAL
+が未定義で、
+.B EDITOR
+が定義されていれば
+.B EDITOR
+で指定されているものを起動する。
+どちらも未定義ならデフォルトとして
+.B vi
+を起動する。
+.TP
+.B \&^L
+.\"O Redraw screen.
+画面を再描画する。
+.TP
+.B :n
+.\"O Go to kth next file.  Defaults to 1.
+k 個目のファイルに移動する。
+デフォルトは 1。
+.TP
+.B :p
+.\"O Go to kth previous file.  Defaults to 1.
+k 個前のファイルに移動する。
+デフォルトは 1。
+.TP
+.B :f
+.\"O Display current file name and line number.
+ファイル名と行数を表示する。
+.TP
+.B \&.
+.\"O Repeat previous command.
+前回のコマンドを繰り返す。
+.RE
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.\"O The
+.\"O .B more
+.\"O command respects the following environment variables, if they exist:
+.B more
+コマンドは、下記の環境変数があれば適用する。
+.TP
+.B MORE
+.\"O This variable may be set with favored options to
+.\"O .BR more .
+.B more
+に対する好みのオプションをセットする。
+.TP
+.B SHELL
+.\"O Current shell in use (normally set by the shell at login time).
+使用中のシェル (通常ログイン時にシェルによってセットされる)。
+.TP
+.B TERM
+.\"O The terminal type used by \fBmore\fR to get the terminal
+.\"O characteristics necessary to manipulate the screen.
+\fBmore\fR が使用するターミナルタイプ。
+スクリーン操作に必要なターミナルの特徴を得るために利用される。
+.TP
+.B VISUAL
+.\"O The editor the user prefers.  Invoked when command key
+.\"O .I v
+.\"O is pressed.
+ユーザが使用したいエディタ。
+コマンドキー
+.I v
+が押された場合に起動される。
+.TP
+.B EDITOR
+.\"O The editor of choice when
+.\"O .B VISUAL
+.\"O is not specified.
+.B VISUAL
+が指定されていない場合のエディタの選択肢。
+.\"O .SH HISTORY
+.SH 履歴
+.\"O The
+.\"O .B more
+.\"O command appeared in 3.0BSD.  This man page documents
+.\"O .B more
+.\"O version 5.19 (Berkeley 6/29/88), which is currently in use in the Linux
+.\"O community.  Documentation was produced using several other versions of the
+.\"O man page, and extensive inspection of the source code.
+.Nm more
+コマンドは 3.0BSD に登場した。
+この man ページは
+現在 Linux コミュニティで利用されている
+.B more
+バージョン 5.19 (Berkeley 6/29/88) について書かれている。
+ドキュメントの作成に当っては、他の数種類のバージョンの man ページを利用し、
+ソースコードの徹底的なチェックを行った。
+.\"O .SH AUTHORS
+.SH 著者
+Eric Shienbrood, UC Berkeley
+.br
+.\"O Modified by Geoff Peck, UCB to add underlining, single spacing
+Geoff Peck, UCB が下線と 1 つ空白にする修正を行った。
+.br
+.\"O Modified by John Foderaro, UCB to add -c and MORE environment variable
+John Foderaro, UCB が -c と MORE 環境変数の追加を行った。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR less (1),
+.BR vi (1)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The more command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+more コマンドは、util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
