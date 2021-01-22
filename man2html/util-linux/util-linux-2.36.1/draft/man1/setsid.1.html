@@ -1,0 +1,123 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SETSID</TITLE>
+</HEAD><BODY>
+<H1>SETSID</H1>
+Section: User Commands (1)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+setsid - 新しいセッションでプログラムを実行する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>setsid</B>
+
+[options]
+<I>program</I>
+
+[<I>arguments</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+<B>setsid</B>
+
+は、新しいセッションでプログラムを実行する。
+このコマンドは、プロセスが既にグループリーダーである場合、
+<B><A HREF="../man2/fork.2.html">fork</A></B>(2)
+
+を呼ぶ。
+そうでない場合、プログラムをカレントプロセスの中で実行する。
+デフォルトの挙動は、<B>--fork</B> オプションで上書きできる。
+<A NAME="lbAE">&nbsp;</A>
+<H2>OPTIONS</H2>
+
+<DL COMPACT>
+<DT><B>-c</B>,<B> --ctty</B>
+
+<DD>
+
+制御端末を現在の端末に設定する。
+<DT><B>-f</B>,<B> --fork</B>
+
+<DD>
+
+常に新しいプロセスを作成する。
+<DT><B>-w</B>,<B> --wait</B>
+
+<DD>
+
+
+
+プログラムの実行終了を待ち、プログラムの返り値を
+<B>setsid</B>
+
+の返り値として返す。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>著者</H2>
+
+Rick Sladkey &lt;<A HREF="mailto:jrs@world.std.com">jrs@world.std.com</A>&gt;
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/setsid.2.html">setsid</A></B>(2)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+setsid コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">OPTIONS</A><DD>
+<DT><A HREF="#lbAF">著者</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:10:01 GMT, January 22, 2021
+</BODY>
+</HTML>
