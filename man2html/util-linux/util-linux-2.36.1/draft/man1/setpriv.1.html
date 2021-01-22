@@ -1,0 +1,604 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SETPRIV</TITLE>
+</HEAD><BODY>
+<H1>SETPRIV</H1>
+Section: User Commands (1)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+setpriv - 別の Linux 特権 (privilege) 設定でプログラムを実行する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>setpriv</B>
+
+[options]
+<I>program</I>
+
+[<I>arguments</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B><A HREF="../man2/execve.2.html">execve</A></B>(2)
+
+で継承される、いろいろな Linux 特権設定を設定または取得する。
+<P>
+
+
+
+
+
+
+
+<B><A HREF="../man1/su.1.html">su</A></B>(1)
+
+と
+<B><A HREF="../man1/runuser.1.html">runuser</A></B>(1),
+
+と比較して、
+<B>setpriv</B>
+
+は PAM を使わず、パスワードのプロンプトも出さない。
+
+
+
+
+
+
+
+
+
+
+これは単純なプログラムで、
+<B><A HREF="../man2/execve.2.html">execve</A></B>(2)
+
+の set-user-ID をしないラッパーであり、特権を削除するために使われる。
+これは
+<B>daemontools</B>
+
+の
+<B><A HREF="../man8/setuidgid.8.html">setuidgid</A></B>(8)、
+
+<B>runit</B>
+
+の
+<B><A HREF="../man8/chpst.8.html">chpst</A></B>(8)
+
+など、他のサービスマネージャーと一緒に提供される同様のツールと同じように
+行われる。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>--clear-groups</B>
+
+<DD>
+
+補助 (supplementary) グループをクリアする。
+<DT><B>-d</B>,<B> --dump</B>
+
+<DD>
+
+
+
+現在の特権状態をダンプする。
+このオプションは、1 回以上指定することが可能で、追加のほとんど使い道のない情報も
+表示できる。
+他の全てのオプションとは互換性がない (一緒には指定できない)。
+<DT><B>--groups </B><I>group</I>...
+
+<DD>
+
+補助グループを設定する。引き数はカンマ区切りの GID またはグループ名のリストである。
+<DT><B>--inh-caps</B> (<B>+</B>|<B>-</B>)<B></B><I>cap</I>...  or  <B>--ambient-caps</B> (<B>+</B>|<B>-</B>)<B></B><I>cap</I>...  or  <B>--bounding-set</B> (<B>+</B>|<B>-</B>)<B></B><I>cap</I>...
+
+<DD>
+
+
+継承可能 (inheritable) ケーパビリティ、環境 (ambient) ケーパビリティ、
+ケーパビリティバウンディングセット (bounding set) を設定する。
+<B><A HREF="../man7/capabilities.7.html">capabilities</A></B>(7)
+
+を参照すること。
+
+
+
+
+
+
+
+
+
+
+引き数は
+<B>+</B><I>cap</I>
+
+と
+<B>-</B><I>cap</I>
+
+エントリのカンマ区切りのリストであり、それぞれエントリを追加と
+削除を行う。
+<I>cap</I> は、
+<B><A HREF="../man7/capabilities.7.html">capabilities</A></B>(7)
+
+に書かれている <I>cap_</I> プレフィックスが付いていない、人が読みやすい名前、
+または
+<B>cap_N</B>
+
+の形式である。
+ここで <I>N</I> は Linux が使う内部ケーパビリティのインデックスである。
+
+
+
+
+<B>+all</B>
+
+と
+<B>-all</B>
+
+は全てのケーパビリティを追加または削除する。
+<DT><DD>
+
+
+
+
+
+
+
+ケーパビリティのセットは、
+<B>--inh-caps</B>
+
+では現在の継承可能セット、
+<B>--ambient-caps</B>
+
+では現在の環境セット、
+<B>--bounding-set</B>
+
+では現在のバウンディングセットから始める。
+<DT><DD>
+
+
+
+これらのケーパビリティのセットの変更には、以下の制約 (詳細は
+<B><A HREF="../man7/capabilities.7.html">capabilities</A></B>(7)
+
+を参照) がある点に注意すること。
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>*<DD>
+
+
+ケーパビリティは、現在のバウンディングセットにある場合にのみ、
+継承可能セットに追加できる。
+<DT>*<DD>
+
+
+ケーパビリティは、現在の許可 (permitted) セットと継承可能セットの両方にある場合にのみ、
+環境セットに追加できる。
+<DT>*<DD>
+
+
+
+<B>setpriv</B>
+
+が提供する書式にも関わらず、カーネルは、ケーパビリティを
+バウンディングセットに追加することを許可していない。
+</DL>
+</DL>
+
+<DT><DD>
+
+
+ケーパビリティをバウンディングセットから削除して、
+継承可能セットから削除しないと、混乱しやすくなるだろう。
+そのようなことをしてはいけない。
+<DT><B>--keep-groups</B>
+
+<DD>
+
+
+
+
+補助グループを保持する。
+<B>--rgid</B>,
+
+<B>--egid</B>,
+
+<B>--regid</B>
+
+と組み合わせた場合にのみ使用できる。
+<DT><B>--init-groups</B>
+
+<DD>
+
+
+
+
+
+
+<B><A HREF="../man3/initgroups.3.html">initgroups</A></B>(3)
+
+を使って補助グループを初期化する。
+<B>--ruid</B>
+
+または
+<B>--reuid</B>
+
+と組み合わせた場合にのみ使用できる。
+<DT><B>--list-caps</B>
+
+<DD>
+
+既存の全てのケーパビリティを表示する。
+このオプションは単独で指定しなけばならない。
+<DT><B>--no-new-privs</B>
+
+<DD>
+
+
+
+
+
+<I>no_new_privs</I>
+
+ビットを設定する。
+このビットを設定すると、
+<B><A HREF="../man2/execve.2.html">execve</A></B>(2)
+
+は新しい特権を許可しない。
+
+
+
+
+
+
+
+
+
+例えば、set-user-ID と set-group-ID ビットと同じく、
+ファイルケーパビリティも無効化される。
+(これらのビットを設定してバイナリを実行すると、動作はするが、
+特権を取得しない。
+特定の LSM (Linux Security Module)、特に AppArmor は特定のプログラムの
+実行に失敗する可能性がある。)
+このビットは、子プロセスに継承され、無効化できない。
+<B><A HREF="../man2/prctl.2.html">prctl</A></B>(2)
+
+と、Linux カーネルソースの
+<I>Documentation/:prctl/:no_:new_:privs.txt</I>
+
+を参照すること。
+<P>
+
+
+
+<I>no_new_privs</I>
+
+ビットは、Linux 3.5 以降でサポートされている。
+<DT><B>--rgid</B><I> gid</I>, <B>--egid</B><I> gid</I>, <B>--regid</B><I> gid</I>
+
+<DD>
+
+
+実 (real) GID、実効 (effective) GID、またはその両方の GID を設定する。
+<I>gid</I> 引き数は、テキストのグループ名でも指定できる。
+<P>
+
+
+
+
+
+
+
+プライマリ
+<I>gid</I>
+
+を設定した場合、安全のため、
+<B>--clear-groups</B>,
+
+<B>--groups</B>,
+
+<B>--keep-groups</B>,
+
+<B>--init-groups</B>
+
+のうちの 1 つを指定しなければならない。
+<DT><B>--ruid</B><I> uid</I>, <B>--euid</B><I> uid</I>, <B>--reuid</B><I> uid</I>
+
+<DD>
+
+
+実 (real) UID、実効 (effective)、またはその両方の UID を設定する。
+<I>uid</I> 引き数は、テキストのログイン名でも指定できる。
+<P>
+
+
+
+
+
+
+
+<I>uid</I>
+
+または
+<I>gid</I>
+
+を設定しても、ケーパビリティを変更しないが、
+最終的な exec コールでケーパビリティが変更される可能性がある。
+root の場合、以下のようにしたいことがあるかもしれないという意味である:
+<P>
+<B>        setpriv --reuid=1000 --regid=1000 --inh-caps=-all</B>
+
+<DT><B>--securebits</B> (<B>+</B>|<B>-</B>)<B></B><I>securebit</I>...
+
+<DD>
+
+セキュアビットを設定またはクリアする。
+引き数はカンマ区切りのリストである。
+
+
+
+
+
+
+
+有効なセキュアビットは
+<I>noroot</I>,
+
+<I>noroot_locked</I>,
+
+<I>no_setuid_fixup</I>,
+
+<I>no_setuid_fixup_locked</I>,
+
+<I>keep_caps_locked</I>
+
+である。
+
+
+
+
+<I>keep_caps</I>
+
+は
+<B><A HREF="../man2/execve.2.html">execve</A></B>(2)
+
+でクリアされるので、許可されない。
+<DT><B>--pdeathsig keep</B>|<B>clear</B>|<B>&lt;signal&gt;</B>
+
+<DD>
+
+
+
+
+親プロセスが死んだ場合のシグナル (parent death signal) を、保持・クリア・設定する。
+いくつかの LSM、特に SELinux と AppArmor は、プロセスのクレデンシャルが変更されたときに、
+このシグナルをクリアする。
+<B>--pdeathsig keep</B> は、このような状況に対処するため、クレデンシャルを変更した後で、
+親プロセスが死んだ場合のシグナルを回復する。
+<DT><B>--selinux-label</B><I> label</I>
+
+<DD>
+
+
+
+
+
+
+
+
+
+
+特定の SELinux 遷移 (transition) を要求する
+(dyntrans ではなく、exec での遷移を使う)。
+SELinux が使われていない場合、要求は失敗し、
+<B>setpriv</B>
+
+はアボートする。
+遷移は無視されるか、SELinux の気まぐれ (whim) で
+<B><A HREF="../man2/execve.2.html">execve</A></B>(2)
+
+が失敗する
+(特に、これは
+<I>no_new_privs</I>
+
+と組み合わせた場合、動作しないだろう)。
+これは、
+<B><A HREF="../man1/runcon.1.html">runcon</A></B>(1)
+
+と同様である。
+<DT><B>--apparmor-profile</B><I> profile</I>
+
+<DD>
+
+
+
+
+
+
+特定の AppArmor プロファイルを要求する (exec での遷移を使う)。
+AppArmor が使われていない場合、要求は失敗し、
+<B>setpriv</B>
+
+はアボートする。
+遷移は無視されるか、AppArmor の気まぐれ (whim) で
+<B><A HREF="../man2/execve.2.html">execve</A></B>(2)
+
+が失敗する。
+<DT><B>--reset-env</B>
+
+<DD>
+
+
+
+TERM 以外の環境変数をクリアする。
+ユーザーの passwd エントリに基づいて、環境変数 HOME, SHELL, USER, LOGNAME を初期化する。
+一般ユーザーでは PATH が <I>/usr/local/bin:/bin:/usr/bin</I> に設定される。
+root では
+<I>/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin</I> に設定される。
+<P>
+
+
+
+
+
+
+<I>/bin</I>
+
+と
+<I>/sbin</I>
+
+が
+<I>/usr</I>
+
+の中に統合されているシステムでは、
+環境変数 PATH が違っているかもしれない。
+
+
+ユーザーの passwd エントリで指定されていない場合、
+環境変数 SHELL のデフォルトは <I>/bin/sh</I> に設定される。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+
+指定したオプションの適用が失敗した場合、
+<I>program</I>
+
+は実行されず、
+<B>setpriv</B>
+
+は返り値 127 を返す。
+<P>
+
+
+
+
+
+
+
+このツールは注意して使うこと -- 予期しないセキュリティ上の結果を出すかもしれない。
+例えば、(このツールが行うように)
+<I>no_new_privs</I>
+
+を設定して、
+SELinux で制限されているプログラムを実行した場合、
+SELinux の制限が妨げられるかもしれない。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+
+
+
+
+
+<B><A HREF="../man1/su.1.html">su</A></B>(1)/<B><A HREF="../man1/runuser.1.html">runuser</A></B>(1) または <B><A HREF="../man8/sudo.8.html">sudo</A></B>(8)
+
+と同様の動作がほしい場合
+(<B>-g</B>
+
+オプションを指定せず)、以下のようにすればよい:
+<P>
+<B>    setpriv --reuid=1000 --regid=1000 --init-groups</B>
+
+<P>
+
+
+
+
+daemontools の
+<B><A HREF="../man8/setuid.8.html">setuid</A></B>(8)
+
+の真似をしたい場合、以下のようにすればよい:
+<P>
+<B>    setpriv --reuid=1000 --regid=1000 --clear-groups</B>
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>著者</H2>
+
+
+Andy Lutomirski
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/runuser.1.html">runuser</A></B>(1),
+
+<B><A HREF="../man1/su.1.html">su</A></B>(1),
+
+<B><A HREF="../man2/prctl.2.html">prctl</A></B>(2),
+
+<B><A HREF="../man7/capabilities.7.html">capabilities</A></B>(7)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+
+
+<B>setpriv</B>
+
+コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">注意</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:52:30 GMT, January 22, 2021
+</BODY>
+</HTML>
