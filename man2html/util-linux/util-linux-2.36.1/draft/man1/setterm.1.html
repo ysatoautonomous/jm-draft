@@ -1,0 +1,634 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SETTERM</TITLE>
+</HEAD><BODY>
+<H1>SETTERM</H1>
+Section: User Commands (1)<BR>Updated: May 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+setterm - 端末の属性を設定する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>setterm</B>
+
+[options]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+
+
+<B>setterm</B>
+
+は指定した端末の機能を呼び出す文字列を標準出力に書き出す。
+このとき、使用する文字列を見付けるために
+<I>terminfo</I>
+
+が参照される。
+しかし、(以下で「仮想コンソールのみ」とマークされた)
+いくつかのオプションは、
+<B><A HREF="../man5/terminfo.5.html">terminfo</A></B>(5)
+
+の機能に対応しない。
+この際、端末タイプが &quot;con&quot; または &quot;linux&quot; であると、
+指定された機能を PC Minix の仮想コンソールドライバ上で
+呼び出すための文字列が出力される。
+端末で実装されていないオプションは無視される。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+
+
+
+ブール値のオプション
+(<B>on</B> または <B>off</B>)
+
+では、
+デフォルトは
+<B>on</B>
+
+である。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B>black</B>,
+
+<B>red</B>,
+
+<B>green</B>,
+
+<B>yellow</B>,
+
+<B>blue</B>,
+
+<B>magenta</B>,
+
+<B>cyan</B>,
+
+<B>white</B>
+
+を以下では
+<I>8-color</I>
+
+とする。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<I>8-color</I>
+
+と
+<B>grey</B>
+
+と、
+<B>bright</B>
+
+を付けた
+<B>red</B>,
+
+<B>green</B>,
+
+<B>yellow</B>,
+
+<B>blue</B>,
+
+<B>magenta</B>,
+
+<B>cyan</B>,
+
+<B>white</B>
+
+を
+<I>16-color</I>
+
+とする。
+<P>
+
+
+
+
+
+
+
+様々な色オプションが、少なくとも仮想コンソールでは、独立に設定できる。
+しかし、マルチモード (例えば、
+<B>--underline</B>
+
+や
+<B>--half-bright</B>)
+
+の設定の結果は、ハードウェア依存である。
+<P>
+
+
+
+オプションの引き数は '=' (イコール記号) が必要で、
+オプションと引き数の間にスペースは不要である。
+例、--option=argument。
+<DL COMPACT>
+<DT><B>--appcursorkeys</B> on|off<DD>
+
+
+
+
+
+
+カーソルキーアプリケーションモードを on または off に設定する。
+on の場合、ESC [ A, ESC [ B などではなく、
+ESC O A, ESC O B などがカーソルキーとして送信される。
+<B>vi</B> ユーザーに対してこれがどのような問題を引き起こすかについては、
+<I>Text-Terminal-HOWTO</I>
+
+の
+<I>vi とカーソルキー</I>
+
+のセクションを参照すること。
+
+仮想コンソールのみ。
+<DT><B>--append</B> <I>console_number</I><DD>
+
+
+
+
+
+<B>--dump</B>
+
+と似ているが、スナップショットファイルを上書きせずに追加する。
+<B>--dump</B>
+
+オプションが指定されていない場合にのみ機能する。
+<DT><B>--background</B> <I>8-color</I>|default<DD>
+
+テキストの背景色を設定する。
+<DT><B>--blank</B>[=0-60|force|poke]<DD>
+
+
+
+(APM が使用できる場合に) スクリーンが自動的に消灯されるまでの
+無活動時間を分単位で指定する。
+引き数が指定されない場合、消灯状態を返す
+(仮想端末の消灯が有効な場合は、その時間を返す。無効の場合は、0 を返す)。
+
+仮想コンソールのみ。
+<DT><DD>
+
+
+
+<B>force</B>
+
+引き数を指定すると、キーを押されててもスクリーンを消灯する。
+<DT><DD>
+
+
+
+<B>poke</B>
+
+引き数を指定すると、スクリーンの消灯を止める。
+<DT><B>--bfreq</B>[=<I>number</I>]<DD>
+
+
+ベルの周波数をヘルツ (Hz) で指定する。
+引き数が指定されない場合、デフォルトは
+<B>0</B>
+
+である。
+
+仮想コンソールのみ。
+<DT><B>--blength</B>[=0-2000]<DD>
+
+
+ベルの継続時間をミリ秒単位で設定する。
+引き数が指定されない場合、デフォルトは
+<B>0</B>
+
+である。
+
+仮想コンソールのみ。
+<DT><B>--blink</B> on|off<DD>
+
+
+
+点滅モードを on または off にする。
+仮想コンソールの場合は例外であるが、
+<B>--blink off</B>
+
+により (太字・半輝度・点滅・反転といった)
+全ての属性が off にされる。
+<DT><B>--bold</B> on|off<DD>
+
+
+
+太字 (高輝度) モードを on または off にする。
+仮想コンソールの場合は例外であるが、
+<B>--bold off</B>
+
+により (太字・半輝度・点滅・反転といった)
+全ての属性が off にされる。
+<DT><B>--clear</B>[=all|rest]<DD>
+
+
+
+
+
+
+
+
+引き数なし、または引き数
+<B>all</B>
+
+が指定された場合、
+<B><A HREF="../man1/clear.1.html">clear</A></B>(1)
+
+と同じように、スクリーンをクリアしてカーソルをホームポジションに
+移動する。
+引き数
+<B>rest</B>
+
+が指定された場合、現在のカーソル位置からスクリーンの最下行までを
+クリアする。
+<DT><B>--clrtabs</B>[=<I>tab1 tab2 tab3</I> ...]<DD>
+
+
+
+指定された水平方向のカーソル位置のタブストップを解除する。
+範囲は
+<B>1-160</B>
+
+である。
+引き数が指定されない場合、全てのタブストップを解除する。
+
+仮想コンソールのみ。
+<DT><B>--cursor</B> on|off<DD>
+
+端末のカーソルを on または off にする。
+<DT><B>--default</B><DD>
+
+端末のレンダリングオプションをデフォルトの値に設定する。
+<DT><B>--dump</B>[=<I>console_number</I>]<DD>
+
+
+
+
+
+
+
+指定された仮想コンソールのスナップショットを (属性とともに)
+<B>--file</B>
+
+オプションで指定されたファイルに書き込む。
+ファイルの内容は上書きされる。
+デフォルトのファイルは
+<I>screen.dump</I>
+
+である。
+引き数が指定されない場合、現在の仮想コンソールをダンプする。
+<B>--append</B>
+
+より優先される。
+<DT><B>--file</B> <I>filename</I><DD>
+
+
+
+
+
+
+
+
+
+<B>--dump</B>
+
+または
+<B>--append</B>
+
+オプションで使う
+スナップショットファイルを同じコマンドライン上で設定する。
+このオプションが指定されない場合、
+デフォルトはカレントディレクトリの
+<I>screen.dump</I>
+
+である。
+システムの最大値を越えたパス名は、切り詰められる。
+linux/limits.h の PATH_MAX の値を参照すること。
+<DT><B>--foreground</B> <I>8-color</I>|default<DD>
+
+テキストの前景色を設定する。
+<DT><B>--half-bright</B> on|off<DD>
+
+
+
+薄暗色 (半輝度) モードを on または off にする。
+仮想コンソールの場合は例外であるが、
+<B>--half-bright off</B>
+
+により (太字・半輝度・点滅・反転といった)
+全ての属性が off にされる。
+<DT><B>--hbcolor</B> [bright] <I>16-color</I><DD>
+
+半輝度文字の色を設定する。
+<DT><B>--initialize</B><DD>
+
+
+端末の初期化文字列を表示する。
+通常は、端末のレンダリングオプションを設定し、
+その他の属性をデフォルト値に設定する。
+<DT><B>--inversescreen</B> on|off<DD>
+
+スクリーン全体で前景色と背景色を入れ換える。
+<DT><B>--linewrap</B> on|off<DD>
+
+行がいっぱいの場合に、端末に新しい行に継続させるか否かを設定する。
+<DT><B>--msg</B> on|off<DD>
+
+
+
+カーネル
+<B>printk</B>()
+
+メッセージを
+コンソールに送信するか否かを設定する。
+
+仮想コンソールのみ。
+<DT><B>--msglevel</B> 0-8<DD>
+
+
+
+
+
+
+
+
+
+
+
+
+カーネル
+<B>printk()</B>
+
+メッセージのログ記録レベルを設定する。
+ここで指定された以上の重要度である全てのメッセージが表示される。
+よって、ログ記録レベル
+<B>0</B>
+
+は
+<B>--msg on</B>
+
+と同じ効果がある。
+また、ログ記録レベル
+<B>8</B>
+
+では全てのカーネルメッセージを表示する。
+<B><A HREF="../man8/klogd.8.html">klogd</A></B>(8)
+
+はカーネルメッセージをログに記録するための
+さらに使いやすいインターフェースである。
+<P>
+
+仮想コンソールのみ。
+<DT><B>--powerdown</B>[=0-60]<DD>
+
+
+
+
+
+
+VESA パワーダウンまでの時間を分単位で設定する。
+引き数が指定されない場合、デフォルトは
+<B>0</B>
+
+である (パワーダウンは行われない)。
+この時間が経過すると、
+コンソールが消灯している場合は垂直同期サスペンドモードになり、
+モニタがサスペンドモードの場合はパワーダウンモードになる。
+<DT><B>--powersave</B> <I>mode</I><DD>
+
+<I>mode</I> に指定可能な値は以下の通り:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>vsync|on</B>
+
+<DD>
+
+モニタを VESA vsync サスペンドモードにする。
+<DT><B>hsync</B>
+
+<DD>
+
+モニタを VESA hsync サスペンドモードにする。
+<DT><B>powerdown</B>
+
+<DD>
+
+モニタを VESA パワーダウンモードにする。
+<DT><B>off</B>
+
+<DD>
+
+モニタを VESA パワーセーブ機能を off にする。
+</DL>
+</DL>
+
+<DT><B>--regtabs</B>[=1-160]<DD>
+
+
+
+全てのタブストップを解除し、通常のタブストップパターンを設定する。
+指定した数値の位置ごとにタブが置かれる。
+引き数が指定されない場合、デフォルトは
+<B>8</B>
+
+である。
+
+仮想コンソールのみ。
+<DT><B>--repeat</B> on|off<DD>
+
+キーボードリピートを on または off にする。
+
+仮想コンソールのみ。
+<DT><B>--reset</B><DD>
+
+
+端末リセット文字列を表示する。
+通常は、端末をパワーオンの状態にリセットする。
+<DT><B>--resize</B><DD>
+
+
+
+
+
+最大の行と列を仮定して端末をリセットする。
+これは実際の大きさとカーネルの端末ドライバーが同期していない場合に
+役立つ。
+最も顕著な使用法はシリアルコンソールであり、
+<B><A HREF="../man3p/ioctl.3p.html">ioctl</A></B>(3p)
+
+を使っていないが、バイトストリームとブレークは使っている場合である。
+<DT><B>--reverse</B> on|off<DD>
+
+
+
+反転モードを on または off にする。
+仮想コンソールの場合は例外であるが、
+<B>--reverse off</B>
+
+により (太字・半輝度・点滅・反転といった)
+全ての属性が off にされる。
+<DT><B>--store</B><DD>
+
+
+端末の現在のレンダリングオプション (前景色と背景色) を、
+デフォルトにリセットする際に使用される値として保存する。
+
+仮想コンソールのみ。
+<DT><B>--tabs</B>[=<I>tab1 tab2 tab3</I> ...]<DD>
+
+
+
+指定された水平方向のカーソル位置にタブストップを設定する。
+範囲は
+<B>1-160</B>
+
+である。
+引き数が指定されない場合、現在のタブストップの設定を表示する。
+<DT><B>--term</B> <I>terminal_name</I><DD>
+
+環境変数 TERM を上書きする。
+<DT><B>--ulcolor</B> [bright] <I>16-color</I><DD>
+
+下線文字の色を設定する。
+
+仮想コンソールのみ。
+<DT><B>--underline</B> on|off<DD>
+
+下線モードを on または off にする。
+<DT><B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>互換性</H2>
+
+
+
+
+
+
+
+バージョン 2.25 から
+<B>setterm</B>
+
+は昔からのハイフン 1 つの長いオプション (例えば
+<B>-help</B>)
+
+に加え、ハイフン 2 つの長いオプション (例えば
+<B>--help</B>)
+
+をサポートした。
+
+
+
+スクリプト内では、後方互換のため、ハイフン 2 つよりハイフン 1 つを使う方が良い。
+現在のところハイフン 1 つの互換性を止める計画や良い理由はない。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>バグ</H2>
+
+
+Minix 版と Linux 版の違いが、この文書には書かれていない。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/stty.1.html">stty</A></B>(1),
+
+<B><A HREF="../man1/tput.1.html">tput</A></B>(1),
+
+<B><A HREF="../man4/tty.4.html">tty</A></B>(4),
+
+<B><A HREF="../man5/terminfo.5.html">terminfo</A></B>(5)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+setterm コマンドは、util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">互換性</A><DD>
+<DT><A HREF="#lbAG">バグ</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:50:39 GMT, January 22, 2021
+</BODY>
+</HTML>
