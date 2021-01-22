@@ -1,0 +1,569 @@
+.\" Copyright 1990 Gordon Irlam (gordoni@cs.ua.oz.au)
+.\" Copyright 1992 Rickard E. Faith (faith@cs.unc.edu)
+.\" Copyright 2000 Colin Watson (cjw44@cam.ac.uk)
+.\" Do not restrict distribution.
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 2001-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun Feb 11 00:25:28 JST 2001
+.\"         by Yuichi SATO <sato@complex.eng.hokudai.ac.jp>
+.\" Updated & Modified Sat May  1 17:54:48 JST 2004
+.\"         by Yuchis SATO <ysato444@yahoo.co.jp>
+.\" Updated & Modified Wed Jul 31 17:36:41 JST 2019
+.\"         by Yuchis SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Sat Jan 23 01:47:49 JST 2021 by Yuichi SATO
+.\"
+.\"WORD:	terminal	端末
+.\"WORD:	virtual		仮想
+.\"WORD:	extra bright	高輝度
+.\"WORD:	half-brigtness	半輝度
+.\"WORD:	blink		点滅
+.\"WORD:	extra bright	高輝度
+.\"WORD:	dim		薄暗色
+.\"WORD:	foreground	前景
+.\"WORD:	background	背景
+.\"WORD:	line-wrapping	行の折り返し
+.\"
+.TH SETTERM 1 "May 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O setterm \- set terminal attributes
+setterm \- 端末の属性を設定する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B setterm
+[options]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B setterm
+.\"O writes to standard output a character string that will invoke the specified
+.\"O terminal capabilities.  Where possible
+.\"O .I terminfo
+.\"O is consulted to find the string to use.  Some options however (marked "virtual
+.\"O consoles only" below) do not correspond to a
+.\"O .BR terminfo (5)
+.\"O capability.  In this case, if the terminal type is "con" or "linux" the string
+.\"O that invokes the specified capabilities on the PC Minix virtual console driver
+.\"O is output.  Options that are not implemented by the terminal are ignored.
+.B setterm
+は指定した端末の機能を呼び出す文字列を標準出力に書き出す。
+このとき、使用する文字列を見付けるために
+.I terminfo
+が参照される。
+しかし、(以下で「仮想コンソールのみ」とマークされた)
+いくつかのオプションは、
+.BR terminfo (5)
+の機能に対応しない。
+この際、端末タイプが "con" または "linux" であると、
+指定された機能を PC Minix の仮想コンソールドライバ上で
+呼び出すための文字列が出力される。
+端末で実装されていないオプションは無視される。
+.\"O .SH OPTIONS
+.SH オプション
+.\"O For boolean options
+.\"O .RB ( on " or " off ),
+.\"O the default is
+.\"O .BR on .
+ブール値のオプション
+.RB ( on " または " off )
+では、
+デフォルトは
+.B on
+である。
+.P
+.\"O Below, an
+.\"O .I 8-color
+.\"O can be
+.\"O .BR black ,
+.\"O .BR red ,
+.\"O .BR green ,
+.\"O .BR yellow ,
+.\"O .BR blue ,
+.\"O .BR magenta ,
+.\"O .BR cyan ,
+.\"O or
+.\"O .BR white .
+.BR black ,
+.BR red ,
+.BR green ,
+.BR yellow ,
+.BR blue ,
+.BR magenta ,
+.BR cyan ,
+.B white
+を以下では
+.I 8-color
+とする。
+.P
+.\"O A
+.\"O .I 16-color
+.\"O can be an
+.\"O .IR 8-color ,
+.\"O or
+.\"O .BR grey ,
+.\"O or
+.\"O .B bright
+.\"O followed
+.\"O by
+.\"O .BR red ,
+.\"O .BR green ,
+.\"O .BR yellow ,
+.\"O .BR blue ,
+.\"O .BR magenta ,
+.\"O .BR cyan ,
+.\"O or
+.\"O .BR white .
+.I 8-color
+と
+.B grey
+と、
+.B bright
+を付けた
+.BR red ,
+.BR green ,
+.BR yellow ,
+.BR blue ,
+.BR magenta ,
+.BR cyan ,
+.B white
+を
+.I 16-color
+とする。
+.P
+.\"O The various color options may be set independently, at least on virtual
+.\"O consoles, though the results of setting multiple modes (for example,
+.\"O .B \-\-underline
+.\"O and
+.\"O .BR \-\-half\-bright )
+.\"O are hardware-dependent.
+様々な色オプションが、少なくとも仮想コンソールでは、独立に設定できる。
+しかし、マルチモード (例えば、
+.B \-\-underline
+や
+.BR \-\-half\-bright )
+の設定の結果は、ハードウェア依存である。
+.PP
+.\"O The optional arguments require '=' (equals sign) and not space between the
+.\"O option and the argument. For example --option=argument.
+オプションの引き数は '=' (イコール記号) が必要で、
+オプションと引き数の間にスペースは不要である。
+例、--option=argument。
+.TP
+\fB\-\-appcursorkeys\fP on|off
+.\"O Sets Cursor Key Application Mode on or off.  When on, ESC O A, ESC O B, etc.
+.\"O will be sent for the cursor keys instead of ESC [ A, ESC [ B, etc.  See the
+.\"O .I vi and Cursor-Keys
+.\"O section of the
+.\"O .I Text-Terminal-HOWTO
+.\"O for how this can cause problems for \fBvi\fR users.
+カーソルキーアプリケーションモードを on または off に設定する。
+on の場合、ESC [ A, ESC [ B などではなく、
+ESC O A, ESC O B などがカーソルキーとして送信される。
+\fBvi\fR ユーザーに対してこれがどのような問題を引き起こすかについては、
+.I Text-Terminal-HOWTO
+の
+.I "vi とカーソルキー"
+のセクションを参照すること。
+.\"O Virtual consoles only.
+仮想コンソールのみ。
+.TP
+\fB\-\-append\fP \fIconsole_number\fP
+.\"O Like
+.\"O .BR \-\-dump ,
+.\"O but appends to the snapshot file instead of overwriting it.  Only works if no
+.\"O .B \-\-dump
+.\"O options are given.
+.B \-\-dump
+と似ているが、スナップショットファイルを上書きせずに追加する。
+.B \-\-dump
+オプションが指定されていない場合にのみ機能する。
+.TP
+\fB\-\-background\fP \fI8-color\fP|default
+.\"O Sets the background text color.
+テキストの背景色を設定する。
+.TP
+\fB\-\-blank\fP[=0-60|force|poke]
+.\"O Sets the interval of inactivity, in minutes, after which the screen will be
+.\"O automatically blanked (using APM if available).  Without an argument, it gets
+.\"O the blank status (returns which vt was blanked, or zero for an unblanked vt).
+(APM が使用できる場合に) スクリーンが自動的に消灯されるまでの
+無活動時間を分単位で指定する。
+引き数が指定されない場合、消灯状態を返す
+(仮想端末の消灯が有効な場合は、その時間を返す。無効の場合は、0 を返す)。
+.\"O Virtual consoles only.
+仮想コンソールのみ。
+.IP
+.\"O The
+.\"O .B force
+.\"O argument keeps the screen blank even if a key is pressed.
+.B force
+引き数を指定すると、キーを押されててもスクリーンを消灯する。
+.IP
+.\"O The
+.\"O .B poke
+.\"O argument unblanks the screen.
+.B poke
+引き数を指定すると、スクリーンの消灯を止める。
+.TP
+\fB\-\-bfreq\fP[=\fInumber\fP]
+.\"O Sets the bell frequency in Hertz.  Without an argument, it defaults to
+.\"O .BR 0 .
+ベルの周波数をヘルツ (Hz) で指定する。
+引き数が指定されない場合、デフォルトは
+.B 0
+である。
+.\"O Virtual consoles only.
+仮想コンソールのみ。
+.TP
+\fB\-\-blength\fP[=0-2000]
+.\"O Sets the bell duration in milliseconds.  Without an argument, it defaults to
+.\"O .BR 0 .
+ベルの継続時間をミリ秒単位で設定する。
+引き数が指定されない場合、デフォルトは
+.B 0
+である。
+.\"O Virtual consoles only.
+仮想コンソールのみ。
+.TP
+\fB\-\-blink\fP on|off
+.\"O Turns blink mode on or off.  Except on a virtual console,
+.\"O .B \-\-blink off
+.\"O turns off all attributes (bold, half-brightness, blink, reverse).
+点滅モードを on または off にする。
+仮想コンソールの場合は例外であるが、
+.B \-\-blink off
+により (太字・半輝度・点滅・反転といった)
+全ての属性が off にされる。
+.TP
+\fB\-\-bold\fP on|off
+.\"O Turns bold (extra bright) mode on or off.  Except on a virtual console,
+.\"O .B \-\-bold off
+.\"O turns off all attributes (bold, half-brightness, blink, reverse).
+太字 (高輝度) モードを on または off にする。
+仮想コンソールの場合は例外であるが、
+.B \-\-bold off
+により (太字・半輝度・点滅・反転といった)
+全ての属性が off にされる。
+.TP
+\fB\-\-clear\fP[=all|rest]
+.\"O Without an argument or with the argument
+.\"O .BR all ,
+.\"O the entire screen is cleared and the cursor is set to the home position,
+.\"O just like
+.\"O .BR clear (1)
+.\"O does.  With the argument
+.\"O .BR rest ,
+.\"O the screen is cleared from the current cursor position to the end.
+引き数なし、または引き数
+.B all
+が指定された場合、
+.BR clear (1)
+と同じように、スクリーンをクリアしてカーソルをホームポジションに
+移動する。
+引き数
+.B rest
+が指定された場合、現在のカーソル位置からスクリーンの最下行までを
+クリアする。
+.TP
+\fB\-\-clrtabs\fP[=\fItab1 tab2 tab3\fP ...]
+.\"O Clears tab stops from the given horizontal cursor positions, in the range
+.\"O .BR 1-160 .
+.\"O Without arguments, it clears all tab stops.
+指定された水平方向のカーソル位置のタブストップを解除する。
+範囲は
+.B 1-160
+である。
+引き数が指定されない場合、全てのタブストップを解除する。
+.\"O Virtual consoles only.
+仮想コンソールのみ。
+.TP
+\fB\-\-cursor\fP on|off
+.\"O Turns the terminal's cursor on or off.
+端末のカーソルを on または off にする。
+.TP
+\fB\-\-default\fP
+.\"O Sets the terminal's rendering options to the default values.
+端末のレンダリングオプションをデフォルトの値に設定する。
+.TP
+\fB\-\-dump\fP[=\fIconsole_number\fP]
+.\"O Writes a snapshot of the virtual console with the given number
+.\"O to the file specified with the
+.\"O .B \-\-file
+.\"O option, overwriting its contents; the default is
+.\"O .IR screen.dump .
+.\"O Without an argument, it dumps the current virtual console.  This overrides
+.\"O .BR \-\-append .
+指定された仮想コンソールのスナップショットを (属性とともに)
+.B \-\-file
+オプションで指定されたファイルに書き込む。
+ファイルの内容は上書きされる。
+デフォルトのファイルは
+.I screen.dump
+である。
+引き数が指定されない場合、現在の仮想コンソールをダンプする。
+.B \-\-append
+より優先される。
+.TP
+\fB\-\-file\fP \fIfilename\fP
+.\"O Sets the snapshot file name for any
+.\"O .B \-\-dump
+.\"O or
+.\"O .B \-\-append
+.\"O options on the same command line.  If this option is not present, the default
+.\"O is
+.\"O .I screen.dump
+.\"O in the current directory.  A path name that exceeds the system maximum will be
+.\"O truncated, see PATH_MAX from linux/limits.h for the value.
+.B \-\-dump
+または
+.B \-\-append
+オプションで使う
+スナップショットファイルを同じコマンドライン上で設定する。
+このオプションが指定されない場合、
+デフォルトはカレントディレクトリの
+.I screen.dump
+である。
+システムの最大値を越えたパス名は、切り詰められる。
+linux/limits.h の PATH_MAX の値を参照すること。
+.TP
+\fB\-\-foreground\fP \fI8-color\fP|default
+.\"O Sets the foreground text color.
+テキストの前景色を設定する。
+.TP
+\fB\-\-half\-bright\fP on|off
+.\"O Turns dim (half-brightness) mode on or off.  Except on a virtual console,
+.\"O .B \-\-half\-bright off
+.\"O turns off all attributes (bold, half-brightness, blink, reverse).
+薄暗色 (半輝度) モードを on または off にする。
+仮想コンソールの場合は例外であるが、
+.B \-\-half\-bright off
+により (太字・半輝度・点滅・反転といった)
+全ての属性が off にされる。
+.TP
+\fB\-\-hbcolor\fP [bright] \fI16-color\fP
+.\"O Sets the color for half-bright characters.
+半輝度文字の色を設定する。
+.TP
+\fB\-\-initialize\fP
+.\"O Displays the terminal initialization string, which typically sets the
+.\"O terminal's rendering options, and other attributes to the default values.
+端末の初期化文字列を表示する。
+通常は、端末のレンダリングオプションを設定し、
+その他の属性をデフォルト値に設定する。
+.TP
+\fB\-\-inversescreen\fP on|off
+.\"O Swaps foreground and background colors for the whole screen.
+スクリーン全体で前景色と背景色を入れ換える。
+.TP
+\fB\-\-linewrap\fP on|off
+.\"O Makes the terminal continue on a new line when a line is full.
+行がいっぱいの場合に、端末に新しい行に継続させるか否かを設定する。
+.TP
+\fB\-\-msg\fP on|off
+.\"O Enables or disables the sending of kernel
+.\"O .BR printk ()
+.\"O messages to the console.
+カーネル
+.BR printk ()
+メッセージを
+コンソールに送信するか否かを設定する。
+.\"O Virtual consoles only.
+仮想コンソールのみ。
+.TP
+\fB\-\-msglevel\fP 0-8
+.\"O Sets the console logging level for kernel
+.\"O .B printk()
+.\"O messages.  All messages strictly more important than this will be printed, so a
+.\"O logging level of
+.\"O .B 0
+.\"O has the same effect as
+.\"O .B \-\-msg on
+.\"O and a logging level of
+.\"O .B 8
+.\"O will print all kernel messages.
+.\"O .BR klogd (8)
+.\"O may be a more convenient interface to the logging of kernel messages.
+カーネル
+.B printk()
+メッセージのログ記録レベルを設定する。
+ここで指定された以上の重要度である全てのメッセージが表示される。
+よって、ログ記録レベル
+.B 0
+は
+.B \-\-msg on
+と同じ効果がある。
+また、ログ記録レベル
+.B 8
+では全てのカーネルメッセージを表示する。
+.BR klogd (8)
+はカーネルメッセージをログに記録するための
+さらに使いやすいインターフェースである。
+.sp
+.\"O Virtual consoles only.
+仮想コンソールのみ。
+.TP
+\fB\-\-powerdown\fP[=0-60]
+.\"O Sets the VESA powerdown interval in minutes.  Without an argument, it defaults
+.\"O to
+.\"O .B 0
+.\"O (disable powerdown).  If the console is blanked or the monitor is in suspend
+.\"O mode, then the monitor will go into vsync suspend mode or powerdown mode
+.\"O respectively after this period of time has elapsed.
+VESA パワーダウンまでの時間を分単位で設定する。
+引き数が指定されない場合、デフォルトは
+.B 0
+である (パワーダウンは行われない)。
+この時間が経過すると、
+コンソールが消灯している場合は垂直同期サスペンドモードになり、
+モニタがサスペンドモードの場合はパワーダウンモードになる。
+.TP
+\fB\-\-powersave\fP \fImode\fP
+.\"O Valid values for \fImode\fP are:
+\fImode\fP に指定可能な値は以下の通り:
+.RS
+.TP
+.B vsync|on
+.\"O Puts the monitor into VESA vsync suspend mode.
+モニタを VESA vsync サスペンドモードにする。
+.TP
+.B hsync
+.\"O Puts the monitor into VESA hsync suspend mode.
+モニタを VESA hsync サスペンドモードにする。
+.TP
+.B powerdown
+.\"O Puts the monitor into VESA powerdown mode.
+モニタを VESA パワーダウンモードにする。
+.TP
+.B off
+.\"O Turns monitor VESA powersaving features.
+モニタを VESA パワーセーブ機能を off にする。
+.RE
+.TP
+\fB\-\-regtabs\fP[=1-160]
+.\"O Clears all tab stops, then sets a regular tab stop pattern, with one tab every
+.\"O specified number of positions.  Without an argument, it defaults to
+.\"O .BR 8 .
+全てのタブストップを解除し、通常のタブストップパターンを設定する。
+指定した数値の位置ごとにタブが置かれる。
+引き数が指定されない場合、デフォルトは
+.B 8
+である。
+.\"O Virtual consoles only.
+仮想コンソールのみ。
+.TP
+\fB\-\-repeat\fP on|off
+.\"O Turns keyboard repeat on or off.
+キーボードリピートを on または off にする。
+.\"O Virtual consoles only.
+仮想コンソールのみ。
+.TP
+\fB\-\-reset\fP
+.\"O Displays the terminal reset string, which typically resets the terminal to
+.\"O its power-on state.
+端末リセット文字列を表示する。
+通常は、端末をパワーオンの状態にリセットする。
+.TP
+\fB\-\-resize\fP
+.\"O Reset terminal size by assessing maximum row and column.  This is useful
+.\"O when actual geometry and kernel terminal driver are not in sync.  Most
+.\"O notable use case is with serial consoles, that do not use
+.\"O .BR ioctl (3p)
+.\"O but just byte streams and breaks.
+最大の行と列を仮定して端末をリセットする。
+これは実際の大きさとカーネルの端末ドライバーが同期していない場合に
+役立つ。
+最も顕著な使用法はシリアルコンソールであり、
+.BR ioctl (3p)
+を使っていないが、バイトストリームとブレークは使っている場合である。
+.TP
+\fB\-\-reverse\fP on|off
+.\"O Turns reverse video mode on or off.  Except on a virtual console,
+.\"O .B \-\-reverse off
+.\"O turns off all attributes (bold, half-brightness, blink, reverse).
+反転モードを on または off にする。
+仮想コンソールの場合は例外であるが、
+.B \-\-reverse off
+により (太字・半輝度・点滅・反転といった)
+全ての属性が off にされる。
+.TP
+\fB\-\-store\fP
+.\"O Stores the terminal's current rendering options (foreground and background
+.\"O colors) as the values to be used at reset-to-default.
+端末の現在のレンダリングオプション (前景色と背景色) を、
+デフォルトにリセットする際に使用される値として保存する。
+.\"O Virtual consoles only.
+仮想コンソールのみ。
+.TP
+\fB\-\-tabs\fP[=\fItab1 tab2 tab3\fP ...]
+.\"O Sets tab stops at the given horizontal cursor positions, in the range
+.\"O .BR 1-160 .
+.\"O Without arguments, it shows the current tab stop settings.
+指定された水平方向のカーソル位置にタブストップを設定する。
+範囲は
+.B 1-160
+である。
+引き数が指定されない場合、現在のタブストップの設定を表示する。
+.TP
+\fB\-\-term\fP \fIterminal_name\fP
+.\"O Overrides the TERM environment variable.
+環境変数 TERM を上書きする。
+.TP
+\fB\-\-ulcolor\fP [bright] \fI16-color\fP
+.\"O Sets the color for underlined characters.
+下線文字の色を設定する。
+.\"O Virtual consoles only.
+仮想コンソールのみ。
+.TP
+\fB\-\-underline\fP on|off
+.\"O Turns underline mode on or off.
+下線モードを on または off にする。
+.TP
+\fB\-\-version\fP
+.\"O Displays version information and exits.
+バージョン情報を表示して、終了する。
+.TP
+\fB\-\-help\fP
+.\"O Displays a help text and exits.
+ヘルプを表示して、終了する。
+.\"O .SH COMPATIBILITY
+.SH 互換性
+.\"O Since version 2.25
+.\"O .B setterm
+.\"O has support for long options with two hyphens, for example
+.\"O .BR \-\-help ,
+.\"O beside the historical long options with a single hyphen, for example
+.\"O .BR \-help .
+バージョン 2.25 から
+.B setterm
+は昔からのハイフン 1 つの長いオプション (例えば
+.BR \-help )
+に加え、ハイフン 2 つの長いオプション (例えば
+.BR \-\-help )
+をサポートした。
+.\"O In scripts it is better to use the backward-compatible single hyphen
+.\"O rather than the double hyphen.  Currently there are no plans nor good
+.\"O reasons to discontinue single-hyphen compatibility.
+スクリプト内では、後方互換のため、ハイフン 2 つよりハイフン 1 つを使う方が良い。
+現在のところハイフン 1 つの互換性を止める計画や良い理由はない。
+.\"O .SH BUGS
+.SH バグ
+.\"O Differences between the Minix and Linux versions are not documented.
+Minix 版と Linux 版の違いが、この文書には書かれていない。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR stty (1),
+.BR tput (1),
+.BR tty (4),
+.BR terminfo (5)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The setterm command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+setterm コマンドは、util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
