@@ -1,0 +1,528 @@
+.\" Copyright (c) 1980, 1990 Regents of the University of California.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by the University of
+.\"	California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"	@(#)script.1	6.5 (Berkeley) 7/27/91
+.\"
+.\" Japanese Version Copyright (c) 1999 NAKANO Takeo all rights reserved.
+.\" Translated Thu 14 Oct 1999 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated Tue Jan  9 18:33:39 JST 2001
+.\"      by Yuichi SATO <sato@complex.eng.hokudai.ac.jp>
+.\" Updated Sat Nov 17 15:27:01 JST 2001
+.\"      by Yuichi SATO <ysato@h4.dion.ne.jp>
+.\" Updated & Modified Sat May  1 17:38:44 JST 2004
+.\"      by Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated & Modified Wed Jul 31 00:08:21 JST 2019
+.\"      by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Fri Jan 22 23:02:15 JST 2021 by Yuichi SATO
+.\"
+.\" WORD:	typescript	写し
+.\"
+.TH SCRIPT "1" "June 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O script \- make typescript of terminal session
+script \- 端末セッションの写し (typescript) を作成する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B script
+[options]
+.RI [ file ]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B script
+.\"O makes a typescript of everything on your terminal session.  The terminal
+.\"O data are stored in raw form to the log file and information about timing
+.\"O .\"O to another (optional) structured log file.  The timing log file is necessary to replay
+.\"O the session later by
+.\"O .BR scriptreplay (1)
+.\"O and to store additional information about the session.
+.B script
+は端末のセッションのすべての写し (typescript) を作成する。
+端末のデータは、ログファイルに生の形式で格納され、
+タイミングは、(オプションで) 別の構造化されたログファイルに格納される。
+タイミングのログは、後で
+.BR scriptreplay (1)
+でセッションを再生するのに必要であり、
+セッションについての追加の情報を格納している。
+.\"O Since version 2.35,
+.\"O .B script
+.\"O supports multiple streams and allows the logging of input and output to separate
+.\"O files or all the one file.  This version also supports new timing file
+.\"O which records additional information.  The command
+.\"O .B scriptreplay \-\-summary
+.\"O then provides all the information.
+バージョン 2.35 以降で、
+.B script
+は複数ストリームをサポートし、入力と出力を別のファイルに記録することも、
+1 つのファイルに記録することもできる。
+このバージョンでは、追加の情報を記録する新しいタイミングファイルも
+サポートしている。
+コマンド
+.B scriptreplay \-\-summary
+で、すべての情報が提供される。
+
+.PP
+.\"O If the argument
+.\"O .I file
+.\"O or option \fB\-\-log\-out\fR \fIfile\fR is given,
+.\"O .B script
+.\"O saves the dialogue in this
+.\"O .IR file .
+引き数
+.I file
+または、オプション \fB\-\-log\-out\fR \fIfile\fR が指定されると、
+.B script
+はすべての記録を
+.I file
+に保存する。
+.\"O If no filename is given, the dialogue is saved in the file
+.\"O .IR typescript .
+ファイル名が与えられなければ、写しは
+.I typescript
+というファイルに保存される。
+.PP
+.\"O Note that logging input using \fB\-\-log\-in\fR or \fB\-\-log\-io\fR
+.\"O may record security-sensitive information
+.\"O as the log file contains all terminal session input
+.\"O (e.g., passwords)
+.\"O independently of the terminal echo flag setting.
+\fB\-\-log\-in\fR または \fB\-\-log\-io\fR を使った入力の記録では、
+端末の echo フラグ設定に拘わらず、
+ログファイルはすべての端末セッションの入力 (例えば、パスワード) を含むので、
+セキュリティ上のセンシティブな情報も記録される点に注意すること。
+.\"O .SH OPTIONS
+.SH オプション
+.\"O Below, the \fIsize\fR argument may be followed by the multiplicative
+.\"O suffixes KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
+.\"O (the "iB" is optional, e.g., "K" has the same meaning as "KiB"), or the suffixes
+.\"O KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+\fIsize\fR 引き数の後ろに倍数の拡張子
+KiB (=1024), MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB を
+付けることができる
+("iB" はオプションであり、つまり "K" は "KiB" と同じ意味である)。
+また、拡張子
+KB (=1000), MB (=1000*1000), GB, TB, PB, EB, ZB, YB
+を付けることもできる。
+.TP
+\fB\-a\fR, \fB\-\-append\fR
+.\"O Append the output to
+.\"O .I file
+.\"O or to
+.\"O .IR typescript ,
+.\"O retaining the prior contents.
+出力を
+.I file
+または
+.I typescript
+に追加 (append) する。
+以前の内容が保存される。
+.TP
+\fB\-c\fR, \fB\-\-command\fR \fIcommand\fR
+.\"O Run the
+.\"O .I command
+.\"O rather than an interactive shell.  This makes it easy for a script to capture
+.\"O the output of a program that behaves differently when its stdout is not a
+.\"O tty.
+インタラクティブなシェルではなく、
+.I command
+を実行する。
+標準出力が端末 (tty) でないと動作が変わってしまうプログラムの出力を、
+script が簡単に記録できるようにする。
+.TP
+\fB\-E\fR, \fB\-\-echo\fR \fIwhen\fR
+.\"O This option controls the ECHO flag for the pseudoterminal within the session.
+このオプションは、セッションの擬似端末の ECHO フラグを制御する。
+.\"O The supported modes are
+.\"O .IR always ,
+.\"O .IR never ,
+.\"O or
+.\"O .IR auto .
+サポートされるモードは
+.IR always ,
+.IR never ,
+.I auto
+である。
+.\"O The default is
+.\"O .I auto
+.\"O -- in this case, ECHO is disabled if the current standard input is a
+.\"O terminal iin order to avoid double-echo,
+.\"O and enabled if standard input is not a terminal
+.\"O (for example pipe:
+.\"O .BR "echo date | script" )
+.\"O to avoid missing input in the session log.
+デフォルトは
+.I auto
+であり -- この場合、現在の標準入力が端末であれば、
+二重のエコーを避けるため、ECHO は無効化される。
+また、標準入力が端末でない場合 (例えばパイプ
+.BR "echo date | script"
+の場合)、セッションログの入力の喪失を避けるため、ECHO は有効化される。
+.TP
+\fB\-e\fR, \fB\-\-return\fR
+.\"O Return the exit status of the child process.  Uses the same format as bash
+.\"O termination on signal termination
+.\"O (i.e., exit status is 128 + the signal number).  The exit status of
+.\"O the child process is always stored in the type script file too.
+子プロセスの終了コードを返す。
+bash でのシグナル終了と同じ形式である (つまり、終了コードは 128+シグナル番号になる)。
+子プロセスの終了コードは、常に typescript ファイルに格納される。
+.TP
+\fB\-f\fR, \fB\-\-flush\fR
+.\"O Flush output after each write.  This is nice for telecooperation: one person
+.\"O does `mkfifo foo; script \-f foo',
+.\"O and another can supervise in real-time what is
+.\"O being done using `cat foo'.  Note that flush has an impact on performance; it's
+.\"O possible to use SIGUSR1 to flush logs on demand.
+書き込みをするごとに出力をフラッシュする。
+これは遠隔で共同作業をする場合に良い。
+一方の人が `mkfifo foo; script \-f foo' を実行した場合、
+もう一方の人は、`cat foo' を使うことにより、
+何が実行されているかをリアルタイムで監視することができる。
+フラッシュは性能に影響がある点に注意すること。
+SIGUSR1 を使って、要求に応じてログをフラッシュできる。
+.TP
+\fB\-\-force\fR
+.\"O Allow the default output file
+.\"O .I typescript
+.\"O to be a hard or symbolic link.  The command will follow a symbolic link.
+.I typescript
+ファイルがハードリンクやシンボリックリンクであっても、
+デフォルトの出力ファイルを許可する。
+コマンドはシンボリックリンクを辿る。
+.TP
+\fB\-B\fR, \fB\-\-log\-io\fR \fIfile\fR
+.\"O Log input and output to the same
+.\"O \fIfile\fR.  Note, this option makes sense only if \fB\-\-log\-timing\fR is
+.\"O also specified, otherwise it's impossible to separate output and input streams from
+.\"O the log \fIfile\fR.
+入力と出力を同じ \fIfile\fR に記録する。
+このオプションは、\fB\-\-log\-timing\fR も指定された場合にのみ、意味を持つ点に注意すること。
+指定されない場合、出力と入力ストリームをログ \fIfile\fR から分離することはできない。
+.TP
+\fB\-I\fR, \fB\-\-log\-in\fR \fIfile\fR
+.\"O Log input to the \fIfile\fR.  The log output is disabled if only \fB\-\-log\-in\fR
+.\"O specified.
+入力を \fIfile\fR に記録する。
+\fB\-\-log\-in\fR しか指定されない場合、出力は記録されない。
+.sp
+.\"O Use this logging functionality carefully as it logs all input, including input
+.\"O when terminal has disabled echo flag (for example, password inputs).
+このログ記録機能は、端末の echo フラグを無効化している場合の入力
+(例えば、パスワード入力) を含む、すべての入力を記録するので、注意して使うこと 。
+.TP
+\fB\-O\fR, \fB\-\-log\-out\fR \fIfile\fR
+.\"O Log output to the \fIfile\fR.  The default is to log output to the file with
+.\"O name
+.\"O .I typescript
+.\"O if the option \fB\-\-log\-out\fR or \fB\-\-log\-in\fR is not given.  The log
+.\"O output is disabled if only \fB\-\-log\-in\fR specified.
+出力を \fIfile\fR に記録する。
+オプション \fB\-\-log\-out\fR または \fB\-\-log\-in\fR が指定されない場合、
+デフォルトでは出力はファイル
+.I typescript
+に記録される。
+\fB\-\-log\-in\fR しか指定されない場合、出力は記録されない。
+.TP
+\fB\-T\fR, \fB\-\-log\-timing\fR \fIfile\fR
+.\"O Log timing information to the \fIfile\fR.  Two timing file formats are supported
+.\"O now.  The classic format is used when only one stream (input or output) logging
+.\"O is enabled.  The multi-stream format is used on \fB\-\-log\-io\fR or when
+.\"O \fB\-\-log\-in\fR and \fB\-\-log\-out\fR are used together.
+タイミング情報を \fIfile\fR に記録する。
+現在のところ、2 種類のタイミングファイルの形式がサポートされている。
+1 つのストリーム (入力または出力) の記録が有効にされている場合に、
+昔からの (classic) 形式が使われる。
+\fB\-\-log\-io\fR が使われた場合、
+または、\fB\-\-log\-in\fR と \fB\-\-log\-out\fR の両方が使われた場合、
+複数ストリーム (multi-stream) 形式が使われる。
+.\"O See also \fB\-\-logging\-format\fR.
+\fB\-\-logging\-format\fR も参照すること。
+.TP
+\fB\-m\fR, \fB\-\-logging\-format\fR \fIformat\fR
+.\"O Force use of
+.\"O .I advanced
+.\"O or
+.\"O .I classic
+.\"O format.  The default is the classic format to log only output and the
+.\"O advanced format when input as well as output logging is requested.
+.I advanced
+または
+.I classic
+形式の使用を強制する。
+デフォルトは昔からの (classic) 形式であり、出力のみを記録する。
+拡張 (advanced) 形式は、出力だけでなく、入力の記録も要求された場合に、使われる。
+.sp
+.RS
+.\"O .B Classic format
+.B 昔からの (classic) 形式
+.PP
+.\"O The log contains two fields, separated by a space.  The first
+.\"O field indicates how much time elapsed since the previous output.  The second
+.\"O field indicates how many characters were output this time.
+このログは、空白で区切られた 2 つのフィールドから構成される。
+1 つ目のフィールドは、前の出力からの経過時間である。
+2 つ目のフィールドは、そのタイミングで何文字出力されたかを示す。
+.sp
+.\"O .B Advanced (multi-stream) format
+.B 拡張 (advanced) (複数ストリーム) 形式
+.PP
+.\"O The first field is an entry type identifier
+.\"O ('I'nput, 'O'utput, 'H'eader, 'S'ignal).
+.\"O The socond field is how much time elapsed since the previous entry,
+.\"O and the rest of the entry is type-specific data.
+1 つ目のフィールドは、エントリータイプの識別子
+('I'nput, 'O'utput, 'H'eader, 'S'ignal) である。
+2 つ目のフィールドは、前のエントリからの経過時間であり、
+エントリの残りの部分は、タイプ固有のデータである。
+.RE
+.TP
+\fB\-o\fR, \fB\-\-output-limit\fR \fIsize\fR
+.\"O Limit the size of the typescript and timing files to
+.\"O .I size
+.\"O and stop the child process after this size is exceeded.  The calculated
+.\"O file size does not include the start and done messages that the
+.\"O .B script
+.\"O command prepends and appends to the child process output.
+.\"O Due to buffering, the resulting output file might be larger than the specified value.
+typescript のサイズを制限し、ファイルを
+.I size
+に切り詰めて、サイズを超過した場合に子プロセスを停止する。
+計算されるファイルサイズには、
+.B script
+コマンドが子プロセスの出力の前に付ける開始メッセージと、
+後に付ける終了メッセージが含まれない。
+バッファリングのために、結果の出力ファイルは指定した値より
+大きくなる可能性がある。
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+.\"O Be quiet (do not write start and done messages to standard output).
+寡黙な動作にする (開始と終了メッセージを標準出力に書き出さない)。
+.TP
+\fB\-t\fR[\fIfile\fR], \fB\-\-timing\fR[=\fIfile\fR]
+.\"O Output timing data to standard error, or to
+.\"O .I file
+.\"O when given.  This option is deprecated in favour of \fB\-\-log\-timing\fR where
+.\"O the \fIfile\fR argument is not optional.
+タイミングデータを標準エラーに出力する。
+.I file
+が指定された場合は、ファイルに出力する。
+.\"O This option is deprecated in favour of \fB\-\-log\-timing\fR where
+.\"O the \fIfile\fR argument is not optional.
+このオプションは古く、\fIfile\fR 引き数がオプションでない、
+\fB\-\-log\-timing\fR を使うべきである。
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH SIGNALS
+.SH シグナル
+.\"O Upon receiving
+.\"O .BR SIGUSR1 ,
+.\"O .B script
+.\"O immediately flushes the output files.
+.B SIGUSR1
+を受けると、
+.B script
+は出力ファイルを即時にフラッシュする。
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.\"O The following environment variable is utilized by
+.\"O .BR script :
+.B script
+は以下の環境変数を用いる。
+.TP
+.B SHELL
+.\"O If the variable
+.\"O .B SHELL
+.\"O exists, the shell forked by
+.\"O .B script
+.\"O will be that shell.  If
+.\"O .B SHELL
+.\"O is not set, the Bourne shell is assumed.  (Most shells set this variable
+.\"O automatically).
+環境変数
+.B SHELL
+が定義されていると、
+.B script
+が fork するシェルはそれになる。
+.B SHELL
+が定義されていなければ、
+Bourne シェルが用いられる。
+(ほとんどのシェルはこの環境変数を自動的にセットする。)
+.\"O .SH NOTES
+.SH 注意
+.\"O The script ends when the forked shell exits (a
+.\"O .I control-D
+.\"O for the Bourne shell
+.\"O .RB ( sh (1p)),
+.\"O and
+.\"O .IR exit ,
+.\"O .I logout
+.\"O or
+.\"O .I control-d
+.\"O (if
+.\"O .I ignoreeof
+.\"O is not set) for the
+.\"O C-shell,
+.\"O .BR csh (1)).
+script は fork されたシェルが終了したときに記録を終える
+(Bourne シェル
+.RB ( sh (1p))
+を終わるには
+.I control-D
+を入力する。
+C シェル
+.RB ( csh (1))
+なら
+.IR exit ,
+.IR logout ,
+.I control-d
+のいずれかを入力する。
+ただし
+.I control-d
+が有効なのは
+.I ignoreeof
+がセットされていない場合である)。
+.PP
+.\"O Certain interactive commands, such as
+.\"O .BR vi (1),
+.\"O create garbage in the typescript file.
+.\"O .B script
+.\"O works best with commands that do not manipulate the screen, the results are
+.\"O meant to emulate a hardcopy terminal.
+.BR vi (1)
+のようなインタラクティブなコマンドでは、
+typescript ファイルにゴミができることがある。
+.B script
+は画面を操作しないコマンドを扱ったときに最もうまく動作する。
+その場合の結果は、ハードコピー端末をエミュレートしたものとなる。
+.PP
+.\"O It is not recommended to run
+.\"O .B script
+.\"O in non-interactive shells.  The inner shell of
+.\"O .B script
+.\"O is always interactive, and this could lead to unexpected results.  If you use
+.\"O .B script
+.\"O in the shell initialization file, you have to avoid entering an infinite
+.\"O loop.  You can use for example the \fB\%.profile\fR file, which is read
+.\"O by login shells only:
+.B script
+を対話的でないシェルで実行するのは推奨されない。
+.B script
+の内部シェルは、常に対話的であり、シェルが対話的でない場合、
+予期しない結果になる可能性がある。
+.B script
+をシェルの初期化ファイルで使う場合、無限ループに入るのを
+避けなければならない。
+例として、以下の \fB\%.profile\fR ファイルを使うことができる。
+これは、ログインシェルからのみ読み込まれる。
+.sp
+.na
+.RS
+.nf
+if test \-t 0 ; then
+    script
+    exit
+fi
+.fi
+.RE
+.ad
+.PP
+.\"O You should also avoid use of
+.\"O .B script
+.\"O in command pipes, as
+.\"O .B script
+.\"O can read more input than you would expect.
+.B script
+はあなたが思うより多くの入力を読み込む可能性があるので、
+コマンドのパイプから
+.B script
+を使うことも避けるべきである。
+.PP
+.\"O .SH HISTORY
+.SH 履歴
+.\"O The
+.\"O .B script
+.\"O command appeared in 3.0BSD.
+.B script
+コマンドは 3.0BSD で登場した。
+.\"O .SH BUGS
+.SH バグ
+.\"O .B script
+.\"O places
+.\"O .I everything
+.\"O in the log file, including linefeeds and backspaces.  This is not what the
+.\"O naive user expects.
+.B script
+はラインフィードやバックスペースも含め、
+.I すべて
+をログファイルに書きこむ。
+これは普通のユーザが期待するものとは異なるかもしれない。
+.PP
+.\"O .B script
+.\"O is primarily designed for interactive terminal sessions.  When stdin
+.\"O is not a terminal (for example: \fBecho foo | script\fR), then the session
+.\"O can hang, because the interactive shell within the script session misses EOF and
+.\"O .B script
+.\"O has no clue when to close the session.  See the \fBNOTES\fR section for more information.
+.B script
+は元々対話的な端末のセッションのために設計されている。
+標準入力が端末でない場合 (例えば、\fBecho foo | script\fR)、
+セッションがハングする可能性がある。
+これは、script セッション内の対話シェルが EOF を見つけられず、
+.B script
+がセッションをクローズする手がかりがないためである。
+より詳細な情報は「\fB注意\fR」のセクションを参照すること。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR csh (1)
+.\"O (for the
+.\"O .I history
+.\"O mechanism),
+.RI ( history
+メカニズムに関する部分),
+.BR scriptreplay (1),
+.BR scriptlive (1),
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The script command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+script コマンドは、util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
