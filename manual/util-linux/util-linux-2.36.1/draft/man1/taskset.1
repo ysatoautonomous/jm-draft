@@ -1,0 +1,211 @@
+.\" taskset(1) manpage
+.\"
+.\" Copyright (C) 2004 Robert Love
+.\"
+.\" This is free documentation; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License,
+.\" version 2, as published by the Free Software Foundation.
+.\"
+.\" The GNU General Public License's references to "object code"
+.\" and "executables" are to be interpreted as the output of any
+.\" document formatting or typesetting system, including
+.\" intermediate and printed output.
+.\"
+.\" This manual is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program; if not, write to the Free Software Foundation, Inc.,
+.\" 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Tue Apr 14 21:04:31 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Sat Jan 23 08:36:34 JST 2021 by Yuichi SATO
+.\"
+.TH TASKSET 1 "August 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O taskset \- set or retrieve a process's CPU affinity
+taskset \- プロセスの CPU アフィニティ (affinity) を設定また取得する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B taskset
+[options]
+.IR mask\ command\  [ argument ...]
+.br
+.B taskset
+[options]
+.B \-p
+.RI [ mask ]\  pid
+.\"O .SH DESCRIPTION
+.SH 説明
+.PP
+.\"O .B taskset
+.\"O is used to set or retrieve the CPU affinity of a running process given its
+.\"O \fIpid\fR, or to launch a new \fIcommand\fR with a given CPU affinity.
+.B taskset
+は \fIpid\fR で指定された実行中の CPU アフィニティを設定または取得するために使われる。
+また、新しい \fIcommand\fR を指定した CPU アフィニティで起動することもできる。
+.\"O CPU affinity is a
+.\"O scheduler property that "bonds" a process to a given set of CPUs on the system.
+CPU アフィニティは、スケジューラーの設定であり、
+プロセスをシステム上の CPU セットと「結びつける」。
+.\"O The Linux scheduler will honor the given CPU affinity and the process will not
+.\"O run on any other CPUs.  Note that the Linux scheduler also supports natural
+.\"O CPU affinity: the scheduler attempts to keep processes on the same CPU as long
+.\"O as practical for performance reasons.  Therefore, forcing a specific CPU
+.\"O affinity is useful only in certain applications.
+Linux スケジューラーは指定された CPU アフィニティを遵守し、他の CPU では実行しない。
+Linux スケジューラーは元々の CPU アフィニティもサポートする点にも注意すること。
+元々のスケジューラーは、性能上の理由がない限り、プロセスを同じ CPU で実行する。
+よって、特定の CPU アフィニティを強制することは、特定のアプリケーションでしか役立たない。
+.sp
+.\"O The CPU affinity is represented as a bitmask, with the lowest order bit
+.\"O corresponding to the first logical CPU and the highest order bit corresponding
+.\"O to the last logical CPU.  Not all CPUs may exist on a given system but a mask
+.\"O may specify more CPUs than are present.  A retrieved mask will reflect only the
+.\"O bits that correspond to CPUs physically on the system.  If an invalid mask is
+.\"O given (i.e., one that corresponds to no valid CPUs on the current system) an
+.\"O error is returned.  The masks may be specified in hexadecimal (with or without
+.\"O a leading "0x"), or as a CPU list with the
+.\"O .B \-\-cpu\-list
+.\"O option.  For example,
+CPU アフィニティはビットマスクで表現され、最下位のビットが最初の論理 CPU に対応し、
+最上位のビットが最後の論理 CPU に対応する。
+全ての CPU が指定されたシステムで存在するわけではないので、
+マスクでは存在する以上の CPU を指定することができる。
+取得したマスクは、システム上に物理的に存在する CPU に対応したビットになっている。
+不正な (つまり、現在のシステムに対応する有効な CPU がない) マスクが指定された場合、
+エラーが返される。
+マスクは 16 進数 (先頭に "0x" があってもなくてもよい)、または 
+.B \-\-cpu\-list
+オプションで CPU のリストで指定できる。
+例えば、
+.RS 4
+.TP 12
+.B 0x00000001
+.\"O is processor #0,
+はプロセッサ #0 である。
+.TP
+.B 0x00000003
+.\"O is processors #0 and #1,
+はプロセッサ #0 と #1 である。
+.TP
+.B 0xFFFFFFFF
+.\"O is processors #0 through #31,
+はプロセッサ #0 から #31 である。
+.TP
+.B 32
+.\"O is processors #1, #4, and #5,
+はプロセッサ #1, #4, #5 である。
+.TP
+.B \-\-cpu\-list\ 0-2,6
+.\"O is processors #0, #1, #2, and #6.
+はプロセッサ #0, #1, #2, #6 である。
+.TP
+.B \-\-cpu\-list\ 0-10:2
+.\"O is processors #0, #2, #4, #6, #8 and #10. The suffix ":N" specifies stride in
+.\"O the range, for example 0-10:3 is interpreted as 0,3,6,9 list.
+はプロセッサ #0, #2, #4, #6, #8, #10 である。
+サフィックス ":N" は範囲内でいくつ飛ばすかを指定する。
+例えば、0-10:3 は 0,3,6,9 というリストとして解釈される。
+.RE
+.PP
+.\"O When
+.\"O .B taskset
+.\"O returns, it is guaranteed that the given program has been scheduled to a legal
+.\"O CPU.
+.B taskset
+が返された場合、指定したプログラムが適切な CPU でスケジューリングされていることが
+保証されている。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-a ,\  \-\-all\-tasks
+.\"O Set or retrieve the CPU affinity of all the tasks (threads) for a given PID.
+指定した PID の全てのタスク (スレッド) の CPU アフィニティを設定または取得する。
+.TP
+.BR \-c ,\  \-\-cpu\-list
+.\"O Interpret \fImask\fR as numerical list of processors instead of a bitmask.
+.\"O Numbers are separated by commas and may include ranges.  For example:
+.\"O .BR 0,5,8-11 .
+\fImask\fR をビットマスクではなく、プロセッサ番号のリストとして解釈する。
+番号はカンマで区切られ、範囲を含めることもできる。
+例えば:
+.BR 0,5,8-11 .
+.TP
+.BR \-p ,\  \-\-pid
+.\"O Operate on an existing PID and do not launch a new task.
+既存の PID について操作を行い、新しいタスクを起動しない。
+.TP
+.BR \-V ,\  \-\-version
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h ,\  \-\-help
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH USAGE
+.SH 使用法
+.TP
+.\"O The default behavior is to run a new command with a given affinity mask:
+デフォルトの動作は、新しいコマンドを指定したアフィニティマスクで実行する:
+.B taskset
+.I mask
+.IR command\  [ arguments ]
+.TP
+.\"O You can also retrieve the CPU affinity of an existing task:
+既存のタスクの CPU アフィニティを取得することもできる:
+.B taskset \-p
+.I pid
+.TP
+.\"O Or set it:
+既存のタスクの CPU アフィニティを設定する:
+.B taskset \-p
+.I mask pid
+.\"O .SH PERMISSIONS
+.SH 権限
+.\"O A user can change the CPU affinity of a process belonging to the same user.
+.\"O A user must possess
+.\"O .B CAP_SYS_NICE
+.\"O to change the CPU affinity of a process belonging to another user.
+.\"O A user can retrieve the affinity mask of any process.
+ユーザーは同じユーザーが所有するプロセスの CPU アフィニティを変更できる。
+他のユーザーが所有するプロセスの CPU アフィニティを変更するには、
+.B CAP_SYS_NICE
+権限を持たなければならない。
+ユーザーは任意のプロセスのアフィニティマスクを取得できる。
+.\"O .SH AUTHORS
+.SH 著者
+.\"O Written by Robert M. Love.
+Robert M. Love によって書かれた。
+.\"O .SH COPYRIGHT
+.SH 著作権
+Copyright \(co 2004 Robert M. Love.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR chrt (1),
+.BR nice (1),
+.BR renice (1),
+.BR sched_getaffinity (2),
+.BR sched_setaffinity (2)
+.sp
+.\"O See
+.\"O .BR sched (7)
+.\"O for a description of the Linux scheduling scheme.
+Linux のスケジューリングの概要については、
+.BR sched (7)
+を参照すること。
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The taskset command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+taskset コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
