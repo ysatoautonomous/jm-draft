@@ -1,0 +1,652 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of RUNUSER</TITLE>
+</HEAD><BODY>
+<H1>RUNUSER</H1>
+Section: User Commands (1)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+runuser - 代わりのユーザー ID とグループ ID でコマンドを実行する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>runuser</B> [options] <B>-u</B>
+
+<I>user</I>
+
+[[--] <I>command</I> [argument<I>...]]</I>
+
+<P>
+
+<B>runuser</B> [options] [<B>-</B>]
+
+[<I>user</I> [<I>argument</I>...]]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B>runuser</B>
+
+を使うと、代わりのユーザー ID とグループ ID でコマンドを実行できる。
+
+
+
+
+
+オプション <B>-u</B> が指定されない場合、
+<B>runuser</B>
+
+は
+<B>su</B>
+
+互換の動作にフォールバックし、シェルが実行される。
+
+
+
+
+
+
+
+
+コマンド
+<B>runuser</B>
+
+と
+<B>su</B>
+
+の違いは、
+<B>runuser</B>
+
+が (root ユーザーのみから実行されるため) パスワードを尋ねない点と、
+別の PAM 設定を使っている点である。
+
+
+
+コマンド
+<B>runuser</B>
+
+は set-user-ID 権限でインストールする必要はない。
+<P>
+
+
+
+
+
+PAM セッションが必要なければ、推奨される方法は
+<B><A HREF="../man1/setpriv.1.html">setpriv</A></B>(1)
+
+コマンドを使うことである。
+<P>
+
+
+
+
+
+引き数なしで呼び出された場合、
+<B>runuser</B>
+
+はデフォルトで対話シェルを
+<I>root</I>
+
+として実行する。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+後方互換のため、
+<B>runuser</B>
+
+はデフォルトではカレントディレクトリを変更せず、
+環境変数
+<B>HOME</B>
+
+と
+<B>SHELL</B>
+
+を設定するだけである
+(対象の
+<I>user</I>
+
+が root でない場合、
+<B>USER</B>
+
+と
+<B>LOGNAME</B>
+
+も設定する)。
+
+
+
+このバージョンの
+<B>runuser</B>
+
+はセッション管理に PAM を使う。
+<P>
+
+
+
+
+
+すべての場合において、
+<B>runuser</B>
+
+は、最終的な環境変数の変更のために、
+PAM (pam_getenvlist()) を使うことに注意すること。
+
+
+
+<B>--login</B> や <B>--preserve-environment</B> といった
+コマンドラインオプションは、PAM で変更される前の環境変数に影響する。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-c</B>,<B> --command</B>=<B></B><I>command</I>
+
+<DD>
+
+
+
+
+
+<I>command</I>
+
+をシェルに
+<B>-c</B>
+
+オプションを付けて渡す。
+<DT><B>-f</B>,<B> --fast</B>
+
+<DD>
+
+
+
+
+<B>-f</B>
+
+をシェルに渡す。
+これはシェルによっては、使えたり、使えなかったりする。
+<DT><B>-g</B>,<B> --group</B>=<B></B><I>group</I>
+
+<DD>
+
+使用するプライマリーグループ。
+このオプションは root ユーザーにのみ許可されている。
+<DT><B>-G</B>,<B> --supp-group</B>=<B></B><I>group</I>
+
+<DD>
+
+
+
+
+補助 (supplementary) グループを指定する。
+このオプションは root ユーザーにのみ許可されている。
+オプション <B>--group</B> が指定されていない場合、補助グループがプライマリグループとして
+使われる。
+<DT><B>-</B>,<B> -l</B>,<B> --login</B>
+
+<DD>
+
+
+シェルをログインシェルとして開始する。環境変数は実際の login と同様である:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>*<DD>
+
+
+
+<B>TERM</B>
+
+と <B>--whitelist-environment</B> で指定された環境変数以外の、
+全ての環境変数をクリアする。
+<DT>*<DD>
+
+環境変数
+<B>HOME</B>,
+
+<B>SHELL</B>,
+
+<B>USER</B>,
+
+<B>LOGNAME</B>,
+
+<B>PATH</B>
+
+を初期化する。
+<DT>*<DD>
+
+対象ユーザーのホームディレクトリに変更する。
+<DT>*<DD>
+
+
+
+シェルの argv[0] に
+'<B>-</B>'
+
+を設定し、シェルをログインシェルとする。
+</DL>
+</DL>
+
+<DT><B>-P</B>,<B> --pty</B>
+
+<DD>
+
+
+
+
+
+
+
+セッションに対して擬似端末 (pseudo-terminal) を作成する。
+独立した端末を使うことで、ユーザーが元のセッションと端末を
+共有しなくなり、より良いセキュリティ環境を提供する。
+これにより、端末のファイルディスクリプターに対する、
+TIOCSTI ioctl 端末インジェクションやセキュリティアタックを回避できる。
+全てのセッションはバックグランドに移すこともできる
+(例えば、&quot;runuser --pty -u username -- command &amp;&quot;)。
+
+
+
+擬似端末が有効になっている場合、 runuser はセッション間の
+プロキシとして動作する (標準入力と標準出力をコピーする)。
+<DT><DD>
+
+
+
+
+この機能は大部分が対話セッションのために設計されている。
+標準入力が端末ではなく、例えばパイプの場合
+(例、echo &quot;date&quot; | runuser --pty -u user)、
+不要な出力を避けるため、擬似端末の ECHO フラグは無効化される。
+<DT><B>-m</B>,<B> -p</B>,<B> --preserve-environment</B>
+
+<DD>
+
+
+
+
+
+
+環境変数を保持する。つまり、
+<B>HOME</B>,
+
+<B>SHELL</B>,
+
+<B>USER</B>,
+
+<B>LOGNAME</B>
+
+を設定しない。
+
+オプション <B>--login</B> が指定されている場合、このオプションは無視される。
+<DT><B>-s</B>,<B> --shell</B>=<B></B><I>shell</I>
+
+<DD>
+
+
+デフォルトのシェルの代わりに、指定した <I>shell</I> を実行する。
+実行するシェルは以下のルールに従って順番に選択される:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>*<DD>
+
+
+<B>--shell</B>
+
+で指定したシェル
+<DT>*<DD>
+
+
+
+
+
+<B>--preserve-environment</B>
+
+オプションが使われている場合は、環境変数
+<B>SHELL</B>
+
+で指定されたシェル
+<DT>*<DD>
+
+対象ユーザーの passwd エントリにリストされているシェル
+<DT>*<DD>
+/bin/sh
+</DL>
+</DL>
+
+<DT><DD>
+
+
+
+
+
+
+対象ユーザーが制限されたシェル
+(つまり /etc/shells に記載されていないシェル) を使っている場合、
+呼び出し元ユーザーが root でない限り、
+<B>--shell</B>
+
+オプションと
+<B>SHELL</B>
+
+環境変数は無視される。
+<DT><B>--session-command=</B><I>command</I>
+
+<DD>
+
+
+
+<B>-c</B>
+
+と同様であるが、新しいセッションを作成しない。(推奨しない)
+<DT><B>-w</B>,<B> --whitelist-environment</B>=<B></B><I>list</I>
+
+<DD>
+
+
+
+
+
+
+
+
+<B>--login</B> で環境変数をクリアする際に、
+カンマ区切りの <I>list</I> に指定された環境変数はリセットしない。
+このホワイトリストでは、環境変数
+<B>HOME</B>,
+
+<B>SHELL</B>,
+
+<B>USER</B>,
+
+<B>LOGNAME</B>,
+
+<B>PATH</B>
+
+は無視される。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>設定ファイル</H2>
+
+
+
+
+
+
+
+
+
+<B>runuser</B>
+
+は設定ファイル
+<I>/etc/default/runuser</I>
+
+と
+<I>/etc/login.defs</I>
+
+を読み込む。
+以下の設定項目が
+<B>runuser</B>
+
+と関連する:
+<P>
+
+<B>ENV_PATH</B>
+
+
+(文字列)
+<DL COMPACT><DT><DD>
+
+
+
+一般ユーザーの PATH 環境変数を定義する。
+デフォルト値は、
+<I>/usr/local/bin::/bin::/usr/bin</I>
+
+である。
+</DL>
+
+<P>
+
+<B>ENV_ROOTPATH</B>
+
+
+(文字列)
+<BR>
+
+<B>ENV_SUPATH</B>
+
+
+(文字列)
+<DL COMPACT><DT><DD>
+
+
+
+
+
+
+root の
+<B>PATH</B>
+
+環境変数を定義する。
+<B>ENV_SUPATH</B>
+
+が優先される。
+デフォルト値は、
+<I>/usr/local/sbin::/usr/local/bin::/sbin::/bin::/usr/sbin::/usr/bin</I>
+
+である。
+</DL>
+
+<P>
+
+<B>ALWAYS_SET_PATH</B>
+
+
+(ブール値)
+<DL COMPACT><DT><DD>
+
+
+
+
+
+
+この項目が
+<I>yes</I>
+
+に設定されており、--login と --preserve-environment が指定されない場合、
+<B>runuser</B>
+
+は
+<B>PATH</B>
+
+を初期化する。
+</DL>
+
+<P>
+
+
+
+
+
+
+
+
+<I>/bin</I>
+
+と
+<I>/sbin</I>
+
+が
+<I>/usr</I>
+
+の中に統合されているシステムでは、
+環境変数
+<B>PATH</B>
+
+が違うかもしれない。
+
+
+
+この環境変数は、<B>--login</B> コマンドラインオプションと PAM システム設定
+(例えば、
+<B><A HREF="../man8/pam_env.8.html">pam_env</A></B>(8))
+
+の影響も受ける。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+
+
+
+通常、
+<B>runuser</B>
+
+は実行したコマンドの返り値を返す。
+コマンドがシグナルで kill された場合、
+<B>runuser</B>
+
+はシグナルの番号 + 128 を返す。
+<P>
+
+
+
+
+<B>runuser</B>
+
+自身が生成する返り値は、以下の通り:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>1<DD>
+
+要求されたコマンドを実行する前の一般的なエラー。
+<DT>126<DD>
+
+要求されたコマンドが実行できなかった。
+<DT>127<DD>
+
+要求されたコマンドが見つからなかった。
+</DL>
+</DL>
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>ファイル</H2>
+
+
+<DL COMPACT>
+<DT>/etc/pam.d/runuser<DD>
+
+デフォルトの PAM 設定ファイル
+<DT>/etc/pam.d/runuser-l<DD>
+
+--login が指定された場合の PAM 設定ファイル
+<DT>/etc/default/runuser<DD>
+
+runuser 固有の logindef 設定ファイル
+<DT>/etc/login.defs<DD>
+
+グローバルの logindef 設定ファイル
+
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+この <B>runuser</B> コマンドは、
+David MacKenzie によって実装された coreutils の <B>su</B> と、
+Dan Walsh によって実装された Fedora の <B>runuser</B> コマンドから派生している。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/setpriv.1.html">setpriv</A></B>(1),
+
+<B><A HREF="../man1/su.1.html">su</A></B>(1),
+
+<B><A HREF="../man5/login.defs.5.html">login.defs</A></B>(5),
+
+<B><A HREF="../man5/shells.5.html">shells</A></B>(5),
+
+<B><A HREF="../man8/pam.8.html">pam</A></B>(8)
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+
+runuser コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">設定ファイル</A><DD>
+<DT><A HREF="#lbAG">返り値</A><DD>
+<DT><A HREF="#lbAH">ファイル</A><DD>
+<DT><A HREF="#lbAI">履歴</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:17:06 GMT, January 22, 2021
+</BODY>
+</HTML>
