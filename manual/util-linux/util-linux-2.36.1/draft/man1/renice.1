@@ -1,0 +1,183 @@
+.\" Copyright (c) 1983, 1991, 1993
+.\"	The Regents of the University of California.  All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by the University of
+.\"	California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"     @(#)renice.8	8.1 (Berkeley) 6/9/93
+.\"5
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun Apr 12 15:14:17 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Fri Jan 22 18:28:20 JST 2021 by Yuichi SATO
+.\"
+.TH RENICE "1" "July 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O renice \- alter priority of running processes
+renice \- 実行中のプロセスの優先度を変更する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B renice
+.RB [ \-n ]
+.I priority
+.RB [ \-g | \-p | \-u ]
+.IR identifier ...
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B renice
+.\"O alters the scheduling priority of one or more running processes.  The
+.\"O first argument is the \fIpriority\fR value to be used.
+.B renice
+は 1 つ以上の実行中プロセスのスケジューリング優先度を変更する。
+1 つ目の引き数は使用する \fIpriority\fR 値である。
+.\"O The other arguments are interpreted as process IDs (by default),
+.\"O process group IDs, user IDs, or user names.
+他の引き数は、プロセス ID (デフォルト)、プロセスグループ ID、
+ユーザー ID、ユーザー名として解釈される。
+.\"O .BR renice 'ing
+.\"O a process group causes all processes in the process group to have their
+.\"O scheduling priority altered.
+プロセスグループを
+.B renice
+すると、プロセスグループに所属する全てのプロセスのスケジューリング
+優先度が変更される。
+ユーザーを
+.B renice
+すると、ユーザーが所有する全てのプロセスのスケジューリング優先度が
+変更される。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-n , " \-\-priority " \fIpriority\fR
+.\"O Specify the scheduling
+.\"O .I priority
+.\"O to be used for the process, process group, or user.  Use of the option
+.\"O .BR \-n " or " \-\-priority
+.\"O is optional, but when used it must be the first argument.
+プロセス、プロセスグループ、ユーザーに使用するスケジューリング
+優先度
+.I priority
+を指定する。
+.BR \-n " または " \-\-priority
+はオプションであるが、使用する場合は最初の引き数にする必要がある。
+.TP
+.BR \-g ", " \-\-pgrp
+.\"O Interpret the succeeding arguments as process group IDs.
+その後に続く引き数をプロセスグループ ID として解釈する。
+.TP
+.BR \-p ", " \-\-pid
+.\"O Interpret the succeeding arguments as process IDs
+.\"O (the default).
+その後に続く引き数をプロセス ID として解釈する (デフォルト)。
+.TP
+.BR \-u ", " \-\-user
+.\"O Interpret the succeeding arguments as usernames or UIDs.
+その後に続く引き数をユーザー名または UID として解釈する。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH FILES
+.SH ファイル
+.TP
+.I /etc/passwd
+.\"O to map user names to user IDs
+ユーザー名とユーザー ID をマッピングする。
+.\"O .SH NOTES
+.SH 注意
+.\"O Users other than the superuser may only alter the priority of processes they
+.\"O own.  Furthermore, an unprivileged user can only
+.\"O .I increase
+.\"O the ``nice value'' (i.e., choose a lower priority)
+.\"O and such changes are irreversible unless (since Linux 2.6.12)
+.\"O the user has a suitable ``nice'' resource limit (see
+.\"O .BR ulimit (1p)
+.\"O and
+.\"O .BR getrlimit (2)).
+スーパーユーザー以外のユーザーは、自身が所有するプロセスの優先度しか
+変更できない。
+非特権ユーザーは ``nice 値'' を
+.I 増加
+させることかできない (つまり、低い優先度を選ぶことしかできない)。
+また、(Linux 2.6.12 以降では) この変更は
+適切な ``nice'' リソース制限が設定されていない限り、元に戻すことはできない
+.RB ( ulimit (1p)
+と
+.BR getrlimit (2)
+を参照すること)。
+
+.\"O The superuser may alter the priority of any process and set the priority to any
+.\"O value in the range \-20 to 19.
+.\"O Useful priorities are: 19 (the affected processes will run only when nothing
+.\"O else in the system wants to), 0 (the ``base'' scheduling priority), anything
+.\"O negative (to make things go very fast).
+スーパーユーザーは、任意のプロセスの優先度を変更可能で、
+優先度を \-20 から 19 の範囲に設定できる。
+よく使われる値は以下の通り:
+19 (この値を設定したプロセスは、システムが何もすることがないときにのみ
+実行される)、0 (``基本の'' スケジューリング優先度)、負の値 (速く処理させる)。
+.\"O .SH HISTORY
+.SH 履歴
+.\"O The
+.\"O .B renice
+.\"O command appeared in 4.0BSD.
+.B renice
+コマンドは 4.0BSD で登場した。
+.\"O .SH EXAMPLES
+.SH 例
+.\"O The following command would change the priority of the processes with
+.\"O PIDs 987 and 32, plus all processes owned by the users daemon and root:
+以下のコマンドは、PID が 987 と 32 のプロセスと、ユーザー daemon と root が
+所有する全てのプロセスの優先度を変更する:
+.TP
+.B "       renice" +1 987 -u daemon root -p 32
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR nice (1),
+.BR chrt (1),
+.BR getpriority (2),
+.BR setpriority (2),
+.BR credentials (7),
+.BR sched (7)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The renice command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+renice コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
