@@ -1,0 +1,253 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of PRLIMIT</TITLE>
+</HEAD><BODY>
+<H1>PRLIMIT</H1>
+Section: User Commands (1)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+prlimit - プロセスのリソース制限を取得または設定する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>prlimit</B> [options]
+
+[<B>--</B><I>resource</I>[<B>=</B><I>limits</I>]
+
+[<B>--pid&nbsp;</B><I>PID</I>]
+
+<P>
+<B>prlimit</B> [options]
+
+[<B>--</B><I>resource</I>[<B>=</B><I>limits</I>]
+
+<I>command </I>[<I>argument</I>...]
+
+<P>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+指定したプロセス ID と 1 つ以上のリソースについて、
+<B>prlimit</B> はその制限を取得または変更する。
+<P>
+
+
+
+<I>command</I> を指定すると、
+<B>prlimit</B>
+
+は指定した引き数でコマンドを実行する。
+<P>
+
+
+
+
+
+<I>limits</I> 引き数は、コロン (:) で区切られたソフト制限とハード制限から構成され、
+既存の値を変更する。
+<I>limits</I> が指定されない場合、<B>prlimit</B> は現在の値を表示する。
+値が指定されない場合、既存の値が使われる。
+無制限はたは無限の値 (RLIM_INFINITY) を指定するには、
+-1 または 'unlimited' 文字列を渡すこと。
+<P>
+
+
+
+制限の特性により、ソフト制限は (上限とも呼ばれる) ハード制限以下でなければならない。
+利用可のな全てのリソース制限を見るには、「リソースオプション」の
+セクションを参照すること。
+<P>
+
+
+
+
+<DL COMPACT>
+<DT><I>soft</I>:<I>hard</I>    両方の制限を指定する。<DD>
+<DT><I>soft</I>:        ソフト制限のみを指定する。<DD>
+<DT>:<I>hard</I>        ハード制限のみを指定する。<DD>
+<DT><I>value</I>        両方の制限を同じ値に指定する。<DD>
+<P>
+
+</DL>
+<A NAME="lbAE">&nbsp;</A>
+<H2>一般的なオプション</H2>
+
+<DL COMPACT>
+<DT><B>-h, --help</B><DD>
+
+ヘルプを表示して、終了する。
+<DT><B>--noheadings</B><DD>
+
+ヘッダ行を表示しない。
+<DT><B>-o, --output </B><I>list</I><DD>
+
+
+使用する出力カラムを定義する。
+出力カラムが指定されない場合、デフォルトのセットが使われる。
+
+サポートされるカラムのリストを取得するには、<B>--help</B> を使うこと。
+<DT><B>-p, --pid</B><DD>
+
+プロセス ID を指定する。何も指定しない場合は、実行中のプロセスが使われる。
+<DT><B>--raw</B><DD>
+
+生の出力形式を使う。
+<DT><B>--verbose</B><DD>
+
+詳細なモード。
+<DT><B>-V, --version</B><DD>
+
+バージョン情報を表示して、終了する。
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>リソースオプション</H2>
+
+<DL COMPACT>
+<DT><B>-c, --core</B>[=<I>limits</I>]<DD>
+
+コアファイルの最大サイズ。
+<DT><B>-d, --data</B>[=<I>limits</I>]<DD>
+
+データの最大サイズ。
+<DT><B>-e, --nice</B>[=<I>limits</I>]<DD>
+
+上げることのできる nice 優先度の最大値。
+<DT><B>-f, --fsize</B>[=<I>limits</I>]<DD>
+
+ファイルの最大サイズ。
+<DT><B>-i, --sigpending</B>[=<I>limits</I>]<DD>
+
+ペンディングされるシグナルの最大数。
+<DT><B>-l, --memlock</B>[=<I>limits</I>]<DD>
+
+アドレス空間のメモリロック可能サイズの最大値。
+<DT><B>-m, --rss</B>[=<I>limits</I>]<DD>
+
+Resident Set Size (RSS) の最大値。
+<DT><B>-n, --nofile</B>[=<I>limits</I>]<DD>
+
+open できるファイルの最大数。
+<DT><B>-q, --msgqueue</B>[=<I>limits</I>]<DD>
+
+POSIX メッセージキューの最大バイト数。
+<DT><B>-r, --rtprio</B>[=<I>limits</I>]<DD>
+
+リアルタイム優先度の最大値。
+<DT><B>-s, --stack</B>[=<I>limits</I>]<DD>
+
+スタックの最大サイズ。
+<DT><B>-t, --cpu</B>[=<I>limits</I>]<DD>
+
+CPU 時間 (秒)。
+<DT><B>-u, --nproc</B>[=<I>limits</I>]<DD>
+
+プロセスの最大数。
+<DT><B>-v, --as</B>[=<I>limits</I>]<DD>
+
+アドレス空間の最大値。
+<DT><B>-x, --locks</B>[=<I>limits</I>]<DD>
+
+保持できるファイルロックの最大数。
+<DT><B>-y, --rttime</B>[=<I>limits</I>]<DD>
+
+リアルタイムタスクのタイムアウト。
+<P>
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+prlimit システムコールは Linux 2.6.36 以降でサポートされており、
+古いカーネルではこのプログラムは失敗する。
+<P>
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>例</H2>
+
+<DL COMPACT>
+<DT><B>prlimit --pid 13134</B><DD>
+
+現在の全てのリソースの制限値を表示する。
+<DT><B>prlimit --pid 13134 --rss --nofile=1024:4095</B><DD>
+
+
+RSS の制限を表示し、open するファイルのソフト制限とハード制限を
+それぞれ 1024 と 4095 にする。
+<DT><B>prlimit --pid 13134 --nproc=512:</B><DD>
+
+プロセスのソフト制限のみを変更する。
+<DT><B>prlimit --pid $$ --nproc=unlimited</B><DD>
+
+
+カレントプロセスのソフト制限と上限をともに無制限にする。
+<DT><B>prlimit --cpu=10 sort -u hugefile</B><DD>
+
+CPU 時間のソフト制限とハード制限をともに 10 秒に設定し、'sort' を実行する。
+<P>
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+<PRE>
+Davidlohr Bueso &lt;<A HREF="mailto:dave@gnu.org">dave@gnu.org</A>&gt; - Dennis M. Ritchie を偲んで。
+</PRE>
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1p/ulimit.1p.html">ulimit</A></B>(1p),
+
+<B><A HREF="../man2/prlimit.2.html">prlimit</A></B>(2)
+
+<P>
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+prlimit コマンドは util-linux パッケージの一部である、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">一般的なオプション</A><DD>
+<DT><A HREF="#lbAF">リソースオプション</A><DD>
+<DT><A HREF="#lbAG">注意</A><DD>
+<DT><A HREF="#lbAH">例</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 08:56:37 GMT, January 22, 2021
+</BODY>
+</HTML>
