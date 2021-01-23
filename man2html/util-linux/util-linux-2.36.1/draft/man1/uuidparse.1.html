@@ -1,0 +1,160 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of UUIDPARSE</TITLE>
+</HEAD><BODY>
+<H1>UUIDPARSE</H1>
+Section: User Commands (1)<BR>Updated: 2017-06-18<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+uuidparse - universal unique identifiers (UUID) を解析するユーティリティ
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>uuidparse</B>
+
+[options]
+<I>uuid</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+このコマンドは、コマンドライン引き数または標準入力で与えられた
+universal unique identifiers (UUID) を解析する。
+入力は空白で区切られる。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>出力</H2>
+
+
+<A NAME="lbAF">&nbsp;</A>
+<H3>変数</H3>
+
+
+<TABLE>
+<TR VALIGN=top><TD>NCS</TD><TD>
+
+Network Computing System 識別子。これが元々の UUID である。
+<BR></TD></TR>
+<TR VALIGN=top><TD>DCE</TD><TD>
+
+The Open Software Foundation (OSF) の Distributed Computing Environment UUID。
+<BR></TD></TR>
+<TR VALIGN=top><TD>Microsoft</TD><TD>
+
+Microsoft Windows プラットフォームの globally unique identifier (GUID)。
+<BR></TD></TR>
+<TR VALIGN=top><TD>other</TD><TD>
+
+不明な変数。通常は不正な入力データ。
+<BR></TD></TR>
+</TABLE>
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H3>タイプ</H3>
+
+<TABLE>
+<TR VALIGN=top><TD>nil</TD><TD>タイプファイルにおける 0 を表す特別なタイプ。<BR></TD></TR>
+<TR VALIGN=top><TD>time-based</TD><TD>DCE の時刻ベースの UUID。<BR></TD></TR>
+<TR VALIGN=top><TD>DCE</TD><TD>DCE の時刻と MAC アドレスベースの UUID。<BR></TD></TR>
+<TR VALIGN=top><TD>name-based</TD><TD>RFC 4122 の md5sum ハッシュ。<BR></TD></TR>
+<TR VALIGN=top><TD>random</TD><TD>RFC 4122 の乱数ベースの UUID。<BR></TD></TR>
+<TR VALIGN=top><TD>sha1-based</TD><TD>RFC 4122 の sha-1 ハッシュ。<BR></TD></TR>
+<TR VALIGN=top><TD>unknown</TD><TD>不明なタイプ。通常は不正な入力データ。<BR></TD></TR>
+</TABLE>
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-J</B>, <B>--json</B><DD>
+
+JSON 出力形式を使う。
+<DT><B>-n</B>, <B>--noheadings</B><DD>
+
+ヘッダ行を表示しない。
+<DT><B>-o</B>, <B>--output</B><DD>
+
+
+どの出力カラムを表示するかを指定する。
+サポートされる全てのカラムのリストを取得するには、--help を使うこと。
+<DT><B>-r</B>, <B>--raw</B><DD>
+
+生の出力形式を使う。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+
+Sami Kerola
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/uuidgen.1.html">uuidgen</A></B>(1),
+
+<B><A HREF="../man3/libuuid.3.html">libuuid</A></B>(3),
+
+
+RFC 4122
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+uuidparse コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">出力</A><DD>
+<DL>
+<DT><A HREF="#lbAF">変数</A><DD>
+<DT><A HREF="#lbAG">タイプ</A><DD>
+</DL>
+<DT><A HREF="#lbAH">オプション</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:05:33 GMT, January 23, 2021
+</BODY>
+</HTML>
