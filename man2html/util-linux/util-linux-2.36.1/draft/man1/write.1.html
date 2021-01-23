@@ -1,0 +1,177 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of WRITE</TITLE>
+</HEAD><BODY>
+<H1>WRITE</H1>
+Section: User Commands (1)<BR>Updated: March 1995<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+write - 別のユーザにメッセージを送る
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>write</B>
+
+<I>user</I>
+
+[<I>ttyname</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>write</B>
+
+は、あなたの端末入力行を他の端末に送ることで、
+他のユーザとのコミュニケーションを可能にする。
+<P>
+
+
+
+
+<B>write</B>
+
+を使ってメッセージを書くと、指定されたユーザは次のような
+書き出しで始まるメッセージを受け取る:
+<P>
+
+<DL COMPACT><DT><DD>
+Message from <A HREF="mailto:yourname@yourhost">yourname@yourhost</A> on yourtty at hh:mm ...
+</DL>
+
+<P>
+
+
+
+
+
+この後の行は、1 行入力するたびにその内容が相手の端末にコピーされる。
+もし相手が返事をしたいと思ったら、その人も
+<B>write</B>
+
+を実行して同じようにメッセージを送る必要がある。
+<P>
+
+
+
+
+
+メッセージを送り終わったら、ファイルの終り文字か割り込み文字を入力する。
+相手には、通信の終りを表す
+<B>EOF</B>
+
+が表示される。
+<P>
+
+
+
+
+
+
+
+
+
+
+他のユーザからのメッセージを拒否したいときは
+(ただしスーパユーザからのメッセージは拒否できない)、
+<B><A HREF="../man1/mesg.1.html">mesg</A></B>(1)
+
+を使う。
+<B><A HREF="../man1/nroff.1.html">nroff</A></B>(1)
+
+や
+<B><A HREF="../man1/pr.1.html">pr</A></B>(1)
+
+といったコマンドは自動的に書き込むのを拒否するので、
+あなたの出力は上書きされない。
+<P>
+
+
+
+
+
+
+
+
+
+
+2 つ以上の端末にログインしているユーザにメッセージを送りたい場合には、
+どの端末にメッセージを送るかを、
+<B>write</B>
+
+の 2 番目の引き数で指定することができる。
+端末名を指定しなければ、もっともアイドル時間の短い端末が選択される。
+事務所でログインしたままになっているユーザが、今は自宅からモデムで
+ログインしている場合などは、これによって正しい端末が選択されるだろう。
+<P>
+
+
+
+
+
+<B>write</B>
+
+コマンドで人とやりとりする時には、次のようなプロトコルが使われてきた。
+行末の `-o' あるいは、`-o'だけの行は、あなたが話す番ですよ、という意味であり、
+`oo'は、会話を終りにしましょうという意味になる。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+<B>write</B>
+
+コマンドは Version 6 AT&amp;T UNIX から登場した。
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/mesg.1.html">mesg</A></B>(1),
+
+<B><A HREF="../man1/talk.1.html">talk</A></B>(1),
+
+<B><A HREF="../man1/who.1.html">who</A></B>(1)
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+write コマンドは、util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">履歴</A><DD>
+<DT><A HREF="#lbAF">関連項目</A><DD>
+<DT><A HREF="#lbAG">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:32:34 GMT, January 23, 2021
+</BODY>
+</HTML>
