@@ -1,0 +1,116 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of UUID_COMPARE</TITLE>
+</HEAD><BODY>
+<H1>UUID_COMPARE</H1>
+Section: Libuuid API (3)<BR>Updated: May 2009<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+uuid_compare - 2 つの UUID が同じであるか比較する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<PRE>
+<B>#include &lt;<A HREF="file:///usr/include/uuid.h">uuid.h</A>&gt;</B>
+
+<B>int uuid_compare(uuid_t </B><I>uu1</I><B>, uuid_t </B><I>uu2)</I>
+</PRE>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+<B>uuid_compare</B>
+
+関数は、与えられた 2 つの uuid 変数
+<I>uu1</I> と <I>uu2</I>
+
+がお互いに等しいかどうか比較する。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+
+
+
+<I>uu1</I>
+
+が
+<I>uu2</I>
+
+よりも辞書的 (lexigraphically) に小さければ 0 より小さい整数が、
+等しければ 0 が、大きければ 0 より大きい整数がそれぞれ返される。
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>作者</H2>
+
+Theodore Y. Ts'o
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man3/uuid.3.html">uuid</A></B>(3),
+
+<B><A HREF="../man3/uuid_clear.3.html">uuid_clear</A></B>(3),
+
+<B><A HREF="../man3/uuid_copy.3.html">uuid_copy</A></B>(3),
+
+<B><A HREF="../man3/uuid_generate.3.html">uuid_generate</A></B>(3),
+
+<B><A HREF="../man3/uuid_is_null.3.html">uuid_is_null</A></B>(3),
+
+<B><A HREF="../man3/uuid_parse.3.html">uuid_parse</A></B>(3),
+
+<B><A HREF="../man3/uuid_unparse.3.html">uuid_unparse</A></B>(3)
+
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+<B>libuuid</B>
+
+はバージョン 2.15.1 から util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">返り値</A><DD>
+<DT><A HREF="#lbAF">作者</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 23:11:07 GMT, January 23, 2021
+</BODY>
+</HTML>
