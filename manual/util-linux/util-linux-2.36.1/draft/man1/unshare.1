@@ -1,0 +1,693 @@
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Wed Apr 15 00:53:59 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Sun Jan 24 00:26:49 JST 2021 by Yuichi SATO
+.\"
+.TH UNSHARE 1 "February 2016" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O unshare \- run program in new namespaces
+unshare \- プログラムを新しい名前空間で実行する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B unshare
+[options]
+.RI [ program
+.RI [ arguments ]]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The
+.\"O .B unshare
+.\"O command creates new namespaces
+.\"O (as specified by the command-line options described below)
+.\"O and then executes the specified \fIprogram\fR.
+.\"O If \fIprogram\fR is not given, then ``${SHELL}'' is
+.\"O run (default: /bin/sh).
+.B unshare
+コマンドは (以下に説明するコマンドラインオプションで指定された) 新しい名前空間を作成し、
+指定した \fIprogram\fR を実行する。
+\fIprogram\fR が指定されない場合、``${SHELL}'' (デフォルトは: /bin/sh) が実行される。
+.PP
+.\"O By default, a new namespace persists only as long as it has member processes.
+デフォルトでは、新しい名前空間は、その名前空間にメンバーがある限り、
+永続化される。
+.\"O A new namespace can be made persistent even when it has no member processes
+.\"O by bind mounting
+.\"O /proc/\fIpid\fR/ns/\fItype\fR files to a filesystem path.
+/proc/\fIpid\fR/ns/\fItype\fR ファイルを
+ファイルシステムに bind マウントすることで、
+メンバープロセスがない場合でも、新しい名前空間を永続化できる。
+.\"O A namespace that has been made persistent in this way can subsequently
+.\"O be entered with
+.\"O .BR \%nsenter (1)
+.\"O even after the \fIprogram\fR terminates (except PID namespaces where
+.\"O a permanently running init process is required).
+この方法で永続化された名前空間は、\fIprogram\fR が終了した後でも、その後で
+.BR \%nsenter (1)
+で名前空間に入れることができる。
+(PID 名前空間は例外であり、init プロセスをずっと動作させる必要がある)。
+.\"O Once a persistent \%namespace is no longer needed,
+.\"O it can be unpersisted by using
+.\"O .BR umount (8)
+.\"O to remove the bind mount.
+一度永続化した名前空間が必要なくなった場合、
+.BR umount (8)
+で bind マウントを削除することで、永続化を解除できる。
+.\"O See the \fBEXAMPLES\fR section for more details.
+より詳細は、「\fB例\fR」のセクションを参照すること。
+.PP
+.\"O .B unshare
+.\"O since util-linux version 2.36 uses /\fIproc/[pid]/ns/pid_for_children\fP and \f/proc/[pid]/ns/time_for_children\fP
+.\"O files for persistent PID and TIME namespaces. This change requires Linux kernel 4.17 or newer.
+util-linux バージョン 2.36 以降の
+.B unshare
+は、永続化 PID 名前空間と永続化時間 (TIME) 名前空間に、
+/\fIproc/[pid]/ns/pid_for_children\fP と
+\f/proc/[pid]/ns/time_for_children\fP ファイルを使う。
+この変更は、Linux カーネル 4.17 以降が必要である。
+.PP
+.\"O The following types of namespaces can be created with
+.\"O .BR unshare :
+以下のタイプの名前空間が、
+.B unshare
+で作成できる:
+.TP
+.B マウント名前空間
+.\"O .B mount namespace
+.\"O Mounting and unmounting filesystems will not affect the rest of the system,
+.\"O except for filesystems which are explicitly marked as
+.\"O shared (with \fBmount \-\-make-shared\fP; see \fI/proc/self/mountinfo\fP or
+.\"O \fBfindmnt \-o+PROPAGATION\fP for the \fBshared\fP flags).
+ファイルシステムのマウントとアンマウントが、他のファイルシステムに
+影響しない。
+ただし、明示的に共有 (shared) とマークされているファイルシステムは除く
+(共有は \fBmount \-\-make-shared\fP で行われる。
+\fI/proc/self/mountinfo\fP または
+\fBfindmnt \-o+PROPAGATION\fP で \fBshared\fP フラグを参照すること)。
+.\"O For further details, see
+.\".BR mount_namespaces (7).
+より詳細は、
+.BR mount_namespaces (7)
+を参照すること。
+.IP
+.\"O .B unshare
+.\"O since util-linux version 2.27 automatically sets propagation to \fBprivate\fP
+.\"O in a new mount namespace to make sure that the new namespace is really
+.\"O unshared.  It's possible to disable this feature with option
+.\"O \fB\-\-propagation unchanged\fP.
+.\"O Note that \fBprivate\fP is the kernel default.
+.B unshare
+は util-linux バージョン 2.27 以降で、新たなマウント名前空間で伝搬 (propagation) を
+自動的に \fBprivate\fP にして、新しい名前空間を共有しないようにする。
+この機能はオプション \fB\-\-propagation unchanged\fP で無効化できる。
+\fBprivate\fP はカーネルのデフォルトである点に注意すること。
+.TP
+.B UTS 名前空間
+.\"O .B UTS namespace
+.\"O Setting hostname or domainname will not affect the rest of the system.
+ホスト名またはドメイン名の設定が、システムの他の部分に影響しない。
+.\"O For further details, see
+.\"O .BR uts_namespaces (7).
+より詳細は、
+.BR uts_namespaces (7)
+を参照すること。
+.TP
+.B IPC 名前空間
+.\"O .B IPC namespace
+.\"O The process will have an independent namespace for POSIX message queues
+.\"O as well as System V \%message queues,
+.\"O semaphore sets and shared memory segments.
+POSIX メッセージキューと、System V メッセージキュー、
+セマフォセット、共有メモリセグメントについて、プロセスは独立した
+名前空間を持つ。
+.\"O For further details, see
+.\"O .BR ipc_namespaces (7).
+より詳細は、
+.BR ipc_namespaces (7)
+を参照すること。
+.TP
+.B ネットワーク名前空間
+.\"O .B network namespace
+.\"O The process will have independent IPv4 and IPv6 stacks, IP routing tables,
+.\"O firewall rules, the \fI/proc/net\fP and \fI/sys/class/net\fP directory trees,
+.\"O sockets, etc.
+プロセスが独立した IPv4 と IPv6 スタック、IP ルーティングテーブル、
+ファイアウォールルール、
+.I /proc\:/net
+と
+.I /sys\:/class\:/net
+のディレクトリツリー、ソケットなどを持つ。
+.\"O For further details, see
+.\"O .BR network_namespaces (7).
+より詳細は、
+.BR network_namespaces (7)
+を参照すること。
+.TP
+.B PID 名前空間
+.\"O .B PID namespace
+.\"O Children will have a distinct set of PID-to-process mappings from their parent.
+親プロセスとは別に、子プロセスがプロセスマッピングをするための PID セットを持つ。
+.\"O For further details, see
+.\"O .BR pid_namespaces (7).
+より詳細は、
+.BR pid_namespaces (7)
+を参照すること。
+.TP
+.B コントロールグループ (cgroup) 名前空間
+.\"O .B cgroup namespace
+.\"O The process will have a virtualized view of \fI/proc\:/self\:/cgroup\fP, and new
+.\"O cgroup mounts will be rooted at the namespace cgroup root.
+プロセスが \fI/proc\:/self\:/cgroup\fP の仮想化されたビューを持ち、
+新しい cgroup マウントで名前空間の cgroup ルートがルートにされる。
+.\"O For further details, see
+.\"O .BR cgroup_namespaces (7).
+より詳細は、
+.BR cgroup_namespaces (7)
+を参照すること。
+.TP
+.B ユーザー名前空間
+.\"O .B user namespace
+.\"O The process will have a distinct set of UIDs, GIDs and capabilities.
+プロセスが個別の UID、GID、ケーパビリティ (capabilities) のセットを持つ。
+.\"O For further details, see
+.\"O .BR user_namespaces (7).
+より詳細は、
+.BR user_namespaces (7)
+を参照すること。
+.TP
+.B 時間 (time) 名前空間
+.\"O .B time namespace
+.\"O The process can have a distinct view of
+.\"O .B CLOCK_MONOTONIC
+.\"O and/or
+.\"O .B CLOCK_BOOTTIME
+.\"O which can be changed using \fI/proc/self/timens_offsets\fP.
+プロセスが
+.B CLOCK_MONOTONIC
+かつ/または
+.B CLOCK_BOOTTIME
+の異なるビューを持ち、\fI/proc/self/timens_offsets\fP で変更できる。
+.\"O For further details, see
+.\"O .BR time_namespaces (7).
+より詳細は、
+.BR time_namespaces (7)
+を参照すること。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-i , " \-\-ipc" [ =\fIfile ]
+.\"O Unshare the IPC namespace.  If \fIfile\fP is specified, then a persistent
+.\"O namespace is created by a bind mount.
+IPC 名前空間を共有しない。
+\fIfile\fP が指定された場合、永続化された名前空間が bind マウントにより作成される。
+.TP
+.BR \-m , " \-\-mount" [ =\fIfile ]
+.\"O Unshare the mount namespace.  If \fIfile\fP is specified, then a persistent
+.\"O namespace is created by a bind mount.
+.\"O Note that \fIfile\fP must be located on a mount whose propagation type
+.\"O is not \fBshared\fP (or an error results).
+.\"O Use the command \fBfindmnt \-o+PROPAGATION\fP
+.\"O when not sure about the current setting.  See also the examples below.
+マウント名前空間を共有しない。
+\fIfile\fP が指定された場合、永続化された名前空間が bind マウントにより作成される。
+\fIfile\fP は伝搬フラグを \fBshared\fP 以外に設定したファイルシステムに
+置かれる必要がある点に注意すること (さもないと、エラーになる)。
+現在の設定が分からない場合は、コマンド \fBfindmnt \-o+PROPAGATION\fP を使うこと。
+以下の例も参照すること。
+.TP
+.BR \-n , " \-\-net" [ =\fIfile ]
+.\"O Unshare the network namespace.  If \fIfile\fP is specified, then a persistent
+.\"O namespace is created by a bind mount.
+ネットワーク名前空間を共有しない。
+\fIfile\fP が指定された場合、永続化された名前空間が bind マウントにより作成される。
+.TP
+.BR \-p , " \-\-pid" [ =\fIfile ]
+.\"O Unshare the PID namespace.  If \fIfile\fP is specified, then a persistent
+.\"O namespace is created by a bind mount.
+PID 名前空間を共有しない。
+\fIfile\fP が指定された場合、永続化された名前空間が bind マウントにより作成される。
+.\"O (Creation of a persistent PID namespace will fail if the
+.\"O .B \-\-fork
+.\"O option is not also specified.)
+.RB ( \-\-fork
+オプションも一緒に指定しないと、永続化 PID 名前空間の作成は失敗する。)
+.IP
+.\"O See also the \fB\-\-fork\fP and
+.\"O \fB\-\-mount-proc\fP options.
+\fB\-\-fork\fP と \fB\-\-mount-proc\fP オプションも参照すること。
+.TP
+.BR \-u , " \-\-uts" [ =\fIfile ]
+.\"O Unshare the UTS namespace.  If \fIfile\fP is specified, then a persistent
+.\"O namespace is created by a bind mount.
+UTS 名前空間を共有しない。
+\fIfile\fP が指定された場合、永続化された名前空間が bind マウントにより作成される。
+.TP
+.BR \-U , " \-\-user" [ =\fIfile ]
+.\"O Unshare the user namespace.  If \fIfile\fP is specified, then a persistent
+.\"O namespace is created by a bind mount.
+ユーザー名前空間を共有しない。
+\fIfile\fP が指定された場合、永続化された名前空間が bind マウントにより作成される。
+.TP
+.BR \-C , " \-\-cgroup" [ =\fIfile ]
+.\"O Unshare the cgroup namespace. If \fIfile\fP is specified then persistent namespace is created
+.\"O by bind mount.
+cgroup 名前空間を共有しない。
+\fIfile\fP が指定された場合、永続化された名前空間が bind マウントにより作成される。
+.TP
+.BR \-T , " \-\-time" [ =\fIfile ]
+.\"O Unshare the time namespace. If \fIfile\fP is specified then a persistent
+.\"O namespace is created by a bind mount. The \fB\-\-monotonic\fP and
+.\"O \fB\-\-boottime\fP options can be used to specify the corresponding
+.\"O offset in the time namespace.
+時間名前空間を共有しない。
+\fIfile\fP を指定すると、bind マウントにより永続化名前空間が作成される。
+\fB\-\-monotonic\fP と \fB\-\-boottime\fP を使って、
+時間名前空間での対応するオフセットを指定できる。
+.TP
+.BR \-f , " \-\-fork"
+.\"O Fork the specified \fIprogram\fR as a child process of \fBunshare\fR rather
+.\"O than running it directly.  This is useful when creating a new PID namespace.
+指定された \fIprogram\fR を、直接実行するのではなく、
+\fBunshare\fR の子プロセスとして fork する。
+これは新しい PID 名前空間を作成する際に役立つ。
+.\"O Note that when \fBunshare\fR is waiting for the child process,
+.\"O then it ignores SIGINT and SIGTERM and does not forward any signals to the
+.\"O child.  It is necessary to send signals to the child process.
+\fBunshare\fR が子プロセスを待っている時、SIGINT と SIGTERM を無視して、
+子プロセスにシグナルを送らない点に注意すること。
+これは、子プロセスにシグナルを送るために必要である。
+.TP
+.B \-\-keep\-caps
+.\"O When the \fB\-\-user\fP option is given, ensure that capabilities granted
+.\"O in the user namespace are preserved in the child process.
+\fB\-\-user\fP オプションが指定された場合、
+名前空間に許可されたケーパビリティは、子プロセスにも保持される。
+.TP
+.BR \-\-kill\-child [ =\fIsigname ]
+.\"O When \fBunshare\fR terminates, have \fIsigname\fP be sent to the forked child process.
+.\"O Combined with \fB\-\-pid\fR this allows for an easy and reliable killing of the entire
+.\"O process tree below \fBunshare\fR.
+.\"O If not given, \fIsigname\fP defaults to \fBSIGKILL\fR.
+.\"O This option implies \fB\-\-fork\fR.
+\fBunshare\fR が終了する時に、fork した子プロセスに \fIsigname\fP を送る。
+\fB\-\-pid\fR と組み合わせることにより、\fBunshare\fR 以下のプロセスツリー全体を、
+簡単に確実に kill することができる。
+\fIsigname\fP が指定されない場合、デフォルトは \fBSIGKILL\fR である。
+このオプションは \fB\-\-fork\fR を暗黙のうちに指定する。
+.TP
+.BR \-\-mount\-proc [ =\fImountpoint ]
+.\"O Just before running the program, mount the proc filesystem at \fImountpoint\fP
+.\"O (default is /proc).  This is useful when creating a new PID namespace.  It also
+.\"O implies creating a new mount namespace since the /proc mount would otherwise
+.\"O mess up existing programs on the system.  The new proc filesystem is explicitly
+.\"O mounted as private (with MS_PRIVATE|MS_REC).
+プログラムを実行する直前に、proc ファイルシステムを \fImountpoint\fP
+(デフォルトは /proc) にマウントする。
+これは新しい PID 名前空間を作成するのに役立つ。
+これは暗黙のうちに新しいマウント名前空間を作成する。
+そうしなければ、/proc マウントはシステム上の既存のプログラムの実行に失敗する。
+新しい proc システムは、(MS_PRIVATE|MS_REC で) 明示的に private としてマウントされる。
+.TP
+.BI \-\-map\-user= uid|name
+.\"O Run the program only after the current effective user ID has been mapped to \fIuid\fP.
+.\"O If this option is specified multiple times, the last occurrence takes precedence.
+.\"O This option implies \fB\-\-user\fR.
+現在の実効 (effective) ユーザー ID を \fIuid\fP にマッピングした後で、
+プログラムを実行する。
+このオプションは複数回指定可能で、最後の指定が優先される。
+このオプションは \fB\-\-user\fR を暗黙のうちに指定する。
+.TP
+.BI \-\-map\-group= gid|name
+.\"O Run the program only after the current effective group ID has been mapped to \fIgid\fP.
+.\"O If this option is specified multiple times, the last occurrence takes precedence.
+.\"O This option implies \fB\-\-setgroups=deny\fR and \fB\-\-user\fR.
+現在の実効 (effective) グループ ID を \fIgid\fP にマッピングした後で、
+プログラムを実行する。
+このオプションは複数回指定可能で、最後の指定が優先される。
+このオプションは \fB\-\-setgroups=deny\fR と
+\fB\-\-user\fR を暗黙のうちに指定する。
+.TP
+.BR \-r , " \-\-map\-root\-user"
+.\"O Run the program only after the current effective user and group IDs have been mapped to
+.\"O the superuser UID and GID in the newly created user namespace.  This makes it possible to
+.\"O conveniently gain capabilities needed to manage various aspects of the newly created
+.\"O namespaces (such as configuring interfaces in the network namespace or mounting filesystems in
+.\"O the mount namespace) even when run unprivileged.  As a mere convenience feature, it does not support
+.\"O more sophisticated use cases, such as mapping multiple ranges of UIDs and GIDs.
+.\"O This option implies \fB\-\-setgroups=deny\fR and \fB\-\-user\fR.
+現在の実効 (effective) ユーザー ID と実効グループ ID を、
+新しく作られた名前空間のスーパーユーザーの UID と GID にマッピングした後で、
+プログラムを実行する。
+これにより、非特権で実行されている場合でも、
+新しく作られた名前空間のいろいろな側面を管理するのに必要な
+ケーパビリティ (capabilities) を簡単に取得できる
+(これには、ネットワーク名前空間でのインタフェースの設定や、
+マウント名前空間でのファイルシステムのマウントなどがある)。
+これは単なる便利機能に過ぎず、複数の範囲の UID と GID をマッピングするといった、
+より洗練された使い方はサポートしていない。
+このオプションは、\fB\-\-setgroups=deny\fR と
+\fB\-\-user\fR を暗黙のうちに指定する。
+.\"O This option is equivalent to \fB\-\-map-user=0 \-\-map-group=0\fR.
+このオプションは、\fB\-\-map-user=0 \-\-map-group=0\fR と同じである。
+.TP
+.BR \-c , " \-\-map\-current\-user"
+.\"O Run the program only after the current effective user and group IDs have been mapped to
+.\"O the same UID and GID in the newly created user namespace. This option implies
+.\"O \fB\-\-setgroups=deny\fR and \fB\-\-user\fR.
+.\"O This option is equivalent to \fB\-\-map-user=$(id -ru) \-\-map-group=$(id -rg)\fR.
+現在の実効ユーザー ID と実効グループ ID を、新しく作られた名前空間で
+同じ UID と GID にマッピングした後で、プログラムを実行する。
+このオプションは、\fB\-\-setgroups=deny\fR と
+\fB\-\-user\fR を暗黙のうちに指定する。
+このオプションは \fB\-\-map-user=$(id -ru) \-\-map-group=$(id -rg)\fR と同じである。
+.TP
+.BR "\-\-propagation private" | shared | slave | unchanged
+.\"O Recursively set the mount propagation flag in the new mount namespace.  The default
+.\"O is to set the propagation to \fIprivate\fP.  It is possible to disable this feature
+.\"O with the argument \fBunchanged\fR.  The option is silently ignored when the mount
+.\"O namespace (\fB\-\-mount\fP) is not requested.
+新しいマウント名前空間のマウント伝搬フラグを再帰的に設定する。
+デフォルトでは伝搬を \fIprivate\fP　に設定する。
+この機能は引き数 \fBunchanged\fR で無効化できる。
+このオプションは、マウント名前空間 (\fB\-\-mount\fP) が指定されない場合、
+黙って無視される。
+.TP
+.BR "\-\-setgroups allow" | deny
+.\"O Allow or deny the
+.\"O .BR setgroups (2)
+.\"O system call in a user namespace.
+ユーザー名前空間で
+.BR setgroups (2)
+システムコールを許可または拒否する。
+.sp
+.\"O To be able to call
+.\"O .BR setgroups (2),
+.\"O the calling process must at least have CAP_SETGID.
+.BR setgroups (2)
+を呼び出すには、呼び出しプロセスは少なくとも CAP_SETGID 権限を持たなければならない。
+.\"O But since Linux 3.19 a further restriction applies:
+.\"O the kernel gives permission to call
+.\"O .BR \%setgroups (2)
+.\"O only after the GID map (\fB/proc/\fIpid\fB/gid_map\fR) has been set.
+しかし、Linux 3.19 以降ではさらに厳しい制限が適用される:
+GID マップ (\fB/proc/\fIpid\fB/gid_map\fR) が設定された後でのみ、
+カーネルは、
+.BR \%setgroups (2)
+の呼び出しを許可する。
+.\"O The GID map is writable by root when
+.\"O .BR \%setgroups (2)
+.\"O is enabled (i.e., \fBallow\fR, the default), and
+.\"O the GID map becomes writable by unprivileged processes when
+.\"O .BR \%setgroups (2)
+.\"O is permanently disabled (with \fBdeny\fR).
+(\fBallow\fR, デフォルトで)
+.BR \%setgroups (2)
+が有効化されると、GID マップは root による書き込みが可能なる。
+(\fBdeny\fR で)
+.BR \%setgroups (2)
+が永続的に無効化されると、GID マップは非特権プロセスによる書き込みが可能になる。
+.TP
+.BR \-R , " \-\-root=\fIdir"
+.\"O run the command with root directory set to \fIdir\fP.
+ルートディレクトリを \fIdir\fP に設定し、コマンドを実行する。
+.TP
+.BR \-w , " \-\-wd=\fIdir"
+.\"O change working directory to \fIdir\fP.
+ワーキングディレクトリを \fIdir\fP に変更する。
+.TP
+.BR \-S , " \-\-setuid \fIuid"
+.\"O Set the user ID which will be used in the entered namespace.
+名前空間全体で使われるユーザー ID を設定する。
+.TP
+.BR \-G , " \-\-setgid \fIgid"
+.\"O Set the group ID which will be used in the entered namespace and drop
+.\"O supplementary groups.
+名前空間全体で使われるグループ ID を設定し、補助 (supplementary) グループを削除する。
+.TP
+.BI \-\-monotonic " offset"
+.\"O Set the offset of
+.\"O .B CLOCK_MONOTONIC
+.\"O which will be used in the entered time namespace. This option requires
+.\"O unsharing a time namespace with \fB\-\-time\fP.
+時間名前空間に入った際に使われる
+.B CLOCK_MONOTONIC
+のオフセットを指定する。
+このオプションは、
+\fB\-\-time\fP で時間名前空間を共有しないことが必要である。
+.TP
+.BI \-\-boottime " offset"
+.\"O Set the offset of
+.\"O .B CLOCK_BOOTTIME
+.\"O which will be used in the entered time namespace. This option requires
+.\"O unsharing a time namespace with \fB\-\-time\fP.
+時間名前空間に入った際に使われる
+.B CLOCK_BOOTTIME
+のオフセットを指定する。
+このオプションは、
+\fB\-\-time\fP で時間名前空間を共有しないことが必要である。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH NOTES
+.SH 注意
+.\"O The proc and sysfs filesystems mounting as root in a user namespace have to be
+.\"O restricted so that a less privileged user can not get more access to sensitive
+.\"O files that a more privileged user made unavailable. In short the rule for proc
+.\"O and sysfs is as close to a bind mount as possible.
+ユーザー名前空間で root として proc と sysfs ファイルシステムをマウントすることは
+制限されなければならない。
+これにより、特権のあるユーザーが見えなくした機微なファイルを、
+特権の少ないユーザーがアクセスできないようにできる。
+端的にいうと、proc と sysfs は可能な限り閉じて bind マウントしなければならない。
+.\"O .SH EXAMPLES
+.SH 例
+.\"O The following command creates a PID namespace, using
+.\"O .B \-\-fork
+.\"O to ensure that the executed command is performed in a child process
+.\"O that (being the first process in the namespace) has PID 1.
+以下のコマンドは
+.B \-\-fork
+で PID 名前空間を作成し、実行されたコマンドが PID 1 の
+子プロセス (名前空間の最初のプロセス) で実行されることを保証する。
+.\"O The
+.\"O .B \-\-mount-proc
+.\"O option ensures that a new mount namespace is also simultaneously created
+.\"O and that a new
+.\"O .BR proc (5)
+.\"O filesystem is mounted that contains information corresponding to the new
+.\"O PID namespace.
+.B \-\-mount-proc
+オプションを指定すると、新しいマウント名前空間も同時に作成され、
+新しい
+.BR proc (5)
+ファイルシステムがマウントされ、新しい PID 名前空間に対応する情報が格納される。
+.\"O When the
+.\"O .B readlink
+.\"O command terminates, the new namespaces are automatically torn down.
+.B readlink
+コマンドが終了すると、新しい名前空間は自動的に解放される。
+.PP
+.in +4n
+.EX
+.B # unshare \-\-fork \-\-pid \-\-mount-proc readlink /proc/self
+1
+.EE
+.in
+.PP
+.\"O As an unprivileged user, create a new user namespace where the user's
+.\"O credentials are mapped to the root IDs inside the namespace:
+非特権ユーザーで、新しいユーザー名前空間を作成し、
+ユーザーのクレデンシャル (credentials) を
+名前空間内の root ID にマップする。
+.PP
+.in +4n
+.EX
+.B $ id \-u; id \-g
+1000
+1000
+.B $ unshare \-\-user \-\-map-root-user \e
+.B "        sh \-c \(aqwhoami; cat /proc/self/uid_map /proc/self/gid_map\(aq"
+root
+         0       1000          1
+         0       1000          1
+.EE
+.in
+.PP
+.\"O The first of the following commands creates a new persistent UTS namespace
+.\"O and modifies the hostname as seen in that namespace.
+以下の最初のコマンドは、新しい永続化 UTS 名前空間を作成し、
+名前空間で見えるホスト名を変更している。
+.\"O The namespace is then entered with
+.\"O .BR nsenter (1)
+.\"O in order to display the modified hostname;
+次に、
+.BR nsenter (1)
+で名前空間に入って、変更したホスト名を表示している。
+.\"O this step demonstrates that the UTS namespace continues to exist
+.\"O even though the namespace had no member processes after the
+.\"O .B unshare
+.\"O command terminated.
+このステップでは、
+.B unshare
+コマンドが終了した後で、名前空間にメンバープロセスがない状態にも
+関わらず、
+UTS 名前空間が継続していることを示している。
+.\"O The namespace is then destroyed by removing the bind mount.
+その後、名前空間は bind マウントを削除することで破壊される。
+.PP
+.in +4n
+.EX
+.B # touch /root/uts-ns
+.B # unshare \-\-uts=/root/uts-ns hostname FOO
+.B # nsenter \-\-uts=/root/uts-ns hostname
+FOO
+.B # umount /root/uts-ns
+.EE
+.in
+.PP
+.\"O The following commands
+.\"O establish a persistent mount namespace referenced by the bind mount
+.\"O .IR /root/namespaces/mnt .
+以下のコマンドは、bind マウント
+.I /root/namespaces/mnt
+で参照される、永続化マウント名前空間を作成する。
+.\"O In order to ensure that the creation of that bind mount succeeds,
+.\"O the parent directory
+.\"O .RI ( /root/namespaces )
+.\"O is made a bind mount whose propagation type is not
+.\"O .BR shared .
+bind マウントの作成を成功させるため、
+親ディレクトリ
+.RI ( /root/namespaces )
+は伝搬 (propagation) タイプを
+.B shared
+以外にして、bind マウントを作成されている。
+.PP
+.in +4n
+.EX
+.B # mount \-\-bind /root/namespaces /root/namespaces
+.B # mount \-\-make-private /root/namespaces
+.B # touch /root/namespaces/mnt
+.B # unshare \-\-mount=/root/namespaces/mnt
+.EE
+.in
+.PP
+.\"O The following commands demonstrate the use of the
+.\"O .B \-\-kill-child
+.\"O option when creating a PID namespace, in order to ensure that when
+.\"O .B unshare
+.\"O is killed, all of the processes within the PID namespace are killed.
+以下のコマンドは、PID 名前空間を作成する際の、
+.B \-\-kill-child
+オプションの使い方を示している。
+.B unshare
+が kill された場合、PID 名前空間内のすべてのプロセスが kill されることを確かめている。
+.PP
+.in +4n
+.EX
+.\"O .BR "# set +m                " "# Don't print job status messages"
+.BR "# set +m                " "# ジョブのステータスメッセージを表示しない"
+.B # unshare \-\-pid \-\-fork \-\-mount\-proc \-\-kill\-child \-\- \e
+.B "       bash \-\-norc \-c \(aq(sleep 555 &) && (ps a &) && sleep 999\(aq &"
+[1] 53456
+#     PID TTY      STAT   TIME COMMAND
+      1 pts/3    S+     0:00 sleep 999
+      3 pts/3    S+     0:00 sleep 555
+      5 pts/3    R+     0:00 ps a
+
+.\"O .BR "# ps h \-o 'comm' $!     " "# Show that background job is unshare(1)"
+.BR "# ps h \-o 'comm' $!     " "# バックグラウンドジョブが unshare(1) であることを表示する"
+unshare
+.\"O .BR "# kill $!               " "# Kill unshare(1)"
+.BR "# kill $!               " "# unshare(1) を kill する"
+.B # pidof sleep
+.EE
+.in
+.PP
+.\"O The
+.\"O .B pidof
+.\"O command prints no output, because the
+.\"O .B sleep
+.\"O processes have been killed.
+.B sleep
+は kill されているので、
+.B pidof
+コマンドは何も出力しない。
+.\"O More precisely, when the
+.\"O .B sleep
+.\"O process that has PID 1 in the namespace (i.e., the namespace's init process)
+.\"O was killed, this caused all other processes in the namespace to be killed.
+より正確には、名前空間で PID 1 の
+.B sleep
+プロセス (つまり、名前空間の init プロセス) が kill されるとき、
+名前空間の他のすべてのプロセスが kill される。
+.\"O By contrast, a similar series of commands where the
+.\"O .B \-\-kill\-child
+.\"O option is not used shows that when
+.\"O .B unshare
+.\"O terminates, the processes in the PID namespace are not killed:
+反対に、
+.B \-\-kill\-child
+オプションが使われない場合、同様のコマンドで
+.B unshare
+が終了した場合に、PID 名前空間のプロセスは kill されない:
+.PP
+.in +4n
+.EX
+.B # unshare \-\-pid \-\-fork \-\-mount\-proc \-\- \e
+.B "       bash \-\-norc \-c \(aq(sleep 555 &) && (ps a &) && sleep 999\(aq &"
+[1] 53479
+#     PID TTY      STAT   TIME COMMAND
+      1 pts/3    S+     0:00 sleep 999
+      3 pts/3    S+     0:00 sleep 555
+      5 pts/3    R+     0:00 ps a
+
+.B # kill $!
+.B # pidof sleep
+53482 53480
+.EE
+.in
+.PP
+.\"O The following example demonstrates the creation of a time namespace
+.\"O where the boottime clock is set to a point several years in the past:
+以下の例では、時間名前空間を作成し、ブート時刻のクロックを数年前の
+過去に設定している。
+.PP
+.in +4n
+.EX
+.\"O .BR "# uptime \-p             " "# Show uptime in initial time namespace"
+.BR "# uptime \-p             " "# 最初の時間名前空間の uptime を表示する"
+up 21 hours, 30 minutes
+.B # unshare \-\-time \-\-fork \-\-boottime 300000000 uptime \-p
+up 9 years, 28 weeks, 1 day, 2 hours, 50 minutes
+.EE
+.in
+.\"O .SH AUTHORS
+.SH 著者
+.UR dottedmag@dottedmag.net
+Mikhail Gusarov
+.UE
+.br
+.UR kzak@redhat.com
+Karel Zak
+.UE
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR clone (2),
+.BR unshare (2),
+.BR namespaces (7),
+.BR mount (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The unshare command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+unshare コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
