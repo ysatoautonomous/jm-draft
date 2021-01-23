@@ -1,0 +1,288 @@
+.\" Copyright (c) 1980, 1990 The Regents of the University of California.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"     This product includes software developed by the University of
+.\"     California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\" @(#)whereis.1 from UCB 4.2
+.\"
+.\" Japanese Version Copyright (c) 2001-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Feb 17 03:19:58 JST 2001
+.\"         by Yuichi SATO <sato@complex.eng.hokudai.ac.jp>
+.\" Updated & Modified Fri Aug  2 20:25:12 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Sun Jan 24 01:22:17 JST 2021 by Yuichi SATO
+.\"
+.TH WHEREIS 1 "October 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O whereis \- locate the binary, source, and manual page files for a command
+whereis \- コマンドのバイナリ・ソース・マニュアルファイルの場所を示す
+.\"O .SH SYNOPSIS
+.SH 書式
+.B whereis
+[options]
+.RB [ \-BMS
+.IR directory "... " \fB\-f\fR ]
+.IR name ...
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B whereis
+.\"O locates the binary, source and manual files for the specified command names.
+.B whereis
+は指定したファイルのバイナリ・ソース・マニュアルファイルの場所を示す。
+.\"O The supplied names are first stripped of leading pathname components and any
+.\"O (single) trailing extension of the form
+.\"O .BI . ext
+.\"O (for example:
+.\"O .BR .c )
+与えられた名前は、最初に始めのパス名の部分が取り除かれ、次に
+.RB ( .c
+のような)
+.BI . ext
+という形式の拡張子が取り除かれる。
+.\"O Prefixes of
+.\"O .B s.
+.\"O resulting from use of source code control are also dealt with.
+ソースコード管理に使われている
+.B s.
+というプレフィックスがついたファイルも表示される。
+.\"O .B whereis
+.\"O then attempts to locate the desired program in the standard Linux places, and
+.\"O in the places specified by
+.\"O .B $PATH
+.\"O and
+.\"O .BR $MANPATH .
+.B whereis
+は、標準的な Linux ファイル階層中と、
+.B $PATH
+と
+.B $MANPATH
+で指定された場所で、対象のプログラムを探す。
+.sp
+.\"O The search restrictions (options \fB\-b\fP, \fB\-m\fP and \fB\-s\fP)
+.\"O are cumulative and apply to the subsequent \fIname\fP patterns on
+.\"O the command line.  Any new search restriction resets the search mask.
+.\"O For example,
+コマンドラインに指定された検索の制限
+(オプション \fB\-b\fP, \fB\-m\fP, \fB\-s\fP) は、
+足し合わされて、その後に続く \fIname\fP パターンに適用される。
+新たに検索の制限を指定すると、検索のマスクがリセットされる。
+例えば、
+.RS
+.sp
+.B "whereis \-bm ls tr \-m gcc"
+.sp
+.RE
+.\"O searches for "ls" and "tr" binaries and man pages, and for "gcc" man pages only.
+を実行すると、"ls" と "tr" のバイナリとマニュアルページ、
+"gcc" のマニュアルのみを検索する。
+.sp
+.\"O The options \fB\-B\fP, \fB\-M\fP and \fB\-S\fP reset search paths for the
+.\"O subsequent \fIname\fP patterns.  For example,
+オプション \fB\-B\fP, \fB\-M\fP and \fB\-S\fP は、
+その後に続く \fIname\fP パターンの検索パスをリセットする。
+例えば、
+.RS
+.sp
+.B "whereis \-m ls \-M /usr/share/man/man1 \-f cal"
+.sp
+.RE
+.\"O searches for "ls" man pages in all default paths, but for "cal" in
+.\"O the /usr/share/man/man1 directory only.
+を実行すると、"ls" の man ページはすべてのデフォルトパスで検索されるが、
+"cal" の man ページは /usr/share/man/man1 ディレクトリのみで検索される。
+
+.\"O .SH OPTIONS
+.SH オプション
+.IP \fB\-b\fP
+.\"O Search for binaries.
+バイナリを探す。
+.IP \fB\-m\fP
+.\"O Search for manuals.
+man ページを探す。
+.IP \fB\-s\fP
+.\"O Search for sources.
+ソースを探す。
+.IP \fB\-u\fP
+.\"O Only show the command names that have unusual entries.  A command is said to be
+.\"O unusual if it does not have just one entry of each explicitly requested type.
+通常とは異なるエントリのコマンドのみを表示する。
+要求されるタイプの 1 つのエントリがコマンドにない場合、
+通常とは異なるコマンドと呼ばれる。
+.\"O Thus
+.\"O .RB ' "whereis \-m \-u *" '
+.\"O asks for those files in the current directory which have no documentation file,
+.\"O or more than one.
+.\"Osato:
+.\"Osato: 原文が動作とあっていない気がします。
+.\"Osato: 手元で試したところドキュメントのないファイル
+.\"Osato: (which have no documentation) は表示されないようです。
+.\"Osato:
+よって、
+.RB ` "whereis\ \ \-m\ \ \-u\ \ *" '
+は、カレントディレクトリのファイルからドキュメントがないもの、
+または 1 つ以上のものを探す。
+.IP "\fB\-B \fIlist\fP"
+.\"O Limit the places where
+.\"O .B whereis
+.\"O searches for binaries, by a whitespace-separated list of directories.
+.B whereis
+がバイナリを探すディレクトリを制限する。
+ディレクトリは空白区切りのリストで指定する。
+.IP "\fB\-M \fIlist\fP"
+.\"O Limit the places where
+.\"O .B whereis
+.\"O searches for manuals and documentation in Info format, by a
+.\"O whitespace-separated list of directories.
+.B whereis
+が man ページと Info 形式のドキュメントを探すディレクトリを制限する。
+ディレクトリは空白区切りのリストで指定する。
+.IP "\fB\-S \fIlist\fP"
+.\"O Limit the places where
+.\"O .B whereis
+.\"O searches for sources, by a whitespace-separated list of directories.
+.B whereis
+がソースを探すディレクトリを制限する。
+ディレクトリは空白区切りのリストで指定する。
+.IP "\fB\-f\fP"
+.\"O Terminates the directory list and signals the start of filenames.  It
+.\"O .I must
+.\"O be used when any of the
+.\"O .BR \-B ,
+.\"O .BR \-M ,
+.\"O or
+.\"O .B \-S
+.\"O options is used.
+直前のディレクトリリストを終了させ、
+ファイル名指定の開始であることを示す。
+.BR \-B ,
+.BR \-M ,
+.B \-S
+オプションのいずれかを使う場合は、
+このオプションを
+.IR 使わなければならない 。
+.IP "\fB\-l"
+.\"O Output the list of effective lookup paths that
+.\"O .B whereis
+.\"O is using.  When none of
+.\"O .BR \-B ,
+.\"O .BR \-M ,
+.\"O or
+.\"O .B \-S
+.\"O is specified, the option will output the hard-coded paths
+.\"O that the command was able to find on the system.
+.B whereis
+が使う有効な検索パスを表示する。
+.BR \-B ,
+.BR \-M ,
+.B \-S
+のいずれも指定されない場合、このオプションは、
+コマンドがシステム上で検索するハードコードされたパスを表示する。
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.\"O .SH FILE SEARCH PATHS
+.SH ファイル検索パス
+.\"O By default
+.\"O .B whereis
+.\"O tries to find files from hard-coded paths, which are defined with glob
+.\"O patterns.  The command attempts to use the contents of
+.\"O .B $PATH
+.\"O and
+.\"O .B $MANPATH
+.\"O environment variables as default search path.  The easiest way to know
+.\"O what paths are in use is to add the
+.\"O .B \-l
+.\"O listing option.  Effects of the
+.\"O .BR \-B ,
+.\"O .BR \-M ,
+.\"O and
+.\"O .B \-S
+.\"O are displayed with
+.\"O .BR \-l .
+デフォルトでは
+.B whereis
+はハードコードされたパスでファイルを検索しようとする。
+このパスは glob パターンで定義される。
+このコマンドは、
+.B $PATH
+と
+.B $MANPATH
+環境変数をデフォルトの検索パスとして使おうとする。
+どのパスが使われるかを簡単に知りたい場合、リストのオプション
+.B \-l
+を指定すればよい。
+.BR \-B ,
+.BR \-M ,
+.B \-S
+の影響を知りたい場合も、
+.BR \-l
+で表示できる。
+.PP
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.IP WHEREIS_DEBUG=all
+.\"O enables debug output.
+.\"O .SH EXAMPLES
+.SH 例
+.\"O To find all files in
+.\"O .I /usr/\:bin
+.\"O which are not documented
+.\"O in
+.\"O .I /usr/\:man/\:man1
+.\"O or have no source in
+.\"O .IR /usr/\:src :
+.I /usr/\:bin
+にあるファイルから
+.I /usr/\:man/\:man1
+に man ページがない、または
+.I /usr/\:src
+にソースがないようなもの探す。
+.IP
+.B cd /usr/bin
+.br
+.B whereis \-u \-ms \-M /usr/man/man1 \-S /usr/src \-f *
+デバッグ出力を有効にする。
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The whereis command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+whereis コマンドは、util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
