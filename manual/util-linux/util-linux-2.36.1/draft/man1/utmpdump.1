@@ -1,0 +1,148 @@
+.\" Copyright (C) 2010 Michael Krapp
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program; if not, write to the Free Software
+.\" Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Wed Apr 15 21:22:46 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Sun Jan 24 00:41:05 JST 2021 by Yuichi SATO
+.\"
+.TH UTMPDUMP 1 "July 2014" "util-linux" "User Commands"
+.\"O .SH NAME
+.SH 名前
+.\"O utmpdump \- dump UTMP and WTMP files in raw format
+utmpdump \-UTMP と WTMP ファイルを生の形式にダンプする。
+.\"O .SH SYNOPSIS
+.SH 書式
+.BR utmpdump " [options]"
+.RI [ filename ]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B utmpdump
+.\"O is a simple program to dump UTMP and WTMP files in raw format, so they
+.\"O can be examined.
+.B utmpdump
+は UTMP と WTMP ファイルを生の形式にダンプする単純なプログラムである。
+これにより、ファイルを調査できる。
+.\"O .B utmpdump
+.\"O reads from stdin unless a
+.\"O .I filename
+.\"O is passed.
+.B utmpdump
+は
+.I filename
+が渡されない場合、標準入力を読み込む。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-f , " \-\-follow"
+.\"O Output appended data as the file grows.
+ファイルが書き足された時に、追加されたデータを出力する。
+.TP
+.BR \-o , " \-\-output " \fIfile
+.\"O Write command output to \fIfile\fR instead of standard output.
+コマンド出力を標準出力ではなく \fIfile\fR に書き出す。
+.TP
+.BR \-r , " \-\-reverse"
+.\"O Undump, write back edited login information into the utmp or wtmp files.
+ダンプの逆を行う。編集したログイン情報を utmp または wtmp ファイルに書き戻す。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH NOTES
+.SH 注意
+.\"O .B utmpdump
+.\"O can be useful in cases of corrupted utmp or wtmp entries.  It can dump
+.\"O out utmp/wtmp to an ASCII file, which can then be edited to remove
+.\"O bogus entries, and reintegrated using:
+.B utmpdump
+は、 utmp または wtmp のエントリが壊れている場合に役に立つ。
+utmp/wtmp ファイルを ASCII ファイルにダンプし、壊れたエントリを削除した後、
+以下のようにして再統合を行う:
+.PP
+.RS
+.B utmpdump \-r < ascii_file > wtmp
+.RE
+.PP
+.\"O But be warned,
+.\"O .B utmpdump
+.\"O was written for debugging purposes only.
+しかし、
+.B utmpdump
+はデバッグ目的のみでかかれている点に注意すること。
+.\"O .SS File formats
+.SS ファイル形式
+.PP
+.\"O Only the binary version of the
+.\"O .BR utmp (5)
+.\"O is standardised.  Textual dumps may become incompatible in future.
+バイナリバージョンの
+.BR utmp (5)
+のみが標準化されている。
+テキスト形式のダンプは、将来、互換性がなくかもしれない。
+.PP
+.\"O The version 2.28 was the last one that printed text output using
+.\"O .BR ctime (3)
+.\"O timestamp format.  Newer dumps use millisecond precision ISO-8601 timestamp
+.\"O format in UTC-0 timezone.  Conversion from former timestamp format can be
+.\"O made to binary, although attempt to do so can lead the timestamps to drift
+.\"O amount of timezone offset.
+バージョン 2.28 は、
+.BR ctime (3)
+タイムスタンプ形式でテキスト出力をする最後のバージョンである。
+UTC-0 タイムゾーンのミリ秒の精度の ISO-8601 タイムスタンプ形式では、もはや書き出さない。
+以前のタイムスタンプ形式からの変換で、バイナリ形式にできるが、
+タイムスタンプがタイムゾーンオフセットの分ずれる。
+.\"O .SH BUGS
+.SH バグ
+.\"O You may
+.\"O .B not
+.\"O use the
+.\"O .B \-r
+.\"O option, as the format for the utmp/wtmp files strongly depends on the input
+.\"O format.  This tool was
+.\"O .B not
+.\"O written for normal use, but for debugging only.
+utmp/wtmp ファイルは入力形式に強く依存しているので、
+.B \-r
+オプションは\fB使うべきではない\fR。
+このツールは、デバッグ用途のみであり、通常の利用用途には\fB書かれていない\fR。
+.\"O .SH AUTHORS
+.SH 著者
+Michael Krapp
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR last (1),
+.BR w (1),
+.BR who (1),
+.BR utmp (5)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The utmpdump command is part of the util-linux package and is available
+.\"O from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+utmpdump コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
