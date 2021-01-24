@@ -1,0 +1,230 @@
+.\" Copyright 1999 Andreas Dilger (adilger@enel.ucalgary.ca)
+.\"
+.\" %Begin-Header%
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, and the entire permission notice in its entirety,
+.\"    including the disclaimer of warranties.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. The name of the author may not be used to endorse or promote
+.\"    products derived from this software without specific prior
+.\"    written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
+.\" WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+.\" OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, ALL OF
+.\" WHICH ARE HEREBY DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE
+.\" LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+.\" CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+.\" OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+.\" BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+.\" LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+.\" (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+.\" USE OF THIS SOFTWARE, EVEN IF NOT ADVISED OF THE POSSIBILITY OF SUCH
+.\" DAMAGE.
+.\" %End-Header%
+.\"
+.\" Created  Wed Mar 10 17:42:12 1999, Andreas Dilger
+.\"
+.\" Japanese Version Copyright 1999 by NAKANO Takeo. All Rights Reserved.
+.\" Translated Sat 23 Oct 1999 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated Tue 16 Nov 1999 by NAKANO Takeo
+.\" Updated & Modified Mon Jul  1 00:00:00 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Sat May  2 22:56:38 JST 2020 by Yuichi SATO
+.\" Updated & Modified Sun Jan 24 19:13:37 JST 2021 by Yuichi SATO
+.\"
+.TH UUID_GENERATE 3 "May 2009" "util-linux" "Libuuid API"
+.\"O .SH NAME
+.SH 名前
+.\"O uuid_generate, uuid_generate_random, uuid_generate_time,
+.\"O uuid_generate_time_safe \- create a new unique UUID value
+uuid_generate, uuid_generate_random, uuid_generate_time,
+uuid_generate_time_safe \- 他と重ならない UUID 値を新しく作成する
+.\"O .SH SYNOPSIS
+.SH 書式
+.nf
+.B #include <uuid.h>
+.sp
+.BI "void uuid_generate(uuid_t " out );
+.BI "void uuid_generate_random(uuid_t " out );
+.BI "void uuid_generate_time(uuid_t " out );
+.BI "int uuid_generate_time_safe(uuid_t " out );
+.BI "void uuid_generate_md5(uuid_t " out ", const uuid_t " ns ", const char " *name ", size_t " len );
+.BI "void uuid_generate_sha1(uuid_t " out ", const uuid_t " ns ", const char " *name ", size_t " len );
+.fi
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The
+.\"O .B uuid_generate
+.\"O function creates a new universally unique identifier (UUID).  The uuid will
+.\"O be generated based on high-quality randomness from
+.\"O .IR /dev/urandom ,
+.\"O if available.  If it is not available, then
+.\"O .B uuid_generate
+.\"O will use an alternative algorithm which uses the current time, the
+.\"O local ethernet MAC address (if available), and random data generated
+.\"O using a pseudo-random generator.
+.\"O .B uuid_generate
+.B uuid_generate
+関数は新しい UUID (universally unique identifier:
+絶対に他とは重ならない識別子) を生成する。
+UUID の生成には、
+.I /dev/urandom
+のような質の良い乱数発生機構が利用できる場合はそれを利用する。
+できない場合には、
+.B uuid_generate
+は別のアルゴリズムを用いる。
+この場合は現在時刻、ローカルなイーサネットの MAC アドレスが取得できればその値、
+および擬似乱数発生機構から生成された乱数が用いられる。
+.sp
+.\"O The
+.\"O .B uuid_generate_random
+.\"O function forces the use of the all-random UUID format, even if
+.\"O a high-quality random number generator (i.e.,
+.\"O .IR /dev/urandom )
+.\"O is not available, in which case a pseudo-random
+.\"O generator will be substituted.  Note that the use of a pseudo-random
+.\"O generator may compromise the uniqueness of UUIDs
+.\"O generated in this fashion.
+.B uuid_generate_random
+関数は、質の良い乱数発生機構 (例えば
+.IR /dev/urandom )
+が利用できない場合でも、完全にランダムベースの (つまり時刻や MAC アドレスを使わない)
+UUID フォーマットを作りたい場合に用いる。
+この場合は擬似乱数発生機構が代わりに用いられる。
+擬似乱数発生機構を利用すると、このように生成された UUID の
+一意性は劣化するかもしれないことに注意すること。
+.sp
+.\"O The
+.\"O .B uuid_generate_time
+.\"O function forces the use of the alternative algorithm which uses the
+.\"O current time and the local ethernet MAC address (if available).
+.\"O This algorithm used to be the default one used to generate UUIDs, but
+.\"O because of the use of the ethernet MAC address, it can leak
+.\"O information about when and where the UUID was generated.  This can cause
+.\"O privacy problems in some applications, so the
+.\"O .B uuid_generate
+.\"O function only uses this algorithm if a high-quality source of
+.\"O randomness is not available.  To guarantee uniqueness of UUIDs generated
+.\"O by concurrently running processes, the uuid library uses a global
+.\"O clock state counter (if the process has permissions to gain exclusive access
+.\"O to this file) and/or the
+.\"O .B uuidd
+.\"O daemon, if it is running already or can be spawned by the process (if
+.\"O installed and the process has enough permissions to run it).  If neither of
+.\"O these two synchronization mechanisms can be used, it is theoretically possible
+.\"O that two concurrently running processes obtain the same UUID(s).  To tell
+.\"O whether the UUID has been generated in a safe manner, use
+.\"O .BR uuid_generate_time_safe .
+.B uuid_generate_time
+関数は、代替アルゴリズムを使いたい場合に用いる。
+これは現在時刻と (あれば) イーサネットの MACアドレスを用いる。
+このアルゴリズムはかつて UUID 生成方法のデフォルトであったが、
+イーサネットの MAC アドレスを用いるので、
+いつどこで UUID が生成されたかの情報がリークしてしまう。
+これはアプリケーションによってはプライバシー問題を起こすことがあるので、
+.B uuid_generate
+関数は質の高い乱数発生機構が利用できない場合に限って、このアルゴリズムを
+用いるようになった。
+並列に実行されているプロセスで生成された UUID の一意性を保証するため、
+uuid ライブラリは (プロセスがグローバルクロックステートカウンターの
+ファイルに排他アクセスを取得する権限がある場合) グローバルクロックステートカウンターを使う。
+また、
+.B uuidd
+デーモンが既に実行されているか、プロセスによってデーモンが生成 (spawn) できる場合
+.RB ( uuidd
+デーモンがインストールされていて、プロセスがデーモンを実行するのに充分な
+権限を持っている場合)、uuid ライブラリは
+.B uuidd
+デーモンを使う。
+2 つの同期機構のどちらも使えない場合、2 つの並列に実行されているプロセスは、
+論理的には同じ UUID を取得する可能性がある。
+UUID が安全な方法で生成されているかを調べるには、
+.B uuid_generate_time_safe
+を使うこと。
+.sp
+.\"O The
+.\"O .B uuid_generate_time_safe
+.\"O function is similar to
+.\"O .BR uuid_generate_time ,
+.\"O except that it returns a value which denotes whether any of the synchronization
+.\"O mechanisms (see above) has been used.
+.B uuid_generate_time_safe
+関数は、
+.B uuid_generate_time
+と同様であるが、同期機構 (上記を参照) が使われているかを表す値を返す。
+.sp
+.\"O The UUID is 16 bytes (128 bits) long, which gives approximately 3.4x10^38
+.\"O unique values (there are approximately 10^80 elementary particles in
+.\"O the universe according to Carl Sagan's
+.\"O .IR Cosmos ).
+UUID は 16 バイト (128 ビット) 長で、およそ 3.4x10^38 個のユニークな値を与える
+(Carl Segan の
+.I Cosmos
+によれば、全宇宙にある素粒子の個数は 10^80 だそうである)。
+.\"O The new UUID can reasonably be considered unique among all UUIDs created
+.\"O on the local system, and among UUIDs created on other systems in the past
+.\"O and in the future.
+新たに作られた UUID は、ローカルなシステムや外部のシステムによって
+過去または未来に生成された/される UUID のいずれとも異なると考えることができる。
+.sp
+.\"O The
+.\"O .B uuid_generate_md5
+.\"O and
+.\"O .B uuid_generate_sha1
+.\"O functions generate an MD5 and SHA1 hashed (predictable) UUID based on a
+.\"O well-known UUID providing the namespace and an arbitrary binary string. The UUIDs
+.\"O conform to V3 and V5 UUIDs per RFC-4122.
+.B uuid_generate_md5
+と
+.B uuid_generate_sha1
+関数は MD5 と SHA1 でハッシュされた (予測可能な) UUID を生成する。
+これは、名前空間と任意のバイナリ文字列を提供する、よく知られた UUID に基づいている。
+この UUID は、RFC-4122 の V3 と V5 の UUID に準拠する。
+.\"O .SH RETURN VALUE
+.SH 返り値
+.\"O The newly created UUID is returned in the memory location pointed to by
+.\"O .IR out .
+新たに生成された UUID が、
+.I out
+の指すメモリ位置に返される。
+.\"O .B uuid_generate_time_safe
+.\"O returns zero if the UUID has been generated in a safe manner, \-1 otherwise.
+.B uuid_generate_time_safe
+は UUID が安全な方法で生成された場合は 0 を返す。
+そうでない場合は、\-1 を返す。
+.\"O .SH CONFORMING TO
+.SH 準拠
+.\"O This library generates UUIDs compatible with OSF DCE 1.1, and hash based UUIDs
+.\"O V3 and V5 compatible with RFC-4122.
+このライブラリは OSF DCE 1.1 に準拠した UUID を生成する。
+また、ハッシュベース UUID V3 と V5 は RFC-4122 に準拠する。
+.\"O .SH AUTHORS
+.SH 作者
+Theodore Y.\& Ts'o
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR uuidgen (1),
+.BR uuid (3),
+.BR uuid_clear (3),
+.BR uuid_compare (3),
+.BR uuid_copy (3),
+.BR uuid_is_null (3),
+.BR uuid_parse (3),
+.BR uuid_time (3),
+.BR uuid_unparse (3),
+.BR uuidd (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O .B libuuid
+.\"O is part of the util-linux package since version 2.15.1 and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+.B libuuid
+はバージョン 2.15.1 から util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
