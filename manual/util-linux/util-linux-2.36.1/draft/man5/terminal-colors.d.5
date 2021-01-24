@@ -1,0 +1,309 @@
+.\" terminal-colors.d.5 --
+.\" Copyright 2014 Ondrej Oprala <ooprala@redhat.com>
+.\" Copyright (C) 2014 Karel Zak <kzak@redhat.com>
+.\" Copyright 2014 Red Hat, Inc.
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun May  3 15:16:32 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Mon Jan 25 00:25:07 JST 2021 by Yuichi SATO
+.\"
+.TH "TERMINAL_COLORS.D" "5" "January 2014" "util-linux" "terminal-colors.d"
+.\"O .SH NAME
+.SH 名前
+.\"O terminal-colors.d \- Configure output colorization for various utilities
+terminal-colors.d \- いろいろなユーティリティの出力の色付けを設定する。
+.\"O .SH SYNOPSIS
+.SH 書式
+/etc/terminal-colors\&.d/[[\fIname\fR][@\fIterm\fR]\&.][\fItype\fR]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O Files in this directory determine the default behavior for utilities
+.\"O when coloring output.
+このディレクトリ内のファイルは、ユーティリティで出力を色付けする際の
+デフォルトの挙動を決定する。
+
+.\"O The
+.\"O .I name
+.\"O is a utility name.  The name is optional and when none is specified then the
+.\"O file is used for all unspecified utilities.
+.I name
+はユーティリティ名である。
+この名前はオプションであり、none が指定された場合、
+そのファイルはユーティリティ名が指定されない場合に使われる。
+
+.\"O The
+.\"O .I term
+.\"O is a terminal identifier (the TERM environment variable).
+.\"O The terminal identifier is optional and when none is specified then the file
+.\"O is used for all unspecified terminals.
+.I term
+は端末識別子 (TERM 環境変数) である。
+この端末識別子はオプションであり、none が指定された場合、
+そのファイルは端末が指定されない場合に使われる。
+
+.\"O The
+.\"O .I type
+.\"O is a file type.  Supported file types are:
+.I type
+はファイルタイプである。
+サポートされるファイルタイプは以下の通り:
+.TP
+.B disable
+.\"O Turns off output colorization for all compatible utilities.
+全ての互換性のあるユーティリティで、出力の色付けを無効化する。
+.TP
+.B enable
+.\"O Turns on output colorization; any matching
+.\"O .B disable
+.\"O files are ignored.
+出力の色付けを有効化する。
+マッチする
+.B disable
+ファイルは無視される。
+.TP
+.B scheme
+.\"O Specifies colors used for output.  The file format may be specific to the utility,
+.\"O the default format is described below.
+出力で使う色を指定する。
+ファイル形式はユーティリティに固有のものであり、
+デフォルトの形式は以下で記載されている。
+.PP
+.\"O If there are more files that match for a utility, then the file with the more
+.\"O specific filename wins.  For example, the filename "@xterm.scheme" has less
+.\"O priority than "dmesg@xterm.scheme".  The lowest priority are those files without a
+.\"O utility name and terminal identifier (e.g., "disable").
+ユーティリティにマッチする複数のファイルがある場合、より詳細な名前の
+ファイルが優先される。
+例えば、ファイル名 "@xterm.scheme" は "dmesg@xterm.scheme" より優先度が低い。
+ユーティリティ名と端末識別子がないファイル (つまり "disable") の優先度がもっとも低い。
+
+.\"O The user-specific
+.\"O .I $XDG_CONFIG_HOME/terminal-colors.d
+.\"O or
+.\"O .I $HOME/.config/terminal-colors.d
+.\"O overrides the global setting.
+ユーザー固有の
+.I $XDG_CONFIG_HOME/terminal-colors.d
+または
+.I $HOME/.config/terminal-colors.d
+はグローバル設定を上書きする。
+
+.\"O .SH DEFAULT SCHEME FILES FORMAT
+.SH デフォルトのスキーマファイル形式
+.\"O The following statement is recognized:
+以下のステートメントが認識される:
+
+.RS
+.br
+.B "name color-sequence"
+.br
+.RE
+
+.\"O The
+.\"O .B name
+.\"O is a logical name of color sequence (for example "error").  The names are
+.\"O specific to the utilities.  For more details always see the COLORS section
+.\"O in the man page for the utility.
+.B name
+はカラーシーケンスの論理名である (例えば "error")。
+この名前はユーティリティ固有である。
+詳細はユーティリティの man ページの「カラー表示」のセクションを参照すること。
+
+.\"O The
+.\"O .B color-sequence
+.\"O is a color name, ASCII color sequences or escape sequences.
+.B color-sequence
+は、色名、ASCII カラーシーケンス、エスケープシーケンスのいずれかである。
+
+.\"O .SS Color names
+.SS 色名
+black, blink, blue, bold, brown, cyan, darkgray, gray, green, halfbright,
+lightblue, lightcyan, lightgray, lightgreen, lightmagenta, lightred, magenta,
+.\"O red, reset, reverse, and yellow.
+red, reset, reverse, yellow.
+
+.\"O .SS ANSI color sequences
+.SS ANSI カラーシーケンス
+.\"O The color sequences are composed of sequences of numbers
+.\"O separated by semicolons.  The most common codes are:
+カラーシーケンスはセミコロンで区切られた数字の並びで構成される。
+もっとも一般的なコードは以下の通り:
+.sp
+.RS
+.TS
+l l.
+.\"O  0	to restore default color
+.\"O  1	for brighter colors
+.\"O  4	for underlined text
+.\"O  5	for flashing text
+ 0	デフォルトの色を復元する
+ 1	明るい色
+ 4	下線のテキスト
+ 5	点滅するテキスト
+.\"O 30	for black foreground
+.\"O 31	for red foreground
+.\"O 32	for green foreground
+.\"O 33	for yellow (or brown) foreground
+.\"O 34	for blue foreground
+.\"O 35	for purple foreground
+.\"O 36	for cyan foreground
+.\"O 37	for white (or gray) foreground
+30	黒の前景色
+31	赤の前景色
+32	緑の前景色
+33	黄 (または茶) の前景色
+34	青の前景色
+35	紫の前景色
+36	シアンの前景色
+37	白 (または灰) の前景色
+.\"O 40	for black background
+.\"O 41	for red background
+.\"O 42	for green background
+.\"O 43	for yellow (or brown) background
+.\"O 44	for blue background
+.\"O 45	for purple background
+.\"O 46	for cyan background
+.\"O 47	for white (or gray) background
+40	黒の背景色
+41	赤の背景色
+42	緑の背景色
+43	黄 (または茶) の背景色
+44	青の背景色
+45	紫の背景色
+46	シアンの背景色
+47	白 (または灰) の背景色
+.TE
+.RE
+.\"O .SS Escape sequences
+.SS エスケープシーケンス
+.\"O To specify control or blank characters in the color sequences,
+.\"O C-style \e-escaped notation can be used:
+制御文字または空白文字をカラーシーケンスで指定する。
+C 言語形式のエスケープ記法が使われる:
+.sp
+.RS
+.TS
+lb l.
+.\"O \ea	Bell (ASCII 7)
+.\"O \eb	Backspace (ASCII 8)
+.\"O \ee	Escape (ASCII 27)
+.\"O \ef	Form feed (ASCII 12)
+.\"O \en	Newline (ASCII 10)
+.\"O \er	Carriage Return (ASCII 13)
+.\"O \et	Tab (ASCII 9)
+.\"O \ev	Vertical Tab (ASCII 11)
+.\"O \e?	Delete (ASCII 127)
+.\"O \e_	Space
+.\"O \e\e	Backslash (\e)
+.\"O \e^	Caret (^)
+.\"O \e#	Hash mark (#)
+\ea	ベル (ASCII 7)
+\eb	バックスペース (ASCII 8)
+\ee	エスケープ (ASCII 27)
+\ef	フォームフィード (ASCII 12)
+\en	改行 (ASCII 10)
+\er	キャリッジリターン (ASCII 13)
+\et	タブ (ASCII 9)
+\ev	垂直タブ (ASCII 11)
+\e?	デリート (ASCII 127)
+\e_	スペース
+\e\e	バックスラッシュ (\e)
+\e^	キャレット (^)
+\e#	ハッシュマーク (#)
+.TE
+.RE
+.sp
+.\"O Please note that escapes are necessary to enter a space, backslash,
+.\"O caret, or any control character anywhere in the string, as well as a
+.\"O hash mark as the first character.
+スペース、バックスラッシュ、キャレット、その他の制御文字は文字列の
+どの場所に入れるにも、エスケープが必要であり、同様にハッシュマークは
+最初の文字にする必要がある点に注意してほしい。
+
+.\"O For example, to use a red background for alert messages in the output of
+.\"O .BR dmesg (1),
+.\"O use:
+例えば、
+.BR dmesg (1)
+の出力でアラートメッセージを赤の背景色にするには、以下のようにする:
+
+.RS
+.br
+.B "echo 'alert 37;41' >> /etc/terminal-colors.d/dmesg.scheme"
+.br
+.RE
+
+.\"O .SS Comments
+.SS コメント
+.\"O Lines where the first non-blank character is a # (hash) are ignored.
+.\"O Any other use of the hash character is not interpreted as introducing
+.\"O a comment.
+空白文字以外の最初の文字が # (ハッシュ) である行は無視される。
+ハッシュ文字以外の使われている文字は、コメントを挿入するために解釈
+されない。
+
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.IP TERMINAL_COLORS_DEBUG=all
+.\"O enables debug output.
+デバッグ出力を有効にする。
+
+.\"O .SH FILES
+.SH ファイル
+.I $XDG_CONFIG_HOME/terminal-colors.d
+.br
+.I $HOME/.config/terminal-colors.d
+.br
+.I /etc/terminal-colors.d
+
+.\"O .SH EXAMPLES
+.SH 例
+.\"O Disable colors for all compatible utilities:
+全ての互換性のあるユーティリティの色付けを無効化する:
+.RS
+.br
+.B "touch /etc/terminal-colors.d/disable"
+.br
+.RE
+
+.\"O Disable colors for all compatible utils on a vt100 terminal:
+vt100 端末上の全ての互換性のあるユーティリティの色付けを無効化する:
+.RS
+.br
+.B "touch /etc/terminal-colors.d/@vt100.disable"
+.br
+.RE
+
+.\"O Disable colors for all compatible utils except dmesg(1):
+dmesg(1) を除き、全ての互換性のあるユーティリティの色付けを無効化する:
+.RS
+.br
+.B "touch /etc/terminal-colors.d/disable"
+.sp
+.B "touch /etc/terminal-colors.d/dmesg.enable"
+.br
+.RE
+
+.\"O .SH COMPATIBILITY
+.SH 互換性
+.\"O The terminal-colors.d functionality is currently supported by all util-linux
+.\"O utilities which provides colorized output.  For more details always see the
+.\"O COLORS section in the man page for the utility.
+terminal-colors.d の機能は、現在のところ、出力の色付けを提供する
+全ての util-linux ユーティリティでサポートされている。
+詳細は、各ユーティリティの man ページの「カラー表示」セクションを常に参照すること。
+
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O terminal-colors.d is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+terminal-colors.d は util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
