@@ -1,0 +1,374 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of TERMINAL_COLORS.D</TITLE>
+</HEAD><BODY>
+<H1>TERMINAL_COLORS.D</H1>
+Section: terminal-colors.d (5)<BR>Updated: January 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+terminal-colors.d - いろいろなユーティリティの出力の色付けを設定する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+/etc/terminal-colors.d/[[<I>name</I>][@<I>term</I>].][<I>type</I>]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+このディレクトリ内のファイルは、ユーティリティで出力を色付けする際の
+デフォルトの挙動を決定する。
+<P>
+
+
+
+
+<I>name</I>
+
+はユーティリティ名である。
+この名前はオプションであり、none が指定された場合、
+そのファイルはユーティリティ名が指定されない場合に使われる。
+<P>
+
+
+
+
+
+<I>term</I>
+
+は端末識別子 (TERM 環境変数) である。
+この端末識別子はオプションであり、none が指定された場合、
+そのファイルは端末が指定されない場合に使われる。
+<P>
+
+
+
+<I>type</I>
+
+はファイルタイプである。
+サポートされるファイルタイプは以下の通り:
+<DL COMPACT>
+<DT><B>disable</B>
+
+<DD>
+
+全ての互換性のあるユーティリティで、出力の色付けを無効化する。
+<DT><B>enable</B>
+
+<DD>
+
+
+
+出力の色付けを有効化する。
+マッチする
+<B>disable</B>
+
+ファイルは無視される。
+<DT><B>scheme</B>
+
+<DD>
+
+
+出力で使う色を指定する。
+ファイル形式はユーティリティに固有のものであり、
+デフォルトの形式は以下で記載されている。
+</DL>
+<P>
+
+
+
+
+
+ユーティリティにマッチする複数のファイルがある場合、より詳細な名前の
+ファイルが優先される。
+例えば、ファイル名 &quot;@xterm.scheme&quot; は &quot;<A HREF="mailto:dmesg@xterm.scheme">dmesg@xterm.scheme</A>&quot; より優先度が低い。
+ユーティリティ名と端末識別子がないファイル (つまり &quot;disable&quot;) の優先度がもっとも低い。
+<P>
+
+
+
+
+
+ユーザー固有の
+<I>$XDG_CONFIG_HOME/terminal-colors.d</I>
+
+または
+<I>$HOME/.config/terminal-colors.d</I>
+
+はグローバル設定を上書きする。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>デフォルトのスキーマファイル形式</H2>
+
+
+以下のステートメントが認識される:
+<P>
+<DL COMPACT><DT><DD>
+<BR>
+
+<B>name color-sequence</B>
+
+<BR>
+
+</DL>
+
+<P>
+
+
+
+
+
+<B>name</B>
+
+はカラーシーケンスの論理名である (例えば &quot;error&quot;)。
+この名前はユーティリティ固有である。
+詳細はユーティリティの man ページの「カラー表示」のセクションを参照すること。
+<P>
+
+
+
+<B>color-sequence</B>
+
+は、色名、ASCII カラーシーケンス、エスケープシーケンスのいずれかである。
+<P>
+
+<A NAME="lbAF">&nbsp;</A>
+<H3>色名</H3>
+
+black, blink, blue, bold, brown, cyan, darkgray, gray, green, halfbright,
+lightblue, lightcyan, lightgray, lightgreen, lightmagenta, lightred, magenta,
+
+red, reset, reverse, yellow.
+<P>
+
+<A NAME="lbAG">&nbsp;</A>
+<H3>ANSI カラーシーケンス</H3>
+
+
+
+カラーシーケンスはセミコロンで区切られた数字の並びで構成される。
+もっとも一般的なコードは以下の通り:
+<P>
+<DL COMPACT><DT><DD>
+<TABLE>
+<TR VALIGN=top><TD><BR>&nbsp;0</TD><TD>デフォルトの色を復元する<BR></TD></TR>
+<TR VALIGN=top><TD><BR>&nbsp;1</TD><TD>明るい色<BR></TD></TR>
+<TR VALIGN=top><TD><BR>&nbsp;4</TD><TD>下線のテキスト<BR></TD></TR>
+<TR VALIGN=top><TD><BR>&nbsp;5</TD><TD>点滅するテキスト<BR></TD></TR>
+<TR VALIGN=top><TD>30</TD><TD>黒の前景色<BR></TD></TR>
+<TR VALIGN=top><TD>31</TD><TD>赤の前景色<BR></TD></TR>
+<TR VALIGN=top><TD>32</TD><TD>緑の前景色<BR></TD></TR>
+<TR VALIGN=top><TD>33</TD><TD>黄 (または茶) の前景色<BR></TD></TR>
+<TR VALIGN=top><TD>34</TD><TD>青の前景色<BR></TD></TR>
+<TR VALIGN=top><TD>35</TD><TD>紫の前景色<BR></TD></TR>
+<TR VALIGN=top><TD>36</TD><TD>シアンの前景色<BR></TD></TR>
+<TR VALIGN=top><TD>37</TD><TD>白 (または灰) の前景色<BR></TD></TR>
+<TR VALIGN=top><TD>40</TD><TD>黒の背景色<BR></TD></TR>
+<TR VALIGN=top><TD>41</TD><TD>赤の背景色<BR></TD></TR>
+<TR VALIGN=top><TD>42</TD><TD>緑の背景色<BR></TD></TR>
+<TR VALIGN=top><TD>43</TD><TD>黄 (または茶) の背景色<BR></TD></TR>
+<TR VALIGN=top><TD>44</TD><TD>青の背景色<BR></TD></TR>
+<TR VALIGN=top><TD>45</TD><TD>紫の背景色<BR></TD></TR>
+<TR VALIGN=top><TD>46</TD><TD>シアンの背景色<BR></TD></TR>
+<TR VALIGN=top><TD>47</TD><TD>白 (または灰) の背景色<BR></TD></TR>
+</TABLE>
+
+</DL>
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H3>エスケープシーケンス</H3>
+
+
+
+制御文字または空白文字をカラーシーケンスで指定する。
+C 言語形式のエスケープ記法が使われる:
+<P>
+<DL COMPACT><DT><DD>
+<TABLE>
+<TR VALIGN=top><TD><B>\a</B></TD><TD>ベル (ASCII 7)<BR></TD></TR>
+<TR VALIGN=top><TD><B>\b</B></TD><TD>バックスペース (ASCII 8)<BR></TD></TR>
+<TR VALIGN=top><TD><B>\e</B></TD><TD>エスケープ (ASCII 27)<BR></TD></TR>
+<TR VALIGN=top><TD><B>\f</B></TD><TD>フォームフィード (ASCII 12)<BR></TD></TR>
+<TR VALIGN=top><TD><B>\n</B></TD><TD>改行 (ASCII 10)<BR></TD></TR>
+<TR VALIGN=top><TD><B>\r</B></TD><TD>キャリッジリターン (ASCII 13)<BR></TD></TR>
+<TR VALIGN=top><TD><B>\t</B></TD><TD>タブ (ASCII 9)<BR></TD></TR>
+<TR VALIGN=top><TD><B>\v</B></TD><TD>垂直タブ (ASCII 11)<BR></TD></TR>
+<TR VALIGN=top><TD><B>\?</B></TD><TD>デリート (ASCII 127)<BR></TD></TR>
+<TR VALIGN=top><TD><B>\_</B></TD><TD>スペース<BR></TD></TR>
+<TR VALIGN=top><TD><B>\\</B></TD><TD>バックスラッシュ (\)<BR></TD></TR>
+<TR VALIGN=top><TD><B>\^</B></TD><TD>キャレット (^)<BR></TD></TR>
+<TR VALIGN=top><TD><B>\#</B></TD><TD>ハッシュマーク (#)<BR></TD></TR>
+</TABLE>
+
+</DL>
+
+<P>
+
+
+
+スペース、バックスラッシュ、キャレット、その他の制御文字は文字列の
+どの場所に入れるにも、エスケープが必要であり、同様にハッシュマークは
+最初の文字にする必要がある点に注意してほしい。
+<P>
+
+
+
+例えば、
+<B><A HREF="../man1/dmesg.1.html">dmesg</A></B>(1)
+
+の出力でアラートメッセージを赤の背景色にするには、以下のようにする:
+<P>
+<DL COMPACT><DT><DD>
+<BR>
+
+<B>echo 'alert 37;41' &gt;&gt; /etc/terminal-colors.d/dmesg.scheme</B>
+
+<BR>
+
+</DL>
+
+<P>
+
+<A NAME="lbAI">&nbsp;</A>
+<H3>コメント</H3>
+
+
+
+
+空白文字以外の最初の文字が # (ハッシュ) である行は無視される。
+ハッシュ文字以外の使われている文字は、コメントを挿入するために解釈
+されない。
+<P>
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT>TERMINAL_COLORS_DEBUG=all<DD>
+
+デバッグ出力を有効にする。
+<P>
+
+</DL>
+<A NAME="lbAK">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>$XDG_CONFIG_HOME/terminal-colors.d</I>
+
+<BR>
+
+<I>$HOME/.config/terminal-colors.d</I>
+
+<BR>
+
+<I>/etc/terminal-colors.d</I>
+
+<P>
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>例</H2>
+
+
+全ての互換性のあるユーティリティの色付けを無効化する:
+<DL COMPACT><DT><DD>
+<BR>
+
+<B>touch /etc/terminal-colors.d/disable</B>
+
+<BR>
+
+</DL>
+
+<P>
+
+vt100 端末上の全ての互換性のあるユーティリティの色付けを無効化する:
+<DL COMPACT><DT><DD>
+<BR>
+
+<B>touch /etc/terminal-colors.d/@vt100.disable</B>
+
+<BR>
+
+</DL>
+
+<P>
+
+<A HREF="../man1/dmesg.1.html">dmesg</A>(1) を除き、全ての互換性のあるユーティリティの色付けを無効化する:
+<DL COMPACT><DT><DD>
+<BR>
+
+<B>touch /etc/terminal-colors.d/disable</B>
+
+<P>
+<B>touch /etc/terminal-colors.d/dmesg.enable</B>
+
+<BR>
+
+</DL>
+
+<P>
+
+<A NAME="lbAM">&nbsp;</A>
+<H2>互換性</H2>
+
+
+
+
+terminal-colors.d の機能は、現在のところ、出力の色付けを提供する
+全ての util-linux ユーティリティでサポートされている。
+詳細は、各ユーティリティの man ページの「カラー表示」セクションを常に参照すること。
+<P>
+
+<A NAME="lbAN">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+terminal-colors.d は util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">デフォルトのスキーマファイル形式</A><DD>
+<DL>
+<DT><A HREF="#lbAF">色名</A><DD>
+<DT><A HREF="#lbAG">ANSI カラーシーケンス</A><DD>
+<DT><A HREF="#lbAH">エスケープシーケンス</A><DD>
+<DT><A HREF="#lbAI">コメント</A><DD>
+</DL>
+<DT><A HREF="#lbAJ">環境変数</A><DD>
+<DT><A HREF="#lbAK">ファイル</A><DD>
+<DT><A HREF="#lbAL">例</A><DD>
+<DT><A HREF="#lbAM">互換性</A><DD>
+<DT><A HREF="#lbAN">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:32:39 GMT, January 24, 2021
+</BODY>
+</HTML>
