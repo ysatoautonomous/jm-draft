@@ -1,0 +1,123 @@
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun May  3 10:37:11 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Sun Jan 24 19:58:56 JST 2021 by Yuichi SATO
+.\"
+.TH ADJTIME_CONFIG 5 "August 2018" "util-linux" "File Formats"
+.\"O .SH NAME
+.SH 名前
+.\"O adjtime \- information about hardware clock setting and drift factor
+adjtime \- ハードウェア・クロック設定とずれ (drift) 要素の情報
+.\"O .SH SYNOPSIS
+.SH 書式
+.I /etc/adjtime
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The file
+.\"O .I /etc/adjtime
+.\"O contains descriptive information about the hardware mode clock setting and clock drift factor.
+.\"O The file is read and write by hwclock; and read by programs like rtcwake to get RTC time mode.
+.I /etc/adjtime
+はハードウェアモードクロック設定とクロックのずれ要素を記述する情報を
+保持する。
+このファイルは、hwclock で読み書きされ、rtcwake のようなプログラムでは、
+RTC 時刻モードを取得するために読み込まれる。
+.PP
+.\"O The file is usually located in /etc, but tools like
+.\"O .BR hwclock (8)
+.\"O or
+.\"O .BR rtcwake (8)
+.\"O can use alternative location by command line options if write access to
+.\"O /etc is unwanted.  The default clock mode is "UTC" if the file is missing.
+このファイルは通常 /etc に置かれるが、
+/etc への書き込みアクセスをさせたくない場合、
+.BR hwclock (8)
+または
+.BR rtcwake (8)
+はコマンドラインオプションにより別の場所を使わせることができる。
+このファイルがない場合、デフォルトのクロックモードは "UTC" である。
+.PP
+.\"O The Hardware Clock is usually not very accurate.  However, much of its inaccuracy is completely predictable - it gains
+.\"O or loses the same amount of time every day.  This is called systematic drift.  The util hwclock keeps the file /etc/adjtime,
+.\"O that keeps some historical information.
+.\"O For more details see "\fBThe Adjust Function\fR" and  "\fBThe Adjtime File\fR" sections from
+.\"O .BR hwclock (8)
+.\"O man page.
+ハードウェア・クロックは通常はそれほど正確ではない。
+しかし、その不正確さの大部分は完全に予測可能である - 
+毎日同じ分だけ進んだり遅れたりする。
+これは規則的なずれ (systematic drift) と呼ばれる。
+ユーティリティ hwclock は、ある種の履歴情報を保持するファイル /etc/adjtime を見る。
+詳細は
+.BR hwclock (8)
+の man ページの「\fB時刻合わせ機能\fR」と「\fBadjtime ファイル\fR」の
+セクションを参照すること。
+.PP
+.
+.\"O The format of the adjtime file is, in ASCII.
+adjtime ファイルの形式は、ASCII である。
+.sp
+.\"O .SS First line
+.SS 1 行目
+.\"O Three numbers, separated by blanks:
+空白で区切られた 3 つの数値
+.TP
+.\"O .B "drift factor"
+.B "ずれ要素"
+.\"O the systematic drift rate in seconds per day (floating point decimal)
+1 日あたりに生じる規則的な時刻ずれを秒で表したもの (浮動小数点型 10 進)
+.TP
+.\"O .B last adjust time
+.B 最終の補正時刻
+.\"O the resulting number of seconds since  1969  UTC  of  most recent adjustment or calibration (decimal integer)
+最後に補正あるいは時計合わせを行った時刻を 1969 UTC からの経過秒数で表したもの (10 進整数)
+.TP
+.\"O .B "adjustment status"
+.B 補正の状態
+.\"O zero (for compatibility with clock(8)) as a floating point decimal
+10 進の浮動小数点小数の 0 (clock(8) との互換性のためのもの)
+
+.\"O .SS Second line
+.SS 2 行目
+.TP
+.\"O .B "last calibration time"
+.B 最終の時計合わせ時刻
+.\"O The resulting number of seconds since 1969 UTC of most recent calibration.
+.\"O Zero if there has been no calibration yet or it is known that any previous
+.\"O calibration is moot (for example, because the Hardware Clock has been found,
+.\"O since that calibration, not to contain a valid time).  This is a decimal
+.\"O integer.
+最後に時計を合わせた時刻を 1969 UTC からの経過秒数で表したもの。
+時計合わせが一度もされていなかったり、以前の時計合わせに問題が
+あった (例えばその時計合わせ以降にハードウェア・クロックの時刻が
+不正なことがわかったとかの) 場合には、0 が入る。
+これは 10 進の整数である。
+
+.\"O .SS Third line
+.SS 3 行目
+.TP
+.\"O .B "clock mode"
+.B クロックモード
+.\"O Supported values are "UTC" or "LOCAL".  Tells whether the Hardware Clock is set
+.\"O to Coordinated Universal Time or local time.  You can always override this
+.\"O value with options on the hwclock command line.
+サポートされる値は "UTC" または "LOCAL" である。
+ハードウェア・クロックが協定世界時かローカルタイムかを示す。
+この値は hwclock にコマンドラインを指定すればいつでも上書き可能である。
+
+.\"O .SH FILES
+.SH ファイル
+.I /etc/adjtime
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR hwclock (8),
+.BR rtcwake (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O This man page is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+この man ページは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
