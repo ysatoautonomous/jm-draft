@@ -1,0 +1,520 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of FSTAB</TITLE>
+</HEAD><BODY>
+<H1>FSTAB</H1>
+Section: File Formats (5)<BR>Updated: February 2015<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+fstab - ファイルシステムの静的な情報
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<I>/etc/fstab</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+このファイル
+<B>fstab</B>
+
+にはシステムでマウントできるファイルシステムに関する情報が記述されている。
+
+
+
+
+
+
+
+
+
+
+
+
+<B>fstab</B>
+
+ファイルはプログラムによって読みこまれるだけで書き込まれることはない。
+このファイルを適切に作り、保守するのはシステム管理者の責任である。
+<B><A HREF="../man8/fsck.8.html">fsck</A></B>(8),
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8),
+
+<B><A HREF="../man8/umount.8.html">umount</A></B>(8)
+
+などのプログラムは、
+<B>fstab</B>
+
+ファイルを先頭から順に読み込んで処理するため、
+<B>fstab</B>
+
+に記述されるレコード (ファイルシステム) の順序は重要である。
+<P>
+
+
+
+それぞれのファイルシステムは一行単位で記述され、
+各行のフィールドは TAB 文字もしくは空白 (spaces) で区切られる。
+'#' で始まる行はコメントである。
+空行は無視される。
+<P>
+
+
+
+
+以下は典型的な
+<B>fstab</B>
+
+のエントリの例である:
+<P>
+<DL COMPACT><DT><DD>
+LABEL=t-home2   /home      ext4    defaults,auto_da_alloc      0  2
+</DL>
+
+<P>
+
+<B>最初のフィールド</B>
+
+(<I>fs_spec</I>).
+
+<DL COMPACT><DT><DD>
+
+
+<P>
+
+
+<P>
+このフィールドは、マウントしたいブロックスペシャルデバイス、
+リモートファイルシステム、ループデバイスのファイルシステムイメージ、
+または、有効にしたいスワップファイル、スワップパーティションを
+記述する。
+<P>
+
+
+
+
+
+
+通常のマウントでは、これはマウントされるブロックスペシャルデバイス
+ノード (またはそれへのリンク) である。
+これは
+<B><A HREF="../man2/mknod.2.html">mknod</A></B>(2)
+
+によって作成される。
+例えば `/dev/cdrom' や `/dev/sdb7' といったものになる。
+NFS マウントの場合は &lt;host&gt;:&lt;dir&gt; という書式になる。
+例えば `knuth.aeb.nl:/' などである。
+
+
+
+
+
+
+ストレージのないファイルシステムについて、任意の文字列を使うことが
+できて、例えば
+<B><A HREF="../man1/df.1.html">df</A></B>(1)
+
+の出力に表示される。
+通常、procfs には `proc'、 tmpfs には `mem', `none', `tmpfs' が使われる。
+udev や sysfs といったその他の特殊なファイルシステムは、通常、
+<B>fstab</B>
+
+にはリストされない。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+デバイス名の代わりに、LABEL=&lt;label&gt; または UUID=&lt;uuid&gt; を指定することができる。
+これは、ディスクを追加または削除した際に、デバイス名が
+ハードウェアの検知順になって、変更される場合に、
+推奨される方法である。
+例:`LABEL=Boot' または `UUID=3e6be9de-8139-11d1-9106-a43f08d823a6'。
+(ファイルシステムの LABEL を設定するには、
+<B><A HREF="../man8/e2label.8.html">e2label</A></B>(8),
+
+<B><A HREF="../man8/xfs_admin.8.html">xfs_admin</A></B>(8),
+
+<B><A HREF="../man8/fatlabel.8.html">fatlabel</A></B>(8)
+
+のようなファイルシステム独自のツールを使うこと)。
+<P>
+
+
+
+
+
+PARTUUID= と PARTLABEL= を使うこともできる。
+これらのパーティション識別子は、例えば、GUID パーティションテーブル (GPT) をサポートする。
+<P>
+
+
+
+
+
+
+デバイス識別子の詳細は、
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8),
+
+<B><A HREF="../man8/blkid.8.html">blkid</A></B>(8)
+
+<B><A HREF="../man8/lsblk.8.html">lsblk</A></B>(8)
+
+を参照すること。
+<P>
+<P>
+
+
+
+
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+は UUID を文字列として使う。
+UUID の文字列表現は小文字をベースとするべきである。
+</DL>
+
+<P>
+
+<B>2 番目のフィールド</B>
+
+(<I>fs_file</I>).
+
+<DL COMPACT><DT><DD>
+
+
+
+
+このフィールドは、ファイルシステムのマウントポイントを記述する。
+スワップパーティションの場合、
+このフィールドは `none' と明記する必要がある。
+マウントポイントに含まれている空白とタブは、`\040' と '\011' のようにエスケープできる。
+</DL>
+
+<P>
+
+<B>3 番目のフィールド</B>
+
+(<I>fs_vfstype</I>).
+
+<DL COMPACT><DT><DD>
+
+
+
+
+
+このフィールドは、ファイルシステムのタイプを記述する。
+Linux では
+ext4, xfs, btrfs, f2fs, vfat, ntfs, hfsplus,
+tmpfs, sysfs, proc, iso9660, udf, squashfs, nfs, cifs
+などのファイルシステムタイプをサポートする。
+詳細は
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+を参照すること。
+<P>
+
+
+
+
+
+エントリ
+<I>swap</I>
+
+はスワップに使われるファイルまたはパーティションを表す。
+<B><A HREF="../man8/swapon.8.html">swapon</A></B>(8)
+
+を参照。
+
+
+
+mount 先をバインドしたり移動したりするために、エントリ
+<I>none</I>
+
+が役に立つ。
+<P>
+
+1 つ以上のファイルシステムタイプをカンマ区切りのリストで指定できる。
+<P>
+
+
+
+
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+と
+<B><A HREF="../man8/umount.8.html">umount</A></B>(8)
+
+はファイルシステム
+<I>subtype</I>
+
+をサポートする。
+
+
+
+
+サブタイプは '.subtype' サフィックスで定義される。
+例えば 'fuse.sshfs' である。
+最初の fstab フィールドにプレフィックスを追加するより、
+サブタイプの記法を使う方が推奨される
+(例えば、 'sshfs#example.com' という記法は廃止されている)。
+</DL>
+
+<P>
+
+<B>4 番目のフィールド</B>
+
+(<I>fs_mntops</I>).
+
+<DL COMPACT><DT><DD>
+
+このフィールドは、ファイルシステム毎のマウントオプションを記述する。
+<P>
+
+
+
+
+
+
+
+
+
+
+
+これはカンマで区切られたオプションのリストである。
+少なくともマウントのタイプ
+(<B>ro</B>
+
+または
+<B>rw</B>)
+
+を書く必要がある。
+加えて (パフォーマンスチューニングオプションを含む)
+ファイルシステムのタイプに応じた
+適切なオプションが書かれていることが多い。
+詳細は
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+または
+<B><A HREF="../man8/swapon.8.html">swapon</A></B>(8)
+
+を参照のこと。
+<P>
+
+基本的なファイルシステムに依存しないオプションは以下のとおり:
+<DL COMPACT>
+<DT><B>defaults</B>
+
+<DD>
+
+デフォルトのオプション rw, suid, dev, exec, auto, nouser, async を使う。
+<DT><B>noauto</B>
+
+<DD>
+
+&quot;mount -a&quot; を実行したとき (ブート時など) にマウントしない。
+<DT><B>user</B>
+
+<DD>
+
+ユーザにマウントを許可する。
+<DT><B>owner</B>
+
+<DD>
+
+デバイスの所有者にマウントを許可する。
+<DT>
+<DD>
+
+
+<B>comment</B> または <B>x-&lt;name&gt;</B>
+
+
+fstab 管理プログラムで使用するためにある。
+<DT><B>nofail</B>
+
+<DD>
+
+このデバイスが存在しない場合に、エラーを報告しない。
+</DL>
+</DL>
+
+<P>
+
+<B>5 番目のフィールド</B>
+
+(<I>fs_freq</I>).
+
+<DL COMPACT><DT><DD>
+
+
+
+このフィールドは、これらのファイルシステムを
+<B><A HREF="../man8/dump.8.html">dump</A></B>(8)
+
+コマンドが
+ダンプする必要があるかを決定するために用いられる。
+
+存在しない場合のデフォルトは 0 (dump しない) である。
+</DL>
+
+<P>
+
+<B>6 番目のフィールド</B>
+
+(<I>fs_passno</I>).
+
+<DL COMPACT><DT><DD>
+
+
+
+
+
+
+
+
+
+
+このフィールドは、
+<B><A HREF="../man8/fsck.8.html">fsck</A></B>(8)
+
+プログラムが用い、
+ブート時にファイルシステムのチェックを実行する順序を
+決定するために参照される。
+ルートファイルシステムは 
+<I>fs_passno</I>
+
+を 1 と明記する必要があり、
+その他のパーティションは、
+<I>fs_passno</I>
+
+を 2 とする必要がある。
+1 つのドライブ中のファイルシステムは順番にチェックされる。
+しかし、異なるドライブのファイルシステムは
+ハードウェアの並列性を役立たせる為に
+同時にチェックされる。
+
+存在しない場合のデフォルトは 0 (fsck しない) である。
+</DL>
+
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/etc/fstab</I>,
+
+<I>&lt;<A HREF="file:///usr/include/fstab.h">fstab.h</A>&gt;</I>
+
+<P>
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+
+
+
+<B>fstab</B>
+
+のレコードを読む正式な方法は、
+<B><A HREF="../man3/getmntent.3.html">getmntent</A></B>(3)
+
+または
+<B>libmount</B>
+
+のルーチンを使うことである。
+<P>
+
+
+
+
+キーワード
+<B>ignore</B>
+
+はファイルシステムタイプ (3 番目のフィールド) として、
+純粋な libmount ベースのマウントユーティリティでは
+(util-linux v2.22 以降では) サポートされていない。
+<P>
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+この
+<B>fstab</B>
+
+ファイルフォーマットの原型は 4.0BSD で導入された。
+
+
+
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man3/getmntent.3.html">getmntent</A></B>(3),
+
+<B><A HREF="../man5/fs.5.html">fs</A></B>(5),
+
+<B><A HREF="../man8/findmnt.8.html">findmnt</A></B>(8),
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8),
+
+<B><A HREF="../man8/swapon.8.html">swapon</A></B>(8)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+この man ページは、util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">ファイル</A><DD>
+<DT><A HREF="#lbAF">注意</A><DD>
+<DT><A HREF="#lbAG">履歴</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:02:41 GMT, January 24, 2021
+</BODY>
+</HTML>
