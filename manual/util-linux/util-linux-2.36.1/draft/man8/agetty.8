@@ -4,6 +4,7 @@
 .\" Modified & Updated Wed Jun 24 1998 by NAKANO Takeo
 .\" Updated & Modified Sat Aug  3 19:48:23 JST 2019
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Mon Jan 25 23:35:04 JST 2021 by Yuichi SATO
 .\"
 .TH AGETTY 8 "February 2016" "util-linux" "System Administration"
 .\"O .SH NAME
@@ -223,10 +224,15 @@ tty が 8-bit クリーンであると仮定し、パリティ検知を無効化
 \fB\-\-noissue\fP オプションはこのオプションを上書きする。
 .TP
 \-\-show\-issue
-Display the current issue file (or other) on the current terminal and exit.
-Use this option to review the current setting, it is not designed for any other
-purpose.  Note that output may use some default or incomplete information as
-proper output depends on terminal and agetty command line.
+.\"O Display the current issue file (or other) on the current terminal and exit.
+.\"O Use this option to review the current setting, it is not designed for any other
+.\"O purpose.  Note that output may use some default or incomplete information as
+.\"O proper output depends on terminal and agetty command line.
+現在の issue ファイル (またはその他) を現在の端末に表示して、終了する。
+このオプションは、現在の設定をレビューするために使うこと。
+それ以外の用途には設計されていない。
+正しい出力は、端末と agetty コマンドラインに依存するので、この出力はいくつかの
+デフォルトと不十分な情報を使っている点に注意すること。
 .TP
 \-h, \-\-flow\-control
 .\"O Enable hardware (RTS/CTS) flow control.  It is left up to the
@@ -407,17 +413,17 @@ vhangup() を呼んで、指定した端末の仮想ハングアップを起こ�
 \-s, \-\-keep\-baud
 .\"O Try to keep the existing baud rate.  The baud rates from
 .\"O the command line are used when agetty receives a BREAK character.
+既存の通信速度を維持しようとする。
+agetty が BREAK 文字を受け取った時の、コマンドラインの通信速度が使われる。
 .\"O Try to keep the existing baud rate.  The baud rates from the command line are
 .\"O used when agetty receives a BREAK character.  If another baud rates specified
 .\"O then the original baud rate is also saved to the end of the wanted baud rates
 .\"O list.
 .\"O This can be used to return to the original baud rate after unexpected BREAKs.
-既存の通信速度を維持しようとする。
-agetty が BREAK 文字を受け取った時の、コマンドラインの通信速度が使われる。
-If another baud rates specified
-then the original baud rate is also saved to the end of the wanted baud rates
-list.
-This can be used to return to the original baud rate after unexpected BREAKs.
+他の通信速度が指定された場合、元の通信速度は、設定したい通信速度の
+リストの最後に追加される。
+通信速度のリストは、予期しない BREAK を受け取った後に、
+元の通信速度に戻すために使われる。
 .TP
 \-t, \-\-timeout \fItimeout\fP
 .\"O Terminate if no user name could be read within \fItimeout\fP seconds.
@@ -615,12 +621,19 @@ agetty はあとに続く "\-" をチェックして、
 このディレクトリは、主となるシステムの \fI/etc/issue\fP ファイルとは独立した、
 3rd パーティーのメッセージを管理できる。
 
-Since version 2.35 additional locations for issue file and directory are
-supported. If the default \fI/etc/issue\fP does not exist than agetty checks
-for \fI/run/issue\fP and \fI/run/issue.d\fP, thereafter for
-\fI/usr/lib/issue\fP and \fI/usr/lib/issue.d\fP.  The directory /etc is
-expected for host specific configuration, /run is expected for generated stuff
-and /usr/lib for static distribution maintained configuration.
+.\"O Since version 2.35 additional locations for issue file and directory are
+.\"O supported. If the default \fI/etc/issue\fP does not exist than agetty checks
+.\"O for \fI/run/issue\fP and \fI/run/issue.d\fP, thereafter for
+.\"O \fI/usr/lib/issue\fP and \fI/usr/lib/issue.d\fP.  The directory /etc is
+.\"O expected for host specific configuration, /run is expected for generated stuff
+.\"O and /usr/lib for static distribution maintained configuration.
+バージョン 2.35 以降で、追加の issue ファイルとディレクトリの場所がサポートされる。
+デフォルトの \fI/etc/issue\fP が存在しない場合、
+agetty は \fI/run/issue\fP と \fI/run/issue.d\fP をチェックし、
+その後で \fI/usr/lib/issue\fP と \fI/usr/lib/issue.d\fP をチェックする。
+ディレクトリ /etc はホスト固有の設定を保持し、
+/run は生成された issue ファイルを保持し、
+/usr/lib は特定のディストリビューションが設定を保持する。
 
 .\"O The default path maybe overridden by \fB\-\-issue\-file\fP option. In this case
 .\"O specified path has to be file or directory and all the default issue file and
@@ -629,10 +642,13 @@ and /usr/lib for static distribution maintained configuration.
 指定したパスのファイルまたはディレクトリが使われ、
 デフォルトの issue ファイルとディレクトリの場所は無視される。
 
-The issue file feature is possible to completely disable by \fB\-\-noissue\fP option.
+.\"O The issue file feature is possible to completely disable by \fB\-\-noissue\fP option.
+issue ファイルの機能は、\fB\-\-noissue\fP オプションで完全に無効化できる。
 
-It is possible to review the current issue file by \fBagetty \-\-show\-issue\fP
-on the current terminal.
+.\"O It is possible to review the current issue file by \fBagetty \-\-show\-issue\fP
+.\"O on the current terminal.
+現在の issue ファイルは、\fBagetty \-\-show\-issue\fP を使って、
+現在の端末でレビューできる。
 
 .\"O The issue files may contain certain escape codes to display the system name, date, time
 .\"O et cetera.  All escape codes consist of a backslash (\\) immediately
