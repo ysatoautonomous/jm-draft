@@ -222,7 +222,7 @@ I/O 制限 (別名 I/O トポロジー) の情報を表示する。
 .\"O option.  If there are multiple devices that match the specified search
 .\"O parameter, then the device with the highest priority is returned, and/or
 .\"O the first device found at a given priority (but see below note about udev).
-\fB\-\-match\-token\fR で指定された検索パラメータにマッチする
+\fB\-\-match\-token\fR オプションで指定された検索パラメータにマッチする
 唯一のデバイスを検索する。
 指定された検索パラメータにマッチする複数のデバイスがある場合、
 もっとも高い優先度のデバイスが返されるか、
@@ -232,7 +232,6 @@ I/O 制限 (別名 I/O トポロジー) の情報を表示する。
 .\"O and finally regular block devices.  If this option is not specified,
 .\"O .B blkid
 .\"O will print all of the devices that match the search parameter.
-\fB\-\-match\-token\fR オプションで指定された検索パラメータにマッチする
 優先度の高い順のデバイスタイプは以下の通り:
 デバイスマッパー, EVMS, LVM, MD, 最後が通常のブロックデバイス。
 このオプションが指定されてない場合、
