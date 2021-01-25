@@ -1,0 +1,595 @@
+.\" Copyright 2000 Andreas Dilger (adilger@turbolinux.com)
+.\"
+.\" This file may be copied under the terms of the GNU Public License.
+.\"
+.\" Japanese Version Copyright (c) 2004-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun Mar  7 00:00:12 JST 2004
+.\"         by Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated & Modified Sat Apr 30 07:25:35 JST 2005 by Yuichi SATO
+.\" Updated & Modified Tue Dec 20 05:57:54 JST 2005 by Yuichi SATO
+.\" Updated & Modified Sat Apr 18 18:19:20 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Tue Jan 26 00:58:18 JST 2021 by Yuichi SATO
+.\"
+.TH BLKID 8 "March 2013" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O blkid \- locate/print block device attributes
+blkid \- ブロックデバイスの属性を検索/表示する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.IP \fBblkid\fR
+.BI \-\-label " label"
+|
+.BI \-\-uuid " uuid"
+
+.IP \fBblkid\fR
+.RB [ \-\-no\-encoding
+.B \-\-garbage\-collect \-\-list\-one \-\-cache\-file
+.IR file ]
+.RB [ \-\-output
+.IR format ]
+.RB [ \-\-match\-tag
+.IR tag ]
+.RB [ \-\-match\-token
+.IR NAME=value ]
+.RI [ device " ...]"
+
+.IP \fBblkid\fR
+.BR \-\-probe " [" \-\-offset
+.IR offset ]
+.RB [ \-\-output
+.IR format ]
+.RB [ \-\-size
+.IR size ]
+.RB [ \-\-match\-tag
+.IR tag ]
+.RB [ \-\-match\-types
+.IR list ]
+.RB [ \-\-usages
+.IR list ]
+.RB [ \-\-no\-part\-details ]
+.IR device " ..."
+
+.IP \fBblkid\fR
+.BR \-\-info " [" \-\-output
+.IR format ]
+.RB [ \-\-match\-tag
+.IR tag ]
+.IR device " ..."
+
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O The
+.\"O .B blkid
+.\"O program is the command-line interface to working with the
+.\"O .BR libblkid (3)
+.\"O library.  It can determine the type of content (e.g., filesystem or swap)
+.\"O that a block device holds, and also the attributes (tokens, NAME=value pairs)
+.\"O from the content metadata (e.g., LABEL or UUID fields).
+.B blkid
+プログラムは
+.BR libblkid (3)
+とともに動作するコマンドラインインタフェースである。
+このプログラムは、ブロックデバイスが保持するコンテンツ種別
+(ファイルシステムやスワップなど)を判定する。
+また、コンテンツメタデータ (LABEL や UUID フィールドなど) から
+属性 (トークン、NAME=value ペア) を判定する。
+.PP
+.\"O .B It is recommended to use
+.\"O .BR lsblk (8)
+.\"O .B command to get information about block devices, or lsblk \-\-fs to get an overview of filesystems, or
+.\"O .BR findmnt (8)
+.\"O .B to search in already mounted filesystems.
+.BR lsblk (8)
+.B コマンドによるブロックデバイスの取得、lsblk \-\-fs によるファイルシステムの概要の取得、
+.BR findmnt (8)
+.B による既にマウントされたファイルシステムの検索が推奨される。
+.PP
+.RS
+.\"O .BR lsblk (8)
+.\"O provides more information, better control on output formatting, easy to use in
+.\"O scripts and it does not require root permissions to get actual information.
+.BR lsblk (8)
+は、より詳細な情報を提供し、出力形式をよりうまく制御でき、
+スクリプトで簡単に使用できる。
+また、実際の情報を取得するのに root 権限は必要ない。
+.\"O .B blkid
+.\"O reads information directly from devices and for non-root users
+.\"O it returns cached unverified information.
+.B blkid
+はデバイスから直接情報を読み取り、root 以外のユーザーには検証されていない
+キャッシュされた情報を返す。
+.\"O .B blkid
+.\"O is mostly designed for system services and to test libblkid functionality.
+.B blkid
+は主にシステムサービスのために設計されており、libblkid の機能のテストのためのものである。
+.RE
+
+.PP
+.\"O When
+.\"O .I device
+.\"O is specified, tokens from only this device are displayed.
+.I device
+が指定された場合、このデバイスのトークンのみが表示される。
+.\"O It is possible to specify multiple
+.\"O .I device
+.\"O arguments on the command line.
+複数の
+.I device
+引き数をコマンドラインで指定できる。
+.\"O If none is given, all partitions or unpartitioned devices which appear in
+.\"O .I /proc/partitions
+.\"O are shown, if they are recognized.
+デバイスが指定されない場合、
+.I /proc/partitions
+にあるデバイスが認識されている場合は、
+デバイスの全てのパーティションまたはパーティション化されてない区画の
+情報が表示される。
+.PP
+.\"O .B blkid
+.\"O has two main forms of operation: either searching for a device with a
+.\"O specific NAME=value pair, or displaying NAME=value pairs for one or
+.\"O more specified devices.
+.B blkid
+は主に 2 つの形式の操作がある。
+指定した NAME=value ペアを持つデバイスの検索、
+または指定した 1 つ以上のデバイスの NAME=value ペアを表示である。
+
+.\"O For security reasons
+.\"O .B blkid
+.\"O silently ignores all devices where the probing result is ambivalent (multiple
+.\"O colliding filesystems are detected).  The low-level probing mode (\fB\-p\fR)
+.\"O provides more information and extra exit status in this case.
+セキュリティ上の理由から、
+.B blkid
+は (複数の衝突するファイルシステムが検出されたときなど) 検出された結果がはっきりしない
+全てのデバイスを黙って無視する。
+この場合、低レベルの検出モード (\fB\-p\fR) では、より多くの情報を提供し、
+多くの返り値を返す。
+.\"O It's recommended to use
+.\"O .BR wipefs (8)
+.\"O to get a detailed overview and to erase obsolete stuff (magic strings) from the device.
+デバイスから詳細な概要を取得し、不要な情報 (マジック文字列) を削除するには、
+.BR wipefs (8)
+を使うことが推奨される。
+
+.\"O .SH OPTIONS
+.SH オプション
+.\"O The \fIsize\fR and \fIoffset\fR arguments may be followed by the multiplicative
+.\"O suffixes like KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
+.\"O (the "iB" is optional, e.g., "K" has the same meaning as "KiB"), or the suffixes
+.\"O KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+\fIsize\fR と \fIoffset\fR 
+引き数には倍数のサフィックス KiB (=1024), MiB (=1024*1024),
+GiB, TiB, PiB, EiB, ZiB, YiB を付けることができる
+("iB" はオプションであり、例えば "K" は "KiB" と同じ意味である)。
+また、フィックス KB (=1000), MB (=1000*1000),
+GB, TB, PB, EB, ZB, YB を付けることもできる。
+.TP
+\fB\-c\fR, \fB\-\-cache\-file\fR \fIcachefile\fR
+.\"O Read from
+.\"O .I cachefile
+.\"O instead of reading from the default cache file (see the CONFIGURATION FILE section
+.\"O for more details).  If you want to start with a clean cache (i.e., don't report
+.\"O devices previously scanned but not necessarily available at this time), specify
+.\"O .IR /dev/null .
+デフォルトのキャッシュファイルではなく、
+.I cachefile
+を読み込む (より詳細は、「設定ファイル」のセクションを参照すること)。
+何もキャッシュしていない状態で開始したい場合 (すなわち、以前はスキャンを行ったが
+今回は利用する必要のないデバイスを表示しない場合) は、
+.I /dev/null
+を指定すること。
+.TP
+\fB\-d\fR, \fB\-\-no\-encoding\fR
+.\"O Don't encode non-printing characters.  The non-printing characters are encoded
+.\"O by ^ and M- notation by default.  Note that the \fB\-\-output udev\fR output format uses
+.\"O a different encoding which cannot be disabled.
+非表示文字をエンコードしない。
+デフォルトでは、非表示文字は ^ と M- の形式でエンコードされる。
+\fB\-\-output udev\fR の出力形式では、無効化できない別のエンコーディングを使う点に
+注意すること。
+.TP
+\fB\-D\fR, \fB\-\-no\-part\-details\fR
+.\"O Don't print information (PART_ENTRY_* tags) from partition table in low-level probing mode.
+低レベル検出モードでパーティションテーブルからの情報 (PART_ENTRY_* タグ) を表示しない。
+.TP
+\fB\-g\fR, \fB\-\-garbage\-collect\fR
+.\"O Perform a garbage collection pass on the blkid cache to remove
+.\"O devices which no longer exist.
+既に存在しないデバイスを blkid キャッシュから削除するために、
+ガベージコレクションを実施する。
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+.\"O Display a usage message and exit.
+使用法のメッセージを表示して、終了する。
+.TP
+\fB\-i\fR, \fB\-\-info\fR
+.\"O Display information about I/O Limits (aka I/O topology).  The 'export' output format is
+.\"O automatically enabled.  This option can be used together with the \fB\-\-probe\fR option.
+I/O 制限 (別名 I/O トポロジー) の情報を表示する。
+\&'export' 出力形式は自動的に有効にされる。
+このオプションは \fB\-\-probe\fR オプションと一緒に指定できる。
+.TP
+\fB\-k\fR, \fB\-\-list\-filesystems\fR
+.\"O List all known filesystems and RAIDs and exit.
+既存の全てのファイルシステムと RAID を表示して、終了する。
+.TP
+\fB\-l\fR, \fB\-\-list\-one\fR
+.\"O Look up only one device that matches the search parameter specified with the \fB\-\-match\-token\fR
+.\"O option.  If there are multiple devices that match the specified search
+.\"O parameter, then the device with the highest priority is returned, and/or
+.\"O the first device found at a given priority (but see below note about udev).
+\fB\-\-match\-token\fR で指定された検索パラメータにマッチする
+唯一のデバイスを検索する。
+指定された検索パラメータにマッチする複数のデバイスがある場合、
+もっとも高い優先度のデバイスが返されるか、
+指定された優先度で見つかった最初のデバイスが返される
+(下記の udev についての注意点を参照すること)。
+.\"O Device types in order of decreasing priority are: Device Mapper, EVMS, LVM, MD,
+.\"O and finally regular block devices.  If this option is not specified,
+.\"O .B blkid
+.\"O will print all of the devices that match the search parameter.
+\fB\-\-match\-token\fR オプションで指定された検索パラメータにマッチする
+優先度の高い順のデバイスタイプは以下の通り:
+デバイスマッパー, EVMS, LVM, MD, 最後が通常のブロックデバイス。
+このオプションが指定されてない場合、
+.B blkid
+は検索パラメータにマッチする全てのデバイスを表示する。
+.sp
+.\"O This option forces
+.\"O .B blkid
+.\"O to use udev when used for LABEL or UUID tokens in \fB\-\-match\-token\fR. The
+.\"O goal is to provide output consistent with other utils (like mount, etc.)
+.\"O on systems where the same tag is used for multiple devices.
+\fB\-\-match\-token\fR に LABEL または UUID トークンが使われた場合、
+このオプションは、
+.B blkid
+に udev を使わせる。
+その目的は、複数のデバイスで同じタグが使われているシステムで、
+他のユーティリティ (mount など) と一貫性を持った出力を提供することである。
+.TP
+\fB\-L\fR, \fB\-\-label\fR \fIlabel\fR
+.\"O Look up the device that uses this filesystem \fIlabel\fR; this is equal to
+.\"O .BR "\-\-list-one \-\-output device \-\-match-token LABEL=\fIlabel\fR" .
+このファイルシステム \fIlabel\fR を使うデバイスを検索する。
+これは、
+.B "\-\-list-one \-\-output device \-\-match-token LABEL=\fIlabel\fR"
+と等しい。
+.\"O This lookup method is able to reliably use /dev/disk/by-label
+.\"O udev symlinks (dependent on a setting in /etc/blkid.conf).  Avoid using the
+.\"O symlinks directly; it is not reliable to use the symlinks without verification.
+この検索方法では、(/etc/blkid.conf の設定に依存する)
+/dev/disk/by-label udev シンボリックリンクを使うことができる。
+このシンボリックリンクを直接使わないこと。
+検証せずにシンボリックリンクを使うことは信頼できない。
+.\"O The \fB-\-label\fR option works on systems with and without udev.
+\fB-\-label\fR オプションは、udev があるシステムでも、ないシステムでも動作する。
+
+.\"O Unfortunately, the original
+.\"O .BR blkid (8)
+.\"O from e2fsprogs uses the \fB\-L\fR option as a
+.\"O synonym for \fB\-o list\fR.  For better portability, use \fB\-l \-o device
+.\"O \-t LABEL=\fIlabel\fR and \fB\-o list\fR in your scripts rather than the \fB\-L\fR option.
+不幸なことに、元々の e2fsprogs の
+.BR blkid (8)
+は \fB\-L\fR オプションを、\fB\-o list\fR の別名として使う。
+移植性を良くするには、スクリプト中では、\fB\-L\fR オプションではなく、
+\fB\-l \-o device \-t LABEL=\fR\fIlabel\fR と \fB\-o list\fR を使うこと。
+.TP
+\fB\-n\fR, \fB\-\-match\-types\fR \fIlist\fR
+.\"O Restrict the probing functions to the specified (comma-separated) \fIlist\fR of
+.\"O superblock types (names).
+.\"O The list items may be prefixed with "no" to specify the types which should be ignored.
+.\"O For example:
+(カンマ区切りの) \fIlist\fR で指定したスーパーブロックタイプ (名) に検出機能を制限する。
+リストのアイテムは、"no" を前置して指定したタイプを無視させることができる。
+例:
+.sp
+  blkid \-\-probe \-\-match-types vfat,ext3,ext4 /dev/sda1
+.sp
+.\"O probes for vfat, ext3 and ext4 filesystems, and
+で vfat, ext3, ext4 ファイルシステムを検出できる。
+.sp
+  blkid \-\-probe \-\-match-types nominix /dev/sda1
+.sp
+.\"O probes for all supported formats except minix filesystems.
+で minix ファイルシステム以外の全てのサポートされているフォーマットを
+検出できる。
+.\"O This option is only useful together with \fB\-\-probe\fR.
+このオプションは、\fB\-\-probe\fR と一緒に指定された場合にのみ、有効になる。
+.TP
+\fB\-o\fR, \fB\-\-output\fR \fIformat\fR
+.\"O Use the specified output format.  Note that the order of variables and
+.\"O devices is not fixed.  See also option \fB\-s\fR.  The
+.\"O .I format
+.\"O parameter may be:
+指定した出力形式を使う。
+変数とデバイスの順番は固定されていない点に注意すること。
+オプション \fB\-s\fR も参照すること。
+.I format
+引き数は以下の通り:
+.RS
+.TP
+.B full
+.\"O print all tags (the default)
+全てのタグを表示する (デフォルト)。
+.TP
+.B value
+.\"O print the value of the tags
+指定した値のタグを表示する。
+.TP
+.B list
+.\"O print the devices in a user-friendly format; this output format is unsupported
+.\"O for low-level probing (\fB\-\-probe\fR or \fB\-\-info\fR).
+デバイスをユーザーに使いやすい形式で表示する。
+この形式は、低レベルの検出 (\fB\-\-probe\fR または\fB\-\-info\fR) ではサポートされない。
+
+.\"O This output format is \fBDEPRECATED\fR in favour of the
+.\"O .BR lsblk (8)
+.\"O command.
+この出力形式は\fB推奨されず\fR、
+.BR lsblk (8)
+コマンドを使うべきである。
+.TP
+.B device
+.\"O print the device name only; this output format is always enabled for the \fB\-\-label\fR
+.\"O and \fB\-\-uuid\fR options
+デバイス名のみを表示する。
+この出力形式は \fB\-\-label\fR と \fB\-\-uuid\fR オプションで常に有効にされる。
+.TP
+.B udev
+.\"O print key="value" pairs for easy import into the udev environment; the keys are
+.\"O prefixed by ID_FS_ or ID_PART_ prefixes.  The value may be modified to be
+.\"O safe for udev environment; allowed is plain ASCII, hex-escaping and valid UTF-8,
+.\"O everything else (including whitespaces) is replaced with '_'. The keys with
+.\"O _ENC postfix use hex-escaping for unsafe chars.
+udev 環境で簡単にインポートできる key="value" ペアを表示する。
+キーにはプレフィックス ID_FS_ または ID_PART_ が付く。
+値は udev 環境で安全なように修正される場合がある。
+値は、プレーンの ASCII、16 進数エスケープ、有効な UTF-8、
+(空白を含む) 任意の文字がある。空白はアンダースコア '_' に置換される。
+キーに安全でない文字が含まれる場合、16 進数エスケープが行われ、
+ポストフィックス _ENC が付く。
+
+.\"O The udev output returns the ID_FS_AMBIVALENT tag if more superblocks are detected,
+.\"O and ID_PART_ENTRY_* tags are always returned for all partitions including empty
+.\"O partitions.
+1 つ以上のスーパーブロックが検出された場合、udev の出力として、
+ID_FS_AMBIVALENT タグが返される。
+また、パーティションに空のパーティションが含まれる場合は、
+ID_PART_ENTRY_* タグが常に返される。
+
+.\"O This output format is \fBDEPRECATED\fR.
+この出力形式は\fB推奨されない\fR。
+.TP
+.B export
+.\"O print key=value pairs for easy import into the environment; this output format
+.\"O is automatically enabled when I/O Limits (\fB\-\-info\fR option) are requested.
+環境にインポートしやすい key=value ペアを表示する。
+この出力形式は、I/O 制限 (\fB\-\-info\fR オプション) が要求された場合、
+自動的に有効化される。
+
+.\"O The non-printing characters are encoded by ^ and M- notation and all
+.\"O potentially unsafe characters are escaped.
+非表示文字は ^ と M- 形式でエンコードされ、
+潜在的に安全でない文字はエスケープされる。
+.RE
+.TP
+\fB\-O\fR, \fB\-\-offset\fR \fIoffset\fR
+.\"O Probe at the given \fIoffset\fR (only useful with \fB\-\-probe\fR).  This option can be
+.\"O used together with the \fB\-\-info\fR option.
+指定された \fIoffset\fR で検出を行う
+(\fB\-\-probe\fR と一緒に指定された場合にのみ有効になる)。
+このオプションは、\fB\-\-info\fR オプションと一緒に指定できる。
+.TP
+\fB\-p\fR, \fB\-\-probe\fR
+.\"O Switch to low-level superblock probing mode (bypassing the cache).
+(キャッシュをバイバスして) 低レベルのスーパーブロック検出モードに切り替える。
+
+.\"O Note that low-level probing also returns information about partition table type
+.\"O (PTTYPE tag) and partitions (PART_ENTRY_* tags). The tag names produced by
+.\"O low-level probing are based on names used internally by libblkid and it may be
+.\"O different than when executed without \fB\-\-probe\fR (for example PART_ENTRY_UUID= vs
+.\"O PARTUUID=). See also \fB\-\-no\-part\-details\fR.
+低レベルの検出モードでは、パーティションテーブルタイプ (PTTYPE タグ) と
+パーティション (PART_ENTRY_* タグ) の情報も返される。
+低レベルの検出モードで出力されるタグ名は、
+libblkid が内部で使っている名前に基づいており、
+\fB\-\-probe\fR なしで実行した場合の名前とは異なる
+(例えば PART_ENTRY_UUID= と PARTUUID= のようになる)。
+\fB\-\-no\-part\-details\fR も参照すること。
+.TP
+\fB\-s\fR, \fB\-\-match\-tag\fR \fItag\fR
+.\"O For each (specified) device, show only the tags that match
+.\"O .IR tag .
+(指定された) 各デバイスについて、
+.I tag
+にマッチしたタグのみを表示する。
+.\"O It is possible to specify multiple
+.\"O .B \-\-match\-tag
+.\"O options.  If no tag is specified, then all tokens are shown for all
+.\"O (specified) devices.
+複数の
+.B \-\-match\-tag
+オプションを指定できる。
+タグが指定されない場合、(指定された) 全てのデバイスについて、
+全てのトークンを表示する。
+.\"O In order to just refresh the cache without showing any tokens, use
+.\"O .B "\-\-match\-tag none"
+.\"O with no other options.
+トークンを何も表示せず、単純にキャッシュをリフレッシュしたい場合、
+他のオプションを付けず、
+.B "\-\-match\-tag none"
+を使うこと。
+.TP
+\fB\-S\fR, \fB\-\-size\fR \fIsize\fR
+.\"O Override the size of device/file (only useful with \fB\-\-probe\fR).
+デバイス/ファイルのサイズを上書きする
+(\fB\-\-probe\fR と一緒に指定した場合のみ有効である)。
+.TP
+\fB\-t\fR, \fB\-\-match\-token\fR \fINAME=value\fR
+.\"O Search for block devices with tokens named
+.\"O .I NAME
+.\"O that have the value
+.\"O .IR value ,
+.\"O and display any devices which are found.
+.I NAME
+で指定された名前で、値が
+.I value
+のトークンを持つブロックデバイスを検索し、
+見つかったデバイスを表示する。
+.\"O Common values for
+.\"O .I NAME
+.\"O include
+.\"O .BR TYPE ,
+.\"O .BR LABEL ,
+.\"O and
+.\"O .BR UUID .
+.I NAME
+で良く使われる値は
+.BR TYPE ,
+.BR LABEL ,
+.B UUID
+である。
+.\"O If there are no devices specified on the command line, all block devices
+.\"O will be searched; otherwise only the specified devices are searched.
+コマンドラインでデバイスが指定されない場合、全てのブロック
+デバイスが検索される。
+指定された場合は、そのデバイスのみが検索される。
+.TP
+\fB\-u\fR, \fB\-\-usages\fR \fIlist\fR
+.\"O Restrict the probing functions to the specified (comma-separated) \fIlist\fR of "usage" types.
+.\"O Supported usage types are: filesystem, raid, crypto and other.  The list items may be
+.\"O prefixed with "no" to specify the usage types which should be ignored.  For example:
+検知機能を指定した (カンマ区切りの) \fIlist\fR の「使用法」のタイプに限定する。
+サポートされる使用法のタイプは以下の通り: filesystem, raid, crypto, other.
+リストのアイテムはプレフィックス "no" を指定して、
+その使用法を無視させることができる。
+例:
+.sp
+  blkid \-\-probe \-\-usages filesystem,other /dev/sda1
+.sp
+.\"O probes for all filesystem and other (e.g., swap) formats, and
+では、全てのファイルシステムとその他 (例えば、スワップ) 形式を検知する。
+.sp
+  blkid \-\-probe \-\-usages noraid /dev/sda1
+.sp
+.\"O probes for all supported formats except RAIDs.
+では、RAID 以外の全てのサポートされる形式を検知する。
+.\"O This option is only useful together with \fB\-\-probe\fR.
+このオプションは \fB\-\-probe\fR と一緒に指定された場合にのみ有効である。
+.TP
+\fB\-U\fR, \fB\-\-uuid\fR \fIuuid\fR
+.\"O Look up the device that uses this filesystem \fIuuid\fR.  For more details see the
+.\"O \fB\-\-label\fR option.
+ファイルシステム\fIuuid\fR を使うデバイスを検索する。
+より詳細は \fB\-\-label\fR オプションを参照すること。
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+.\"O Display version number and exit.
+バージョン番号を表示して、終了する。
+.\"O .SH EXIT STATUS
+.SH 返り値
+.\"O If the specified device or device addressed by specified token (option
+.\"O \fB\-\-match\-token\fR) was found and it's possible to gather any information about the
+.\"O device, an exit status 0 is returned.  Note the option \fB\-\-match\-tag\fR filters output
+.\"O tags, but it does not affect exit status.
+指定されたデバイス、または指定されたトークン (オプション \fB\-\-match\-token\fR) で
+指し示されるデバイスが見つかって、デバイスの情報が収集できた場合、
+返り値 0 が返される。
+オプション \fB\-\-match\-tag\fR は出力タグをフィルタするが、
+返り値には影響しない点に注意すること。
+
+.\"O If the specified token was not found, or no (specified) devices could be
+.\"O identified, or it is impossible to gather any information about the device
+.\"O identifiers or device content an exit status of 2 is returned.
+指定されたトークンが見つからなかった場合、または (指定された) デバイスが特定できなかった場合、
+またはデバイスの識別子やデバイスの内容についての情報が収集できなかった
+場合、返り値 2 が返される。
+
+.\"O For usage or other errors, an exit status of 4 is returned.
+使用法または他のエラーの場合、返り値 4 が返される。
+
+.\"O If an ambivalent probing result was detected by low-level probing mode (\fB\-p\fR), an exit status of 8 is
+.\"O returned.
+低レベルの検知モード (\fB\-p\fR) で、曖昧な検知結果が返された場合、返り値 8 が返される。
+.\"O .SH CONFIGURATION FILE
+.SH 設定ファイル
+.\"O The standard location of the
+.\"O .I /etc/blkid.conf
+.\"O config file can be overridden by the environment variable BLKID_CONF.
+.\"O The following options control the libblkid library:
+設定ファイル
+.I /etc/blkid.conf
+の標準的な配置場所は、環境変数 BLKID_CONF で上書きできる。
+以下のオプションで libblkid ライブラリを制御できる:
+.TP
+.I SEND_UEVENT=<yes|not>
+.\"O Sends uevent when
+.\"O .I /dev/disk/by-{label,uuid,partuuid,partlabel}/
+.\"O symlink does not match with LABEL, UUID, PARTUUID or PARTLABEL on the device.  Default is "yes".
+.I /dev/disk/by-{label,uuid,partuuid,partlabel}/
+シンボリックリンクがデバイスの LABEL, UUID, PARTUUID, PARTLABEL にマッチしない場合、
+uevent を送る。
+デフォルトは "yes" である。
+.TP
+.I CACHE_FILE=<path>
+.\"O Overrides the standard location of the cache file.  This setting can be
+.\"O overridden by the environment variable BLKID_FILE.  Default is
+.\"O .IR /run/blkid/blkid.tab ,
+.\"O or
+.\"O .I /etc/blkid.tab
+.\"O on systems without a /run directory.
+キャッシュファイルの標準の配置場所を上書きする。
+この設定は環境変数 BLKID_FILE で上書きできる。
+デフォルトは
+.IR /run/blkid/blkid.tab 、
+または /run ディレクトリがない場合は
+.I /etc/blkid.tab
+である。
+.TP
+.I EVALUATE=<methods>
+.\"O Defines LABEL and UUID evaluation method(s).  Currently, the libblkid library
+.\"O supports the "udev" and "scan" methods.  More than one method may be specified in
+.\"O a comma-separated list.  Default is "udev,scan".  The "udev" method uses udev
+.\"O .I /dev/disk/by-*
+.\"O symlinks and the "scan" method scans all block devices from the
+.\"O .I /proc/partitions
+.\"O file.
+LABEL と UUID の評価方法を定義する。
+現在のところ、libblkid ライブラリは、評価方法として "udev" と "scan" をサポートしている。
+1 つ以上の評価方法をカンマ区切りのリストで指定できる。
+デフォルトは "udev,scan" である。
+"udev" は udev
+.I /dev/disk/by-*
+シンボリックリンクを使い、"scan" は
+.I /proc/partitions
+ファイルにある全てのブロックデバイスをスキャンする。
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.\"O .IP "Setting LIBBLKID_DEBUG=all enables debug output."
+.IP "LIBBLKID_DEBUG=all を設定することで、デバッグ出力を有効化できる。"
+.\"O .SH AUTHORS
+.SH 著者
+.\"O .B blkid
+.\"O was written by Andreas Dilger for libblkid and improved by Theodore Ts'o
+.\"O and Karel Zak.
+.B blkid
+は libblkid のために Andreas Dilger によって書かれた。
+そして、Theodore Ts'o と Karel Zak によって改良された。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR libblkid (3),
+.BR findfs (8),
+.BR lsblk (8),
+.BR wipefs (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The blkid command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+blkid コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
