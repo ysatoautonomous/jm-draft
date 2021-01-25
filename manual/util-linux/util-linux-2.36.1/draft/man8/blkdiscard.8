@@ -1,0 +1,150 @@
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Thu Apr 16 22:47:17 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH BLKDISCARD 8 "July 2014" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O blkdiscard \- discard sectors on a device
+blkdiscard \- デバイスのセクタを破棄する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B blkdiscard
+[options]
+.RB [ \-o
+.IR offset ]
+.RB [ \-l
+.IR length ]
+.I device
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B blkdiscard
+.\"O is used to discard device sectors.  This is useful for solid-state
+.\"O drivers (SSDs) and thinly-provisioned storage.  Unlike
+.\"O .BR fstrim (8),
+.\"O this command is used directly on the block device.
+.B blkdiscard
+はデバイスのセクタを破棄するために使われる。
+これはソリッドステートドライブ (SSD) と、シンプロビジョニングされたストレージで役立つ。
+.BR fstrim (8)
+とは違い、このコマンドはブロックデバイスに直接使用される。
+.PP
+.\"O By default,
+.\"O .B blkdiscard
+.\"O will discard all blocks on the device.  Options may be used to modify
+.\"O this behavior based on range or size, as explained below.
+デフォルトでは
+.B blkdiscard
+はデバイスの全てのブロックを破棄する。
+以下に示すように、この挙動はオプションを用いて範囲またはサイズに
+基づくように変更できる。
+.PP
+.\"O The
+.\"O .I device
+.\"O argument is the pathname of the block device.
+.I device
+引き数はブロックデバイスのパス名である。
+.PP
+.\"O .B WARNING: All data in the discarded region on the device will be lost!
+.B 警告: デバイス上の破棄された範囲の全てのデータは失われる!
+.\"O .SH OPTIONS
+.SH オプション
+.\"O The
+.\"O .I offset
+.\"O and
+.\"O .I length
+.\"O arguments may be followed by the multiplicative suffixes KiB (=1024),
+.\"O MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB (the "iB" is
+.\"O optional, e.g., "K" has the same meaning as "KiB") or the suffixes
+.\"O KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+.I offset
+と
+.I length
+引き数には倍数のサフィックス KiB (=1024), MiB (=1024*1024),
+GiB, TiB, PiB, EiB, ZiB, YiB を付けることができる
+("iB" はオプションであり、例えば "K" は "KiB" と同じ意味である)。
+また、フィックス KB (=1000), MB (=1000*1000),
+GB, TB, PB, EB, ZB, YB を付けることもできる。
+.TP
+.BR \-o , " \-\-offset \fIoffset"
+.\"O Byte offset into the device from which to start discarding.  The provided value
+.\"O will be aligned to the device sector size.  The default value is zero.
+デバイス上で破棄を開始するバイトオフセット。
+指定された値は、デバイスのセクタサイズで調整される。
+デフォルト値は 0 である。
+.TP
+.BR \-l , " \-\-length \fIlength"
+.\"O The number of bytes to discard (counting from the starting point).  The provided value
+.\"O will be aligned to the device sector size.  If the specified value extends past
+.\"O the end of the device,
+.\"O .B blkdiscard
+.\"O will stop at the device size boundary.  The default value extends to the end
+.\"O of the device.
+(開始地点から数えた) 破棄するバイト数。
+指定された値は、デバイスのセクタサイズで調整される。
+指定された値が、デバイスの終わりを越した場合、
+.B blkdiscard
+はデバイスのサイズ境界で停止する。
+デフォルト値はデバイスの終わりまでである。
+.TP
+.BR \-p , " \-\-step \fIlength"
+.\"O The number of bytes to discard within one iteration. The default is to discard
+.\"O all by one ioctl call.
+1 回で破棄するバイト数。
+デフォルトでは 1 回の ioctl 呼び出しで全てを破棄する。
+.TP
+.BR \-s , " \-\-secure"
+.\"O Perform a secure discard.  A secure discard is the same as a regular discard
+.\"O except that all copies of the discarded blocks that were possibly created by
+.\"O garbage collection must also be erased.  This requires support from the device.
+セキュアな破棄を行う。
+セキュアな破棄は、通常の破棄と同様であるが、
+ガベージコレクションで作成される可能性がある破棄ブロックのコピーも
+消去される。
+これにはデバイスのサポートが必要である。
+.TP
+.BR \-z , " \-\-zeroout"
+.\"O Zero-fill rather than discard.
+破棄ではなく 0 埋めする。
+.TP
+.BR \-v , " \-\-verbose"
+.\"O Display the aligned values of
+.\"O .I offset
+.\"O and
+.\"O .IR length .
+.\"O If the \fB\-\-step\fR option is specified, it prints the discard progress every second.
+調整された
+.I offset
+と
+.I length
+の値を表示する。
+\fB\-\-step\fR オプションが指定された場合、破棄の進捗を毎秒表示する。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH AUTHOR
+.SH 著者
+.MT lczerner@redhat.com
+Lukas Czerner
+.ME
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR fstrim (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The blkdiscard command is part of the util-linux package and is available
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+blkdiscard コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
