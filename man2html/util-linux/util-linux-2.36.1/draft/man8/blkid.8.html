@@ -1,0 +1,715 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of BLKID</TITLE>
+</HEAD><BODY>
+<H1>BLKID</H1>
+Section: System Administration (8)<BR>Updated: March 2013<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+blkid - ブロックデバイスの属性を検索/表示する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<DL COMPACT>
+<DT><B>blkid</B><DD>
+<B>--label</B><I> label</I>
+
+|
+<B>--uuid</B><I> uuid</I>
+
+<P>
+<DT><B>blkid</B><DD>
+[<B>--no-encoding</B>
+
+<B>--garbage-collect --list-one --cache-file</B>
+
+<I>file</I>]
+
+[<B>--output</B>
+
+<I>format</I>]
+
+[<B>--match-tag</B>
+
+<I>tag</I>]
+
+[<B>--match-token</B>
+
+<I>NAME=value</I>]
+
+[<I>device</I> ...]
+
+<P>
+<DT><B>blkid</B><DD>
+<B>--probe</B> [<B>--offset</B>
+
+<I>offset</I>]
+
+[<B>--output</B>
+
+<I>format</I>]
+
+[<B>--size</B>
+
+<I>size</I>]
+
+[<B>--match-tag</B>
+
+<I>tag</I>]
+
+[<B>--match-types</B>
+
+<I>list</I>]
+
+[<B>--usages</B>
+
+<I>list</I>]
+
+[<B>--no-part-details</B>]
+
+<I>device</I> ...
+
+<P>
+<DT><B>blkid</B><DD>
+<B>--info</B> [<B>--output</B>
+
+<I>format</I>]
+
+[<B>--match-tag</B>
+
+<I>tag</I>]
+
+<I>device</I> ...
+
+<P>
+
+</DL>
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+<B>blkid</B>
+
+プログラムは
+<B><A HREF="../man3/libblkid.3.html">libblkid</A></B>(3)
+
+とともに動作するコマンドラインインタフェースである。
+このプログラムは、ブロックデバイスが保持するコンテンツ種別
+(ファイルシステムやスワップなど)を判定する。
+また、コンテンツメタデータ (LABEL や UUID フィールドなど) から
+属性 (トークン、NAME=value ペア) を判定する。
+<P>
+
+
+
+
+
+
+<B><A HREF="../man8/lsblk.8.html">lsblk</A></B>(8)
+
+<B>コマンドによるブロックデバイスの取得、lsblk --fs によるファイルシステムの概要の取得、</B>
+
+<B><A HREF="../man8/findmnt.8.html">findmnt</A></B>(8)
+
+<B>による既にマウントされたファイルシステムの検索が推奨される。</B>
+
+<P>
+
+<DL COMPACT><DT><DD>
+
+
+
+<B><A HREF="../man8/lsblk.8.html">lsblk</A></B>(8)
+
+は、より詳細な情報を提供し、出力形式をよりうまく制御でき、
+スクリプトで簡単に使用できる。
+また、実際の情報を取得するのに root 権限は必要ない。
+
+
+
+<B>blkid</B>
+
+はデバイスから直接情報を読み取り、root 以外のユーザーには検証されていない
+キャッシュされた情報を返す。
+
+
+<B>blkid</B>
+
+は主にシステムサービスのために設計されており、libblkid の機能のテストのためのものである。
+</DL>
+
+<P>
+<P>
+
+
+
+
+<I>device</I>
+
+が指定された場合、このデバイスのトークンのみが表示される。
+
+
+
+複数の
+<I>device</I>
+
+引き数をコマンドラインで指定できる。
+
+
+
+デバイスが指定されない場合、
+<I>/proc/partitions</I>
+
+にあるデバイスが認識されている場合は、
+デバイスの全てのパーティションまたはパーティション化されてない区画の
+情報が表示される。
+<P>
+
+
+
+
+
+<B>blkid</B>
+
+は主に 2 つの形式の操作がある。
+指定した NAME=value ペアを持つデバイスの検索、
+または指定した 1 つ以上のデバイスの NAME=value ペアを表示である。
+<P>
+
+
+
+
+
+セキュリティ上の理由から、
+<B>blkid</B>
+
+は (複数の衝突するファイルシステムが検出されたときなど) 検出された結果がはっきりしない
+全てのデバイスを黙って無視する。
+この場合、低レベルの検出モード (<B>-p</B>) では、より多くの情報を提供し、
+多くの返り値を返す。
+
+
+
+デバイスから詳細な概要を取得し、不要な情報 (マジック文字列) を削除するには、
+<B><A HREF="../man8/wipefs.8.html">wipefs</A></B>(8)
+
+を使うことが推奨される。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+
+
+
+
+<I>size</I> と <I>offset</I> 
+引き数には倍数のサフィックス KiB (=1024), MiB (=1024*1024),
+GiB, TiB, PiB, EiB, ZiB, YiB を付けることができる
+(&quot;iB&quot; はオプションであり、例えば &quot;K&quot; は &quot;KiB&quot; と同じ意味である)。
+また、フィックス KB (=1000), MB (=1000*1000),
+GB, TB, PB, EB, ZB, YB を付けることもできる。
+<DL COMPACT>
+<DT><B>-c</B>, <B>--cache-file</B> <I>cachefile</I><DD>
+
+
+
+
+
+
+デフォルトのキャッシュファイルではなく、
+<I>cachefile</I>
+
+を読み込む (より詳細は、「設定ファイル」のセクションを参照すること)。
+何もキャッシュしていない状態で開始したい場合 (すなわち、以前はスキャンを行ったが
+今回は利用する必要のないデバイスを表示しない場合) は、
+<I>/dev/null</I>
+
+を指定すること。
+<DT><B>-d</B>, <B>--no-encoding</B><DD>
+
+
+
+非表示文字をエンコードしない。
+デフォルトでは、非表示文字は ^ と M- の形式でエンコードされる。
+<B>--output udev</B> の出力形式では、無効化できない別のエンコーディングを使う点に
+注意すること。
+<DT><B>-D</B>, <B>--no-part-details</B><DD>
+
+低レベル検出モードでパーティションテーブルからの情報 (PART_ENTRY_* タグ) を表示しない。
+<DT><B>-g</B>, <B>--garbage-collect</B><DD>
+
+
+既に存在しないデバイスを blkid キャッシュから削除するために、
+ガベージコレクションを実施する。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+使用法のメッセージを表示して、終了する。
+<DT><B>-i</B>, <B>--info</B><DD>
+
+
+I/O 制限 (別名 I/O トポロジー) の情報を表示する。
+'export' 出力形式は自動的に有効にされる。
+このオプションは <B>--probe</B> オプションと一緒に指定できる。
+<DT><B>-k</B>, <B>--list-filesystems</B><DD>
+
+既存の全てのファイルシステムと RAID を表示して、終了する。
+<DT><B>-l</B>, <B>--list-one</B><DD>
+
+
+
+
+<B>--match-token</B> で指定された検索パラメータにマッチする
+唯一のデバイスを検索する。
+指定された検索パラメータにマッチする複数のデバイスがある場合、
+もっとも高い優先度のデバイスが返されるか、
+指定された優先度で見つかった最初のデバイスが返される
+(下記の udev についての注意点を参照すること)。
+
+
+
+
+<B>--match-token</B> オプションで指定された検索パラメータにマッチする
+優先度の高い順のデバイスタイプは以下の通り:
+デバイスマッパー, EVMS, LVM, MD, 最後が通常のブロックデバイス。
+このオプションが指定されてない場合、
+<B>blkid</B>
+
+は検索パラメータにマッチする全てのデバイスを表示する。
+<P>
+
+
+
+
+
+<B>--match-token</B> に LABEL または UUID トークンが使われた場合、
+このオプションは、
+<B>blkid</B>
+
+に udev を使わせる。
+その目的は、複数のデバイスで同じタグが使われているシステムで、
+他のユーティリティ (mount など) と一貫性を持った出力を提供することである。
+<DT><B>-L</B>, <B>--label</B> <I>label</I><DD>
+
+
+このファイルシステム <I>label</I> を使うデバイスを検索する。
+これは、
+<B>--list-one --output device --match-token LABEL=</B><I>label</I>
+
+と等しい。
+
+
+
+この検索方法では、(/etc/blkid.conf の設定に依存する)
+/dev/disk/by-label udev シンボリックリンクを使うことができる。
+このシンボリックリンクを直接使わないこと。
+検証せずにシンボリックリンクを使うことは信頼できない。
+
+<B>--label</B> オプションは、udev があるシステムでも、ないシステムでも動作する。
+<P>
+
+
+
+
+
+不幸なことに、元々の e2fsprogs の
+<B><A HREF="../man8/blkid.8.html">blkid</A></B>(8)
+
+は <B>-L</B> オプションを、<B>-o list</B> の別名として使う。
+移植性を良くするには、スクリプト中では、<B>-L</B> オプションではなく、
+<B>-l -o device -t LABEL=</B><I>label</I> と <B>-o list</B> を使うこと。
+<DT><B>-n</B>, <B>--match-types</B> <I>list</I><DD>
+
+
+
+
+(カンマ区切りの) <I>list</I> で指定したスーパーブロックタイプ (名) に検出機能を制限する。
+リストのアイテムは、&quot;no&quot; を前置して指定したタイプを無視させることができる。
+例:
+<P>
+<BR>&nbsp;&nbsp;blkid&nbsp;--probe&nbsp;--match-types&nbsp;vfat,ext3,ext4&nbsp;/dev/sda1
+<P>
+
+で vfat, ext3, ext4 ファイルシステムを検出できる。
+<P>
+<BR>&nbsp;&nbsp;blkid&nbsp;--probe&nbsp;--match-types&nbsp;nominix&nbsp;/dev/sda1
+<P>
+
+で minix ファイルシステム以外の全てのサポートされているフォーマットを
+検出できる。
+
+このオプションは、<B>--probe</B> と一緒に指定された場合にのみ、有効になる。
+<DT><B>-o</B>, <B>--output</B> <I>format</I><DD>
+
+
+
+
+指定した出力形式を使う。
+変数とデバイスの順番は固定されていない点に注意すること。
+オプション <B>-s</B> も参照すること。
+<I>format</I>
+
+引き数は以下の通り:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>full</B>
+
+<DD>
+
+全てのタグを表示する (デフォルト)。
+<DT><B>value</B>
+
+<DD>
+
+指定した値のタグを表示する。
+<DT><B>list</B>
+
+<DD>
+
+
+デバイスをユーザーに使いやすい形式で表示する。
+この形式は、低レベルの検出 (<B>--probe</B> または<B>--info</B>) ではサポートされない。
+<P>
+
+
+
+この出力形式は<B>推奨されず</B>、
+<B><A HREF="../man8/lsblk.8.html">lsblk</A></B>(8)
+
+コマンドを使うべきである。
+<DT><B>device</B>
+
+<DD>
+
+
+デバイス名のみを表示する。
+この出力形式は <B>--label</B> と <B>--uuid</B> オプションで常に有効にされる。
+<DT><B>udev</B>
+
+<DD>
+
+
+
+
+
+udev 環境で簡単にインポートできる key=&quot;value&quot; ペアを表示する。
+キーにはプレフィックス ID_FS_ または ID_PART_ が付く。
+値は udev 環境で安全なように修正される場合がある。
+値は、プレーンの ASCII、16 進数エスケープ、有効な UTF-8、
+(空白を含む) 任意の文字がある。空白はアンダースコア '_' に置換される。
+キーに安全でない文字が含まれる場合、16 進数エスケープが行われ、
+ポストフィックス _ENC が付く。
+<P>
+
+
+
+1 つ以上のスーパーブロックが検出された場合、udev の出力として、
+ID_FS_AMBIVALENT タグが返される。
+また、パーティションに空のパーティションが含まれる場合は、
+ID_PART_ENTRY_* タグが常に返される。
+<P>
+
+この出力形式は<B>推奨されない</B>。
+<DT><B>export</B>
+
+<DD>
+
+
+環境にインポートしやすい key=value ペアを表示する。
+この出力形式は、I/O 制限 (<B>--info</B> オプション) が要求された場合、
+自動的に有効化される。
+<P>
+
+
+非表示文字は ^ と M- 形式でエンコードされ、
+潜在的に安全でない文字はエスケープされる。
+</DL>
+</DL>
+
+<DT><B>-O</B>, <B>--offset</B> <I>offset</I><DD>
+
+
+指定された <I>offset</I> で検出を行う
+(<B>--probe</B> と一緒に指定された場合にのみ有効になる)。
+このオプションは、<B>--info</B> オプションと一緒に指定できる。
+<DT><B>-p</B>, <B>--probe</B><DD>
+
+(キャッシュをバイバスして) 低レベルのスーパーブロック検出モードに切り替える。
+<P>
+
+
+
+
+
+低レベルの検出モードでは、パーティションテーブルタイプ (PTTYPE タグ) と
+パーティション (PART_ENTRY_* タグ) の情報も返される。
+低レベルの検出モードで出力されるタグ名は、
+libblkid が内部で使っている名前に基づいており、
+<B>--probe</B> なしで実行した場合の名前とは異なる
+(例えば PART_ENTRY_UUID= と PARTUUID= のようになる)。
+<B>--no-part-details</B> も参照すること。
+<DT><B>-s</B>, <B>--match-tag</B> <I>tag</I><DD>
+
+
+(指定された) 各デバイスについて、
+<I>tag</I>
+
+にマッチしたタグのみを表示する。
+
+
+
+
+複数の
+<B>--match-tag</B>
+
+オプションを指定できる。
+タグが指定されない場合、(指定された) 全てのデバイスについて、
+全てのトークンを表示する。
+
+
+
+トークンを何も表示せず、単純にキャッシュをリフレッシュしたい場合、
+他のオプションを付けず、
+<B>--match-tag none</B>
+
+を使うこと。
+<DT><B>-S</B>, <B>--size</B> <I>size</I><DD>
+
+デバイス/ファイルのサイズを上書きする
+(<B>--probe</B> と一緒に指定した場合のみ有効である)。
+<DT><B>-t</B>, <B>--match-token</B> <I>NAME=value</I><DD>
+
+
+
+
+
+<I>NAME</I>
+
+で指定された名前で、値が
+<I>value</I>
+
+のトークンを持つブロックデバイスを検索し、
+見つかったデバイスを表示する。
+
+
+
+
+
+
+
+<I>NAME</I>
+
+で良く使われる値は
+<B>TYPE</B>,
+
+<B>LABEL</B>,
+
+<B>UUID</B>
+
+である。
+
+
+コマンドラインでデバイスが指定されない場合、全てのブロック
+デバイスが検索される。
+指定された場合は、そのデバイスのみが検索される。
+<DT><B>-u</B>, <B>--usages</B> <I>list</I><DD>
+
+
+
+検知機能を指定した (カンマ区切りの) <I>list</I> の「使用法」のタイプに限定する。
+サポートされる使用法のタイプは以下の通り: filesystem, raid, crypto, other.
+リストのアイテムはプレフィックス &quot;no&quot; を指定して、
+その使用法を無視させることができる。
+例:
+<P>
+<BR>&nbsp;&nbsp;blkid&nbsp;--probe&nbsp;--usages&nbsp;filesystem,other&nbsp;/dev/sda1
+<P>
+
+では、全てのファイルシステムとその他 (例えば、スワップ) 形式を検知する。
+<P>
+<BR>&nbsp;&nbsp;blkid&nbsp;--probe&nbsp;--usages&nbsp;noraid&nbsp;/dev/sda1
+<P>
+
+では、RAID 以外の全てのサポートされる形式を検知する。
+
+このオプションは <B>--probe</B> と一緒に指定された場合にのみ有効である。
+<DT><B>-U</B>, <B>--uuid</B> <I>uuid</I><DD>
+
+
+ファイルシステム<I>uuid</I> を使うデバイスを検索する。
+より詳細は <B>--label</B> オプションを参照すること。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン番号を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+
+
+指定されたデバイス、または指定されたトークン (オプション <B>--match-token</B>) で
+指し示されるデバイスが見つかって、デバイスの情報が収集できた場合、
+返り値 0 が返される。
+オプション <B>--match-tag</B> は出力タグをフィルタするが、
+返り値には影響しない点に注意すること。
+<P>
+
+
+
+指定されたトークンが見つからなかった場合、または (指定された) デバイスが特定できなかった場合、
+またはデバイスの識別子やデバイスの内容についての情報が収集できなかった
+場合、返り値 2 が返される。
+<P>
+
+使用法または他のエラーの場合、返り値 4 が返される。
+<P>
+
+
+低レベルの検知モード (<B>-p</B>) で、曖昧な検知結果が返された場合、返り値 8 が返される。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>設定ファイル</H2>
+
+
+
+
+
+設定ファイル
+<I>/etc/blkid.conf</I>
+
+の標準的な配置場所は、環境変数 BLKID_CONF で上書きできる。
+以下のオプションで libblkid ライブラリを制御できる:
+<DL COMPACT>
+<DT><I>SEND_UEVENT=&lt;yes|not&gt;</I>
+
+<DD>
+
+
+
+<I>/dev/disk/by-{label,uuid,partuuid,partlabel}/</I>
+
+シンボリックリンクがデバイスの LABEL, UUID, PARTUUID, PARTLABEL にマッチしない場合、
+uevent を送る。
+デフォルトは &quot;yes&quot; である。
+<DT><I>CACHE_FILE=&lt;path&gt;</I>
+
+<DD>
+
+
+
+
+
+
+キャッシュファイルの標準の配置場所を上書きする。
+この設定は環境変数 BLKID_FILE で上書きできる。
+デフォルトは
+<I>/run/blkid/blkid.tab</I>、
+
+または /run ディレクトリがない場合は
+<I>/etc/blkid.tab</I>
+
+である。
+<DT><I>EVALUATE=&lt;methods&gt;</I>
+
+<DD>
+
+
+
+
+
+
+
+LABEL と UUID の評価方法を定義する。
+現在のところ、libblkid ライブラリは、評価方法として &quot;udev&quot; と &quot;scan&quot; をサポートしている。
+1 つ以上の評価方法をカンマ区切りのリストで指定できる。
+デフォルトは &quot;udev,scan&quot; である。
+&quot;udev&quot; は udev
+<I>/dev/disk/by-*</I>
+
+シンボリックリンクを使い、&quot;scan&quot; は
+<I>/proc/partitions</I>
+
+ファイルにある全てのブロックデバイスをスキャンする。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>環境変数</H2>
+
+
+<DL COMPACT>
+<DT>LIBBLKID_DEBUG=all を設定することで、デバッグ出力を有効化できる。<DD>
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+
+
+
+<B>blkid</B>
+
+は libblkid のために Andreas Dilger によって書かれた。
+そして、Theodore Ts'o と Karel Zak によって改良された。
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man3/libblkid.3.html">libblkid</A></B>(3),
+
+<B><A HREF="../man8/findfs.8.html">findfs</A></B>(8),
+
+<B><A HREF="../man8/lsblk.8.html">lsblk</A></B>(8),
+
+<B><A HREF="../man8/wipefs.8.html">wipefs</A></B>(8)
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+blkid コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">設定ファイル</A><DD>
+<DT><A HREF="#lbAH">環境変数</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:01:09 GMT, January 25, 2021
+</BODY>
+</HTML>
