@@ -1,0 +1,172 @@
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Apr 18 20:44:08 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Mon Feb  1 22:23:27 JST 2021 by Yuichi SATO
+.\"
+.TH CHCPU 8 "July 2014" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O chcpu \- configure CPUs
+chcpu \- CPU を設定する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B chcpu
+.BR \-c | \-d | \-e | \-g
+.I cpu-list
+.br
+.B chcpu \-p
+.I mode
+.br
+.B chcpu
+.BR \-r | \-h | \-V
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B chcpu
+.\"O can modify the state of CPUs.  It can enable or disable CPUs, scan for new
+.\"O CPUs, change the CPU dispatching
+.\"O .I mode
+.\"O of the underlying hypervisor, and request CPUs from the hypervisor
+.\"O (configure) or return CPUs to the hypervisor (deconfigure).
+.B chcpu
+は CPU の状態を変更することができる。
+このコマンドは、CPU の有効化/無効化、新しい CPU の検知、
+下層のハイパーバイザーの CPU の分配 (dispatch)
+.I mode
+の変更、ハイパーバイザーからの CPU のリクエスト (設定)、
+ハイパーバイザーへの CPU の返却 (戻し設定) ができる。
+.PP
+.\"O Some options have a
+.\"O .I cpu-list
+.\"O argument.  Use this argument to specify a comma-separated list of CPUs.  The
+.\"O list can contain individual CPU addresses or ranges of addresses.  For
+.\"O example,
+.\"O .B 0,5,7,9-11
+.\"O makes the command applicable to the CPUs with the addresses 0, 5, 7, 9, 10,
+.\"O and 11.
+.I cpu-list
+引き数をとるオプションもある。
+この引き数を使って、カンマ区切りの CPU のリストを指定する。
+このリストは、各 CPU アドレスとアドレスの範囲を含むことができる。
+例えば、
+.B 0,5,7,9-11
+は、コマンドをアドレス 0, 5, 7, 9, 10, 11 の CPU に適用する。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-c , " \-\-configure " \fIcpu-list\fP
+.\"O Configure the specified CPUs.  Configuring a CPU means that the hypervisor
+.\"O takes a CPU from the CPU pool and assigns it to the virtual hardware on which
+.\"O your kernel runs.
+指定した CPU を設定する。
+CPU の設定とは、ハイパーバイザーが CPU を CPU プールから取得し、
+カーネルを実行する仮想ハードウェアに割り当てることを意味する。
+.TP
+.BR \-d , " \-\-disable " \fIcpu-list\fP
+.\"O Disable the specified CPUs.  Disabling a CPU means that the kernel sets it
+.\"O offline.
+指定した CPU を無効化する。
+CPU の無効化とは、カーネルが CPU をオフラインにすることを意味する。
+.TP
+.BR \-e , " \-\-enable " \fIcpu-list\fP
+.\"O Enable the specified CPUs.  Enabling a CPU means that the kernel sets it
+.\"O online.  A CPU must be configured, see \fB\-c\fR, before it can be enabled.
+指定した CPU を有効化する。
+CPU の有効化とは、カーネルが CPU をオフラインにすることを意味する。
+CPU を有効化する前に、CPU を設定しなければならない (\fB\-c\fR を参照)。
+.TP
+.BR \-g , " \-\-deconfigure " \fIcpu-list\fP
+.\"O Deconfigure the specified CPUs.  Deconfiguring a CPU means that the
+.\"O hypervisor removes the CPU from the virtual hardware on which the Linux
+.\"O instance runs and returns it to the CPU pool.  A CPU must be offline, see
+.\"O \fB\-d\fR, before it can be deconfigured.
+指定した CPU を戻し設定する。
+CPU の戻し設定は、ハイパーバイザーが Linux インスタンスが実行されている
+仮想ハードウェアから CPU を削除し、CPU を CPU プールに返すことを意味する。
+CPU を戻し設定する前に、CPU をオフラインにしなければならない (\fB\-d\fR を参照)。
+.TP
+.BR \-p , " \-\-dispatch " \fImode\fP
+.\"O Set the CPU dispatching
+.\"O .I mode
+.\"O (polarization).  This option has an effect only if your hardware architecture
+.\"O and hypervisor support CPU polarization.  Available
+.\"O .I modes
+.\"O are:
+CPU の分配
+.I mode
+(分極化: polarization) を設定する。
+このオプションは、使っているハードウェアアーキテクチャと
+ハイパーバイザーが、CPU の分極化をサポートする場合にのみ有効である。
+指定可能な
+.I mode
+は以下の通り:
+.RS 14
+.TP 12
+.PD 0
+.B horizontal
+.\"O The workload is spread across all available CPUs.
+負荷を全ての利用可能な CPU に分散する。
+.TP 12
+.B vertical
+.\"O The workload is concentrated on few CPUs.
+負荷を特定の CPU に集中させる。
+.RE
+.PD 1
+.TP
+.BR \-r , " \-\-rescan"
+.\"O Trigger a rescan of CPUs.  After a rescan, the Linux kernel recognizes
+.\"O the new CPUs.  Use this option on systems that do not
+.\"O automatically detect newly attached CPUs.
+CPU の再スキャンのトリガーを引く。
+再スキャン後、Linux カーネルは新しい CPU を認識できる。
+新しく追加された CPU を自動的に検知できないシステムでは、このオプションを使うこと。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+
+.\"O .SH EXIT STATUS
+.SH 返り値
+.\"O .B chcpu
+.\"O has the following exit status values:
+.B chcpu
+は以下の返り値を返す:
+.TP
+.B 0
+.\"O success
+成功
+.TP
+.B 1
+.\"O failure
+失敗
+.TP
+.B 64
+.\"O partial success
+部分的に成功
+.\"O .SH AUTHORS
+.SH 著者
+.MT heiko.carstens@de.ibm.com
+Heiko Carstens
+.ME
+.\"O .SH COPYRIGHT
+.SH 著作権
+Copyright IBM Corp. 2011
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR lscpu (1)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The chcpu command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+chcpu コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
