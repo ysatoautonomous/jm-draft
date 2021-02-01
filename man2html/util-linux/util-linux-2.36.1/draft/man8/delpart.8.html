@@ -1,0 +1,84 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of DELPART</TITLE>
+</HEAD><BODY>
+<H1>DELPART</H1>
+Section: System Administration (8)<BR>Updated: January 2015<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+delpart - パーティションをカーネルに忘れさせる。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>delpart</B>
+
+<I>device partition</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>delpart</B>
+
+は、指定された <I>device</I> の指定された <I>partition</I> (番号) を
+Linux カーネルに忘れるように要求する。
+
+このコマンドは「パーティション削除」の ioctl の簡単なラッパーである。
+<P>
+
+このコマンドはブロックデバイス上のパーティションを操作しない。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/addpart.8.html">addpart</A></B>(8),
+
+<B><A HREF="../man8/fdisk.8.html">fdisk</A></B>(8),
+
+<B><A HREF="../man8/parted.8.html">parted</A></B>(8),
+
+<B><A HREF="../man8/partprobe.8.html">partprobe</A></B>(8),
+
+<B><A HREF="../man8/partx.8.html">partx</A></B>(8)
+
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+delpart コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">関連項目</A><DD>
+<DT><A HREF="#lbAF">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:02:36 GMT, February 01, 2021
+</BODY>
+</HTML>
