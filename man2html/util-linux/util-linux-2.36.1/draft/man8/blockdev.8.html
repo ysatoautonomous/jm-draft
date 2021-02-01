@@ -1,0 +1,214 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of BLOCKDEV</TITLE>
+</HEAD><BODY>
+<H1>BLOCKDEV</H1>
+Section: System Administration (8)<BR>Updated: August 2010<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+blockdev - コマンドラインからブロックデバイスの ioctl を呼び出す
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>blockdev</B>
+
+[<B>-q</B>]
+
+[<B>-v</B>]
+
+<I>command</I>
+
+[<I>command</I>...]
+
+<I>device</I>
+
+[<I>device</I>...]
+
+<BR>
+
+<B>blockdev</B>
+
+<B>--report</B>
+
+[<I>device</I>...]
+
+<BR>
+
+<B>blockdev</B>
+
+<B>-h</B>|<B>-V</B>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>blockdev</B>
+
+ユーティリティは、
+コマンドラインからブロックデバイスの ioctl を呼び出すことを可能にする。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-q</B><DD>
+
+静かにする (訳注: 余分な表示をしない)。
+<DT><B>-v</B><DD>
+
+詳細に表示する。
+<DT><B>--report</B><DD>
+
+
+
+指定したデバイスのレポートを表示する。
+複数のデバイスを指定することもできる。
+何も指定しない場合、/proc/partitions のすべてのデバイスが表示される。
+パーティションの開始セクタ (StartSec) は 512 バイトセクタである。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>コマンド</H2>
+
+
+複数のデバイスと、複数のコマンドを指定できる。
+<DL COMPACT>
+<DT><B>--flushbufs</B><DD>
+
+バッファをフラッシュする。
+<DT><B>--getalignoff</B><DD>
+
+アライメントオフセットを取得する。
+<DT><B>--getbsz</B><DD>
+
+
+
+ブロックサイズをバイト単位で表示する。
+このサイズはデバイスのトポロジーを説明している訳ではない。
+このサイズはカーネルで内部的に使われ、(例えば) マウント時に
+ファイルシステムドライバで修正される可能性がある。
+<DT><B>--getdiscardzeroes</B><DD>
+
+discard zeroes サポートの状態を取得する。
+<DT><B>--getfra</B><DD>
+
+ファイルシステムの先読み (readahead) の大きさを 512 バイトセクタ単位で取得する。
+<DT><B>--getiomin</B><DD>
+
+最小 I/O サイズを取得する。
+<DT><B>--getioopt</B><DD>
+
+最適な I/O サイズを取得する。
+<DT><B>--getmaxsect</B><DD>
+
+リクエストの最大セクタを取得する。
+<DT><B>--getpbsz</B><DD>
+
+物理ブロック (セクタ) サイズを取得する。
+<DT><B>--getra</B><DD>
+
+先読みの大きさを (512 バイトセクタ単位で) 表示する。
+<DT><B>--getro</B><DD>
+
+読み込みだけが許可されているかの情報を取得する。
+デバイスが読み込みだけの許可である場合は、1 を表示する。
+それ以外の場合は、0 を表示する。
+<DT><B>--getsize64</B><DD>
+
+デバイスのサイズをバイト単位で表示する。
+<DT><B>--getsize</B><DD>
+
+デバイスのサイズ (32ビット!) をセクタ単位で表示する。
+廃止されているので、--getsz オプションを使うこと。
+<DT><B>--getss</B><DD>
+
+論理セクタサイズをバイト単位で表示する - 通常は 512 バイトである。
+<DT><B>--getsz</B><DD>
+
+デバイスのサイズを 512 バイトセクタ単位で取得する。
+<DT><B>--rereadpt</B><DD>
+
+パーティションテーブルの再読み込みを行う。
+<DT><B>--setbsz</B> <I>bytes</I><DD>
+
+
+
+ブロックサイズを設定する。
+このブロックサイズはブロックデバイスをオープンしている
+現在のファイルディスクリプターに限定されたものである。
+そのため、ブロックサイズの変更は blockdev がデバイスをオープンしている間だけ続き、
+blockdev が終了すると失われる。
+<DT><B>--setfra</B> <I>sectors</I><DD>
+
+ファイルシステムの先読みの大きさを設定する
+(2.6 カーネルの --setra と同様)。
+<DT><B>--setra</B> <I>sectors</I><DD>
+
+先読みの大きさを 512 バイトセクタ単位で設定する。
+<DT><B>--setro</B><DD>
+
+
+読み込みだけを許可するように設定する。
+デバイスへの現在のアクティブなアクセスは、この変更の影響を受けない。
+例えば、既に読み書きモードでマウントされているファイルシステムは
+影響を受けない。
+変更は再マウントされた後に適用される。
+<DT><B>--setrw</B><DD>
+
+読み書きを許可するように設定する。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>作者</H2>
+
+
+blockdev は Andries E. Brouwer によって書かれ、
+Karel Zak によって書き直された。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+blockdev コマンドは、util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">コマンド</A><DD>
+<DT><A HREF="#lbAG">作者</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 12:58:06 GMT, February 01, 2021
+</BODY>
+</HTML>
