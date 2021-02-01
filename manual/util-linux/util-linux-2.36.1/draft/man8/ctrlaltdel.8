@@ -1,0 +1,101 @@
+.\" Copyright 1992, 1993 Rickard E. Faith (faith@cs.unc.edu)
+.\" May be distributed under the GNU General Public License
+.\" 
+.\" Japanese Version Copyright (c) 2019-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Fri Nov  1 14:34:33 JST 2019
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Mon Feb  1 22:50:26 JST 2021 by Yuichi SATO
+.\" 
+.TH CTRLALTDEL 8 "October 2015" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O ctrlaltdel \- set the function of the Ctrl-Alt-Del combination
+ctrlaltdel \- Ctrl-Alt-Del の組み合わせの機能を設定する
+.\"O .SH SYNOPSIS
+.SH 書式
+.BR "ctrlaltdel hard" | soft
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O Based on examination of the
+.\"O .I linux/kernel/reboot.c
+.\"O code, it is clear that there are two supported functions that the
+.\"O Ctrl-Alt-Del sequence can perform.
+.I linux/kernel/reboot.c
+のコードでの実装に基づくと、
+Ctrl-Alt-Del のシーケンスで実行できる機能が 2 つあることは明白である。
+.TP
+.B hard
+.\"O Immediately reboot the computer without calling
+.\"O .BR sync (2)
+.\"O and without any other preparation.  This is the default.
+.BR sync (2)
+を呼び出さず、その他の準備もせずに、即時にコンピュータを再起動する。
+これがデフォルトである。
+.TP
+.B soft
+.\"O Make the kernel send the SIGINT (interrupt) signal to the
+.\"O .B init
+.\"O process (this is always the process with PID 1).  If this option is used,
+.\"O the
+.\"O .BR init (8)
+.\"O program must support this feature.  Since there are now several
+.\"O .BR init (8)
+.\"O programs in the Linux community, please consult the documentation for the
+.\"O version that you are currently using.
+カーネルに対して SIGINT (割り込み) シグナルを
+.B init
+(これは常に PID 1 のプロセスである) に送信させる。
+このオプションが使われる場合、
+.BR init (8)
+プログラムはこの機能をサポートしていなければならない。
+Linux コミュニティでは、現在いくつかの
+.BR init (8)
+プログラムがあるので、使用しているバージョンのドキュメントを
+参照してほしい。
+.PP
+.\"O When the command is run without any argument, it will display the current
+.\"O setting.
+このコマンドを引き数なしで実行すると、現在の設定を表示する。
+.PP
+.\"O The function of
+.\"O .B ctrlaltdel
+.\"O is usually set in the
+.\"O .I /etc/rc.local
+.\"O file.
+.B ctrlaltdel
+の機能は、
+.I /etc/rc.local
+ファイルで設定されることが多い。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH FILES
+.SH ファイル
+.I /etc/rc.local
+.\"O .SH AUTHORS
+.SH 著者
+.UR poe@daimi.aau.dk
+Peter Orbaek
+.UE
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR init (8),
+.BR systemd (1)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The ctrlaltdel command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+ctrlaltdel コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+から入手できる。
+.UE .
