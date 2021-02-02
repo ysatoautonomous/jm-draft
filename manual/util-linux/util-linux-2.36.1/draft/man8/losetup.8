@@ -1,0 +1,349 @@
+.\" Japanese Version Copyright (c) 1997-2000 NAKANO Takeo all rights reserved.
+.\" Translated Thu Nov 3 1997 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Updated & Modified Thu 19 Oct 2000 by NAKANO Takeo
+.\" Updated & Modified Wed May  5 16:10:26 JST 2004
+.\"         by Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated & Modified Sat May  7 00:26:26 JST 2005 by Yuichi SATO
+.\" Updated & Modified Mon Mar 23 00:48:55 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Wed Feb  3 01:24:08 JST 2021 by Yuichi SATO
+.\"
+.TH LOSETUP 8 "November 2015" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O losetup \- set up and control loop devices
+losetup \- loop デバイスの設定と制御を行う
+.\"O .SH SYNOPSIS
+.SH 書式
+.ad l
+.\"O Get info:
+情報を取得する:
+.sp
+.in +5
+.B losetup
+[\fIloopdev\fP]
+.sp
+.B losetup \-l
+.RB [ \-a ]
+.sp
+.B losetup \-j
+.I file
+.RB [ \-o
+.IR offset ]
+.sp
+.in -5
+.\"O Detach a loop device:
+loop デバイスを切断する:
+.sp
+.in +5
+.B "losetup \-d"
+.IR loopdev ...
+.sp
+.in -5
+.\"O Detach all associated loop devices:
+紐付けられた全ての loop デバイスを切断する:
+.sp
+.in +5
+.B "losetup \-D"
+.sp
+.in -5
+.\"O Set up a loop device:
+loop デバイスを設定する:
+.sp
+.in +5
+.B losetup
+.RB [ \-o
+.IR offset ]
+.RB [ \-\-sizelimit
+.IR size ]
+.RB [ \-\-sector\-size
+.IR size ]
+.in +8
+.RB [ \-Pr ]
+.RB [ \-\-show ]  " \-f" | \fIloopdev\fP
+.I file
+.sp
+.in -13
+.\"O Resize a loop device:
+loop デバイスをリサイズする:
+.sp
+.in +5
+.B "losetup \-c"
+.I loopdev
+.in -5
+.ad b
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B losetup
+.\"O is used to associate loop devices with regular files or block devices,
+.\"O to detach loop devices, and to query the status of a loop device.  If only the
+.\"O \fIloopdev\fP argument is given, the status of the corresponding loop
+.\"O device is shown.  If no option is given, all loop devices are shown.
+.B losetup
+は loop デバイスを通常のファイルやブロックデバイスと接続/切断したり、
+loop デバイスへの問い合わせを行うために用いられる。
+引き数として
+.I loop_device
+が与えられた場合に限り、対応する loop デバイスの状態が表示される。
+オプションが指定されない場合、全ての loop デバイスが表示される。
+.sp
+.\"O Note that the old output format (i.e., \fBlosetup \-a\fR) with comma-delimited
+.\"O strings is deprecated in favour of the \fB\-\-list\fR output format.
+古い出力フォーマット (つまり、\fBlosetup \-a\fR) の
+コンマ区切り文字列は廃れており、
+\fB\-\-list\fR 出力フォーマットが指示されている。
+.sp
+.\"O It's possible to create more independent loop devices for the same backing
+.\"O file.
+.\"O .B This setup may be dangerous, can cause data loss, corruption and overwrites.
+.\"O Use \fB\-\-nooverlap\fR with \fB\-\-find\fR during setup to avoid this problem.
+同じバッキングファイルで、より独立性の高い loop デバイスを作ることができる。
+.B このセットアップは危険であり、データの喪失・破損・上書きを
+.B 引き起こす場合がある。
+この問題を避けるには、セットアップ時に
+\fB\-\-nooverlap\fR と \fB\-\-find\fR を使うこと。
+.sp
+.\"O The loop device setup is not an atomic operation when used with \fB\-\-find\fP, and
+.\"O .B losetup
+.\"O does not protect this operation by any lock.  The number of attempts is
+.\"O internally restricted to a maximum of 16.  It is recommended to use for example
+.\"O .BR flock (1)
+.\"O to avoid a collision in heavily parallel use cases.
+\fB\-\-find\fP オプションを付けた場合、loop デバイスのセットアップは
+アトミックな操作ではなく、
+.B losetup
+は、この操作をロックで保護しない。
+操作の数は、内部的に最大 16 に制限されている。
+並列度が高い使い方の場合、衝突を避けるために、
+例えば、
+.BR flock (1)
+を使うことが推奨される。
+
+.\"O .SH OPTIONS
+.SH オプション
+.\"O The \fIsize\fR and \fIoffset\fR
+.\"O arguments may be followed by the multiplicative suffixes KiB (=1024),
+.\"O MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB (the "iB" is
+.\"O optional, e.g., "K" has the same meaning as "KiB") or the suffixes
+.\"O KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+\fIsize\fR と \fIoffset\fR
+引き数をバイトではなく、数値と倍数のサフィックス KiB (=1024), MiB (=1024*1024),
+さらに GiB, TiB, PiB, EiB, ZiB, YiB を続けて指定できる。
+("iB" はオプションであり、例えば "K" は "KiB" と同じ意味である)。
+もしくはサフィックス KB (=1000), MB (=1000*1000),
+さらに GB, TB, PB, EB, ZB, YB を続けて指定できる。
+.TP
+.BR \-a , " \-\-all"
+.\"O Show the status of all loop devices.  Note that not all information is accessible
+.\"O for non-root users.  See also \fB\-\-list\fR.  The old output format (as printed
+.\"O without \fB\-\-list)\fR is deprecated.
+全ての loop デバイスの状態を表示する。
+非 root ユーザでは全ての情報にアクセスできる訳ではない点に注意すること。
+\fB\-\-list\fR を参照すること。
+(\fB\-\-list\fR を指定せずに表示される) 古いフォーマットは廃れている。
+.TP
+.BR \-d , " \-\-detach " \fIloopdev\fR...
+.\"O Detach the file or device associated with the specified loop device(s). Note
+.\"O that since Linux v3.7 kernel uses "lazy device destruction".  The detach
+.\"O operation does not return EBUSY error anymore if device is actively used by
+.\"O system, but it is marked by autoclear flag and destroyed later.
+指定した loop デバイスを対応するファイルやデバイスから切断する。
+Linux v3.7 カーネルから「遅延デバイス破棄」を使っている点に注意すること。
+デバイスがシステムにアクティブに使用されている場合でも、
+切断操作は最早 EBUSY エラーを返さなくなり、
+自動クリア (autoclear) フラグでマークされ、後から破棄される。
+.TP
+.BR \-D , " \-\-detach\-all"
+.\"O Detach all associated loop devices.
+紐付けられた全ての loop デバイスを切断する。
+.TP
+.BR \-f , " \-\-find " "\fR[\fIfile\fR]"
+.\"O Find the first unused loop device.  If a \fIfile\fR argument is present, use
+.\"O the found device as loop device.  Otherwise, just print its name.
+使用されていない最初の loop デバイスを見つける。
+\fIfile\fR 引き数が指定されている場合は、そのデバイスを loop デバイスとして使用する。
+指定されていない場合は、loop デバイスの名前を表示する。
+.IP "\fB\-\-show\fP"
+.\"O Display the name of the assigned loop device if the \fB\-f\fP option and a
+.\"O \fIfile\fP argument are present.
+\fB\-f\fP オプションと \fIfile\fP 引き数が指定されている場合、
+紐付けられた loop デバイスの名前を表示する。
+.TP
+.BR \-L , " \-\-nooverlap"
+.\"O Check for conflicts between loop devices to avoid situation when the same
+.\"O backing file is shared between more loop devices. If the file is already used
+.\"O by another device then re-use the device rather than a new one. The option
+.\"O makes sense only with \fB\-\-find\fP.
+同じバッキングファイルが複数の loop デバイスで共有されている状況を避けるため、
+loop デバイス間の衝突をチェックする。
+ファイルが他のデバイスで既に使われている場合、
+新しいデバイスを作るのではなく、そのデバイスを再利用する。
+このオプションは \fB\-\-find\fP と一緒に指定された場合にのみ意味を持つ。
+.TP
+.BR \-j , " \-\-associated " \fIfile\fR " \fR[\fB\-o \fIoffset\fR]"
+.\"O Show the status of all loop devices associated with the given \fIfile\fR.
+指定された \fIfile\fR に紐付けられた全ての loop デバイスの状態を表示する。
+.TP
+.BR \-o , " \-\-offset " \fIoffset
+.\"O The data start is moved \fIoffset\fP bytes into the specified file or device.  The \fIoffset\fP
+.\"O may be followed by the multiplicative suffixes; see above.
+データの開始地点を指定したファイルやデバイスの \fIoffset\fP バイトに移動する。
+\fIoffset\fP は、上記の乗数のサフィックスを付けることができる。
+.IP "\fB\-\-sizelimit \fIsize\fP"
+.\"O The data end is set to no more than \fIsize\fP bytes after the data start.  The \fIsize\fP
+.\"O may be followed by the multiplicative suffixes; see above.
+データの終了地点を、データの開始地点から \fIsize\fP バイトにする。
+\fIsize\fP は、上記の乗数のサフィックスを付けることができる。
+.TP
+.BR \-b , " \-\-sector-size " \fIsize
+.\"O Set the logical sector size of the loop device in bytes (since Linux 4.14). The
+.\"O option may be used when create a new loop device as well as stand-alone command
+.\"O to modify sector size of the already existing loop device.
+loop デバイスの論理セクタサイズを指定したバイトにする (Linux 4.14 以降)。
+このオプションは、新しい loop デバイスを作成するときにも、
+既存の loop デバイスのセクタサイズを変更するときのスタンドアロンの
+コマンドにも使える。
+.TP
+.BR \-c , " \-\-set\-capacity " \fIloopdev
+.\"O Force the loop driver to reread the size of the file associated with the
+.\"O specified loop device.
+指定された loop デバイスに紐付けられたファイルのサイズを、
+loop ドライバに再読み込みさせる。
+.TP
+.BR \-P , " \-\-partscan"
+.\"O Force the kernel to scan the partition table on a newly created loop device.  Note that the
+.\"O partition table parsing depends on sector sizes.  The default is sector size is 512 bytes,
+.\"O otherwise you need to use the option \fB\-\-sector\-size\fR together with \fB\-\-partscan\fR.
+新しく作成された loop デバイスのパーティションテーブルを
+カーネルにスキャンさせる。
+パーティションテーブルの解析は、セクタサイズに依存する点に
+注意すること。
+デフォルトのセクタサイズは 512 バイトである。
+それ以外の値を使いたい場合は、オプション \fB\-\-sector\-size\fR を
+\fB\-\-partscan\fR とともに指定すること。
+.TP
+.BR \-r , " \-\-read\-only"
+.\"O Set up a read-only loop device.
+読み込みのみの loop デバイスを設定する。
+.TP
+.BR \-\-direct\-io [ =on | off ]
+.\"O Enable or disable direct I/O for the backing file.  The optional argument
+.\"O can be either \fBon\fR or \fBoff\fR.  If the argument is omitted, it defaults
+.\"O to \fBoff\fR.
+バッキングファイルの直接 I/O を有効または無効にする。
+オプションの引き数は \fBon\fR または \fBoff\fR のいずれかである。
+引き数が省略された場合、デフォルトは \fBoff\fR である。
+.TP
+.BR \-v , " \-\-verbose"
+.\"O Verbose mode.
+詳細なモード。
+.TP
+.BR \-l , " \-\-list"
+.\"O If a loop device or the \fB\-a\fR option is specified, print the default columns
+.\"O for either the specified loop device or all loop devices; the default is to
+.\"O print info about all devices.  See also \fB\-\-output\fP, \fB\-\-noheadings\fP,
+.\"O \fB\-\-raw\fP, and \fB\-\-json\fP.
+loop デバイス、または \fB\-a\fR オプションが指定された場合、
+指定された loop デバイス、または全てのデバイスの
+デフォルトの列が表示される。
+デフォルトでは全てのデバイスの情報を表示する。
+\fB\-\-output\fP, \fB\-\-noheadings\fP,
+\fB\-\-raw\fP, \fB\-\-json\fP を参照すること。
+.TP
+.BR \-O , " \-\-output " \fIcolumn\fR[,\fIcolumn\fR]...
+.\"O Specify the columns that are to be printed for the \fB\-\-list\fP output.
+.\"O Use \fB\-\-help\fR to get a list of all supported columns.
+\fB\-\-list\fP 出力で表示される列を指定する。
+サポートされる全ての列のリストを取得するには、\fB\-\-help\fR を使うこと。
+.TP
+.B \-\-output\-all
+.\"O Output all available columns.
+利用可能な全ての列を出力する。
+.TP
+.BR \-n , " \-\-noheadings"
+.\"O Don't print headings for \fB\-\-list\fP output format.
+\fB\-\-list\fP 出力フォーマットで、ヘッダを表示しない。
+.IP "\fB\-\-raw\fP"
+.\"O Use the raw \fB\-\-list\fP output format.
+生の \fB\-\-list\fP 出力フォーマットを使う。
+.TP
+.BR \-J , " \-\-json"
+.\"O Use JSON format for \fB\-\-list\fP output.
+\fB\-\-list\fP 出力で JSON フォーマットを使う。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+
+.\"O .SH ENCRYPTION
+.SH 暗号化
+.\"O .B Cryptoloop is no longer supported in favor of dm-crypt.
+.\"O .B For more details see cryptsetup(8).
+.B cryptoloop は既にサポートされておらず、dm-crypt が支持されている。
+.B より詳細は cryptsetup(8) を参照すること。
+
+.\"O .SH EXIT STATUS
+.SH 返り値
+.\"O .B losetup
+.\"O returns 0 on success, nonzero on failure.  When
+.\"O .B losetup
+.\"O displays the status of a loop device, it returns 1 if the device
+.\"O is not configured and 2 if an error occurred which prevented
+.\"O .B losetup
+.\"O determining the status of the device.
+.B losetup
+は成功すると 0 を返し、失敗すると 0 以外を返す。
+.B losetup
+に loop デバイスの状態を表示させる場合は、
+デバイスが設定されていなければ 1 を、
+デバイスの状態を決定できなくするようなエラーが起った場合は 2 を返す。
+
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.IP LOOPDEV_DEBUG=all
+.\"O enables debug output.
+デバッグ出力を有効にする。
+
+.\"O .SH FILES
+.SH ファイル
+.TP
+.I /dev/loop[0..N]
+.\"O loop block devices
+loop ブロックデバイス
+.TP
+.I /dev/loop-control
+.\"O loop control device
+loop コントロールデバイス
+.\"O .SH EXAMPLE
+.SH 例
+.\"O The following commands can be used as an example of using the loop device.
+以下の一連のコマンドは loop デバイスの使用例である。
+.nf
+.IP
+# dd if=/dev/zero of=~/file.img bs=1024k count=10
+# losetup \-\-find \-\-show ~/file.img
+/dev/loop0
+# mkfs \-t ext2 /dev/loop0
+# mount /dev/loop0 /mnt
+...
+# umount /dev/loop0
+# losetup \-\-detach /dev/loop0
+.fi
+.\"O .SH AUTHORS
+.SH 作者
+.\"O Karel Zak <kzak@redhat.com>, based on the original version from
+.\"O Theodore Ts'o <tytso@athena.mit.edu>
+Karel Zak <kzak@redhat.com> が
+Theodore Ts'o <tytso@athena.mit.edu> の
+オリジナルバージョンに基づいて書いた。
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The losetup command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+losetup コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
