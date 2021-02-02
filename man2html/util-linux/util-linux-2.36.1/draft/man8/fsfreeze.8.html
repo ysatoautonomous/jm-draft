@@ -1,0 +1,243 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of FSFREEZE</TITLE>
+</HEAD><BODY>
+<H1>FSFREEZE</H1>
+Section: System Administration (8)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+fsfreeze - ファイルシステム (Ext3/4, ReiserFS, JFS, XFS) へのアクセスを中断する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>fsfreeze</B>
+
+<B>--freeze</B>|<B>--unfreeze</B>
+
+<I>mountpoint</I>
+
+<P>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B>fsfreeze</B>
+
+はファイルシステムへのアクセスを中断または再開する。
+<P>
+
+
+
+<B>fsfreeze</B>
+
+はファイルシステムへの新しいアクセスを中止し、
+ディスク上に永続的なイメージを作成する。
+
+
+
+<B>fsfreeze</B>
+
+は、スナップショットの作成をサポートしているハードウェア RAID で使うことを意図している。
+<P>
+
+
+
+
+
+
+<B>fsfreeze</B>
+
+は
+<B>デバイス・マッパー</B>
+
+デバイスを必要としない。
+デバイス・マッパー (と LVM) は、スナップショットの作成を要求された場合、
+自動的にデバイス上のファイルシステムの凍結 (freeze) を行う。
+
+
+
+より詳細は
+<B><A HREF="../man8/dmsetup.8.html">dmsetup</A></B>(8)
+
+の man ページを参照すること。
+<P>
+
+
+
+
+
+<I>mountpoint</I>
+
+引き数は、ファイルシステムがマウントされるディレクトリのパス名である。
+
+
+ファイルシステムは、凍結するためにマウントされなければならない
+(<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+を参照すること)。
+<P>
+
+
+
+
+昔からの atime の挙動でファイルシステムがマウントされている場合、
+アクセス時刻の更新も中断される点に注意すること
+(マウントオプション <B>strictatime</B> の詳細ついては、
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+を参照すること)。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-f</B>,<B> --freeze</B>
+
+<DD>
+
+
+
+
+
+
+このオプションは、指定されたファイルシステムに対して、新たな変更が
+できないように凍結する。
+このオプションが選択されると、ファイルシステムで実行中の全ての
+トランザクションは完了まで許可される。
+新たな書き込みシステムコールと、
+ファイルシステムを変更するその他のシステムコールは停止される。
+また、全てのダーティなデータ、メタデータ、ログ情報がディスクに
+書き出される。
+凍結されたファイルシステムに書き込みを行おうとするプロセスは、
+ファイルシステムが凍結解除されるまで、ブロックされる。
+<P>
+
+
+
+
+凍結後であっても、ディスク上のファイルシステムは、
+アンリンクしている最中のファイルの情報を保持している。
+これらのファイルは、ファイルシステムの凍結が解除されるまで、
+またはスナップショットのクリーンマウントが完了するまで、
+アンリンクされない。
+<DT><B>-u</B>,<B> --unfreeze</B>
+
+<DD>
+
+
+
+このオプションを使うと、ファイルシステムの凍結を解除し、
+操作が継続できるようになる。
+凍結によってブロックされたファイルシステムの変更は、
+ブロックが解除され、完了できるようになる。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>ファイルシステムのサポート</H2>
+
+
+このコマンドは、ファイルシステムが凍結をサポートしている場合にのみ、
+動作する。
+
+(2016-12-18 時点で) 以下のファイルシステムがサポートしている:
+<B>btrfs</B>,
+
+<B>ext2/3/4</B>,
+
+<B>f2fs</B>,
+
+<B>jfs</B>,
+
+<B>nilfs2</B>,
+
+<B>reiserfs</B>,
+
+
+<B>xfs</B>.
+
+
+
+
+以前のリストは不完全で、より多くのファイルシステムがサポートされるように
+なった。
+ファイルシステムが凍結をサポートしているかが不確かな場合、
+簡単に知るには、小さいループバックマウント作成し、凍結をテストして
+みればよい。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>注意</H2>
+
+<P>
+
+
+
+この man ページは
+<B><A HREF="../man8/xfs_freeze.8.html">xfs_freeze</A></B>(8)
+
+に基づいている。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>著者</H2>
+
+
+Hajime Taira によって書かれた。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+fsfreeze コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">ファイルシステムのサポート</A><DD>
+<DT><A HREF="#lbAG">注意</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:24:55 GMT, February 02, 2021
+</BODY>
+</HTML>
