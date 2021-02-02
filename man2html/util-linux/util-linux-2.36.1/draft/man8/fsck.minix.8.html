@@ -1,0 +1,334 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of FSCK.MINIX</TITLE>
+</HEAD><BODY>
+<H1>FSCK.MINIX</H1>
+Section: System Administration (8)<BR>Updated: June 2015<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+fsck.minix - Minix ファイルシステムの整合性をチェックする
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>fsck.minix</B>
+
+[options]
+<I>device</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B>fsck.minix</B>
+
+は Linux MINIX ファイルシステムの整合性チェックを行う。
+<P>
+
+
+
+
+
+
+このプログラムでは、
+ファイルシステムがアクティブではないことを前提としている。
+マウントされたデバイスに対しては、
+誰も書き込みを行っていないという確信が持てなければ、
+<B>fsck.minix</B>
+
+を用いるべきではない。
+そしてカーネルがファイル検索を行うときに、
+書き込みを行うかもしれないことに注意。
+<P>
+
+
+<I>device</I> 名は通常以下のようなものである:
+<DL COMPACT><DT><DD>
+<TABLE>
+<TR VALIGN=top><TD>/dev/hda[1-63]</TD><TD>IDE disk 1<BR></TD></TR>
+<TR VALIGN=top><TD>/dev/hdb[1-63]</TD><TD>IDE disk 2<BR></TD></TR>
+<TR VALIGN=top><TD>/dev/sda[1-15]</TD><TD>SCSI disk 1<BR></TD></TR>
+<TR VALIGN=top><TD>/dev/sdb[1-15]</TD><TD>SCSI disk 2<BR></TD></TR>
+</TABLE>
+
+</DL>
+
+<P>
+
+
+
+
+
+
+
+
+ファイルシステムを変更すると、つまり修復すると、
+<B>fsck.minix</B>
+
+は「ファイルシステムが変更されました」と表示し、
+<B><A HREF="../man2/sync.2.html">sync</A></B>(2)
+
+を 3 回行ってから終了する。
+Linux  は今のところ raw デバイスを持たないので、
+このときリブートする必要は<I>ない</I>。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>警告</H2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B>fsck.minix</B>
+
+をマウントされているファイルシステムに<B>用いるべきではない</B>。
+マウントされているファイルシステムに
+<B>fsck.minix</B>
+
+を用いるのは非常に危険である。
+まだ使用されているファイルを削除してしまう可能性があるので、
+まったく問題のないファイルシステムに深刻な障害を与えてしまうかもしれない!
+どうしても
+<B>fsck.minix</B>
+
+をマウントされたファイルシステムに用いなければならない場合
+例えばルートファイルシステムなどは、
+誰もディスクへの書き込みを行っていないこと、
+及び削除を待っている「ゾンビ」ファイルが存在しないことを、
+よくよく確かめてからにすること。
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-l</B>, <B>--list</B><DD>
+
+全てのファイル名をリストする。
+<DT><B>-r</B>, <B>--repair</B><DD>
+
+復旧作業を対話的に行う。
+<DT><B>-a</B>, <B>--auto</B><DD>
+
+
+
+
+
+自動的に復旧作業を行う。
+<B>--repair</B>
+
+も指定したことになり、全ての質問に対してデフォルトの回答をする。
+ファイルシステムの被害が大きい場合には、
+このオプションを用いるのは非常に危険である。
+<DT><B>-v</B>, <B>--verbose</B><DD>
+
+饒舌な表示をする。
+<DT><B>-s</B>, <B>--super</B><DD>
+
+スーパーブロックの情報を出力する。
+<DT><B>-m</B>, <B>--uncleared</B><DD>
+
+MINIX 的な &quot;mode not cleared&quot; の警告を有効にする。
+<DT><B>-f</B>, <B>--force</B><DD>
+
+
+ファイルシステムに有効マークが付いている場合にも強制的にチェックする。
+このマークは、ファイルシステムがアンマウントされるときにカーネルが付ける。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>診断メッセージ</H2>
+
+
+
+多くの診断メッセージが存在する。
+ここに紹介するのは、通常の利用でよく見られるだろうものである。
+<P>
+<P>
+
+
+
+
+
+
+
+デバイスが存在しないと、
+<B>fsck.minix</B>
+
+は「スーパーブロックを読み込むことができません」と表示する。
+デバイスが存在するが MINIX ファイルシステムではない場合は、
+<B>fsck.minix</B>
+
+は「スーパーブロックに不正なマジックナンバーがあります」と表示する。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+
+<B>fsck.minix</B>
+
+の返り値は、以下の和となる:
+<P>
+
+<DL COMPACT><DT><DD>
+
+<DL COMPACT>
+<DT><B>0</B>
+
+<DD>
+
+エラーなし
+<DT><B>3</B>
+
+<DD>
+
+
+ファイルシステムのエラーが修正された。
+ファイルシステムがマウントされていた場合はシステムを
+リブートすべきである。
+<DT><B>4</B>
+
+<DD>
+
+ファイルシステムのエラーが修正されずに残っている
+<DT><B>7</B>
+
+<DD>
+
+返り値 3 と 4 の組み合わせ。
+<DT><B>8</B>
+
+<DD>
+
+動作エラー
+<DT><B>16</B>
+
+<DD>
+
+利用法または文法のエラー
+
+</DL>
+</DL>
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+
+Linus Torvalds
+
+<BR>
+
+
+返り値:
+
+Rik Faith
+
+<BR>
+
+
+ファイルシステム有効フラグのサポート:
+
+Dr. Wettstein
+
+<BR>
+
+
+マウントされているファイルシステムの fsck を避けるためのチェック:
+
+Daniel Quinlan
+
+<BR>
+
+
+Minix v2 ファイルシステムのサポート:
+
+Andreas Schwab
+
+
+その更新:
+
+Nicolai Langfeldt
+
+<BR>
+
+
+移植性向上のためのパッチ:
+
+Russell King
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/fsck.8.html">fsck</A></B>(8),
+
+<B><A HREF="../man8/fsck.ext2.8.html">fsck.ext2</A></B>(8),
+
+<B><A HREF="../man8/mkfs.8.html">mkfs</A></B>(8),
+
+<B><A HREF="../man8/mkfs.ext2.8.html">mkfs.ext2</A></B>(8),
+
+<B><A HREF="../man8/mkfs.minix.8.html">mkfs.minix</A></B>(8),
+
+<B><A HREF="../man8/reboot.8.html">reboot</A></B>(8)
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+fsck.minix コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手可能である。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">警告</A><DD>
+<DT><A HREF="#lbAF">オプション</A><DD>
+<DT><A HREF="#lbAG">診断メッセージ</A><DD>
+<DT><A HREF="#lbAH">返り値</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:07:48 GMT, February 02, 2021
+</BODY>
+</HTML>
