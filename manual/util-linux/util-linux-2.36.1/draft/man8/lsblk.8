@@ -1,0 +1,377 @@
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat Apr 25 22:57:49 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Wed Feb  3 21:07:19 JST 2021 by Yuichi SATO
+.\"
+.TH LSBLK 8 "February 2013" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O lsblk \- list block devices
+lsblk \- ブロックデバイスをリスト表示する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B lsblk
+[options]
+.RI [ device ...]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B lsblk
+.\"O lists information about all available or the specified block devices.  The
+.\"O .B lsblk
+.\"O command reads the
+.\"O .B sysfs
+.\"O filesystem and
+.\"O .B udev db
+.\"O to gather information. If the udev db is not available or lsblk is compiled without udev support than it
+.\"O tries to read LABELs, UUIDs and filesystem types from the block device. In this case root permissions
+.\"O are necessary.
+.B lsblk
+は全ての利用可能なブロックデバイス、または指定されたブロックデバイスの
+情報をリスト表示する。
+.B lsblk
+コマンドは
+.B sysfs
+ファイルシステムと
+.B udev db
+を読んで、情報を集める。
+udev db が利用可能出ない場合、または lsblk が udev のサポートなしで
+コンパイルされている場合、ブロックデバイスから LABEL, UUID, ファイルシステムタイプを読み込む。
+この場合 root 権限が必要である。
+.PP
+.\"O The command prints all block devices (except RAM disks) in a tree-like format
+.\"O by default.  Use
+.\"O .B "lsblk \-\-help"
+.\"O to get a list of all available columns.
+このコマンドは、デフォルトでは (RAM ディスク以外の) 全てのブロックデバイスを
+ツリー状の形式で表示する。
+全ての利用可能なカラムのリストを取得するには、
+.B "lsblk \-\-help"
+を使うこと。
+.PP
+.\"O The default output, as well as the default output from options like
+.\"O .B \-\-fs
+.\"O and
+.\"O .BR \-\-topology ,
+.\"O is subject to change.  So whenever possible, you should avoid using default
+.\"O outputs in your scripts.  Always explicitly define expected columns by using
+.\"O .B \-\-output
+.\"O .I columns-list
+.\"O and
+.\"O .B \-\-list
+.\"O in environments where a stable output is required.
+デフォルトの出力や、
+.B \-\-fs
+と
+.B \-\-topology
+のようなオプションによるデフォルトの出力は、変更される可能性がある。
+可能な限り、スクリプト内ではデフォルトの出力を使わないべきである。
+固定した出力が必要な場合、その環境では
+.B \-\-output
+.I columns-list
+と
+.B \-\-list
+を使って、期待する列を常に明示的に定義するべきである。
+.PP
+.\"O Note that
+.\"O .B lsblk
+.\"O might be executed in time when
+.\"O .B udev
+.\"O does not have all information about recently added or modified devices yet. In this
+.\"O case it is recommended to use
+.\"O .B "udevadm settle"
+.\"O before lsblk to synchronize with udev.
+最近追加または変更されたデバイスについての全ての情報を、
+.B udev
+がまだ持っていない状態で、
+.B lsblk
+が実行される可能性がある点に注意すること。
+この場合、lsblk が udev と同期する前に、
+.B "udevadm settle"
+を使うことが推奨される。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-a , " \-\-all"
+.\"O Also list empty devices and RAM disk devices.
+空のデバイスと RAM ディスクデバイスもリスト表示する。
+.TP
+.BR \-b , " \-\-bytes"
+.\"O Print the SIZE column in bytes rather than in a human-readable format.
+SIZE カラムを人が読みやすい形式ではなくバイト単位で表示する。
+.TP
+.BR \-D , " \-\-discard"
+.\"O Print information about the discarding capabilities (TRIM, UNMAP) for each device.
+各デバイスの破棄ケーパビリティ (discarding capabilities) (TRIM, UNMAP) の情報を表示する。
+.TP
+.BR \-d , " \-\-nodeps"
+.\"O Do not print holder devices or slaves.  For example, \fBlsblk \-\-nodeps /dev/sda\fR prints
+.\"O information about the sda device only.
+ホルダーデバイスとスレーブを表示しない。
+例えば、\fBlsblk \-\-nodeps /dev/sda\fR は、sda デバイスのみの情報を表示する。
+.TP
+.BR \-E , " \-\-dedup " \fIcolumn\fP
+.\"O Use \fIcolumn\fP as a de-duplication key to de-duplicate output tree. If the
+.\"O key is not available for the device, or the device is a partition and parental
+.\"O whole-disk device provides the same key than the device is always printed.
+\fIcolumn\fP を重複排除 (de-duplication) のキーとして、
+出力されるツリーを重複排除する。
+キーがデバイスで利用可能でない場合、またはデバイスが
+パーティションの場合、デバイスがいつも表示するキーではなく、
+親のディスクデバイス全体で同じキーを提供する。
+
+.\"O The usual use case is to de-duplicate output on system multi-path devices, for
+.\"O example by \fB\-E WWN\fR.
+一般的な使い方は、システムのマルチパスデバイスの出力の重複排除
+である。
+例えば、\fB\-E WWN\fR を使う。
+.TP
+.BR \-e , " \-\-exclude " \fIlist\fP
+.\"O Exclude the devices specified by the comma-separated \fIlist\fR of major device numbers.
+メジャーデバイス番号のカンマ区切りのリスト \fIlist\fR で指定されたデバイスを除外する。
+.\"O Note that RAM disks (major=1) are excluded by default if \fB\-\-all\fR is not specified.
+\fB\-\-all\fR が指定されない限り、RAM ディスク (メジャー番号=1) は
+除外される点に注意すること。
+.\"O The filter is applied to the top-level devices only. This may be confusing for
+.\"O \fB\-\-list\fR output format where hierarchy of the devices is not obvious.
+このフィルターはトップレベルのデバイスにのみ適用される。
+これは、デバイスの階層が明確でない \fB\-\-list\fR 出力形式では、戸惑うかもしれない。
+.TP
+.BR \-f , " \-\-fs"
+.\"O Output info about filesystems.  This option is equivalent to
+.\"O .BR \-o\ NAME,FSTYPE,LABEL,UUID,FSAVAIL,FSUSE%,MOUNTPOINT .
+ファイルシステムについての情報を出力する。
+このオプションは
+.BR \-o\ NAME,FSTYPE,LABEL,UUID,FSAVAIL,FSUSE%,MOUNTPOINT
+と同じである。
+.\"O The authoritative information about filesystems and raids is provided by the
+.\"O .BR blkid (8)
+.\"O command.
+ファイルシステムと RAID についての信頼できる情報は、
+.BR blkid (8)
+コマンドで提供される。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+.BR \-I , " \-\-include " \fIlist\fP
+.\"O Include devices specified by the comma-separated \fIlist\fR of major device numbers.
+メジャーデバイス番号のカンマ区切りのリスト \fIlist\fR で指定されたデバイスを含める。
+.\"O The filter is applied to the top-level devices only. This may be confusing for
+.\"O \fB\-\-list\fR output format where hierarchy of the devices is not obvious.
+このフィルターはトップレベルのデバイスにのみ適用される。
+これは、デバイスの階層が明確でない \fB\-\-list\fR 出力形式では、戸惑うかもしれない。
+.TP
+.BR \-i , " \-\-ascii"
+.\"O Use ASCII characters for tree formatting.
+ツリー形式に ASCII 文字を使う。
+.TP
+.BR \-J , " \-\-json"
+.\"O Use JSON output format.  It's strongly recommended to use \fB\-\-output\fR and
+.\"O also \fB\-\-tree\fR if necessary.
+JSON 出力形式を使う。
+\fB\-\-output\fR を使うことが強く推奨される。
+また、必要であれば \fB\-\-tree\fR も使うこと。
+.TP
+.BR \-l , " \-\-list"
+.\"O Produce output in the form of a list. The output does not provide information
+.\"O about relationships between devices and since version 2.34 every device is
+.\"O printed only once if \fB\-\-pairs\fR or \fB\-\-raw\fR not specified (the
+.\"O parsable outputs are maintained in backwardly compatible way).
+リスト形式で出力する。
+デバイス間の関係の情報は提供されず、バージョン 2.34 以降では
+\fB\-\-pairs\fR または \fB\-\-raw\fR が指定されない場合、
+各デバイスは 1 度しか表示されない
+(解析しやすい出力形式は、後方互換のために残されている)。
+.TP
+.BR \-M , " \-\-merge"
+.\"O Group parents of sub-trees to provide more readable output for RAIDs and
+.\"O Multi-path devices. The tree-like output is required.
+RAID とマルチパスデバイスの出力を読みやすくするため、
+サブツリーの親をグループ化する。
+ツリー状の出力が必要である。
+.TP
+.BR \-m , " \-\-perms"
+.\"O Output info about device owner, group and mode.  This option is equivalent to
+.\"O .BR \-o\ NAME,SIZE,OWNER,GROUP,MODE .
+デバイスの所有者、グループ、モードの情報を出力する。
+このオプションは
+.B \-o\ NAME,SIZE,OWNER,GROUP,MODE
+と同じである。
+.TP
+.BR \-n , " \-\-noheadings"
+.\"O Do not print a header line.
+ヘッダ行を表示しない。
+.TP
+.BR \-o , " \-\-output " \fIlist\fP
+.\"O Specify which output columns to print.  Use
+.\"O .B \-\-help
+.\"O to get a list of all supported columns.  The columns may affect tree-like output.
+.\"O The default is to use tree for the column 'NAME' (see also \fB\-\-tree\fR).
+表示する出力カラムを指定する
+全てのサポートされるカラムのリストを取得するには、。
+.B \-\-help
+を使うこと。
+このカラムはツリー状の出力には影響しない。
+デフォルトではカラム 'NAME' についてツリーを作る (\fB\-\-tree\fR も参照すること)。
+
+.\"O The default list of columns may be extended if \fIlist\fP is
+.\"O specified in the format \fI+list\fP (e.g., \fBlsblk \-o +UUID\fP).
+\fIlist\fP を \fI+list\fP の形式にすることで、カラムのデフォルトのリストを拡張できる
+(例えば、\fBlsblk \-o +UUID\fP)。
+.TP
+.BR \-O , " \-\-output\-all"
+.\"O Output all available columns.
+全ての利用可能なカラムを出力する。
+.TP
+.BR \-P , " \-\-pairs"
+.\"O Produce output in the form of key="value" pairs.  The output lines are still ordered by
+.\"O dependencies.  All potentially unsafe characters are hex-escaped (\\x<code>).
+key="value" のペアの形式で出力する。
+出力行は、依存関係の順になっている。
+全ての潜在的に安全でない文字は 16 進数エスケープされる (\\x<code>)。
+.TP
+.BR \-p , " \-\-paths"
+.\"O Print full device paths.
+完全なデバイスパスを表示する。
+.TP
+.BR \-r , " \-\-raw"
+.\"O Produce output in raw format.  The output lines are still ordered by
+.\"O dependencies.  All potentially unsafe characters are hex-escaped
+.\"O (\\x<code>) in the NAME, KNAME, LABEL, PARTLABEL and MOUNTPOINT columns.
+生の形式で出力する。
+出力行は、依存関係の順になっている。
+NAME, KNAME, LABEL, PARTLABEL, MOUNTPOINT カラムについて、
+全ての潜在的に安全でない文字は 16 進数エスケープされる (\\x<code>)。
+.TP
+.BR \-S , " \-\-scsi"
+.\"O Output info about SCSI devices only.  All partitions, slaves and holder devices are ignored.
+SCSI デバイスのみの情報を出力する。
+全てのパーティションについて、スレーブとホルダーデバイスが
+無視される。
+.TP
+.BR \-s , " \-\-inverse"
+.\"O Print dependencies in inverse order. If the \fB\-\-list\fR output is requested then
+.\"O the lines are still ordered by dependencies.
+依存関係を逆順に表示する。
+\fB\-\-list\fR 出力の場合、各行は依存関係の順のままである。
+.TP
+.BR \-T , " \-\-tree" [ =\fIcolumn ]
+.\"O Force tree-like output format.  If \fIcolumn\fP is specified, then a tree is printed in the column.
+.\"O The default is NAME column.
+ツリー状の出力形式にする。
+\fIcolumn\fP が指定された場合、そのカラムでツリーが表示される。
+デフォルトは NAME カラムである。
+.TP
+.BR \-t , " \-\-topology"
+.\"O Output info about block-device topology.
+.\"O This option is equivalent to
+.\"O .BR -o\ NAME,ALIGNMENT,MIN-IO,OPT-IO,PHY-SEC,LOG-SEC,ROTA,SCHED,RQ-SIZE,RA,WSAME .
+ブロックデバイスのトポロジーを出力する。
+このオプションは
+.B -o\ NAME,ALIGNMENT,MIN-IO,OPT-IO,PHY-SEC,LOG-SEC,ROTA,SCHED,RQ-SIZE,RA,WSAME
+と同じである。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-x , " \-\-sort " \fIcolumn\fP
+.\"O Sort output lines by \fIcolumn\fP. This option enables \fB\-\-list\fR output format by default.
+.\"O It is possible to use the option \fI\-\-tree\fP to force tree-like output and
+.\"O than the tree branches are sorted by the \fIcolumn\fP.
+\fIcolumn\fP で出力行をソートする。
+このオプションは、デフォルトで \fB\-\-list\fR 出力形式を有効にする。
+オプション \fI\-\-tree\fP を使って、ツリー状の出力にすることもできる。
+この場合、ツリーの枝 (branch) は \fIcolumn\fP でソートされる。
+.TP
+.BR \-z , " \-\-zoned"
+.\"O Print the zone model for each device.
+各デバイスのゾーンモデルを表示する。
+.TP
+.BR " \-\-sysroot " \fIdirectory\fP
+.\"O Gather data for a Linux instance other than the instance from which the lsblk
+.\"O command is issued.  The specified directory is the system root of the Linux
+.\"O instance to be inspected.  The real device nodes in the target directory can
+.\"O be replaced by text files with udev attributes.
+lsblk コマンドが実行された Linux インスタンス以外のインスタンスのデータを集める。
+指定するディレクトリは、調査する Linux インスタンスのシステムルートである。
+対象ディレクトリの実際のデバイスノードは、
+udev 属性が書かれたテキストファイルで置換される。
+
+.\"O .SH EXIT STATUS
+.SH 返り値
+.IP 0
+.\"O success
+成功
+.IP 1
+.\"O failure
+失敗
+.IP 32
+.\"O none of specified devices found
+指定されたデバイスが何も見つからなかった
+.IP 64
+.\"O some specified devices found, some not found
+指定されたデバイスが一部は見つかり、一部は見つからなかった
+
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.IP LSBLK_DEBUG=all
+.\"O enables lsblk debug output.
+lsblk のデバッグ出力を有効にする。
+.IP LIBBLKID_DEBUG=all
+.\"O enables libblkid debug output.
+libblkid のデバッグ出力を有効にする。
+.IP LIBMOUNT_DEBUG=all
+.\"O enables libmount debug output.
+libmount のデバッグ出力を有効にする。
+.IP LIBSMARTCOLS_DEBUG=all
+.\"O enables libsmartcols debug output.
+libsmartcols のデバッグ出力を有効にする。
+.IP LIBSMARTCOLS_DEBUG_PADDING=on
+.\"O use visible padding characters. Requires enabled LIBSMARTCOLS_DEBUG.
+表示される埋め文字を使う。
+LIBSMARTCOLS_DEBUG を有効にする必要がある。
+.\"O .SH NOTES
+.SH 注意
+.\"O For partitions, some information (e.g. queue attributes) is inherited from the
+.\"O parent device.
+パーティションについて、いくつかの情報 (例えば、キュー属性) は親のデバイスから継承される。
+.PP
+.\"O The
+.\"O .B lsblk
+.\"O command needs to be able to look up each block device by major:minor numbers,
+.\"O which is done by using
+.\"O .IR /sys/dev/block .
+.B lsblk
+コマンドは各ブロックデバイスをメジャー:マイナー番号で探せる必要がある。
+これは
+.I /sys/dev/block
+を使って行われる。
+.\"O This sysfs block directory appeared in kernel 2.6.27 (October 2008).
+.\"O In case of problems with a new enough kernel, check that CONFIG_SYSFS
+.\"O was enabled at the time of the kernel build.
+sysfs ブロックディレクトリはカーネル 2.6.27 (2008 年 10 月) で登場した。
+充分に新しいカーネルで問題がある場合、
+カーネルのビルド時に CONFIG_SYSFS が有効になってるかをチェックすること。
+
+.\"O .SH AUTHORS
+.SH 著者
+.nf
+Milan Broz <mbroz@redhat.com>
+Karel Zak <kzak@redhat.com>
+.fi
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR ls (1),
+.BR blkid (8),
+.BR findmnt (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The lsblk command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+lsblk コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
