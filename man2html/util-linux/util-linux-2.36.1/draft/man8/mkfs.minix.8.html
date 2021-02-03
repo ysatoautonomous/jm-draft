@@ -1,0 +1,194 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MKFS.MINIX</TITLE>
+</HEAD><BODY>
+<H1>MKFS.MINIX</H1>
+Section: System Administration (8)<BR>Updated: June 2015<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+mkfs.minix - MINIX ファイルシステムを作成する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>mkfs.minix</B>
+
+[options]
+<I>device</I>
+
+[<I>size-in-blocks</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B>mkfs.minix</B>
+
+は Linux MINIX ファイルシステムをデバイス
+(通常はディスクパーティション) 上に作成する。
+<P>
+
+
+
+
+<I>device</I>
+
+は通常以下のようなものである:
+<P>
+<PRE>
+<DL COMPACT><DT><DD>/dev/hda[1-8] (IDE disk 1)
+/dev/hdb[1-8] (IDE disk 2)
+/dev/sda[1-8] (SCSI disk 1)
+/dev/sdb[1-8] (SCSI disk 2)
+</DL>
+</PRE>
+
+<P>
+
+
+デバイスはブロックデバイス、またはイメージファイルであるが、
+強制はされない。
+キャラクタデバイス上に作るのは楽しいものではないと予想できる :-).
+<P>
+
+
+
+
+
+
+
+
+<I>size-in-blocks</I>
+
+引数は、ファイルシステムのサイズの希望値をブロック単位で指定する。
+これは、もっぱら過去との互換性の維持を目的とした機能である。
+省略されると、サイズは自動的に決定される。
+11 以上か、65535 以下の値だけが指定可能である。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-c</B>, <B>--check</B><DD>
+
+
+ファイルシステムを作成する前に、
+デバイスに不良ブロックがないかチェックする。
+見付かったら、ブロックカウントを表示する。
+<DT><B>-n</B>, <B>--namelength</B> <I>length</I><DD>
+
+
+
+ファイル名の最大の長さを指定する。
+現在指定できるのは、バージョン 1 と 2 では 14 または 30 だけである。
+バージョン 3 では 60 だけである。
+デフォルトは 30 である。
+<DT><B>-i</B>, <B>--inodes</B> <I>number</I><DD>
+
+ファイルシステムの i-ノードの個数を指定する。
+<DT><B>-l</B>, <B>--badblocks</B> <I>filename</I><DD>
+
+
+
+
+<I>filename</I>
+
+から不良ブロックのリストを読み込む
+ファイルの一行に不良ブロックをひとつ書く。
+読み込んだ不良ブロックのカウントが表示される。
+<DT><B>-1</B>
+
+<DD>
+
+Minix version 1 ファイルシステムを作成する。
+これがデフォルトである。
+<DT><B>-2</B>,<B> -v</B>
+
+<DD>
+
+Minix version 2 ファイルシステムを作成する。
+<DT><B>-3</B>
+
+<DD>
+
+Minix version 3 ファイルシステムを作成する。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+
+バージョン情報を表示して、終了する。
+長いオプションは、他のオプションと組み合わせて使うことができない。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+
+<B>mkfs.minix</B>
+
+の返り値は以下のどれかである:
+<DL COMPACT>
+<DT>0<DD>
+
+エラーなし
+<DT>8<DD>
+
+動作エラー
+<DT>16<DD>
+
+利用法または文法のエラー
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/fsck.8.html">fsck</A></B>(8),
+
+<B><A HREF="../man8/mkfs.8.html">mkfs</A></B>(8),
+
+<B><A HREF="../man8/reboot.8.html">reboot</A></B>(8)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+mkfs.minix コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:32:13 GMT, February 03, 2021
+</BODY>
+</HTML>
