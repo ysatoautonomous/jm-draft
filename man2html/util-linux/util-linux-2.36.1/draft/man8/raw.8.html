@@ -1,0 +1,252 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of RAW</TITLE>
+</HEAD><BODY>
+<H1>RAW</H1>
+Section: System Administration (8)<BR>Updated: August 1999<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+raw - Linux raw キャラクタデバイスをバインドする
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>raw</B>
+
+<I>/dev/raw/raw&lt;N&gt; &lt;major&gt; &lt;minor&gt;</I>
+
+<P>
+
+<B>raw</B>
+
+<I>/dev/raw/raw&lt;N&gt; /dev/&lt;blockdev&gt;</I>
+
+<P>
+
+<B>raw -q</B>
+
+<I>/dev/raw/raw&lt;N&gt;</I>
+
+<P>
+
+<B>raw -qa</B>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+<B>raw</B>
+
+は Linux raw キャラクタデバイスを
+ブロックデバイスにバインドするために用いられる。
+どんなブロックデバイスでも利用できる。
+またバインドする時にデバイスドライバがアクセス可能でなくてもかまわない
+(つまりオンデマンドでロードされるカーネルモジュールであってもかまわない)。 
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B>raw</B>
+
+の利用法には 2 つのモードがある。一つは raw デバイスのバインドを
+設定する動作であり、もう一つは存在しているバインドに対する問合わせをする
+動作である。 raw デバイスの設定をするときは、
+<I>/dev/raw/raw&lt;N&gt;</I>
+
+はファイルシステム中に存在している raw デバイスのノードのデバイス名である。
+バインド先のブロックデバイスは、
+<I>major</I> と <I>minor</I>
+
+番号で示しても良いし、存在しているブロックデバイスファイルのパス名
+<I>/dev/&lt;blockdev&gt;</I>
+
+で示しても良い。
+<P>
+
+
+
+
+
+
+
+既に存在しているバインドに対して、
+<I>-q</I>
+
+オプションによって問合わせを行うことができる。
+この際には、問合わせる raw デバイスのファイル名を指定しても良いし、
+<I>-a</I>
+
+オプションを用いればバインド済みの全ての raw デバイスが対象となる。
+<P>
+
+
+major と minor を 0 に指定することにより、アンバインドすることができる。
+<P>
+
+
+
+
+
+
+
+
+
+いったん raw デバイスをブロックデバイスにバインドすると、
+その raw デバイスはバインド先のブロックデバイスと同じように
+オープンしたり read/write できる。しかし raw デバイスの動作は
+ブロックデバイスと全く同じではない。特に違う点としては、
+raw デバイスへのアクセスは、
+カーネルのブロックバッファキャッシュを全く用いない。
+全ての I/O は、その I/O を行ったプロセスのアドレス空間に対して
+直に行われる。もし下層にあるブロックデバイスドライバが
+DMA をサポートしていると、データコピーを全く行わなくても
+I/O を完了することができる。
+<P>
+
+
+
+
+
+
+
+raw I/O では、プロセスのアドレス空間が割り付けられた物理メモリに
+直接的なハードウェアアクセスを行うので、例外的な制限がいくつか存在する。
+全ての I/O はメモリやディスク上で正しくアラインされていなければならない。
+すなわちディスク上のセクタ先頭から始まり、セクタ長の整数倍で、
+かつ仮想メモリ上のデータバッファもセクタ長の整数倍でなければならない。
+ほとんどのデバイスでは、セクタのサイズは 512 バイトである。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-q</B>, <B>--query</B><DD>
+
+
+
+問合わせモード。
+<B>raw</B>
+
+は新たなバインドを設定する代わりに、
+既存のバインドに対する問合わせを行う。
+<DT><B>-a</B>, <B>--all</B><DD>
+
+
+
+<B>-q</B>
+
+オプションとともに用い、既存のバインド済み
+raw デバイスすべてに対して問合わせを行う。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>注意</H2>
+
+
+
+
+アプリケーションは、raw デバイスを使うよりも、
+/dev/sda1 のようなデバイスを O_DIRECT フラグ付きで
+<B><A HREF="../man2/open.2.html">open</A></B>(2)
+
+するべきである。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>バグ</H2>
+
+
+
+
+
+
+Linux の
+<B><A HREF="../man1/dd.1.html">dd</A></B>(1)
+
+コマンドは、<B>bs=</B> オプションなしで使うべきである。
+また、ブロックサイズはデバイスのセクタサイズ (通常は 512 バイト) の
+倍数である必要がある。
+さもないと、
+<B><A HREF="../man1/dd.1.html">dd</A></B>(1)
+
+は &quot;Invalid Argument&quot; メッセージ (EINVAL) を出して、失敗する。
+<P>
+<P>
+
+
+
+
+
+
+raw I/O デバイスは、 Linux ブロックデバイスのバッファキャッシュとの
+キャッシュの整合性を管理しない。バッファキャッシュに既に存在するデータを
+raw I/O を用いて上書きすると、そのバッファキャッシュの指す記憶装置の
+デバイスの実際の内容との不整合が発生する。
+これは恣意的なものであるが、
+質問した人によって、回答はバグであったり仕様であったりするだろう!
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>著者</H2>
+
+Stephen Tweedie (<A HREF="mailto:sct@redhat.com">sct@redhat.com</A>)
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+raw コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">注意</A><DD>
+<DT><A HREF="#lbAG">バグ</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:32:50 GMT, February 03, 2021
+</BODY>
+</HTML>
