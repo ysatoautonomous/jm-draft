@@ -1,0 +1,154 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MKFS.BFS</TITLE>
+</HEAD><BODY>
+<H1>MKFS.BFS</H1>
+Section: System Administration (8)<BR>Updated: July 2011<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+mkfs.bfs - SCO bfs ファイルシステムを作成する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>mkfs.bfs</B>
+
+[options]<I> device </I>[<I>block-count</I>]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>mkfs.bfs</B>
+
+は SCO bfs ファイルシステムをブロックデバイス
+(通常はディスクパーティションか loop デバイスでアクセスされるファイル)
+上に作成する。
+<P>
+
+
+
+
+<I>block-count</I>
+
+引数は、ファイルシステムのサイズの希望値をブロック単位で指定する。
+省略されると、パーティションの全体が用いられる。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-N</B>,<B> --inodes </B><I>number</I>
+
+<DD>
+
+
+
+i-ノードの個数 <I>number</I> を指定する (最大 512)。
+何も指定しないと、パーティションのサイズから計算された
+デフォルトの数値 (48-512 の間) が用いられる。
+<DT><B>-V</B>,<B> --vname </B><I>label</I>
+
+<DD>
+
+ボリュームラベル <I>label</I> を指定する。筆者はこの利用法・利用局面がわからない。
+<DT><B>-F</B>,<B> --fname </B><I>name</I>
+
+<DD>
+
+ファイルシステム名 <I>name</I> を指定する。筆者はこの利用法・利用局面がわからない。
+<DT><B>-v</B>,<B> --verbose</B>
+
+<DD>
+
+何が行われているかを表示する。
+<DT><B>-c</B>
+
+<DD>
+
+このオプションは黙って無視される。
+<DT><B>-l</B>
+
+<DD>
+
+このオプションは黙って無視される。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+
+
+
+
+
+<B>-V</B>
+
+は、単独で指定された場合にのみ、
+<B>--version</B>
+
+として動作する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+
+<B>mkfs.bfs</B>
+
+の返り値は、
+正常に終了した場合は 0、異常が発生した場合は 1 になる。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/mkfs.8.html">mkfs</A></B>(8)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+mkfs.bfs コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:05:29 GMT, February 03, 2021
+</BODY>
+</HTML>
