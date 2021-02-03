@@ -1,0 +1,163 @@
+.\" -*- nroff -*-
+.\" This manual page is a part of util-linux.
+.\"
+.\" Japanese Version Copyright (c) 1997-1998 NAKANO Takeo all rights reserved.
+.\" Translated Thu Aug 28 1997 by NAKANO Takeo <nakano@apm.seikei.ac.jp>
+.\" Modified & Updated Wed Jun 24 1998 by NAKANO Takeo
+.\" Updated & Modified Thu Oct 7 1999 by NAKANO Takeo
+.\" Updated & Modified Mon Mar 23 02:00:36 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Wed Feb  3 21:51:46 JST 2021 by Yuichi SATO
+.\"
+.TH MKFS 8 "June 2011" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O mkfs \- build a Linux filesystem
+mkfs \- Linux のファイルシステムを構築する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B mkfs
+[options]
+.RB [ \-t
+.IR type "] [" fs-options ] " device " [ size ]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B This mkfs frontend is deprecated in favour of filesystem specific mkfs.<type> utils.
+.B この mkfs フロントエンドは廃れており、ファイルシステム固有の mkfs.<type>
+.B ユーティリティが支持されている。
+.PP
+.\"O .B mkfs
+.\"O is used to build a Linux filesystem on a device, usually
+.\"O a hard disk partition.  The
+.\"O .I device
+.\"O argument is either the device name (e.g.,
+.\"O .IR /dev/hda1 ,
+.\"O .IR /dev/sdb2 ),
+.\"O or a regular file that shall contain the filesystem.  The
+.\"O .I size
+.\"O argument is the number of blocks to be used for the filesystem.
+.B mkfs
+は Linux のファイルシステムをデバイス (通常はハードディスクのパーティ
+ション) 上に構築するために用いられる。
+.I device
+引き数はファイルシステムを作成するデバイスの名前
+.RI ( /dev/hda1 ", " /dev/sdb2
+など)、またはファイルシステムを含む通常ファイルである。
+.I size
+は作成するファイルシステムのブロック数である。
+.PP
+.\"O The exit status returned by
+.\"O .B mkfs
+.\"O is 0 on success and 1 on failure.
+.B mkfs
+の返り値は成功すれば 0、失敗した場合は 1 である。
+.PP
+.\"O In actuality,
+.\"O .B mkfs
+.\"O is simply a front-end for the various filesystem builders
+.\"O (\fBmkfs.\fIfstype\fR)
+.\"O available under Linux.
+実際は
+.B mkfs
+は単なるフロントエンドにすぎない。 Linux で利用できるファイルシステム
+には様々なものがあるが、実際のファイルシステムの作成はそれらファイル
+システムに専用のプログラム
+(\fBmkfs.\fIfstype\fR)
+が行う。
+.\"O The filesystem-specific builder is searched for via your PATH
+.\"O environment setting only.
+.\"O Please see the filesystem-specific builder manual pages for
+.\"O further details.
+各ファイルシステム用の作成プログラムの探索は、
+PATH 環境変数の設定でのみ行われる。
+詳細については各ファイルシステム用作成プログラムの
+マニュアルページを見てほしい。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-t , " \-\-type " \fItype\fR
+.\"O Specify the \fItype\fR of filesystem to be built.
+.\"O If not specified, the default filesystem type
+.\"O (currently ext2) is used.
+作成するファイルシステムのタイプ \fItype\fR を指定する。
+指定されなかった場合は、
+デフォルトのファイルシステムタイプ (現在は ext2) が用いられる。
+.TP
+.I fs-options
+.\"O Filesystem-specific options to be passed to the real filesystem builder.
+実際のファイルシステム作成を行うコマンドに渡す、ファイルシステム
+固有のオプションを指定する。
+.TP
+.BR \-V , " \-\-verbose"
+.\"O Produce verbose output, including all filesystem-specific commands
+.\"O that are executed.
+.\"O Specifying this option more than once inhibits execution of any
+.\"O filesystem-specific commands.
+.\"O This is really only useful for testing.
+実行されるファイルシステム固有の全てのコマンドを含む、詳細な出力を行う。
+このオプションを 2 回以上指定すると、
+ファイルシステム固有のコマンドの実行を行わない。
+これは、テストのために本当に便利である。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.  (Option \fB\-V\fR will display
+.\"O version information only when it is the only parameter, otherwise it
+.\"O will work as \fB\-\-verbose\fR.)
+バージョン情報を表示して、終了する。
+(オプション \fB\-V\fR は単独の引き数として指定された場合、
+バージョン情報を表示する。
+他の引き数が指定された場合、
+\fB\-\-verbose\fR として動作する。)
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH BUGS
+.SH バグ
+.\"O All generic options must precede and not be combined with
+.\"O filesystem-specific options.
+.\"O Some filesystem-specific programs do not automatically
+.\"O detect the device size and require the
+.\"O .I size
+.\"O parameter to be specified.
+mkfs の全ての汎用オプションは、ファイルシステム固有のオプションに
+優先すべきである。
+専用プログラムには、自動的にデバイスのサイズを知ることができず、
+.I size
+パラメータを必ず指定しなければならないものもある。
+.\"O .SH AUTHORS
+.SH 著者
+David Engel (david@ods.com)
+.br
+Fred N.\& van Kempen (waltje@uwalt.nl.mugnet.org)
+.br
+Ron Sommeling (sommel@sci.kun.nl)
+.br
+.\"O The manual page was shamelessly adapted from Remy Card's version
+.\"O for the ext2 filesystem.
+本マニュアルページは (厚顔にも) Remy Card が作成した ext2 ファイル
+システム向けの版を少々変更したものである。
+.\"O .SH SEE ALSO
+.SH 関連情報
+.na
+.BR fs (5),
+.BR badblocks (8),
+.BR fsck (8),
+.BR mkdosfs (8),
+.BR mke2fs (8),
+.BR mkfs.bfs (8),
+.BR mkfs.ext2 (8),
+.BR mkfs.ext3 (8),
+.BR mkfs.ext4 (8),
+.BR mkfs.minix (8),
+.BR mkfs.msdos (8),
+.BR mkfs.vfat (8),
+.BR mkfs.xfs (8)
+.ad
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The mkfs command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+mkfs コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
