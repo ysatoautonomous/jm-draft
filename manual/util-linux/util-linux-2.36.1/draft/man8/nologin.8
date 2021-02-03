@@ -1,0 +1,119 @@
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Mon Apr 27 21:54:12 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Wed Feb  3 22:58:48 JST 2021 by Yuichi SATO
+.\"
+.TH NOLOGIN 8 "November 2019" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O nologin \- politely refuse a login
+nologin \- ログインを丁重に拒否する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B nologin
+.RB [ \-V ]
+.RB [ \-h ]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B nologin
+.\"O displays a message that an account is not available and exits non-zero.  It is
+.\"O intended as a replacement shell field to deny login access to an account.
+.B nologin
+は、アカウントが利用可能でない旨のメッセージを表示して、0 以外で終了する。
+これは、シェルのフィールドの代替とすることを意図しており、
+アカウントにログインすることを拒否する。
+.PP
+.\"O If the file /etc/nologin.txt exists, nologin displays its contents to the
+.\"O user instead of the default message.
+ファイル /etc/nologin.txt が存在する場合、nologin は、
+デフォルトのメッセージの代わりに、ファイルの内容を表示する。
+.PP
+.\"O The exit status returned by
+.\"O .B nologin
+.\"O is always 1.
+.B nologin
+の返り値は常に 1 である。
+.\"O .SH OPTIONS
+.SH オプション
+\fB\-c\fR, \fB\-\-command\fR \fIcommand\fR
+.br
+\fB\-\-init-file\fR
+.br
+\fB\-i\fR \fB\-\-interactive\fR
+.br
+\fB\-\-init-file\fR \fIfile\fR
+.br
+\fB\-i\fR, \fB\-\-interactive\fR
+.br
+\fB\-l\fR, \fB\-\-login\fR
+.br
+\fB\-\-noprofile\fR
+.br
+\fB\-\-norc\fR
+.br
+\fB\-\-posix\fR
+.br
+\fB\-\-rcfile\fR \fIfile\fR
+.br
+\fB\-r\fR, \fB\-\-restricted\fR
+.IP
+.\"O These shell command-line options are ignored to avoid nologin error.
+これらのシェルコマンドラインオプションは、nologin のエラーを避けるため、無視される。
+.IP "\fB\-h\fR, \fB\-\-help\fR"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.IP "\fB\-V\fR, \fB\-\-version\fR"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.\"O .SH NOTES
+.SH 注意
+.\"O .B nologin
+.\"O is a per-account way to disable login (usually used for system accounts like http or ftp).
+.B nologin
+はアカウント毎にログインを無効にする方法である
+(通常は、http や ftp のようなシステムアカウントに使われる)。
+.\"O .BR nologin (8)
+.\"O uses /etc/nologin.txt as an optional source for a non-default message, the login
+.\"O access is always refused independently of the file.
+.BR nologin (8)
+は /etc/nologin.txt をデフォルト以外のメッセージのオプションの情報元として使う。
+このファイルの存在有無に関わらず、ログインアクセスは常に拒否される。
+.PP
+.\"O .BR pam_nologin (8)
+.\"O PAM module usually prevents all non-root users from logging into the system.
+.BR pam_nologin (8)
+は PAM モジュールであり、通常は root 以外の全てのユーザーがシステムにログインするのを防止する。
+.\"O .BR pam_nologin (8)
+.\"O functionality is controlled by /var/run/nologin or the /etc/nologin file.
+.BR pam_nologin (8)
+の機能は /var/run/nologin または /etc/nologin ファイルで制御される。
+.\"O .SH HISTORY
+.SH 履歴
+.\"O The
+.\"O .B nologin
+.\"O command appeared in 4.4BSD.
+.B nologin
+コマンドは 4.4BSD で登場した。
+.\"O .SH AUTHORS
+.SH 著者
+.UR kzak@redhat.com
+Karel Zak
+.UE
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR login (1),
+.BR passwd (5),
+.BR pam_nologin (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The nologin command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+nologin コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
