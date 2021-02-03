@@ -1,0 +1,198 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of MKFS.CRAMFS</TITLE>
+</HEAD><BODY>
+<H1>MKFS.CRAMFS</H1>
+Section: System Administration (8)<BR>Updated: April 2013<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+mkfs.cramfs - 圧縮 ROM ファイルシステムを作成する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>mkfs.cramfs</B>
+
+[options]
+<I>directory file</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+cramfs ファイルシステム上のファイルは、zlib で圧縮され、
+1 度に 1 ページが読み込まれ、ランダム読み込みアクセスができる。
+メタデータは圧縮されないが、簡略化された表現であり、一般的なファイル
+システムよりディスク領域を使わない。
+<P>
+
+
+
+
+このファイルシステムは、設計を簡単にするため、読み込みのみを意図している。
+圧縮ファイルに対するランダム書き込みアクセスは、実装が難しい。
+cramfs は、ファイルを新しい cramfs イメージにパッキングする
+ユーティリティ (mkcramfs) とともに提供される。
+<P>
+
+
+ファイルサイズは 16&nbsp;MB 以下に制限されている。
+<P>
+
+
+
+最大ファイルシステムサイズは、272&nbsp;MB より小さい。
+(ファイルシステムの最後のファイルは、
+256&nbsp;MB ブロックより前に開始される必要があるが、
+終了は 256&nbsp;MB ブロックを過ぎてもよい。)
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>引き数</H2>
+
+
+
+
+
+<I>directory</I>
+
+はディレクトリツリーのルートであり、そこから圧縮ファイルシステムを
+作成する。
+<P>
+
+
+
+
+<I>file</I>
+
+は cram ファイルシステムを格納するファイルであり、
+これを後からマウントできる。
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-v</B><DD>
+
+詳細なメッセージを有効化する。
+<DT><B>-E</B><DD>
+
+全ての警告をエラーとして扱う。これはコマンドの返り値に反映される。
+<DT><B>-b</B> <I>blocksize</I><DD>
+
+指定したブロックサイズを使う。
+ブロックサイズはページサイズで割りきれる必要がある。
+<DT><B>-e</B> <I>edition</I><DD>
+
+指定したファイルシステムエディション番号をスーパーブロックで使う。
+<DT><B>-N</B> <I>big, little, host</I><DD>
+
+
+指定したエンディアンを使う。
+デフォルト値は
+<I>host</I>
+
+である。
+<DT><B>-i</B> <I>file</I><DD>
+
+
+
+<I>file</I>
+
+を cramfs ファイルシステムに挿入する。
+<DT><B>-n</B> <I>name</I><DD>
+
+cramfs ファイルシステムの名前を設定する。
+<DT><B>-p</B><DD>
+
+ブートコード用に 512 バイトを埋め込む。
+<DT><B>-s</B><DD>
+
+
+このオプションは無視される。
+元々 -s オプションは、ディレクトリエントリのソートを有効にしていた。
+<DT><B>-z</B><DD>
+
+明示的なホールを作成する。
+<DT><B>-h</B>, <B>--help</B><DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-V</B>, <B>--version</B><DD>
+
+バージョン情報を表示して、終了する。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>返り値</H2>
+
+<DL COMPACT><DT><DD>
+
+<DL COMPACT>
+<DT><B>0</B>
+
+<DD>
+
+成功
+<DT><B>8</B>
+
+<DD>
+
+メモリの確保ができなかったといった、操作エラー。
+
+</DL>
+</DL>
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/fsck.cramfs.8.html">fsck.cramfs</A></B>(8),
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+mkfs.cramfs コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">引き数</A><DD>
+<DT><A HREF="#lbAF">オプション</A><DD>
+<DT><A HREF="#lbAG">返り値</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:17:27 GMT, February 03, 2021
+</BODY>
+</HTML>
