@@ -1,0 +1,177 @@
+.\" Man page for the lslocks command.
+.\" Copyright 2012 Davidlohr Bueso <dave@gnu.org>
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun Apr 26 00:46:26 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH LSLOCKS 8 "December 2014" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O lslocks \- list local system locks
+lslocks \- ローカルシステムのロックをリスト表示する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B lslocks
+[options]
+
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B lslocks
+.\"O lists information about all the currently held file locks in a Linux system.
+.B lslocks
+は Linux システムで現在保持されている全てのファイルロックの情報をリスト表示する。
+.sp
+.\"O Note that lslocks also lists OFD (Open File Description) locks, these locks are
+.\"O not associated with any process (PID is \-1).  OFD locks are associated with the
+.\"O open file description on which they are acquired.  This lock type is available
+.\"O since Linux 3.15, see \fBfcntl\fR(2) for more details.
+lslocks は OFD (Open File Description) ロックも表示する。
+これらのロックはどのプロセスにも関連付けられていない (PID は \-1)。
+OFD ロックは、ロックを取得したオープンファイルディスクリプションに
+関連付けられる。
+このロックタイプは Linux 3.15 以降で利用可能である。
+詳細は \fBfcntl\fR(2) を参照すること。
+
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-b , " \-\-bytes"
+.\"O Print the SIZE column in bytes rather than in a human-readable format.
+SIZE カラムを、人が読みやすい形式ではなく、バイト単位で表示する。
+.TP
+.BR \-i , " \-\-noinaccessible"
+.\"O Ignore lock files which are inaccessible for the current user.
+カレントユーザーからアクセスできないロックファイルを無視する。
+.TP
+.BR \-J , " \-\-json"
+.\"O Use JSON output format.
+JSON 出力形式を使う。
+.TP
+.BR \-n , " \-\-noheadings"
+.\"O Do not print a header line.
+ヘッダ行を表示しない。
+.TP
+.BR \-o , " \-\-output " \fIlist\fP
+.\"O Specify which output columns to print.  Use
+.\"O .B \-\-help
+.\"O to get a list of all supported columns.
+表示する出力カラムを指定する。
+全てのサポートされるカラムのリストを取得するには、
+.B \-\-help
+を使うこと。
+
+.\"O The default list of columns may be extended if \fIlist\fP is
+.\"O specified in the format \fI+list\fP (e.g., \fBlslocks \-o +BLOCKER\fP).
+\fIlist\fP を \fI+list\fP の形式にすることで、
+カラムのデフォルトのリストを拡張できる
+(例えば \fBlslocks \-o +BLOCKER\fP)。
+.TP
+.B \-\-output\-all
+.\"O Output all available columns.
+全ての利用可能なカラムを出力する。
+.TP
+.BR \-p , " \-\-pid " \fIpid\fP
+.\"O Display only the locks held by the process with this \fIpid\fR.
+指定した \fIpid\fR のプロセスが保持するロックのみを表示する。
+.TP
+.BR \-r , " \-\-raw"
+.\"O Use the raw output format.
+生の出力形式を使う。
+.TP
+.BR \-u , " \-\-notruncate"
+.\"O Do not truncate text in columns.
+カラムの文字列を切り詰めない。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+
+.\"O .SH OUTPUT
+.SH 出力
+.IP "COMMAND"
+.\"O The command name of the process holding the lock.
+ロックを保持するプロセスのコマンド名。
+.IP "PID"
+.\"O The process ID of the process which holds the lock or \-1 for OFDLCK.
+ロックを保持するプロセスのプロセス ID。
+OFDLCK の場合は、\-1。
+.IP "TYPE"
+.\"O The type of lock; can be FLOCK (created with \fBflock\fR(2)), POSIX
+.\"O (created with \fBfcntl\fR(2) and \fBlockf\fR(3)) or OFDLCK (created with fcntl(2).
+ロックのタイプ。
+(\fBflock\fR(2) で作成された) FLOCK,
+(\fBfcntl\fR(2) と \fBlockf\fR(3) で作成された) POSIX,
+(fcntl(2) で作成された) OFDLCK のいずれかである。
+.IP "SIZE"
+.\"O Size of the locked file.
+ロックファイルのサイズ。
+.IP "MODE"
+.\"O The lock's access permissions (read, write).  If the process is blocked and waiting for the lock,
+.\"O then the mode is postfixed with an '*' (asterisk).
+ロックのアクセス権限 (読み込み、書き込み)。
+プロセスがブロックされて、ロックを待っている場合、
+モードの後に '*' (アスタリスク) が付く。
+.IP "M"
+.\"O Whether the lock is mandatory; 0 means no (meaning the lock is only advisory), 1 means yes.
+.\"O (See \fBfcntl\fR(2).)
+ロックが必須か否か。
+0 は必須でないことを表す (ロックは勧告のみである)。
+1 は必須であることを表す。
+(\fBfcntl\fR(2) を参照すること。)
+.IP "START"
+.\"O Relative byte offset of the lock.
+ロックの相対パイトオフセット。
+.IP "END"
+.\"O Ending offset of the lock.
+ロックの終了オフセット。
+.IP "PATH"
+.\"O Full path of the lock.  If none is found, or there are no permissions to read
+.\"O the path, it will fall back to the device's mountpoint and "..." is appended to
+.\"O the path.  The path might be truncated; use
+.\"O \fB\-\-notruncate\fR to get the full path.
+ロックの完全なパス。
+パスが見つからない場合、またはパスを読み込む権限がない場合、
+デバイスのマウントポイントになり、パスに "..." が表示される。
+パスは切り詰められる可能性がある。
+完全なパスを取得する場合は、\fB\-\-notruncate\fR を使うこと。
+.IP "BLOCKER"
+.\"O The PID of the process which blocks the lock.
+ロックをブロックしているプロセスの PID。
+
+.\"O .SH NOTES
+.SH 注意
+.nf
+.\"O The \fBlslocks\fR command is meant to replace the \fBlslk\fR(8) command,
+.\"O originally written by Victor A. Abell <abe@purdue.edu> and unmaintained
+.\"O since 2001.
+\fBlslocks\fR コマンドは、\fBlslk\fR(8) の代替となることを意図している。
+\fBlslk\fR(8) は、元々 Victor A. Abell <abe@purdue.edu> によって書かれて、
+2001 年からメンテナンスされていない。
+.fi
+
+.\"O .SH AUTHORS
+.SH 著者
+.nf
+Davidlohr Bueso <dave@gnu.org>
+.fi
+
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR flock (1),
+.BR fcntl (2),
+.BR lockf (3)
+
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The lslocks command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+lslocks コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
