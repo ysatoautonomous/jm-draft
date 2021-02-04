@@ -1,0 +1,122 @@
+.\" wdctl.8 --
+.\" Copyright (C) 2012 Karel Zak <kzak@redhat.com>
+.\" May be distributed under the GNU General Public License
+.\"
+.\" Japanese Version Copyright (c) 2020 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat May  2 04:32:42 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Thu Feb  4 23:29:48 JST 2021 by Yuichi SATO
+.\"
+.TH WDCTL "8" "July 2014" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O wdctl \- show hardware watchdog status
+wdctl \- ハードウェアウォッチドッグ (watchdog) の状態を表示する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B wdctl
+[options]
+.RI [ device ...]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O Show hardware watchdog status.  The default device is
+.\"O .IR /dev/watchdog .
+.\"O If more than one device is specified then the output is separated by
+.\"O one blank line.
+ハードウェアウォッチドッグの状態を表示する。
+デフォルトのデバイスは
+.I /dev/watchdog
+である。
+2 つ以上のデバイスが指定された場合、出力は空行で区切られる。
+.PP
+.\"O If the device is already used or user has no permissions to read from the device than
+.\"O .B wdctl
+.\"O reads data from sysfs.  In this case information about supported features (flags) might be missing.
+デバイスが既に使われている場合、またはユーザーにデバイスを読み込む
+権限がない場合、
+.B wdctl
+はデータを sysfs から読み込む。
+この場合、サポートされる機能 (フラグ) についての情報が、なくなるかもしれない。
+.PP
+.\"O Note that the number of supported watchdog features is hardware specific.
+サポートされるウォッチドッグの機能の数は、ハードウェア依存である点に
+注意すること。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-f , " \-\-flags " \fIlist
+.\"O Print only the specified flags.
+指定されたフラグのみを表示する。
+.TP
+.BR \-F , " \-\-noflags"
+.\"O Do not print information about flags.
+フラグについての情報を表示しない。
+.TP
+.BR \-I , " \-\-noident"
+.\"O Do not print watchdog identity information.
+ウォッチドッグの識別情報を表示しない。
+.TP
+.BR \-n , " \-\-noheadings"
+.\"O Do not print a header line for flags table.
+フラグテーブルのヘッダ行を表示しない。
+.IP "\fB\-o\fR, \fB\-\-output \fIlist\fP"
+.\"O Define the output columns to use in table of watchdog flags.  If no
+.\"O output arrangement is specified, then a default set is used.  Use
+.\"O .B \-\-help
+.\"O to get list of all supported columns.
+ウォッチドッグのテーブルで使う出力カラムを定義する。
+出力の配置を指定しない場合、デフォルトのセットが使われる。
+全てのサポートされるカラムのリストを取得するには、
+.B \-\-help
+を使うこと。
+.TP
+.BR \-O , " \-\-oneline"
+.\"O Print all wanted information on one line in key="value" output format.
+全ての必要な情報を 1 行の key="value" 出力形式で表示する。
+.TP
+.BR \-r , " \-\-raw"
+.\"O Use the raw output format.
+生の出力形式を使う。
+.TP
+.BR \-s , " \-settimeout " \fIseconds
+.\"O Set the watchdog timeout in seconds.
+ウォッチドッグのタイムアウトを秒単位で指定する。
+.TP
+.BR \-T , " \-\-notimeouts"
+.\"O Do not print watchdog timeouts.
+ウォッチドッグのタイムアウトを表示しない。
+.IP "\fB\-x\fR, \fB\-\-flags\-only\fP"
+.\"O Same as \fB\-I \-T\fP.
+\fB\-I \-T\fP と同じ
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH AUTHORS
+.SH 著者
+.MT kzak@\:redhat\:.com
+Karel Zak
+.ME
+.br
+.MT lennart@\:poettering\:.net
+Lennart Poettering
+.ME
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The
+.\"O .B wdctl
+.\"O command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+.B wdctl
+コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
