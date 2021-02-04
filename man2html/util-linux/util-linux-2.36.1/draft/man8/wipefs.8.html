@@ -1,0 +1,340 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of WIPEFS</TITLE>
+</HEAD><BODY>
+<H1>WIPEFS</H1>
+Section: System Administration (8)<BR>Updated: December 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+wipefs - デバイスからシグネチャを消去する。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>wipefs</B>
+
+[<B>options</B>]
+
+<I>device</I>...
+
+<P>
+<B>wipefs</B>
+
+[<B>--backup</B>]
+
+<B>-o</B>
+
+<I>offset</I>
+
+<I>device</I>...
+
+<P>
+<B>wipefs</B>
+
+[<B>--backup</B>]
+
+<B>-a</B>
+
+<I>device</I>...
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+<B>wipefs</B>
+
+は、指定した
+<I>device</I>
+
+からファイルシステム、RAID、パーティションテーブルのシグネチャ (マジック文字列) を消去し、
+シグネチャを libblkid から見えなくする。
+
+
+<B>wipefs</B>
+
+はファイルシステム自体を消去したり、デバイスからシグネチャ以外のデータを
+消去したりはしない。
+<P>
+
+
+
+オプションを指定せずに使うと、wipefs は全ての参照可能なファイルシステムと、
+その基本的なシグネチャのオフセットをリスト表示する。
+デフォルトの出力は変更される可能性がある。
+可能な限り、スクリプト内ではデフォルトの出力を使わないべきである。
+
+
+
+
+固定した出力が必要な場合、その環境では
+<B>--output</B>
+
+<I>columns-list</I>
+
+を使って、期待する列を常に明示的に定義するべきである。
+<P>
+
+
+
+
+<B>wipefs</B>
+
+は、消去されたパーティションテーブルシグネチャがあって、その変更を
+カーネルに知らせる場合、
+BLKRRPART ioctl を呼び出す。
+指定された全てのデバイスの指定された全てのシグネチャが既に消去されている
+場合、最後のステップとして、この ioctl が呼び出される。
+<P>
+
+
+この機能は、ディスクデバイス上のパーティションテーブルだけでなく、
+パーティションデバイスの内容も消去できる。
+例えば、<B>wipefs -a /dev/sdc1 /dev/sdc2 /dev/sdc</B>。
+<P>
+
+
+
+
+
+ファイルシステムとパーティションテーブルの中には、
+デバイス (例えば FAT, ZFS, GPT) 上に複数のマジック文字列を格納するものもある。
+(v2.31 以降の)
+<B>wipefs</B>
+
+コマンドは、マジック文字列が検知された全てのオフセットをリスト表示する。
+<P>
+
+
+
+
+オプション <B>-a</B> を使うと、libblkid から参照できる全てのマジック文字列が消去される。
+この場合、
+<B>wipefs</B>
+
+は、マジック文字列が見つからなくなるまで、各修正 (消去) の後に、デバイスをスキャンする。
+<P>
+
+
+
+
+デフォルトでは
+<B>wipefs</B>
+
+はディスクデバイス全体以外にある入れ子のパーティションを消去しない。
+これを行うには、オプション <B>--force</B> が必要である。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-a</B>,<B> --all</B>
+
+<DD>
+
+
+全ての利用可能なシグネチャを消去する。
+消去されるシグネチャは <B>-t</B> オプションで制限できる。
+<DT><B>-b</B>,<B> --backup</B>
+
+<DD>
+
+
+シグネチャのバックアップをファイル $HOME/wipefs-&lt;devname&gt;-&lt;offset&gt;.bak に作成する。
+詳細は「<B>例</B>」のセクションを参照すること。
+<DT><B>-f</B>,<B> --force</B>
+
+<DD>
+
+
+ファイルシステムがマウントされている場合でも、強制的に消去する。
+これはブロックデバイス上のパーティションテーブルのシグネチャを
+消去する場合に必要である。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-J</B>,<B> --json</B>
+
+<DD>
+
+JSON 出力形式を使う。
+<DT><B>--lock</B>[=<I>mode</I>]<DD>
+
+
+
+
+
+
+操作するデバイスまたはファイルに、排他 BSD ロックを使う。
+オプションの引き数 <I>mode</I> は <B>yes</B>, <B>no</B> (または 1 と 0)
+または <B>nonblock</B> である。
+<I>mode</I> 引き数が省略された場合、デフォルトは <B>&quot;yes&quot;</B> である。
+このオプションは環境変数 <B>$LOCK_BLOCK_DEVICE</B> を上書きする。
+デフォルトは、ロックを全く使わないが、
+udevd や他のツールとの衝突を避けるため、ロックを使うことを推奨する。
+<DT><B>-i</B>,<B> --noheadings</B>
+
+<DD>
+
+ヘッダ行を表示しない。
+<DT><B>-O</B>,<B> --output </B><I>list</I>
+
+<DD>
+
+
+表示する出力カラムを指定する。
+全てのサポートされるカラムのリストを取得するには、
+--help を使うこと。
+<DT><B>-n</B>,<B> --no-act</B>
+
+<DD>
+
+write() の呼び出し以外は、全てを実行する。
+<DT><B>-o</B>,<B> --offset </B><I>offset</I>
+
+<DD>
+
+
+
+デバイスから消去を行うシグネチャの位置 (バイト単位) を指定する。
+<I>offset</I> の数値にはプレフィックス &quot;0x&quot; を付けることができる。
+この場合、数値は 16 進数として解釈される。
+複数の <B>-o</B> オプションを指定することも可能である。
+<P>
+
+
+
+
+<I>offset</I> 引き数は倍数のサフィックス
+KiB (=1024), MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB を付けることができる
+(&quot;iB&quot; はオプションで、例えば &quot;K&quot; は &quot;KiB&quot; と同じ意味である)。
+また、サフィックス KB (=1000), MB (=1000*1000), GB, TB, PB, EB, ZB, YB を
+付けることもできる。
+<DT><B>-p</B>,<B> --parsable</B>
+
+<DD>
+
+
+表示しやすい形式ではなく、解析しやすい形式で表示する。
+文字列に含まれる潜在的に安全でない全ての文字は、プレフィックス '\x' を付けて
+対応する 16 進数にエンコードされる。
+<DT><B>-q</B>,<B> --quiet</B>
+
+<DD>
+
+シグネチャの消去が成功した後の、全てのメッセージを抑止する。
+<DT><B>-t</B>,<B> --types </B><I>list</I>
+
+<DD>
+
+
+
+
+表示または消去するシグネチャのセットを制限する。
+2 つ以上のタイプをカンマ区切りのリストで指定できる。
+リストまたは各タイプは、プレフィックス 'no' を付けて、
+そのタイプについて何も実行しないことを指定できる。
+詳細は <A HREF="../man8/mount.8.html">mount</A>(8) を参照すること。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT>LIBBLKID_DEBUG=all<DD>
+
+libblkid のデバッグ出力を有効にする。
+<DT>LOCK_BLOCK_DEVICE=&lt;mode&gt;<DD>
+
+排他 BSD ロックを使う。
+mode は &quot;1&quot; または &quot;0&quot; である。
+より詳細は、<B>--lock</B> を参照すること。
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>例</H2>
+
+<DL COMPACT>
+<DT><B>wipefs /dev/sda*</B>
+
+<DD>
+
+sda と sda 上の全てのパーティションの情報を表示する。
+<DT><B>wipefs --all --backup /dev/sdb</B>
+
+<DD>
+
+
+デバイス /dev/sdb から全てのシグネチャを消去し、各シグネチャについて
+シグネチャのバックアップファイル ~/wipefs-sdb-&lt;offset&gt;.bak を作成する。
+<DT><B>dd if=~/wipefs-sdb-0x00000438.bak of=/dev/sdb seek=$((0x00000438)) bs=1 conv=notrunc</B>
+
+<DD>
+
+バックアップファイル ~/wipefs-sdb-0x00000438.bak から ext2 のシグネチャを復旧する。
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>著者</H2>
+
+Karel Zak &lt;<A HREF="mailto:kzak@redhat.com">kzak@redhat.com</A>&gt;
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/blkid.8.html">blkid</A></B>(8),
+
+<B><A HREF="../man8/findfs.8.html">findfs</A></B>(8)
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+wipefs コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">環境変数</A><DD>
+<DT><A HREF="#lbAG">例</A><DD>
+<DT><A HREF="#lbAH">著者</A><DD>
+<DT><A HREF="#lbAI">関連項目</A><DD>
+<DT><A HREF="#lbAJ">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:53:41 GMT, February 04, 2021
+</BODY>
+</HTML>
