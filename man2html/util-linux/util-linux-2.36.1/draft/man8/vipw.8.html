@@ -1,0 +1,170 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of VIPW</TITLE>
+</HEAD><BODY>
+<H1>VIPW</H1>
+Section: System Administration (8)<BR>Updated: September 2011<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+vipw, vigr - passwd ファイル、 group ファイルを編集する
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>vipw</B>
+
+[options]
+<BR>
+
+<B>vigr</B>
+
+[options]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B>vipw</B>
+
+はパスワードファイルに適当なロックをかけてからこれを編集する。
+そしてアンロックしてから必要な後処理を行う。
+もしパスワードファイルがすでに他のユーザによって、編集用にロック
+されていたら、
+<B>vipw</B>
+
+は時間をおいてから再度実行するようにプロンプトを出す。
+<B>vipw</B>
+
+と
+<B>vigr</B>
+
+のデフォルトのエディタは
+<B><A HREF="../man1/vi.1.html">vi</A></B>(1)
+
+である。
+
+
+
+
+<B>vipw</B>
+
+が passwd ファイルを編集するのと同じように、
+<B>vigr</B>
+
+は group ファイルを編集する。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>環境変数</H2>
+
+
+
+
+
+以下の環境変数が存在する場合、
+<B>vipw</B>
+
+と
+<B>vigr</B>
+
+で利用される:
+<I><DL COMPACT>
+<DT></I><B>EDITOR</B>
+
+<DD>
+
+
+
+
+
+
+文字列
+<B>EDITOR</B>
+
+で設定されているエディタが、デフォルトのエディタ
+<B><A HREF="../man1/vi.1.html">vi</A></B>(1)
+
+の代わりに実行される。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+<B>vipw</B>
+
+コマンドは 4.0BSD から導入された。
+<BR>
+
+
+
+
+<B>vigr</B>
+
+コマンドは Util-Linux 2.6 から導入された。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man1/vi.1.html">vi</A></B>(1),
+
+<B><A HREF="../man1/passwd.1.html">passwd</A></B>(1),
+
+<B><A HREF="../man2/flock.2.html">flock</A></B>(2),
+
+<B><A HREF="../man5/passwd.5.html">passwd</A></B>(5)
+
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+vigr と vipw コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">環境変数</A><DD>
+<DT><A HREF="#lbAF">履歴</A><DD>
+<DT><A HREF="#lbAG">関連項目</A><DD>
+<DT><A HREF="#lbAH">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:21:12 GMT, February 04, 2021
+</BODY>
+</HTML>
