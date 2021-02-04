@@ -1,0 +1,197 @@
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat May  2 16:53:15 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Fri Feb  5 00:05:35 JST 2021 by Yuichi SATO
+.\"
+.TH ZRAMCTL 8 "July 2014" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O zramctl \- set up and control zram devices
+zramctl \- zram デバイスの設定と制御を行う。
+.\"O .SH SYNOPSIS
+.SH 書式
+.ad l
+.\"O Get info:
+情報を取得する:
+.sp
+.in +5
+.BR zramctl " [options]"
+.sp
+.in -5
+.\"O Reset zram:
+zram をリセットする:
+.sp
+.in +5
+.B "zramctl \-r"
+.IR zramdev ...
+.sp
+.in -5
+.\"O Print name of first unused zram device:
+使用されていない最初の zram デバイスの名前を表示する:
+.sp
+.in +5
+.B "zramctl \-f"
+.sp
+.in -5
+.\"O Set up a zram device:
+zram デバイスを設定する:
+.sp
+.in +5
+.B zramctl
+.RB [ \-f " | "\fIzramdev\fP ]
+.RB [ \-s
+.IR size ]
+.RB [ \-t
+.IR number ]
+.RB [ \-a
+.IR algorithm ]
+.sp
+.in -5
+.ad b
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B zramctl
+.\"O is used to quickly set up zram device parameters, to reset zram devices, and to
+.\"O query the status of used zram devices.
+.B zramctl
+は zram デバイスのパラメータを手早く設定したり、zram デバイスをリセットしたり、
+使用されている zram デバイスの状態を取得したりするのに使われる。
+.PP
+.\"O If no option is given, all non-zero size zram devices are shown.
+オプションが指定されない場合、サイズが 0 でない全ての zram デバイスが表示される。
+.PP
+.\"O Note that \fIzramdev\fP node specified on command line has to already exist. The command
+.\"O .B zramctl
+.\"O creates a new /dev/zram<N> nodes only when \fB\-\-find\fR option specified. It's possible
+.\"O (and common) that after system boot /dev/zram<N> nodes are not created yet.
+コマンドラインで指定した \fIzramdev\fP ノードは、既に存在していなればならない点に注意すること。
+.B zramctl
+は \fB\-\-find\fR オプションが指定された場合にのみ、
+新しい /dev/zram<N> ノードを作成する。
+システムのブート後、/dev/zram<N> ノードがまだ作成されていない可能性もある
+(そして、それが一般的である)。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-a , " \-\-algorithm lzo" | lz4 | lz4hc | deflate | 842
+.\"O Set the compression algorithm to be used for compressing data in the zram device.
+zram デバイスでデータの圧縮に使われるアルゴリズムを設定する。
+.TP
+.BR \-f , " \-\-find"
+.\"O Find the first unused zram device.  If a \fB\-\-size\fR argument is present, then
+.\"O initialize the device.
+使用されていない最初の zram デバイスを見つける。
+\fB\-\-size\fR 引き数が存在する場合、デバイスの初期化が行われる。
+.TP
+.BR \-n , " \-\-noheadings"
+.\"O Do not print a header line in status output.
+状態の出力でヘッダ行を表示しない。
+.TP
+.BR \-o , " \-\-output " \fIlist
+.\"O Define the status output columns to be used.  If no output arrangement is
+.\"O specified, then a default set is used.
+.\"O Use \fB\-\-help\fP to get a list of all supported columns.
+使用する状態の出力カラムを定義する。
+出力の配置が指定されていない場合、デフォルトのセットが使われる。
+全てのサポートされるカラムのリストを取得するには、\fB\-\-help\fP を使うこと。
+.TP
+.B \-\-output\-all
+.\"O Output all available columns.
+全ての利用可能なカラムを出力する。
+.TP
+.B \-\-raw
+.\"O Use the raw format for status output.
+状態の出力で生の形式を使う。
+.TP
+.BR \-r , " \-\-reset"
+.\"O Reset the options of the specified zram device(s).  Zram device settings
+.\"O can be changed only after a reset.
+指定した zram デバイスのオプションをリセットする。
+zram デバイスの設定は、リセット後にのみ変更できる。
+.TP
+.BR \-s , " \-\-size " \fIsize
+.\"O Create a zram device of the specified \fIsize\fR.
+.\"O Zram devices are aligned to memory pages; when the requested \fIsize\fR is
+.\"O not a multiple of the page size, it will be rounded up to the next multiple.
+.\"O When not otherwise specified, the unit of the \fIsize\fR parameter is bytes.
+zram デバイスを指定した \fIsize\fR で作成する。
+zram デバイスはメモリページに調整される。
+要求された \fIsize\fR がページサイズの倍数でない場合、次に大きな倍数に丸められる。
+単位が何も指定されない場合、\fIsize\fR 引き数の単位はバイトである。
+.IP
+.\"O The \fIsize\fR argument may be followed by the multiplicative suffixes KiB (=1024),
+.\"O MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB (the "iB"
+.\"O is optional, e.g., "K" has the same meaning as "KiB") or the suffixes
+.\"O KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.
+\fIsize\fR 引き数の後ろに倍数のサフィックス KiB (=1024),
+MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB を付けることができる
+("iB" はオプションであり、例えば "K" は "KiB" と同じ意味である)。
+また、サフィックス KB (=1000), MB (=1000*1000), GB, TB, PB, EB, ZB, YB を
+付けることもできる。
+.TP
+.BR \-t , " \-\-streams " \fInumber
+.\"O Set the maximum number of compression streams that can be used for the device.
+.\"O The default is one stream.
+デバイスとして使用可能な圧縮ストリームの最大数を設定する。
+デフォルトは 1 つのストリームである。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+
+.\"O .SH RETURN VALUE
+.SH 返り値
+.\"O .B zramctl
+.\"O returns 0 on success, nonzero on failure.
+.B zramctl
+は、成功した場合は 0 を返し、失敗した場合は 0 以外を返す。
+
+.\"O .SH FILES
+.SH ファイル
+.TP
+.I /dev/zram[0..N]
+.\"O zram block devices
+zram ブロックデバイス
+
+.\"O .SH EXAMPLE
+.SH 例
+.\"O The following commands set up a zram device with a size of one gigabyte
+.\"O and use it as swap device.
+以下のコマンドでは、サイズ 1GiB の zram デバイスを設定し、スワップデバイスとして使う。
+.nf
+.IP
+# zramctl --find --size 1024M
+/dev/zram0
+# mkswap /dev/zram0
+# swapon /dev/zram0
+ ...
+# swapoff /dev/zram0
+# zramctl --reset /dev/zram0
+.fi
+.\"O .SH AUTHORS
+.SH 著者
+.nf
+Timofey Titovets <nefelim4ag@gmail.com>
+Karel Zak <kzak@redhat.com>
+.fi
+.\"O .SH SEE ALSO
+.SH 関連項目
+.\"O .UR http://git.\:kernel.\:org\:/cgit\:/linux\:/kernel\:/git\:/torvalds\:/linux.git\:/tree\:/Documentation\:/admin-guide\:/blockdev\:/zram.rst
+.\"O Linux kernel documentation
+.\"O .UE .
+.UR http://git.\:kernel.\:org\:/cgit\:/linux\:/kernel\:/git\:/torvalds\:/linux.git\:/tree\:/Documentation\:/admin-guide\:/blockdev\:/zram.rst
+Linux カーネルのドキュメント
+.UE .
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The zramctl command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+zramctl コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
