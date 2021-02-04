@@ -1,0 +1,576 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of SWAPON</TITLE>
+</HEAD><BODY>
+<H1>SWAPON</H1>
+Section: System Administration (8)<BR>Updated: October 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+swapon, swapoff - デバイスやファイルへのページング、スワッピングを有効 / 無効にする
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>swapon</B>
+
+[options]
+[<I>specialfile</I>...]
+
+<BR>
+
+<B>swapoff</B>
+
+[<B>-va</B>]
+
+[<I>specialfile</I>...]
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+<B>swapon</B>
+
+は、ページング (paging) やスワッピング (swapping) を行うデバイスを
+指定するために用いられる。
+<P>
+
+
+
+
+
+
+
+使用されるデバイスまたはファイルは、
+<I>specialfile</I>
+
+引き数で指定される。
+<B>-L</B><I> label</I>
+
+または
+<B>-U</B><I> uuid</I>
+
+という形式で、ラベルまたは uuid でデバイスを指定することができる。
+<P>
+
+
+
+
+
+<B>swapon</B>
+
+の呼び出しは、通常システムのブートスクリプトで行われる。
+普通はここですべてのスワップデバイスを有効にし、ページング
+やスワッピングが複数のデバイスやファイルにまたがってインターリーブ 
+(interleave) 動作できるようにする。
+<P>
+
+
+
+
+
+
+
+
+
+<B>swapoff</B>
+
+は指定されたデバイスとファイルのスワッピングを無効にする。
+<B>-a</B>
+
+フラグが指定された場合、
+(<I>/proc/swaps</I>
+
+または
+<I>/etc/fstab</I>
+
+に見つかった) 既知の全てのスワップデバイスとファイルのスワッピングが無効化される。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-a</B>,<B> --all</B>
+
+<DD>
+
+
+
+
+<I>/etc/fstab</I>
+
+中で ``swap'' マークが付いているスワップデバイスをすべて有効にする。
+ただし ``noauto'' オプションが付いているものは除く。
+スワップとして既に使われているデバイスは、黙ってスキップされる。
+<DT><B>-d</B>,<B> --discard</B>[<B>=</B><I>policy</I>]
+
+<DD>
+
+
+
+
+スワップのバッキングデバイスが破棄と切り詰め操作をサポートしている
+場合、スワップの破棄を有効化する。
+これは SSD (Solid State Devices) で性能を改善できる場合もあるが、
+多くの場合そうでもない。
+このオプションは 2 つのスワップ破棄ポリシーのうち、1 つを選択できる:
+
+
+
+
+
+
+<B>--discard=once</B>
+
+は swapon でスワップ領域全体に対して 1 回の破棄操作を行う。
+また
+<B>--discard=pages</B>
+
+は解放されたスワップページを、再利用できるようにする前に、
+非同期に破棄する。
+ポリシーが選択されない場合、デフォルトの挙動は、両方の破棄タイプを
+有効にすることである。
+
+
+
+
+
+
+
+
+<I>/etc/fstab</I>
+
+のマウントオプション
+<B>discard</B>,
+
+<B>discard=once</B>,
+
+<B>discard=pages</B>
+
+はどれも破棄フラグを有効にするために使用できる。
+<DT><B>-e</B>,<B> --ifexists</B>
+
+<DD>
+
+
+
+
+
+
+存在しないデバイスを黙ってスキップする。
+
+
+
+
+
+<I>/etc/fstab</I>
+
+のマウントオプション
+<B>nofail</B>
+
+も、存在しないデバイスをスキップするために使われる。
+<P>
+<DT><B>-f</B>,<B> --fixpgsz</B>
+
+<DD>
+
+
+
+
+スワップ領域のページサイズが現在実行されているカーネルと
+マッチしない場合、
+スワップ領域を再初期化 (mkswap を実行) する。
+<B><A HREF="../man8/mkswap.8.html">mkswap</A></B>(8)
+
+はデバイス全体を初期化し、不良ブロックをチェックしない。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+<DT><B>-L</B><I> label</I>
+
+<DD>
+
+
+
+
+
+指定された
+<I>label</I>
+
+のパーティションを使う。
+(これを使用するためには
+<I>/proc/partitions</I>
+
+にアクセスする必要がある。)
+<DT><B>-o</B>,<B> --options </B><I>opts</I>
+
+<DD>
+
+
+スワップオプションを fstab 互換のカンマ区切り文字列で指定する。
+例えば:
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+<P>
+<B>swapon -o pri=1,discard=pages,nofail /dev/sda2</B>
+
+<P>
+</DL>
+
+
+
+<I>opts</I> 文字列は最後に評価され、他の全てのコマンドラインオプションを
+上書きする。
+</DL>
+
+<DT><B>-p</B>,<B> --priority </B><I>priority</I>
+
+<DD>
+
+スワップデバイスの優先度 (priority) を指定する。
+
+
+
+
+
+
+
+
+
+
+<I>priority</I>
+
+は -1 から 32767 の間の数値である。
+数値が大きいほど優先度が高い。
+スワップ優先度の詳細な説明に関しては
+<B><A HREF="../man2/swapon.2.html">swapon</A></B>(2)
+
+を見よ。
+<I>/etc/fstab</I>
+
+のオプションフィールドに
+<B>pri=</B><I>value</I>
+
+を記述すれば、
+<B>swapon -a </B>
+
+の際にその値が用いられる。
+
+優先度が定義されていない場合、デフォルトは -1 である。
+<DT><B>-s</B>,<B> --summary</B>
+
+<DD>
+
+
+
+スワップの使用状況をデバイス毎に表示する。
+&quot;cat /proc/swaps&quot; と等しい。
+この出力形式は「推奨されず」、
+出力データをより良く制御できる <B>--show</B> を使うべきである。
+<DT><B>--show</B>[<B>=</B><I>column</I>...]
+
+<DD>
+
+
+
+スワップ領域について定義可能なテーブルを表示する。
+利用可能な列のリストについては、
+<B>--help</B>
+
+の出力を参照すること。
+<DT><B>--output-all</B>
+
+<DD>
+
+利用可能な全ての列を出力する。
+<DT><B>--noheadings</B>
+
+<DD>
+
+
+
+<B>--show</B>
+
+の出力を表示する際に、ヘッダを表示しない。
+<DT><B>--raw</B>
+
+<DD>
+
+
+
+<B>--show</B>
+
+の出力を表示する際に、テーブルの列を (きれいに) 配置しない。
+<DT><B>--bytes</B>
+
+<DD>
+
+
+
+<B>--show</B>
+
+の出力で、スワップサイズを、ユーザーがわかりやすい単位ではなく、
+バイト単位で表示する。
+<DT><B>-U</B><I> uuid</I>
+
+<DD>
+
+
+指定された
+<I>uuid</I>
+
+のパーティションを使う。
+<DT><B>-v</B>,<B> --verbose</B>
+
+<DD>
+
+詳細に表示する。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+<B>swapoff</B>
+
+は、v2.36 以降で以下の返り値を持つようになった:
+<DL COMPACT>
+<DT><B>0</B>
+
+<DD>
+
+成功
+<DT><B>2</B>
+
+<DD>
+
+システムにスワッピングを停止させる十分なメモリがない (OOM)
+<DT><B>4</B>
+
+<DD>
+
+swapoff システムコールが、その他の理由で失敗した
+<DT><B>8</B>
+
+<DD>
+
+swapoff 以外のシステムコールのエラー (メモリ不足など)
+<DT><B>16</B>
+
+<DD>
+
+使用法、または書式のエラー
+<DT><B>32</B>
+
+<DD>
+
+<B>--all</B> で、すべての swapoff が失敗した
+<DT><B>64</B>
+
+<DD>
+
+<B>--all</B> で、いくつかの swapoff が失敗した
+<P>
+
+
+コマンド <B>swapoff --all</B> は、0 (すべて成功), 32 (すべて失敗),
+64 (いくつかは成功、いくつかは失敗) を返す。
+<P>
+
+v2.36 より古いバージョンでは、返り値についてのドキュメントがなく、
+すべてのバージョンで 0 が成功を意味している。
+<P>
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT>LIBMOUNT_DEBUG=all<DD>
+
+libmount デバッグ出力を有効にする。
+<DT>LIBBLKID_DEBUG=all<DD>
+
+libblkid デバッグ出力を有効にする。
+<P>
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>ファイル</H2>
+
+<I>/dev/sd??</I>
+
+
+標準のページングデバイス
+<BR>
+
+<I>/etc/fstab</I>
+
+
+ファイルシステムを ascii で記述した表。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>注意</H2>
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H3>ホールのあるファイル</H3>
+
+
+
+
+カーネルのスワップファイル実装は、ファイルシステムの助けなしに、
+ファイルに直接書き込むことができることが想定されている。
+これは Btrfs のようなファイルシステムで、
+ホールのあるファイルやファイルへの copy-on-write で問題がある。
+<P>
+
+
+
+
+
+<B><A HREF="../man1/cp.1.html">cp</A></B>(1)
+
+や
+<B><A HREF="../man1/truncate.1.html">truncate</A></B>(1)
+
+のようはコマンドは、ホールのあるファイルを作成する。
+これらのファイルは swapon で拒否される。
+<P>
+
+
+
+
+<B><A HREF="../man1/fallocate.1.html">fallocate</A></B>(1)
+
+で作成された事前確保されたファイルは、ファイルシステムに非常に依存した
+ホールのあるファイルとして解釈される。
+Linux 4.18 以降で、事前確保されたスワップファイルは XFS 上でサポートされる。
+<P>
+
+
+
+スワップファイルを作成する、もっとも汎用性の高い方法は、
+<B><A HREF="../man1/dd.1.html">dd</A></B>(1)
+
+と /dev/zero を使うことである。
+<A NAME="lbAK">&nbsp;</A>
+<H3>Btrfs</H3>
+
+
+
+
+
+Btrfs 上のスワップファイルは Linux 5.0 以降で nocow 属性のついたファイルとして
+サポートされている。
+より詳細は
+<B><A HREF="../man5/btrfs.5.html">btrfs</A></B>(5)
+
+のマニュアルページを参照すること。
+<A NAME="lbAL">&nbsp;</A>
+<H3>NFS</H3>
+
+
+<B>NFS</B> 上の swap は動作しないかもしれない。
+<A NAME="lbAM">&nbsp;</A>
+<H3>Suspend</H3>
+
+
+
+
+
+
+<B>swapon</B>
+
+は、古いソフトウェアサスペンドデータ (例えば. S1SUSPEND, S2SUSPEND, ...) のついた
+スワップ領域のシグネチャを、自動的に検出して書き直す。
+このようにしないと、次回にサスペンドの停止をしようとした場合、
+データ破壊が起きる。
+
+<A NAME="lbAN">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+<B>swapon</B>
+
+コマンドは 4.0BSD から導入された。
+
+<A NAME="lbAO">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/swapoff.2.html">swapoff</A></B>(2),
+
+<B><A HREF="../man2/swapon.2.html">swapon</A></B>(2),
+
+<B><A HREF="../man5/fstab.5.html">fstab</A></B>(5),
+
+<B><A HREF="../man8/init.8.html">init</A></B>(8),
+
+<B><A HREF="../man1/fallocate.1.html">fallocate</A></B>(1),
+
+<B><A HREF="../man8/mkswap.8.html">mkswap</A></B>(8),
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8),
+
+<B><A HREF="../man8/rc.8.html">rc</A></B>(8)
+
+
+<A NAME="lbAP">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+swapon コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">環境変数</A><DD>
+<DT><A HREF="#lbAH">ファイル</A><DD>
+<DT><A HREF="#lbAI">注意</A><DD>
+<DL>
+<DT><A HREF="#lbAJ">ホールのあるファイル</A><DD>
+<DT><A HREF="#lbAK">Btrfs</A><DD>
+<DT><A HREF="#lbAL">NFS</A><DD>
+<DT><A HREF="#lbAM">Suspend</A><DD>
+</DL>
+<DT><A HREF="#lbAN">履歴</A><DD>
+<DT><A HREF="#lbAO">関連項目</A><DD>
+<DT><A HREF="#lbAP">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:25:01 GMT, February 04, 2021
+</BODY>
+</HTML>
