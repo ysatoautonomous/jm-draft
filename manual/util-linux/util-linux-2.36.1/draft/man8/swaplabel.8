@@ -1,0 +1,125 @@
+.\" Copyright 2010 Jason Borden <jborden@bluehost.com>
+.\"
+.\" This file may be copied under the terms of the GNU Public License.
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sat May  2 01:28:20 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Thu Feb  4 21:59:32 JST 2021 by Yuichi SATO
+.\"
+.TH SWAPLABEL 8 "April 2010" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O swaplabel \- print or change the label or UUID of a swap area
+swaplabel \- スワップ領域のラベルまたは UUID を表示または変更する
+.\"O .SH SYNOPSIS
+.SH 書式
+.B swaplabel
+.RB [ \-L
+.IR label ]
+.RB [ \-U
+.IR UUID ]
+.I device
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B swaplabel
+.\"O will display or change the label or UUID of a swap partition located on
+.\"O .I device
+.\"O (or regular file).
+.B swaplabel
+は
+.I device
+(または通常ファイル) 上にあるスワップパーティションのラベルまたは UUID を表示または変更する。
+.PP
+.\"O If the optional arguments
+.\"O .B \-L
+.\"O and
+.\"O .B \-U
+.\"O are not given,
+.\"O .B swaplabel
+.\"O will simply display the current swap-area label and UUID of
+.\"O .IR device .
+オプションの引き数
+.B \-L
+と
+.B \-U
+が指定されていない場合、
+.B swaplabel
+は
+.I device
+の現在のスワップ領域のラベルと UUID を単に表示する。
+.PP
+.\"O If an optional argument is present, then
+.\"O .B swaplabel
+.\"O will change the appropriate value on
+.\"O .IR device .
+オプションの引き数が存在する場合、
+.B swaplabel
+は
+.I device
+の適切な値を変更する。
+.\"O These values can also be set during swap creation using
+.\"O .BR mkswap (8).
+これらの値は
+.BR mkswap (8)
+を使ったスワップ作成時に設定できる。
+.\"O The
+.\"O .B swaplabel
+.\"O utility allows changing the label or UUID on an actively used swap device.
+.B swaplabel
+ユーティリティはアクティブに使われているスワップデバイスのラベルまたは UUID を変更できる。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.TP
+.BR \-L , " \-\-label " \fIlabel\fR
+.\"O Specify a new \fIlabel\fR for the device.
+.\"O Swap partition labels can be at most 16 characters long.  If
+.\"O .I label
+.\"O is longer than 16 characters,
+.\"O .B swaplabel
+.\"O will truncate it and print a warning message.
+デバイスの新しい \fIlabel\fR を指定する。
+スワップパーティションラベルは最大で 16 文字である。
+.I label
+が 16 文字より長い場合、
+.B swaplabel
+は切り詰めを行い、警告メッセージを表示する。
+.TP
+.BR \-U , " \-\-uuid " \fIUUID\fR
+.\"O Specify a new \fIUUID\fR for the device.
+.\"O The \fI UUID\fR
+.\"O must be in the standard 8-4-4-4-12 character format, such as is output by
+.\"O .BR uuidgen (1).
+デバイスの新しい \fIUUID\fR を指定する。
+\fIUUID\fR は、
+.BR uuidgen (1)
+で出力される、標準的な 8-4-4-4-12 の文字列形式である。
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.IP LIBBLKID_DEBUG=all
+.\"O enables libblkid debug output.
+libblkid のデバッグ出力を有効にする。
+.\"O .SH AUTHOR
+.SH 著者
+.\"O .B swaplabel
+.\"O was written by Jason Borden <jborden@bluehost.com> and Karel Zak <kzak@redhat.com>.
+.B swaplabel
+は Jason Borden <jborden@bluehost.com> と Karel Zak <kzak@redhat.com> によって
+書かれた。
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR uuidgen (1),
+.BR mkswap (8),
+.BR swapon (8)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The swaplabel command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+swaplabel コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
