@@ -1,0 +1,280 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of ZRAMCTL</TITLE>
+</HEAD><BODY>
+<H1>ZRAMCTL</H1>
+Section: System Administration (8)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+zramctl - zram デバイスの設定と制御を行う。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+
+
+情報を取得する:
+<P>
+
+<B>zramctl</B> [options]
+
+<P>
+
+
+zram をリセットする:
+<P>
+
+<B>zramctl -r</B>
+
+<I>zramdev</I>...
+
+<P>
+
+
+使用されていない最初の zram デバイスの名前を表示する:
+<P>
+
+<B>zramctl -f</B>
+
+<P>
+
+
+zram デバイスを設定する:
+<P>
+
+<B>zramctl</B>
+
+[<B>-f</B> | <I>zramdev</I><B>]</B>
+
+[<B>-s</B>
+
+<I>size</I>]
+
+[<B>-t</B>
+
+<I>number</I>]
+
+[<B>-a</B>
+
+<I>algorithm</I>]
+
+<P>
+
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>zramctl</B>
+
+は zram デバイスのパラメータを手早く設定したり、zram デバイスをリセットしたり、
+使用されている zram デバイスの状態を取得したりするのに使われる。
+<P>
+
+
+オプションが指定されない場合、サイズが 0 でない全ての zram デバイスが表示される。
+<P>
+
+
+
+
+
+コマンドラインで指定した <I>zramdev</I> ノードは、既に存在していなればならない点に注意すること。
+<B>zramctl</B>
+
+は <B>--find</B> オプションが指定された場合にのみ、
+新しい /dev/zram&lt;N&gt; ノードを作成する。
+システムのブート後、/dev/zram&lt;N&gt; ノードがまだ作成されていない可能性もある
+(そして、それが一般的である)。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-a</B>,<B> --algorithm lzo</B>|<B>lz4</B>|<B>lz4hc</B>|<B>deflate</B>|<B>842</B>
+
+<DD>
+
+zram デバイスでデータの圧縮に使われるアルゴリズムを設定する。
+<DT><B>-f</B>,<B> --find</B>
+
+<DD>
+
+
+使用されていない最初の zram デバイスを見つける。
+<B>--size</B> 引き数が存在する場合、デバイスの初期化が行われる。
+<DT><B>-n</B>,<B> --noheadings</B>
+
+<DD>
+
+状態の出力でヘッダ行を表示しない。
+<DT><B>-o</B>,<B> --output </B><I>list</I>
+
+<DD>
+
+
+
+使用する状態の出力カラムを定義する。
+出力の配置が指定されていない場合、デフォルトのセットが使われる。
+全てのサポートされるカラムのリストを取得するには、<B>--help</B> を使うこと。
+<DT><B>--output-all</B>
+
+<DD>
+
+全ての利用可能なカラムを出力する。
+<DT><B>--raw</B>
+
+<DD>
+
+状態の出力で生の形式を使う。
+<DT><B>-r</B>,<B> --reset</B>
+
+<DD>
+
+
+指定した zram デバイスのオプションをリセットする。
+zram デバイスの設定は、リセット後にのみ変更できる。
+<DT><B>-s</B>,<B> --size </B><I>size</I>
+
+<DD>
+
+
+
+
+zram デバイスを指定した <I>size</I> で作成する。
+zram デバイスはメモリページに調整される。
+要求された <I>size</I> がページサイズの倍数でない場合、次に大きな倍数に丸められる。
+単位が何も指定されない場合、<I>size</I> 引き数の単位はバイトである。
+<DT><DD>
+
+
+
+
+<I>size</I> 引き数の後ろに倍数のサフィックス KiB (=1024),
+MiB (=1024*1024), GiB, TiB, PiB, EiB, ZiB, YiB を付けることができる
+(&quot;iB&quot; はオプションであり、例えば &quot;K&quot; は &quot;KiB&quot; と同じ意味である)。
+また、サフィックス KB (=1000), MB (=1000*1000), GB, TB, PB, EB, ZB, YB を
+付けることもできる。
+<DT><B>-t</B>,<B> --streams </B><I>number</I>
+
+<DD>
+
+
+デバイスとして使用可能な圧縮ストリームの最大数を設定する。
+デフォルトは 1 つのストリームである。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>返り値</H2>
+
+
+
+<B>zramctl</B>
+
+は、成功した場合は 0 を返し、失敗した場合は 0 以外を返す。
+<P>
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>ファイル</H2>
+
+<DL COMPACT>
+<DT><I>/dev/zram[0..N]</I>
+
+<DD>
+
+zram ブロックデバイス
+<P>
+
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>例</H2>
+
+
+
+以下のコマンドでは、サイズ 1GiB の zram デバイスを設定し、スワップデバイスとして使う。
+<PRE>
+<DL COMPACT>
+<DT><DD># zramctl --find --size 1024M
+/dev/zram0
+# mkswap /dev/zram0
+# swapon /dev/zram0
+ ...
+# swapoff /dev/zram0
+# zramctl --reset /dev/zram0
+</PRE>
+
+
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>著者</H2>
+
+<PRE>
+Timofey Titovets &lt;<A HREF="mailto:nefelim4ag@gmail.com">nefelim4ag@gmail.com</A>&gt;
+Karel Zak &lt;<A HREF="mailto:kzak@redhat.com">kzak@redhat.com</A>&gt;
+</PRE>
+
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>関連項目</H2>
+
+
+
+
+
+Linux カーネルのドキュメント
+
+
+<A NAME="lbAK">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+zramctl コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">返り値</A><DD>
+<DT><A HREF="#lbAG">ファイル</A><DD>
+<DT><A HREF="#lbAH">例</A><DD>
+<DT><A HREF="#lbAI">著者</A><DD>
+<DT><A HREF="#lbAJ">関連項目</A><DD>
+<DT><A HREF="#lbAK">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:07:43 GMT, February 04, 2021
+</BODY>
+</HTML>
