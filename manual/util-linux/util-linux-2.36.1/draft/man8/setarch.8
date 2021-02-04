@@ -1,0 +1,236 @@
+.\"
+.\" Japanese Version Copyright (c) 2020-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Thu Apr 30 00:15:30 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Thu Feb  4 21:42:03 JST 2021 by Yuichi SATO
+.\"
+.TH SETARCH 8 "December 2017" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O setarch \- change reported architecture in new program environment and/or set personality flags
+setarch \- 新しいプログラム環境で表示されるアーキテクチャを変更し、パーソナリティ (personality) フラグを設定する。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B setarch
+.RI [ arch ]
+[options]
+.RI [ program
+.RI [ argument ...]]
+.sp
+.B setarch
+.BR \-\-list | \-h | \-V
+.sp
+.B arch
+[options]
+.RI [ program
+.RI [ argument ...]]
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B setarch
+.\"O modifies execution domains and process personality flags.
+.B setarch
+は実行ドメインを変更し、パーソナリティフラグを扱う。
+.PP
+.\"O The execution domains currently only affects the output of \fBuname \-m\fR.
+.\"O For example, on an AMD64 system, running \fBsetarch i386 \fIprogram\fR
+.\"O will cause \fIprogram\fR to see i686 instead of x86_64 as the machine type.
+.\"O It can also be used to set various personality options.
+.\"O The default \fIprogram\fR is \fB/bin/sh\fR.
+実行ドメインは現在のところ \fBuname \-m\fR の出力にのみ影響する。
+例えば、AMD64 システムで \fBsetarch i386 \fIprogram\fR を実行すると、
+\fIprogram\fR はマシンタイプとして x86_64 ではなく i686 を参照するようになる。
+これは様々なパーソナリティオプションの設定もできる。
+デフォルトの \fIprogram\fR は \fB/bin/sh\fR である。
+.PP
+.\"O Since version 2.33 the
+.\"O .I arch
+.\"O command line argument is optional and
+.\"O .B setarch
+.\"O may be used to change personality flags (ADDR_LIMIT_*, SHORT_INODE, etc) without
+.\"O modification of the execution domain.
+バージョン 2.33 以降では
+.I arch
+コマンドライン引き数はオプションであり、
+.B setarch
+は実行ドメインを変更せず、パーソナリティフラグ
+(ADDR_LIMIT_*, SHORT_INODE, etc) を変更することができる。
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.B \-\-list
+.\"O List the architectures that \fBsetarch\fR knows about.  Whether \fBsetarch\fR
+.\"O can actually set each of these architectures depends on the running kernel.
+\fBsetarch\fR が理解できるアーキテクチャをリスト表示する。
+\fBsetarch\fR が各アーキテクチャを実際に設定できるかは、
+実行されているカーネルに依存する。
+.TP
+.B \-\-uname\-2.6
+.\"O Causes the \fIprogram\fR to see a kernel version number beginning with 2.6.
+.\"O Turns on UNAME26.
+\fIprogram\fR に 2.6 で始まるカーネルバージョン番号を参照させる。
+UNAME26 を有効にする。
+.TP
+.BR \-v , " \-\-verbose"
+.\"O Be verbose.
+詳細な表示をさせる。
+.TP
+\fB\-3\fR, \fB\-\-3gb\fR
+.\"O Specifies
+.\"O .I program
+.\"O should use a maximum of 3GB of address space.  Supported on x86.  Turns on
+.\"O ADDR_LIMIT_3GB.
+.I program
+が最大 3GB のアドレスを使えるように指定する。
+x86 でサポートされる。
+ADDR_LIMIT_3GB を有効にする。
+.TP
+\fB\-\-4gb\fR
+.\"O This option has no effect.  It is retained for backward compatibility only,
+.\"O and may be removed in future releases.
+このオプションは何の効果もない。
+このオプションは後方互換のためにのみ保持されており、将来の
+リリースで削除されるかもしれない。
+.TP
+\fB\-B\fR, \fB\-\-32bit\fR
+.\"O Limit the address space to 32 bits to emulate hardware.  Supported on ARM
+.\"O and Alpha.  Turns on ADDR_LIMIT_32BIT.
+ハードウェアをエミュレートし、アドレス空間を 32 ビットに制限する。
+ARM と Alpha でサポートされる。
+ADDR_LIMIT_32BIT を有効にする。
+.TP
+\fB\-F\fR, \fB\-\-fdpic\-funcptrs\fR
+.\"O Treat user-space function pointers to signal handlers as pointers to address
+.\"O descriptors.  This option has no effect on architectures that do not support
+.\"O FDPIC ELF binaries.  In kernel v4.14 support is limited to ARM, Blackfin,
+.\"O Fujitsu FR-V, and SuperH CPU architectures.
+シグナルハンドラへのユーザー空間関数ポインタを、アドレス
+ディスクリプタへのポインタとして扱う。
+このオプションは FDPIC ELF バイナリをサポートしていないアーキテクチャには効果がない。
+カーネル v4.14 では、ARM, Blackfin,
+Fujitsu FR-V, SuperH CPU アーキテクチャでのみサポートが制限されている。
+.TP
+\fB\-I\fR, \fB\-\-short\-inode\fR
+.\"O Obsolete bug emulation flag.  Turns on SHORT_INODE.
+廃れたバグエミュレーションのフラグ。
+SHORT_INODE を有効にする。
+.TP
+\fB\-L\fR, \fB\-\-addr\-compat\-layout\fR
+.\"O Provide legacy virtual address space layout.  Use when the
+.\"O .I program
+.\"O binary does not have PT_GNU_STACK ELF header.  Turns on
+.\"O ADDR_COMPAT_LAYOUT.
+古い仮想アドレス空間レイアウトを提供する。
+.I program
+バイナリに PT_GNU_STACK ELF ヘッダがない場合に使うこと。
+ADDR_COMPAT_LAYOUT を有効にする。
+.TP
+\fB\-R\fR, \fB\-\-addr\-no\-randomize\fR
+.\"O Disables randomization of the virtual address space.  Turns on
+.\"O ADDR_NO_RANDOMIZE.
+仮想アドレス空間のランダム化を無効にする。
+ADDR_NO_RANDOMIZE を有効にする。
+.TP
+\fB\-S\fR, \fB\-\-whole\-seconds\fR
+.\"O Obsolete bug emulation flag.  Turns on WHOLE_SECONDS.
+廃れたバグエミュレーションのフラグ。
+WHOLE_SECONDS を有効にする。
+.TP
+\fB\-T\fR, \fB\-\-sticky\-timeouts\fR
+.\"O This makes
+.\"O .BR select (2),
+.\"O .BR pselect (2),
+.\"O and
+.\"O .BR ppoll (2)
+.\"O system calls preserve the timeout value instead of modifying it to reflect
+.\"O the amount of time not slept when interrupted by a signal handler.  Use when
+.\"O .I program
+.\"O depends on this behavior.  For more details see the timeout description in
+.\"O .BR select (2)
+.\"O manual page.  Turns on STICKY_TIMEOUTS.
+このオプションを指定すると、
+.BR select (2),
+.BR pselect (2),
+.BR ppoll (2)
+システムコールはタイムアウト値を変更せずに保持する。
+シグナルハンドラで割り込まれた場合、指定された時間スリープしない
+ように反映される。
+.I program
+がこの挙動に依存している場合に使うこと。
+詳細は
+.BR select (2)
+マニュアルページのタイムアウトの説明を参照すること。
+STICKY_TIMEOUTS を有効にする。
+.TP
+\fB\-X\fR, \fB\-\-read\-implies\-exec\fR
+.\"O If this is set then
+.\"O .BR mmap (3p)
+.\"O PROT_READ will also add the PROT_EXEC bit - as expected by legacy x86
+.\"O binaries.  Notice that the ELF loader will automatically set this bit when
+.\"O it encounters a legacy binary.  Turns on READ_IMPLIES_EXEC.
+このオプションを設定すると、
+.BR mmap (3p)
+PROT_READ で PROT_EXEC ビットも追加する - これは古い x86 バイナリで期待されている。
+ELF ローダーは、古いバイナリに出会った場合、このビットを自動的に設定
+する点に注意すること。
+READ_IMPLIES_EXEC を有効にする。
+.TP
+\fB\-Z\fR, \fB\-\-mmap\-page\-zero\fR
+.\"O SVr4 bug emulation that will set
+.\"O .BR mmap (3p)
+.\"O page zero as read-only.  Use when
+.\"O .I program
+.\"O depends on this behavior, and the source code is not available to be fixed.
+.\"O Turns on MMAP_PAGE_ZERO.
+SVr4 バグエミュレーションで、
+.BR mmap (3p)
+のページ 0 を読み込みのみにする。
+.I program
+がこの挙動に依存していて、修正するためのソースコードが利用可能
+でない場合に使うこと。
+MMAP_PAGE_ZERO を有効にする。
+.TP
+.BR \-V , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+.\"O .SH EXAMPLE
+.SH 例
+setarch \-\-addr-no-randomize mytestprog
+.br
+setarch ppc32 rpmbuild \-\-target=ppc \-\-rebuild foo.src.rpm
+.br
+setarch ppc32 \-v \-vL3 rpmbuild \-\-target=ppc \-\-rebuild bar.src.rpm
+.br
+setarch ppc32 \-\-32bit rpmbuild \-\-target=ppc \-\-rebuild foo.src.rpm
+.\"O .SH AUTHORS
+.SH 著者
+.MT sopwith@redhat.com
+Elliot Lee
+.ME
+.br
+.MT jnovy@redhat.com
+Jindrich Novy
+.ME
+.br
+.MT kzak@redhat.com
+Karel Zak
+.ME
+.\"O .SH SEE ALSO
+.SH 関連項目
+.BR personality (2),
+.BR select (2)
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The setarch command is part of the util-linux package and is available from
+.\"O .UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+.\"O Linux Kernel Archive
+.\"O .UE .
+setarch コマンドは util-linux パッケージの一部であり、
+.UR https://\:www.kernel.org\:/pub\:/linux\:/utils\:/util-linux/
+Linux Kernel Archive
+.UE
+から入手できる。
