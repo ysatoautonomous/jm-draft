@@ -1,0 +1,107 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of RESIZEPART</TITLE>
+</HEAD><BODY>
+<H1>RESIZEPART</H1>
+Section: System Administration (8)<BR>Updated: January 2015<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+resizepart - パーティションの新しいサイズをカーネルに知らせる。
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>resizepart</B>
+
+<I>device partition length</I>
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+<B>resizepart</B>
+
+はパーティションの新しいサイズを Linux カーネルに知らせる。
+このコマンドは「パーティションのサイズ変更」の ioctl の簡単なラッパーである。
+<P>
+
+このコマンドはブロックデバイス上のパーティションを操作しない。
+<P>
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>引き数</H2>
+
+<DL COMPACT>
+<DT><I>device</I>
+
+<DD>
+
+ディスクデバイス。
+<DT><I>partition</I>
+
+<DD>
+
+パーティション番号。
+<DT><I>length</I>
+
+<DD>
+
+パーティションの新しい長さ (512 バイトセクタ単位)。
+<P>
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man8/addpart.8.html">addpart</A></B>(8),
+
+<B><A HREF="../man8/delpart.8.html">delpart</A></B>(8),
+
+<B><A HREF="../man8/fdisk.8.html">fdisk</A></B>(8),
+
+<B><A HREF="../man8/parted.8.html">parted</A></B>(8),
+
+<B><A HREF="../man8/partprobe.8.html">partprobe</A></B>(8),
+
+<B><A HREF="../man8/partx.8.html">partx</A></B>(8)
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+resizepart コマンドは util-linux パッケージの一部であり、
+<A HREF="https://www.kernel.org/pub/linux/utils/util-linux/">https://www.kernel.org/pub/linux/utils/util-linux/</A>
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">引き数</A><DD>
+<DT><A HREF="#lbAF">関連項目</A><DD>
+<DT><A HREF="#lbAG">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 08:55:09 GMT, April 29, 2020
+</BODY>
+</HTML>
