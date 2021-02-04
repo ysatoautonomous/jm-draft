@@ -1,0 +1,212 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of UUIDD</TITLE>
+</HEAD><BODY>
+<H1>UUIDD</H1>
+Section: System Administration (8)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+uuidd - UUID 生成デーモン
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>uuidd</B>
+
+[options]
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+<B>uuidd</B>
+
+デーモンは UUID ライブラリによって使用され、
+UUID (universally unique identifier: 汎システム的に他とは重ならない識別子)、
+特に時刻ベースの UUID を生成する。
+多くのスレッドが別々の CPU で UUID を取得しようとした場合でも、
+生成はセキュアで一意性が保証されるやり方で行われる。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-d</B>,<B> --debug</B>
+
+<DD>
+
+uuidd をデバッグモードで実行する。uuidd をデーモンとして実行しないようにする。
+<DT><B>-F</B>,<B> --no-fork</B>
+
+<DD>
+
+二重 fork を使ってデーモン化を行わない。
+<DT><B>-k</B>,<B> --kill</B>
+
+<DD>
+
+現在 uuidd デーモンが実行中の場合、kill する。
+<DT><B>-n</B>,<B> --uuids </B><I>number</I>
+
+<DD>
+
+
+
+
+実行中の uuidd にテストリクエストを発行する際に、
+<I>number</I>
+
+個の UUID を一括のレスポンスとして返すようにリクエストする。
+<DT><B>-P</B>,<B> --no-pid</B>
+
+<DD>
+
+pid ファイルを生成しない。
+<DT><B>-p</B>,<B> --pid </B><I>path</I>
+
+<DD>
+
+
+pid ファイルが書かれるパス名を指定する。
+デフォルトでは、pid ファイルは /usr/var/run/uuidd/uuidd.pid に書かれる。
+<DT><B>-q</B>,<B> --quiet</B>
+
+<DD>
+
+失敗メッセージを抑止する。
+<DT><B>-r</B>,<B> --random</B>
+
+<DD>
+
+
+実行中の uuidd デーモンへの接続を試みて uuidd をテストする。
+さらに乱数ベースの UUID を返すようにリクエストする。
+<DT><B>-S</B>,<B> --socket-activation</B>
+
+<DD>
+
+
+
+
+ソケットを作成しないが、それ以外は、呼び出し元プロセスに
+提供される。
+このオプションは <B>--no-fork</B> と <B>--no-pid</B> を暗黙のうちに指定する。
+このオプションは <B><A HREF="../man1/systemd.1.html">systemd</A></B>(1) と一緒に使うことのみを意図している。
+これは設定オプションで有効にする必要がある。
+<DT><B>-s</B>,<B> --socket </B><I>path</I>
+
+<DD>
+
+
+
+
+このパス名を unix ドメインソケットとして uuidd に使わせる。
+デフォルトでは、使用されるパス名は /usr/var/run/uuidd/request である。
+このオプションは主としてデバッグ目的であるので、
+パス名は libuuid ライブラリにハードコードされている。
+<DT><B>-T</B>,<B> --timeout </B><I>number</I>
+
+<DD>
+
+<I>number</I> 秒間、無反応である場合、uuidd を終了させる。
+<DT><B>-t</B>,<B> --time</B>
+
+<DD>
+
+
+実行中の uuidd デーモンへの接続を試みて uuidd をテストする。
+さらに時刻ベースの UUID を返すようにリクエストする。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプ画面を表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>例</H2>
+
+
+デーモンを起動して、42 個の乱数キーを表示して、デーモンを終了する。
+<P>
+
+<DL COMPACT><DT><DD>
+<PRE>
+uuidd -p /tmp/uuidd.pid -s /tmp/uuidd.socket
+uuidd -d -r -n 42 -s /tmp/uuidd.socket
+uuidd -d -k -s /tmp/uuidd.socket
+</PRE>
+
+</DL>
+
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>著者</H2>
+
+
+
+
+<B>uuidd</B>
+
+デーモンは Theodore Ts'o &lt;<A HREF="mailto:tytso@mit.edu">tytso@mit.edu</A>&gt; によって書かれた。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man3/uuid.3.html">uuid</A></B>(3),
+
+<B><A HREF="../man1/uuidgen.1.html">uuidgen</A></B>(1)
+
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+uuidd デーモンは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">例</A><DD>
+<DT><A HREF="#lbAG">著者</A><DD>
+<DT><A HREF="#lbAH">関連項目</A><DD>
+<DT><A HREF="#lbAI">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 14:10:32 GMT, February 04, 2021
+</BODY>
+</HTML>
