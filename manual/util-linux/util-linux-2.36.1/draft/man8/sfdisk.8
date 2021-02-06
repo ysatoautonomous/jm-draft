@@ -1,0 +1,1071 @@
+.\" sfdisk.8 -- man page for sfdisk
+.\" Copyright (C) 2014 Karel Zak <kzak@redhat.com>
+.\"
+.\" Permission is granted to make and distribute verbatim copies of this
+.\" manual provided the copyright notice and this permission notice are
+.\" preserved on all copies.
+.\"
+.\" Permission is granted to copy and distribute modified versions of this
+.\" manual under the conditions for verbatim copying, provided that the
+.\" entire resulting derived work is distributed under the terms of a
+.\" permission notice identical to this one.
+.\"
+.\"
+.\" Japanese Version Copyright (c) 2001-2021 Yuichi SATO
+.\"         all rights reserved.
+.\" Translated Sun Mar  4 15:57:26 JST 2001
+.\"         by Yuichi SATO <ysato@h4.dion.ne.jp>
+.\" Updated & Modified Fri Jan 25 05:42:49 JST 2002 by Yuichi SATO
+.\" Updated & Modified Mon Mar 10 04:26:24 JST 2003
+.\"         by Yuichi SATO <ysato444@yahoo.co.jp>
+.\" Updated & Modified Sun May  2 12:41:19 JST 2004 by Yuichi SATO
+.\" Updated & Modified Mon May  9 03:21:52 JST 2005 by Yuichi SATO
+.\" Updated & Modified Fri Apr  3 00:37:30 JST 2020
+.\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\"
+.TH SFDISK 8 "June 2015" "util-linux" "System Administration"
+.\"O .SH NAME
+.SH 名前
+.\"O sfdisk \- display or manipulate a disk partition table
+sfdisk \- ディスクパーティションテーブルの表示と操作を行う。
+.\"O .SH SYNOPSIS
+.SH 書式
+.B sfdisk
+[options]
+.I device
+.RB [ \-N
+.IR partition-number ]
+.sp
+.B sfdisk
+[options]
+.I command
+.\"O .SH DESCRIPTION
+.SH 説明
+.\"O .B sfdisk
+.\"O is a script-oriented tool for partitioning any block device.  It
+.\"O runs in interactive mode if executed on terminal (stdin refers to a terminal).
+.B sfdisk
+はスクリプトベースのツールで、ブロックデバイスのパーティション操作が
+できる。
+端末から実行された場合、(端末を標準入力として) 対話モードで実行される。
+
+.\"O Since version 2.26
+.\"O .B sfdisk
+.\"O supports MBR (DOS), GPT, SUN and SGI disk labels, but no longer provides any
+.\"O functionality for CHS (Cylinder-Head-Sector) addressing.  CHS has
+.\"O never been important for Linux, and this addressing concept does not make any
+.\"O sense for new devices.
+バージョン 2.26 から
+.B sfdisk
+は MBR (DOS), GPT, SUN, SGI ディスクラベルをサポートしているが、
+CHS (Cylinder-Head-Sector) アドレス指定をサポートしなくなった。
+CHS は Linux では重要でなくなっており、このアドレス指定の考え方は
+新しいデバイスでは意味をなさなくなった。
+.sp
+.\"O .B sfdisk
+.\"O (since version 2.26)
+.\"O .B aligns the start and end of partitions
+.\"O to block-device I/O limits when relative sizes are specified, when the default
+.\"O values are used or when multiplicative suffixes (e.g., MiB) are used for sizes.
+.B sfdisk
+(バージョン 2.26 以降) は、相対サイズが指定された場合、
+またはデフォルト値が使われた場合、またはサイズに乗数のサフィックス
+(例えば、MiB) が使われた場合、ブロックデバイスの I/O 制限に
+.B パーティションの開始と終了を揃える。
+.\"O It is possible that partition size will be optimized (reduced or enlarged) due
+.\"O to alignment if the start offset is specified exactly in sectors and partition
+.\"O size relative or by multiplicative suffixes.
+開始オフセットが厳密にセクタに指定され、かつパーティションサイズが相対値、
+または乗数のサフィックスが指定された場合、調整のために、
+パーティションサイズが最適化 (縮小または拡大) される。
+
+.\"O The recommended way is not to specify start offsets at all and specify
+.\"O partition size in MiB, GiB (or so).  In this case sfdisk align all partitions
+.\"O to block-device I/O limits (or when I/O limits are too small then to megabyte
+.\"O boundary to keep disk layout portable).  If this default behaviour is unwanted
+.\"O (usually for very small partitions) then specify offsets and sizes in
+.\"O sectors.  In this case sfdisk entirely follows specified numbers without any
+.\"O optimization.
+推奨される方法は、開始オフセットを全く指定せず、
+パーティションサイズを MiB, GiB (など) で指定することである。
+この場合、sfdisk は全てのパーティションを
+ブロックデバイス I/O 制限に揃える
+(もしくは、I/O 制限がとても小さい場合、ディスクレイアウトを他でも
+利用できるようにするため、メガバイト境界にされる)。
+このデフォルトの挙動が望ましくない場合 (通常はとても小さいパーティションの場合)、
+オフセットとサイズをセクタ数で指定する。
+この場合、sfdisk は最適化をせずに指定された数値に完全に従う。
+.sp
+.\"O .B sfdisk
+.\"O does not create the standard system partitions for SGI and SUN disk labels like
+.\"O .BR fdisk (8)
+.\"O does.
+.\"O It is necessary to explicitly create all partitions including whole-disk system
+.\"O partitions.
+.B sfdisk
+は、
+.BR fdisk (8)
+のようには、SGI と SUN ディスクラベルに対して、
+標準的なシステムパーティションを作成しない。
+ディスクシステムパーティション全体を含むように、
+明示的に全部のパーティションを作成する必要がある。
+
+.\"O .B sfdisk
+.\"O uses BLKRRPART (reread partition table) ioctl to make sure that the device is
+.\"O not used by system or other tools (see also \-\-no-reread).  It's possible that
+.\"O this feature or another sfdisk activity races with \fBudevd\fR.  The recommended way
+.\"O how to avoid possible collisions is to use \fB\-\-lock\fR option.
+.\"O The exclusive lock will cause udevd to skip the event handling on the device.
+.B sfdisk
+は BLKRRPART (パーティションテーブルの再読み込み) ioctl を使い、
+デバイスがシステムまたは他のツールで使われていないかを確かめる
+(\-\-no-reread を参照)。
+この機能または他の sfdisk の操作が、\fBudevd\fR と競合する可能性がある。
+衝突の可能性を回避するのに推奨される方法は、\fB\-\-lock\fR を使うことである。
+排他ロックを使うと、udevd がデバイスのイベントハンドリングをスキップする可能性がある。
+.PP
+The sfdisk prompt is only a hint for users and a displayed partition number does
+not mean that the same partition table entry will be created (if -N not
+specified), especially for tables with gaps.
+
+.\"O .SH COMMANDS
+.SH コマンド
+.\"O The commands are mutually exclusive.
+コマンドはどれか 1 つしか使用できない。
+.TP
+.RB [ \-N " \fIpartition-number\fR] " \fIdevice\fR
+.\"O The default \fBsfdisk\fR command is to read the specification for the desired
+.\"O partitioning of \fIdevice\fR from standard input, and then create a partition
+.\"O table according to the specification.  See below for the description of the
+.\"O input format.  If standard input is a terminal, then \fBsfdisk\fR starts an
+.\"O interactive session.
+デフォルトの \fBsfdisk\fR コマンドは、
+\fIdevice\fR について希望するパーティション分割の仕様を、標準入力から読み取り、
+その仕様に従ってパーティションテーブルを作成する。
+入力フォーマットの説明は下記を参照すること。
+標準入力が端末の場合、\fBsfdisk\fR は対話型のセッションを開始する。
+.sp
+.\"O If the option \fB\-N\fR is specified, then the changes are applied to
+.\"O the partition addressed by \fIpartition-number\fR.  The unspecified fields
+.\"O of the partition are not modified.
+オプション \fB\-N\fR が指定されると、
+\fIpartition-number\fR で指定されたパーティションに変更が適用される。
+指定されないパーティションのフィールドは、変更されない。
+.sp
+.\"O Note that it's possible to address an unused partition with \fB\-N\fR.
+.\"O For example, an MBR always contains 4 partitions, but the number of used
+.\"O partitions may be smaller.  In this case \fBsfdisk\fR follows the default
+.\"O values from the partition table and does not use built-in defaults for the
+.\"O unused partition given with \fB\-N\fR.  See also \fB\-\-append\fR.
+使用されていないパーティションを \fB\-N\fR で指定できる点に注意すること。
+例えば、MBR は常に 4 つのパーティションを持ち、
+使用されているパーティションの番号は、小さい方から使われる。
+この場合、\fBsfdisk\fR は、\fB\-N\fR で指定された使用されていないパーティションについて、
+パーティションテーブルからのデフォルト値に従い、
+組み込みのデフォルト値を使わない。
+\fB\-\-append\fR を参照すること。
+.TP
+.BR \-A , " \-\-activate \fIdevice " [ \fIpartition-number...]
+.\"O Switch on the bootable flag for the specified partitions and switch off the
+.\"O bootable flag on all unspecified partitions. The special placeholder '\-'
+.\"O may be used instead of the partition numbers to switch off the bootable flag
+.\"O on all partitions.
+指定されたパーティションのブート可能フラグをオンにし、
+指定されていない全てのパーティションのブート可能フラグをオフにする。
+特別なプレースホルダー '\-' はパーティション番号の代わりに使われ、
+全てのパーティションのブート可能フラグをオフにする。
+
+.\"O The activation command is supported for MBR and PMBR only.  If GPT label is detected
+.\"O than sfdisk prints warning and automatically enter PMBR.
+アクティブ化コマンドは、MBR と PMBR のみでサポートされている。
+GPT ラベルが検出されると、sfdisk は警告を表示して、
+自動的に PMBR に入る。
+
+.\"O If no \fIpartition-number\fR is specified, then list the partitions with an
+.\"O enabled flag.
+\fIpartition-number\fR が指定されない場合、
+有効化フラグの付いたパーティションのリストを表示する。
+.TP
+.BR "\-\-delete \fIdevice " [ \fIpartition-number ...]
+.\"O Delete all or the specified partitions.
+全てのパーティション、または指定されたパーティションを削除する。
+.TP
+.BR \-d , " \-\-dump " \fIdevice\fR
+.\"O Dump the partitions of a device in a format that is usable as input to \fBsfdisk\fR.
+.\"O See the section \fBBACKING UP THE PARTITION TABLE\fR.
+\fBsfdisk\fR の入力として利用可能なフォーマットで、
+デバイスのパーティションをダンプする。
+\fBパーティションテーブルのバックアップ\fR のセクションを参照すること。
+.TP
+.BR \-g , " \-\-show\-geometry " [ \fIdevice ...]
+.\"O List the geometry of all or the specified devices. For backward
+.\"O compatibility the deprecated option \fB\-\-show\-pt\-geometry\fR have the same
+.\"O meaning as this one.
+全てのパーティション、または指定されたパーティションのジオメトリを
+表示する。
+後方互換のため、推奨されないオプション \fB\-\-show\-pt\-geometry\fR は、
+このオプションと同じ意味を持つ。
+.TP
+.BR \-J , " \-\-json " \fIdevice\fR
+.\"O Dump the partitions of a device in JSON format.  Note that \fBsfdisk\fR is
+.\"O not able to use JSON as input format.
+デバイスのパーティションを JSON フォーマットでダンプする。
+\fBsfdisk\fR は JSON を入力フォーマットとして使えない点に注意すること。
+.TP
+.BR \-l , " \-\-list " [ \fIdevice ...]
+.\"O List the partitions of all or the specified devices.  This command can be used
+.\"O together with \fB\-\-verify\fR.
+全てのデバイス、または指定されたデバイスのパーティションを表示する。
+このコマンドは、\fB\-\-verify\fR とともに利用できる。
+.TP
+.BR \-F , " \-\-list-free " [ \fIdevice ...]
+.\"O List the free unpartitioned areas on all or the specified devices.
+全てのデバイス、または指定されたデバイスのパーティション作成
+されていない領域を表示する。
+.TP
+.BR "\-\-part\-attrs \fIdevice partition-number " [ \fIattributes ]
+.\"O Change the GPT partition attribute bits.  If \fIattributes\fR is not specified,
+.\"O then print the current partition settings.  The \fIattributes\fR argument is a
+.\"O comma- or space-delimited list of bits numbers or bit names.  For example, the
+.\"O string "RequiredPartition,50,51" sets three bits.  The currently supported
+.\"O attribute bits are:
+GPT パーティション属性ビットを変更する。
+\fIattributes\fR が指定されない場合、現状のパーティション設定が表示される。
+\fIattributes\fR 引き数は、カンマ、またはスペース区切りのビット数字、または
+ビット名のリストである。
+例えば、"RequiredPartition,50,51" は 3 ビットを設定する。
+現状サポートされている属性ビットは以下の通り:
+.RS
+.TP
+.BR "Bit 0 (RequiredPartition)"
+If this bit is set, the partition is required for the platform to function. The
+creator of the partition indicates that deletion or modification of the contents
+can result in loss of platform features or failure for the platform to boot or
+operate. The system cannot function normally if this partition is removed, and it
+should be considered part of the hardware of the system.
+.TP
+.BR "Bit 1 (NoBlockIOProtocol)"
+EFI firmware should ignore the content of the partition and not try to read from it.
+.TP
+.BR "Bit 2 (LegacyBIOSBootable)"
+The partition may be bootable by legacy BIOS firmware.
+.TP
+.BR "Bits 3-47"
+Undefined and must be zero. Reserved for expansion by future versions of the
+UEFI specification.
+.TP
+.BR "Bits 48-63"
+Reserved for GUID specific use. The use of these bits will vary depending on
+the partition type.  For example Microsoft uses bit 60 to indicate read-only,
+61 for shadow copy of another partition, 62 for hidden partitions and 63 to
+disable automount.
+.RE
+.sp
+.TP
+.BR "\-\-part\-label \fIdevice partition-number " [ \fIlabel ]
+.\"O Change the GPT partition name (label).  If \fIlabel\fR is not specified,
+.\"O then print the current partition label.
+GPT パーティション名 (ラベル) を変更する。
+\fIlabel\fR が指定されない場合、現在のパーティションラベルを表示する。
+.TP
+.BR "\-\-part\-type \fIdevice partition-number " [ \fItype ]
+.\"O Change the partition type.  If \fItype\fR is not specified, then print the
+.\"O current partition type.
+パーティションタイプを変更する。
+\fItype\fR が指定されない場合、現在のパーティションタイプを表示する。
+.sp
+.\"O The \fItype\fR argument is hexadecimal for MBR,
+.\"O GUID for GPT, type alias (e.g. "linux") or type shortcut (e.g. 'L').
+\fItype\fR 引き数は、MBR については 16 進数、GPT については GUID、
+タイプの別名 (例えば、"linux")、タイプのショートカット (例えば、'L') である。
+.\"O For backward compatibility the options \fB\-c\fR and
+.\"O \fB\-\-id\fR have the same meaning as this one.
+後方互換のため、オプション \fB\-c\fR と \fB\-\-id\fR は、
+このオプションと同じ意味を持つ。
+.TP
+.BR "\-\-part\-uuid \fIdevice partition-number " [ \fIuuid ]
+.\"O Change the GPT partition UUID.  If \fIuuid\fR is not specified,
+.\"O then print the current partition UUID.
+GPT パーティションの UUID を変更する。
+\fIuuid\fR が指定されない場合、現在のパーティション UUID を表示する。
+.TP
+.BR "\-\-disk\-id \fIdevice " [ \fIid ]
+Change the disk identifier.  If \fIid\fR is not specified,
+then print the current identifier.  The identifier is UUID for GPT
+or unsigned integer for MBR.
+.TP
+.BR \-r , " \-\-reorder " \fIdevice
+.\"O Renumber the partitions, ordering them by their start offset.
+パーティション番号を開始オフセットの順番に振りなおす。
+.TP
+.BR \-s , " \-\-show\-size " [ \fIdevice ...]
+.\"O List the sizes of all or the specified devices in units of 1024 byte size.
+.\"O This command is DEPRECATED in favour of
+.\"O .BR blockdev (8).
+全てのデバイス、または指定されたデバイスのサイズを、1024 バイトサイズを単位として表示する。
+このコマンドは「推奨されず」、
+.BR blockdev (8)
+を使うべきである。
+.TP
+.BR \-T , " \-\-list\-types"
+.\"O Print all supported types for the current disk label or the label specified by
+.\"O \fB\-\-label\fR.
+現在のディスクラベル、または \fB\-\-label\fR で指定されたラベルについて、
+全てのサポートされたタイプを表示する。
+.TP
+.BR \-V , " \-\-verify " [ \fIdevice ...]
+.\"O Test whether the partition table and partitions seem correct.
+パーティションテーブルとパーティションが正しく見えるかを
+テストする。
+.TP
+.BR "\-\-relocate \fIoper " \fIdevice
+Relocate partition table header. This command is currently supported for GPT header only.
+The argument \fIoper\fP can be:
+.RS
+.TP
+.B gpt-bak-std
+Move GPT backup header to the standard location at the end of the device.
+.TP
+.B gpt-bak-mini
+Move GPT backup header behind the last partition. Note that UEFI
+standard requires the backup header at the end of the device and partitioning
+tools can automatically relocate the header to follow the standard.
+.RE
+.\"O .SH OPTIONS
+.SH オプション
+.TP
+.BR \-a , " \-\-append"
+.\"O Don't create a new partition table, but only append the specified partitions.
+新しいパーティションテーブルを作成せず、指定したパーティションの
+追加のみを行う。
+.sp
+Note that unused partition maybe be re-used in this case although it is not the
+last partition in the partition table. See also \fB\-N\fR to specify entry in
+the partition table.
+.TP
+.BR \-b , " \-\-backup"
+.\"O Back up the current partition table sectors before starting the partitioning.
+.\"O The default backup file name is ~/sfdisk-<device>-<offset>.bak; to use another
+.\"O name see option \fB\-O\fR, \fB\-\-backup\-file\fR.
+パーティション作成を開始する前に、現在のパーティションテーブル
+セクタをバックアップする。
+デフォルトのバックアップファイル名は ~/sfdisk-<device>-<offset>.bak である。
+他の名前を使う場合は、オプション \fB\-O\fR, \fB\-\-backup\-file\fR を参照すること。
+.TP
+.BR \-\-color [ =\fIwhen ]
+.\"O Colorize the output.  The optional argument \fIwhen\fP
+.\"O can be \fBauto\fR, \fBnever\fR or \fBalways\fR.  If the \fIwhen\fR argument is omitted,
+.\"O it defaults to \fBauto\fR.  The colors can be disabled; for the current built-in default
+.\"O see the \fB\-\-help\fR output.  See also the \fBCOLORS\fR section.
+出力をカラー表示する。
+オプションの引き数 \fIwhen\fP は、
+\fBauto\fR, \fBnever\fR, \fBalways\fR のいずれかである。
+\fIwhen\fR 引き数が省略された場合、デフォルトは \fBauto\fR である。
+カラー表示は無効化できる。
+現在の組み込みのデフォルトは、\fB\-\-help\fR の出力を参照すること。
+\fBカラー表示\fR セクションも参照すること。
+.TP
+.BR \-f , " \-\-force"
+.\"O Disable all consistency checking.
+全ての整合性チェックを無効化する。
+.TP
+.B \-\-Linux
+.\"O Deprecated and ignored option.  Partitioning that is compatible with
+.\"O Linux (and other modern operating systems) is the default.
+推奨されず、無視されるオプション。
+Linux (と他の現代的な OS) と互換のパーティション作成は、デフォルトである。
+.TP
+\fB\-\-lock\fR[=\fImode\fR]
+Use exclusive BSD lock for device or file it operates.  The optional argument
+\fImode\fP can be \fByes\fR, \fBno\fR (or 1 and 0) or \fBnonblock\fR.  If the \fImode\fR
+argument is omitted, it defaults to \fB"yes"\fR.  This option overwrites
+environment variable \fB$LOCK_BLOCK_DEVICE\fR.  The default is not to use any
+lock at all, but it's recommended to avoid collisions with udevd or other
+tools.
+.TP
+.BR \-n , " \-\-no\-act"
+.\"O Do everything except writing to the device.
+デバイスに書き込む以外の全てを行う。
+.TP
+.B \-\-no\-reread
+.\"O Do not check through the re-read-partition-table ioctl whether the device is in use.
+パーティションテーブルの再読み込み ioctl を使った、
+デバイスが使用中か否かのチェックを行わない。
+.TP
+.B \-\-no\-tell\-kernel
+.\"O Don't tell the kernel about partition changes. This option is recommended together
+.\"O with \fB\-\-no\-reread\fR to modify a partition on used disk. The modified partition
+.\"O should not be used (e.g., mounted).
+パーティションの変更をカーネルに知らせない。
+このオプションは、使用されているディスクのパーティションを
+変更する際に、\fB\-\-no\-reread\fR とともに使うことが推奨される。
+変更されたパーティションは使用 (例えば、マウント) すべきではない。
+.TP
+.BR \-O , " \-\-backup\-file " \fIpath
+.\"O Override the default backup file name.  Note that the device name and offset
+.\"O are always appended to the file name.
+デフォルトのバックアップファイル名を上書きする。
+デバイス名とオフセットは常にファイル名に追加される点に注意すること。
+.TP
+.BR \-\-move-data [ =\fIpath ]
+.\"O Move data after partition relocation, for example when moving the beginning
+.\"O of a partition to another place on the disk.  The size of the partition has
+.\"O to remain the same, the new and old location may overlap.  This option requires
+.\"O option \fB\-N\fR in order to be processed on one specific partition only.
+例えば、パーティションの始まりをディスク上で他の場所に移動する
+場合などで、パーティションの再配置の後で、データを移動する。
+パーティションのサイズは同じでなければならず、
+新しい場所と古い場所は重なっても良い。
+このオプションは特定の 1 つのパーティションのみを扱うために、
+オプション \fB\-N\fR が必要である。
+
+.\"O The optional \fIpath\fR specifies log file name. The log file contains information
+.\"O about all read/write operations on the partition data. The word "@default" as
+.\"O a \fIpath\fR forces sfdisk to use ~/sfdisk-<devname>.move for the log.  The log is
+.\"O optional since v2.35.
+オプションの \fIpath\fR にはログファイル名を指定する。
+このログファイルは、パーティションデータの読み書き操作の情報を
+保持する。
+\fIpath\fR に単語 "@default" を指定すると、
+sfdisk はログとして ~/sfdisk-<devname>.move を使う。
+ログは v2.35 以降でオプションとなった。
+
+.\"O Note that this operation is risky and not atomic. \fBDon't forget to backup your data!\fR
+この操作は危険を伴い、アトミックでない点に注意すること。
+\fBデータのバックアップを忘れないこと!\fR
+
+.\"O See also \fB\-\-move\-use\-fsync\fR.
+\fB\-\-move\-use\-fsync\fR も参照すること。
+
+.\"O In the example below, the first command creates a 100MiB free area before
+.\"O the first partition and moves the data it contains (e.g., a filesystem),
+.\"O the next command creates a new partition from the free space (at offset 2048),
+.\"O and the last command reorders partitions to match disk order
+.\"O (the original sdc1 will become sdc2).
+以下の例では、最初のコマンドは、最初のパーティションの前に 100MiB の
+空き領域を作成し、最初のパーティションが保持するデータ
+(例えば、ファイルシステム) を移動する。
+2 つ目のコマンドは空き領域に (オフセット 2048 で) 新しいパーティションを作成する。
+最後のコマンドは、ディスクの順番に合うようにパーティションを
+並べ直す (元の sdc1 は sdc2 になる)。
+.RS
+.sp
+.B "echo '+100M,' | sfdisk \-\-move-data /dev/sdc \-N 1"
+.br
+.\"O .B "echo '2048,' | sfdisk /dev/sdc --append
+.B "echo '2048,' | sfdisk /dev/sdc \-\-append"
+.br
+.B sfdisk /dev/sdc \-\-reorder
+.sp
+.RE
+
+.TP
+.B \-\-move\-use\-fsync
+Use fsync system call after each write when move data to a new location by
+\fB\-\-move\-data\fR.
+.TP
+.BR \-o , " \-\-output " \fIlist
+.\"O Specify which output columns to print.  Use
+.\"O .B \-\-help
+.\"O to get a list of all supported columns.
+どの列を表示するかを指定する。
+サポートされている全ての列のリストを見るには、
+.B \-\-help
+を使うこと。
+.sp
+.\"O The default list of columns may be extended if \fIlist\fP is
+.\"O specified in the format \fI+list\fP (e.g., \fB\-o +UUID\fP).
+\fIlist\fP を (例えば. \fB\-o +UUID\fP のように)
+\fI+list\fP の形式で指定すると、デフォルトの列のリストを拡張できる。
+.TP
+.BR \-q , " \-\-quiet"
+.\"O Suppress extra info messages.
+余分な情報のメッセージを抑制する。
+.TP
+.BR \-u , " \-\-unit S"
+.\"O Deprecated option.  Only the sector unit is supported. This option is not
+.\"O supported when using the \-\-show-size command.
+推奨されないオプション。
+セクタ単位のみがサポートされる。
+\-\-show-size コマンドが使われた場合、このオプションはサポートされない。
+.TP
+.BR \-X , " \-\-label " \fItype
+.\"O Specify the disk label type (e.g., \fBdos\fR, \fBgpt\fR, ...).  If this option
+.\"O is not given, then \fBsfdisk\fR defaults to the existing label, but if there
+.\"O is no label on the device yet, then the type defaults to \fBdos\fR. The default
+.\"O or the current label may be overwritten by the "label: <name>" script header
+.\"O line. The option \fB\-\-label\fR does not force \fBsfdisk\fR to create empty
+.\"O disk label (see the \fBEMPTY DISK LABEL\fR section below).
+ディスクラベルタイプ (例えば、\fBdos\fR, \fBgpt\fR, ...) を指定する。
+このオプションが指定されない場合、\fBsfdisk\fR は既存のラベルをデフォルトとするが、
+デバイスにまだラベルがない場合、デフォルトは \fBdos\fR になる。
+デフォルト、または現在のラベルはスクリプトヘッダ行 "label: <name>" で上書きできる。
+オプション \fB\-\-label\fR を指定した場合、
+\fBsfdisk\fR は空のディスクラベルを作成しない
+(下記の \fB空のディスクラベル\fR のセクションを参照すること)。
+.TP
+.BR \-Y , " \-\-label\-nested " \fItype
+.\"O Force editing of a nested disk label.  The primary disk label has to exist already.
+.\"O This option allows editing for example a hybrid/protective MBR on devices with GPT.
+入れ子の (nested) ディスクラベルを強制的に編集する。
+プライマリディスクラベルが存在していなければならない。
+このオプションは、例えば GPT を持つデバイス上の
+ハイブリッド/保護 MBR の編集を可能にする。
+.TP
+.BR \-w , " \-\-wipe "\fIwhen
+.\"O Wipe filesystem, RAID and partition-table signatures from the device, in order
+.\"O to avoid possible collisions.  The argument \fIwhen\fR can be \fBauto\fR,
+.\"O \fBnever\fR or \fBalways\fR.  When this option is not given, the default is
+.\"O \fBauto\fR, in which case signatures are wiped only when in interactive mode;
+.\"O except the old partition-table signatures which are always wiped before create
+.\"O a new partition-table if the argument \fIwhen\fR is not \fBnever\fR. In all
+.\"O cases detected signatures are reported by warning messages before a new
+.\"O partition table is created.  See also
+.\"O .BR wipefs (8)
+.\"O command.
+衝突の可能性を避けるため、デバイスからファイルシステム、RAID、
+パーティションテーブルシグネチャを消す。
+引き数 \fIwhen\fR は \fBauto\fR, \fBnever\fR, \fBalways\fR のいずれかである。
+このオプションが指定されない場合、デフォルトは \fBauto\fR であり、
+シグネチャは対話モードでのみ消すことができる。
+引き数 \fIwhen\fR が \fBnever\fR でない場合、
+新しいパーティションテーブルを作成する前に、
+古いパーティションテーブルのシグネチャが常に消去される点が
+例外である。
+全ての場合で、新しいパーティションテーブルが作成される前に、
+検出されたシグネチャは警告メッセージを出して報告される。
+.BR wipefs (8)
+コマンドも参照すること。
+
+.TP
+.BR \-W , " \-\-wipe-partitions "\fIwhen
+.\"O Wipe filesystem, RAID and partition-table signatures from a newly created
+.\"O partitions, in order to avoid possible collisions.  The argument \fIwhen\fR can
+.\"O be \fBauto\fR, \fBnever\fR or \fBalways\fR.  When this option is not given, the
+.\"O default is \fBauto\fR, in which case signatures are wiped only when in
+.\"O interactive mode and after confirmation by user.  In all cases detected
+.\"O signatures are reported by warning messages after a new partition is created.
+.\"O See also
+.\"O .BR wipefs (8)
+.\"O command.
+衝突の可能性を避けるため、デバイスからファイルシステム、RAID、
+パーティションテーブルシグネチャを消す。
+引き数 \fIwhen\fR は \fBauto\fR, \fBnever\fR, \fBalways\fR のいずれかである。
+このオプションが指定されない場合、デフォルトは \fBauto\fR であり、
+シグネチャは対話モードでユーザーが確認した後にのみ
+消すことができる。
+全ての場合で、新しいパーティションテーブルが作成される前に、
+検出されたシグネチャは警告メッセージを出して報告される。
+.BR wipefs (8)
+コマンドも参照すること。
+
+.TP
+.BR \-v , " \-\-version"
+.\"O Display version information and exit.
+バージョン情報を表示して、終了する。
+.TP
+.BR \-h , " \-\-help"
+.\"O Display help text and exit.
+ヘルプを表示して、終了する。
+
+.\"O .SH INPUT FORMATS
+.SH 入力フォーマット
+.\"O .B sfdisk
+.\"O supports two input formats and generic header lines.
+.B sfdisk
+は 2 つの入力フォーマットとジオメトリヘッダ行をサポートする。
+
+.\"O .B Header lines
+.B ヘッダ行
+.RS
+.\"O The optional header lines specify generic information that apply to the partition
+.\"O table.  The header-line format is:
+オプションのヘッダ行は、パーティションテーブルに適用されるジオメトリ情報を指定する。
+ヘッダ行の形式は以下の通り:
+.RS
+.sp
+.B "<name>: <value>"
+.sp
+.RE
+.\"O The currently recognized headers are:
+現在、認識できるヘッダは以下の通り:
+.RS
+.TP
+.B unit
+.\"O Specify the partitioning unit.  The only supported unit is \fBsectors\fR.
+パーティション作成の単位を指定する。
+サポートされている単位は、\fBセクタ\fR のみである。
+.TP
+.B label
+.\"O Specify the partition table type.  For example \fBdos\fR or \fBgpt\fR.
+パーティションテーブルタイプを指定する。
+例えば、\fBdos\fR または \fBgpt\fR である。
+.TP
+.B label-id
+.\"O Specify the partition table identifier.  It should be a  hexadecimal number
+.\"O (with a 0x prefix) for MBR and a UUID for GPT.
+パーティションテーブル識別子を指定する。
+識別子は、MBR については (0x を前に付けた) 16 進数で、
+GPT については MBR である。
+.TP
+.B first-lba
+.\"O Specify the first usable sector for GPT partitions.
+GPT パーティションの最初の利用可能なセクタを指定する。
+.TP
+.B last-lba
+.\"O Specify the last usable sector for GPT partitions.
+GPT パーティションの最後の利用可能なセクタを指定する。
+.TP
+.B table-length
+.\"O Specify the maximal number of GPT partitions.
+GPT パーティションの最大数を指定する。
+.TP
+.B grain
+.\"O Specify minimal size in bytes used to calculate partitions alignment.  The
+.\"O default is 1MiB and it's strongly recommended to use the default.  Do not
+.\"O modify this variable if you're not sure.
+パーティション配置を計算するために使われる
+最小サイズをバイト単位で指定する。
+デフォルトは 1MiB であり、デフォルトとして使うことが強く推奨される。
+良く分からない場合は、この値を変更しないこと。
+.TP
+.B sector-size
+Specify sector size. This header is informative only and it is not used when
+sfdisk creates a new partition table, in this case the real device specific
+value is always used and sector size from the dump is ignored.
+.RE
+.sp
+.\"O Note that it is only possible to use header lines before the first partition
+.\"O is specified in the input.
+入力で指定される最初のパーティションの前に、
+ヘッダ行を使うことが可能である点に注意すること。
+.RE
+
+.\"O .B Unnamed-fields format
+.B 無名フィールド形式
+.RS
+.RS
+.sp
+.I start size type bootable
+.sp
+.RE
+.\"O where each line fills one partition descriptor.
+ここで各行が 1 つのパーティションディスクリプターに対応する。
+.sp
+.\"O Fields are separated by whitespace, comma or semicolon possibly
+.\"O followed by whitespace; initial and trailing whitespace is ignored.
+.\"O Numbers can be octal, decimal or hexadecimal; decimal is the default.
+.\"O When a field is absent, empty or specified as '\-' a default value is
+.\"O used.  But when the \fB\-N\fR option (change a single partition) is
+.\"O given, the default for each field is its previous value.
+フィールドは、空白、カンマ、セミコロンで区切られ、
+空白を続けることができる。
+最初と最後の空白は無視される。
+数値は 8 進数、10 進数、16 進数のいずれかであり、10 進数がデフォルトである。
+フィールドがない場合、空白の場合、'\-' が指定された場合、
+デフォルト値が使われる。
+(1 つのパーティションを変更する) \fB\-N\fR オプションが指定された場合、
+各フィールドのデフォルト値は、前の値である。
+.sp
+.\"O The default value of
+.\"O .I start
+.\"O is the first non-assigned sector aligned according to device I/O limits.
+.\"O The default start offset for the first partition is 1 MiB.  The offset may
+.\"O be followed by the multiplicative suffixes (KiB, MiB, GiB, TiB, PiB,
+.\"O EiB, ZiB and YiB) then the number is interpreted as offset in bytes.
+.I start
+のデフォルト値は、デバイスの I/O 制限に基づいて配置された、
+最初のアサインされていないセクタである。
+最初のパーティションのデフォルトの開始オフセットは、1 MiB である。
+オフセットには乗数のサフィックス (KiB, MiB, GiB, TiB, PiB,
+EiB, ZiB, YiB) を付けることができる。
+数値はバイト単位のオフセットとして解釈される。
+.sp
+.\"O The default value of
+.\"O .I size
+.\"O indicates "as much as possible"; i.e., until the next partition or
+.\"O end-of-device.  A numerical argument is by default interpreted as a
+.\"O number of sectors, however if the size is followed by one of the
+.\"O multiplicative suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB)
+.\"O then the number is interpreted as the size of the partition in bytes
+.\"O and it is then aligned according to the device I/O limits.  A '+' can
+.\"O be used instead of a number to enlarge the partition as much as
+.\"O possible.  Note '+' is equivalent to the default behaviour for a new
+.\"O partition; existing partitions will be resized as required.
+.I size
+のデフォルト値は「可能か限り大きく」を表す。
+つまり、次のパーティションまで、またはデバイスの終わりまでである。
+数値の引き数はデフォルトではセクタ数として解釈されるが、
+サイズに乗数のサフィックス (KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB) を付けると、
+数値はバイト単位のパーティションサイズとして解釈され、
+デバイスの I/O 制限に基づいて配置される。
+数値の代わりに '+' を使うと、パーティションをできる限り拡張する。
+'+' は新しいパーティションについてのデフォルトの挙動と同じである。
+既存のパーティションは、必要に応じてリサイズされる。
+.sp
+.\"O The partition
+.\"O .I type
+.\"O is given in hex for MBR (DOS), without the 0x prefix, a GUID string for GPT, or
+.\"O a shortcut:
+パーティションタイプ
+.I type
+は、MBR (DOS) については、プレフィックス 0x を付けない 16 進数で指定する。
+また、GPT については、GUID 文字列で指定する。
+もしくは、ショートカットで指定する:
+
+The partition
+.I type
+is given in hex for MBR (DOS) where 0x prefix is optional; a GUID string for
+GPT; a shortcut or an alias. It's recommended to use two letters for MBR hex codes to
+avoid collision between deprecated shortcut 'E' and '0E' MBR hex code. For backward
+compatibility sfdisk tries to interpret
+.I type
+as a shortcut as a first possibility in partitioning scripts although on other places (e.g.
+\fB\-\-part-type command)\fR it tries shortcuts as the last possibility.
+
+Since v2.36 libfdisk supports partition type aliases as extension to shortcuts. The alias is a
+simple human readable word (e.g. "linux").
+
+Supported shortcuts and aliases:
+.RS
+.TP
+.B L - 別名 'linux'
+.\"O .B L - alias 'linux'
+.\"O Linux; means 83 for MBR and 0FC63DAF-8483-4772-8E79-3D69D8477DE4 for GPT.
+Linux; MBR では 83 であり、
+GPT では 0FC63DAF-8483-4772-8E79-3D69D8477DE4 である。
+.TP
+.B S - 別名 'swap'
+.\"O .B S - alias 'swap'
+.\"O swap area; means 82 for MBR and 0657FD6D-A4AB-43C4-84E5-0933C84B4F4F for GPT
+スワップ領域; MBR では 82 であり、
+GPT では 0657FD6D-A4AB-43C4-84E5-0933C84B4F4F である。
+.TP
+.B Ex - 別名 'extended'
+.\"O .B Ex - alias 'extended'
+.\"O MBR extended partition; means 05 for MBR.  The original shortcut 'E' is deprecated due to collision with
+.\"O 0x0E MBR partition type.
+拡張パーティション; MBR では 05 である。
+元々のショートカット 'E' は、0x0E MBR パーティションタイプと衝突するので、古い。
+.TP
+.B H - 別名 'home'
+.\"O .B H - alias 'home'
+.\"O home partition; means 933AC7E1-2EB4-4F13-B844-0E14E2AEF915 for GPT
+ホームパーティション; GPT では 933AC7E1-2EB4-4F13-B844-0E14E2AEF915 である。
+.TP
+.B U - 別名 'uefi'
+.\"O .B U - alias 'uefi'
+.\"O EFI System partition, means EF for MBR and C12A7328-F81F-11D2-BA4B-00A0C93EC93B for GPT
+EFI システムパーティション; MBR では EF であり、
+GPT では C12A7328-F81F-11D2-BA4B-00A0C93EC93B である。
+.TP
+.B R - 別名 'raid'
+.\"O .B R - alias 'raid'
+.\"O Linux RAID; means FD for MBR and A19D880F-05FC-4D3B-A006-743F0F84911E for GPT
+Linux RAID; MBR では FD であり、
+GPT では A19D880F-05FC-4D3B-A006-743F0F84911E である。
+.TP
+.B V - 別名 'lvm'
+.\"O .B V - alias 'lvm'
+.\"O LVM; means 8E for MBR and E6D6D379-F507-44C2-A23C-238F2A3DF928 for GPT
+LVM; MBR では 8E であり、
+GPT では E6D6D379-F507-44C2-A23C-238F2A3DF928 である。
+.RE
+.PP
+.\"O The default
+.\"O .I type
+.\"O value is
+.\"O .I linux
+デフォルトの
+.I type
+の値は
+.I linux
+である。
+.sp
+The shortcut 'X' for Linux extended partition (85) is deprecated in favour of 'Ex'.
+
+.\"O .I bootable
+.\"O is specified as [\fB*\fR|\fB-\fR], with as default not-bootable.  The
+.\"O value of this field is irrelevant for Linux - when Linux runs it has
+.\"O been booted already - but it might play a role for certain boot
+.\"O loaders and for other operating systems.
+.I bootable
+は [\fB*\fR|\fB-\fR] で指定する。
+デフォルトではブート可能でない。
+このフィールドの値は Linux とは関係ない。
+- Linux が稼働しているなら、既にブート済みである -
+しかし、このフィールドはある種のブートローダや他の OS で用いられる。
+.RE
+
+.\"O .B Named-fields format
+.B 名前付きフィールド形式
+.RS
+.\"O This format is more readable, robust, extensible and allows specifying additional
+.\"O information (e.g., a UUID).  It is recommended to use this format to keep your scripts
+.\"O more readable.
+この形式は、より読みやすく、堅牢で、拡張可能で、追加の情報 (例えば、UUID) を指定できる。
+スクリプトをより読みやすくするために、この形式を使うことが
+推奨される。
+.RS
+.sp
+.RI [ "device \fB:" ] " name" [\fB= value "], ..."
+.sp
+.RE
+.\"O The
+.\"O .I device
+.\"O field is optional.  \fBsfdisk\fR extracts the partition number from the
+.\"O device name.  It allows specifying the partitions in random order.
+.\"O This functionality is mostly used by \fB\-\-dump\fR.
+.\"O Don't use it if you are not sure.
+.I device
+フィールドはオプションである。
+\fBsfdisk\fR はデバイス名からパーティション番号を抽出する。
+パーティションをランダムな順番で指定できる。
+この機能は主に \fB\-\-dump\fR で使われる。
+良く分からない場合は、使わないこと。
+
+.\"O The
+.\"O .I value
+.\"O can be between quotation marks (e.g., name="This is partition name").
+.\"O The currently supported fields are:
+.I value
+はクォーテーションマークの間に指定できる
+(例えば name="This is partition name")。
+現在サポートされているフィールドは以下の通り:
+.RS
+.TP
+.BI start= number
+.\"O The first non-assigned sector aligned according to device I/O limits.  The default
+.\"O start offset for the first partition is 1 MiB. The offset may be followed by
+.\"O the multiplicative suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB) then
+.\"O the number is interpreted as offset in bytes.
+デバイスの I/O 制限に基づいて配置された、
+最初のアサインされていないセクタである。
+最初のパーティションのデフォルトの開始オフセットは、1 MiB である。
+オフセットには乗数のサフィックス (KiB, MiB, GiB, TiB, PiB,
+EiB, ZiB, YiB) を付けることができる。
+数値はバイト単位のオフセットとして解釈される。
+.TP
+.BI size= number
+.\"O Specify the partition size in sectors.  The number may be followed by the multiplicative
+.\"O suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and YiB), then it's interpreted as size
+.\"O in bytes and the size is aligned according to device I/O limits.
+パーティションサイズをセクタ数で指定する。
+数値に乗数のサフィックス (KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB) を付けると、
+数値はバイト単位のサイズとして解釈され、デバイスの I/O 制限に基づいて配置される。
+.TP
+.B bootable
+.\"O Mark the partition as bootable.
+パーティションをブート可能に設定する。
+.TP
+.BI attrs= string
+.\"O Partition attributes, usually GPT partition attribute bits.  See
+.\"O \fB\-\-part\-attrs\fR for more details about the GPT-bits string format.
+パーティション属性。通常は GPT パーティション属性ビット。
+GPT ビット文字列の形式の詳細は、\fB\-\-part\-attrs\fR を参照すること。
+.TP
+.BI uuid= string
+.\"O GPT partition UUID.
+GPT パーティション UUID。
+.TP
+.BI name= string
+.\"O GPT partition name.
+GPT パーティション 名。
+.TP
+.BI type= code
+.\"O A hexadecimal number (without 0x) for an MBR partition, a GUID for a GPT partition,
+.\"O or a shortcut as for unnamed-fields format.
+.\"O For backward compatibility the \fBId=\fR field has the same meaning.
+MBR パーティションについては、(0x なしの) 16 進数である。
+GPT パーティションについては、GUID である。
+無名フィールド形式については、ショートカットである。
+後方互換のため、\fBId=\fR フィールドは同じ意味を持つ。
+.RE
+.RE
+
+.\"O .SH EMPTY DISK LABEL
+.SH 空のディスクラベル
+.\"O .B sfdisk
+.\"O does not create partition table without partitions by default. The lines with
+.\"O partitions are expected in the script by default. The empty partition table has
+.\"O to be explicitly requested by "label: <name>" script header line without any
+.\"O partitions lines. For example:
+.B sfdisk
+は、デフォルトでは、パーティションなしではパーティションテーブルを
+作成しない。
+スクリプトは、デフォルトでは、パーティションを指定した行を想定している。
+空のパーティションテーブルを明示的に要求するには、
+パーティションの行がない "label: <name>" スクリプトヘッダを指定すればよい。
+例えば:
+.RS
+.sp
+.B "echo 'label: gpt' | sfdisk /dev/sdb"
+.sp
+.RE
+.\"O creates empty GPT partition table. Note that the \fB\-\-append\fR disables this feature.
+で空の GPT パーティションテーブルを作成できる。
+\fB\-\-append\fR は、この機能を無効化する点に注意すること。
+
+.\"O .SH BACKING UP THE PARTITION TABLE
+.SH パーティションテーブルのバックアップ
+.\"O It is recommended to save the layout of your devices.
+.\"O .B sfdisk
+.\"O supports two ways.
+デバイスのレイアウトを保存することが推奨される。
+.B sfdisk
+は 2 つの方法をサポートしている。
+.sp
+.\"O Use the \fB\-\-dump\fR option to save a description of the device layout
+.\"O to a text file.  The dump format is suitable for later \fBsfdisk\fR input.
+.\"O For example:
+\fB\-\-dump\fR オプションでデバイスレイアウトの記述を
+テキストファイルに保存できる。
+ダンプ形式は、その後の \fBsfdisk\fR の入力に適している。
+.\"O For example:
+例えば:
+.RS
+.sp
+.B "sfdisk \-\-dump /dev/sda > sda.dump"
+.sp
+.RE
+.\"O This can later be restored by:
+これは、後から以下のようにして復旧できる:
+.RS
+.sp
+.B "sfdisk /dev/sda < sda.dump"
+.RE
+
+.\"O If you want to do a full (binary) backup of all sectors where the
+.\"O partition table is stored,
+.\"O then use the \fB\-\-backup\fR option.  It writes the sectors to
+.\"O ~/sfdisk-<device>-<offset>.bak files.  The default name of the backup file can
+.\"O be changed with the \fB\-\-backup\-file\fR option.  The backup files
+.\"O contain only raw data from the \fIdevice\fR.
+.\"O Note that the same concept of backup files is used by
+.\"O .BR wipefs (8).
+.\"O For example:
+パーティションテーブルが格納されている、
+全てのセクタの完全な (バイナリ) バックアップをしたい場合、
+\fB\-\-backup\fR オプションを使うこと。
+このオプションは、セクタに ~/sfdisk-<device>-<offset>.bak ファイルを書き出す。
+バックアップファイルのデフォルトの名前は、
+\fB\-\-backup\-file\fR オプションで変更できる。
+バックアップファイルは、\fIdevice\fR からの生データを保持する。
+バックアップファイルの同じ考え方が、
+.BR wipefs (8)
+で使われている点に注意すること。
+例えば:
+.RS
+.sp
+.B "sfdisk \-\-backup /dev/sda"
+.sp
+.RE
+.\"O The GPT header can later be restored by:
+GPT ヘッダは、後から以下のようにして復旧できる:
+.RS
+.sp
+.nf
+.B "dd  if=~/sfdisk-sda-0x00000200.bak  of=/dev/sda  \e"
+.B "  seek=$((0x00000200))  bs=1  conv=notrunc"
+.fi
+.sp
+.RE
+.\"O Note that \fBsfdisk\fR since version 2.26 no longer provides the \fB\-I\fR option to
+.\"O restore sectors.
+.\"O .BR dd (1)
+.\"O provides all necessary functionality.
+\fBsfdisk\fR は、バージョン 2.26 以降で、
+セクタの復旧に \fB\-I\fR オプションを提供しない点に注意すること。
+.BR dd (1)
+が必要な全ての機能を提供している。
+
+.\"O .SH COLORS
+.SH カラー表示
+.\"O Implicit coloring can be disabled by an empty file \fI/etc/terminal-colors.d/sfdisk.disable\fR.
+暗黙のカラー表示は空ファイル \fI/etc/terminal-colors.d/sfdisk.disable\fR で
+無効化できる。
+
+.\"O See
+.\"O .BR terminal-colors.d (5)
+.\"O for more details about colorization configuration. The logical color names
+.\"O supported by
+.\"O .B sfdisk
+.\"O are:
+カラー表示設定の詳細は
+.BR terminal-colors.d (5)
+を参照すること。
+.B sfdisk
+でサポートされている論理的なカラー名は以下の通り:
+.TP
+.B header
+.\"O The header of the output tables.
+出力テーブルのヘッダー。
+.TP
+.B warn
+.\"O The warning messages.
+警告メッセージ。
+.TP
+.B welcome
+.\"O The welcome message.
+ようこそのメッセージ。
+
+.\"O .SH ENVIRONMENT
+.SH 環境変数
+.IP SFDISK_DEBUG=all
+.\"O enables sfdisk debug output.
+sfdisk デバッグ出力を有効化する。
+.IP LIBFDISK_DEBUG=all
+.\"O enables libfdisk debug output.
+libfdisk デバッグ出力を有効化する。
+.IP LIBBLKID_DEBUG=all
+.\"O enables libblkid debug output.
+libblkid デバッグ出力を有効化する。
+.IP LIBSMARTCOLS_DEBUG=all
+.\"O enables libsmartcols debug output.
+libsmartcols デバッグ出力を有効化する。
+.IP LOCK_BLOCK_DEVICE=<mode>
+use exclusive BSD lock.  The mode is "1" or "0".  See \fB\-\-lock\fR for more details.
+
+.\"O .SH NOTES
+.SH 注意
+.\"O Since version 2.26 \fBsfdisk\fR no longer provides the \fB\-R\fR or
+.\"O \fB\-\-re\-read\fR option to force the kernel to reread the partition table.
+.\"O Use \fBblockdev \-\-rereadpt\fR instead.
+バージョン 2.26 以降で \fBsfdisk\fR は、
+カーネルにパーティションテーブルを再読み込みさせるための、
+\fB\-R\fR と \fB\-\-re\-read\fR オプションを提供しない。
+代わりに \fBblockdev \-\-rereadpt\fR を使うこと。
+.PP
+.\"O Since version 2.26 \fBsfdisk\fR does not provide the \fB\-\-DOS\fR, \fB\-\-IBM\fR, \fB\-\-DOS\-extended\fR,
+.\"O \fB\-\-unhide\fR, \fB\-\-show\-extended\fR, \fB\-\-cylinders\fR, \fB\-\-heads\fR, \fB\-\-sectors\fR,
+.\"O \fB\-\-inside\-outer\fR, \fB\-\-not\-inside\-outer\fR options.
+バージョン 2.26 以降で \fBsfdisk\fR は、
+\fB\-\-DOS\fR, \fB\-\-IBM\fR, \fB\-\-DOS\-extended\fR,
+\fB\-\-unhide\fR, \fB\-\-show\-extended\fR, \fB\-\-cylinders\fR, \fB\-\-heads\fR, \fB\-\-sectors\fR,
+\fB\-\-inside\-outer\fR, \fB\-\-not\-inside\-outer\fR
+オプションを提供しない。
+
+.\"O .SH AUTHORS
+.SH 著者
+Karel Zak <kzak@redhat.com>
+.PP
+.\"O The current sfdisk implementation is based on the original sfdisk
+.\"O from Andries E. Brouwer.
+現在の sfdisk の実装は、オリジナルの Andries E. Brouwer の
+sfdisk に基づいている。
+
+.\"O .SH "SEE ALSO"
+.SH 関連項目
+.BR fdisk (8),
+.BR cfdisk (8),
+.BR parted (8),
+.BR partprobe (8),
+.BR partx (8)
+
+.\"O .SH AVAILABILITY
+.SH 入手方法
+.\"O The sfdisk command is part of the util-linux package and is available from
+.\"O https://www.kernel.org/pub/linux/utils/util-linux/.
+sfdisk コマンドは util-linux パッケージの一部であり、
+https://www.kernel.org/pub/linux/utils/util-linux/
+から入手できる。
