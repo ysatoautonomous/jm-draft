@@ -1,0 +1,666 @@
+<HTML>
+  <HEAD>
+  <META CHARSET="UTF-8"/>
+  <META HTTP-QUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
+  <LINK REL="stylesheet" TYPE="text/css"
+	    HREF="../../../../css/jm-draft.css"/>
+  <TITLE>Manpage of UMOUNT</TITLE>
+</HEAD><BODY>
+<H1>UMOUNT</H1>
+Section: System Administration (8)<BR>Updated: July 2014<BR><A HREF="#index">Index</A>
+<A HREF="https://github.com/ysatoautonomous/jm-draft/wiki">Return to Main Contents</A><HR>
+
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>名前</H2>
+
+
+umount - ファイルシステムをアンマウントする
+
+<A NAME="lbAC">&nbsp;</A>
+<H2>書式</H2>
+
+<B>umount -a</B>
+
+[<B>-dflnrv</B>]
+
+[<B>-t</B>
+
+<I>fstype</I>]
+
+[<B>-O</B>
+
+<I>option</I>...]
+
+<P>
+<B>umount</B>
+
+[<B>-dflnrv</B>]
+
+{<I>directory</I>|<I>device</I>}...
+
+<P>
+<B>umount</B>
+
+<B>-h</B>|<B>-V</B>
+
+<P>
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>説明</H2>
+
+
+
+
+
+
+
+
+<B>umount</B>
+
+コマンドは、ファイルの階層構造から指定したファイルシステムを切り離す。
+ファイルシステムの指定には、システムをマウントしたディレクトリを与える。
+またファイルシステムの実体が存在するスペシャルデバイスを与えることも
+できるが、
+このやり方は古く、デバイスが 2 つ以上のディレクトリに
+マウントされている場合に失敗するだろう。
+<P>
+
+
+
+
+
+
+
+
+
+ファイルシステムが `busy' である時にはアンマウントは実行できない。
+例えばそのファイルシステム上で、
+ファイルがオープンされている
+(あるいはスワップファイルが使用中である) 場合や、
+あるプロセスのワーキングディレクトリがそこにある場合などが該当する。
+この原因となるプロセスが
+<B>umount</B>
+
+自身の場合もありうる。
+<B>umount</B>
+
+は libc をオープンするし、
+libc はまた多くのファイル (locale ファイルなど)
+をオープンする可能性がある。
+lazy アンマウントにより、この問題は回避できるが、別の問題を引き起こす。
+下記の <B>--lazy</B> の説明を参照すること。
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>オプション</H2>
+
+<DL COMPACT>
+<DT><B>-a</B>,<B> --all</B>
+
+<DD>
+
+
+
+
+
+
+
+<I>/proc/self/mountinfo</I>
+
+(または、推奨されない
+<I>/etc/mtab</I>)
+
+に記述されている
+全てのファイルシステムがアンマウントされる。
+proc, devfs, devpts, sysfs, rpc_pipefs, nfsd ファイルシステムは例外である。
+このファイルシステムのリストは、<B>--types</B> umount オプションで置き換えられる。
+<DT><B>-A</B>,<B> --all-targets</B>
+
+<DD>
+
+
+
+
+
+
+
+
+
+
+指定されたファイルシステムについて、現在のマウント名前空間で全ての
+マウントポイントをアンマウントする。
+ファイルシステムは、マウントポイント、またはデバイス名 (または UUID など) の
+いずれかで指定できる。
+このオプションを <B>--recursive</B> とともに使うと、
+ファイルシステム中の全ての入れ子 (nested) のマウントが、
+再帰的にアンマウントされる。
+このオプションは
+<I>/etc/mtab</I>
+
+が
+<I>/proc/mounts</I>
+
+へのシンボリックリンクである
+システムでのみサポートされる。
+<DT><B>-c</B>,<B> --no-canonicalize</B>
+
+<DD>
+
+
+
+
+
+
+
+パスを正規化 (canonicalize) しない。
+パスの正規化は
+<B><A HREF="../man2/stat.2.html">stat</A></B>(2)
+
+と
+<B><A HREF="../man2/readlink.2.html">readlink</A></B>(2)
+
+システムコールに基づいている。
+これらのシステムコールは、あるケース (例えば NFS でサーバが利用できない場合など) では
+ハングする可能性がある。
+このオプションはマウントポイントへの正規化されたパスで使う
+必要がある。
+<P>
+
+
+
+
+
+このオプションのより詳細は、
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+の man ページを参照すること。
+<B>umount</B> は、このオプションを
+<B>/sbin/umount.</B><I>type</I>
+
+ヘルパーに渡さない点に注意すること。
+<DT><B>-d</B>,<B> --detach-loop</B>
+
+<DD>
+
+
+
+
+アンマウントされたデバイスが loop デバイスである場合、
+この loop デバイスの解放も行う。
+&quot;autoclear&quot; 機能がデフォルトで有効になっている場合、
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+で初期化されたデバイスについて、
+このオプションは必要ではない。
+<DT><B>--fake</B>
+
+<DD>
+
+
+
+
+
+
+
+実際のシステムコール、または umount ヘルパーの実行以外の、
+全てのを実行する。
+これはファイルシステムのアンマウントを「騙す (fake)」。
+これは、
+<B>-n</B>
+
+オプションでアンマウントするのに先立ち、
+推奨されない
+<I>/etc/mtab</I>
+
+のエントリを削除するのに使われる。
+<DT><B>-f</B>,<B> --force</B>
+
+<DD>
+
+強制的にアンマウントする (到達不可能な NFS システムの場合)。
+<P>
+
+
+
+このオプションは umount コマンドがハングしないことを保証するものではない。
+umount で到達不能な NFS 上での、望まない readlink と stat システムコールを避けるためには、
+シンボリックリンクを使わない絶対パスを使うことが強く推奨される。
+<DT><B>-i</B>,<B> --internal-only</B>
+
+<DD>
+
+
+<B>/sbin/umount.</B><I>filesystem</I> ヘルパーがあっても、呼び出さない。
+デフォルトでは、ヘルパープログラムがある場合は、それが呼び出される。
+<DT><B>-l</B>,<B> --lazy</B>
+
+<DD>
+
+
+
+lazy アンマウント。
+現在のファイルシステムの階層構造から指定されたファイルシステムを
+切り離し、
+ファイルシステムへの全ての参照が busy でなくなった時点ですぐに整理する。
+<P>
+
+
+
+
+
+このオプションをネットワークファイルシステム、
+またはサブマウントのあるローカルファイルシステムで使う場合、
+近い将来にシステムリブートが求められるようになるかもしれない。
+<B>umount -l</B> の推奨される使い方は、到達不能なネットワーク共有による
+シャットダウン時のハングを防止することである。
+到達不能なネットワーク共有は、ダウンしたサーバやネットワーク
+パーティションにより、通常の umount がハングを起こす。
+これらの共有の再マウントは不可能だろう。
+<DT><B>-N</B>,<B> --namespace </B><I>ns</I>
+
+<DD>
+
+
+
+<I>ns</I> で指定されたマウント名前空間で umount を実行する。
+<I>ns</I> は、その名前空間で実行されている プロセスの PID、
+またはその名前空間を表す特殊ファイルのいずれかである。
+<P>
+
+
+
+
+
+
+
+
+
+
+<B><A HREF="../man8/umount.8.html">umount</A></B>(8)
+
+は
+<I>/etc/fstab</I>
+
+の読み込み、
+<I>/etc/mtab</I>
+
+の書き込み (または
+<I>/run/mount</I>
+
+の書き込み)、
+<B><A HREF="../man2/umount.2.html">umount</A></B>(2)
+
+システムコールの呼び出し時に、名前空間を切り替える。
+
+
+
+
+それ以外の場合は、元々の名前空間で実行される。
+これは、
+<B><A HREF="../man2/umount.2.html">umount</A></B>(2)
+
+コマンドを実行するのに必要なライブラリまたは他に要求されるものを、
+対象のマウント名前空間に持っている必要がないことを意味する。
+<P>
+
+より詳細な情報は <B><A HREF="../man7/mount_namespaces.7.html">mount_namespaces</A></B>(7) を参照すること。
+<DT><B>-n</B>,<B> --no-mtab</B>
+
+<DD>
+
+
+アンマウントの際、
+<I>/etc/mtab</I>
+
+への書き込みを行わない。
+<DT><B>-O</B>,<B> --test-opts </B><I>option</I>...
+
+<DD>
+
+
+このオプションが
+<I>/etc/fstab</I>
+
+で指定されているファイルシステムについてのみアンマウントを行う。
+
+
+
+
+コンマで区切ることで 2 つ以上のオプションを指定できる。
+オプションに
+<B>no</B>
+
+を前置することもでき、
+この場合は動作を行わないオプションを指定したことになる。
+<DT><B>-q</B>,<B> --quiet</B>
+
+<DD>
+
+&quot;not mounted&quot; というエラーメッセージを抑止する。
+<DT><B>-R</B>,<B> --recursive</B>
+
+<DD>
+
+
+
+
+
+
+
+指定された各ディレクトリを再帰的にアンマウントする。
+各ディレクトリの再帰は、チェーンのアンマウント操作が何らかの理由で
+失敗した場合にストップする。
+マウントポイント間の関係は
+<I>/proc/self/mountinfo</I>
+
+エントリで決定される。
+ファイルシステムはマウントポイントのパスで指定しなればならない。
+デバイス名 (または UUID) での再帰的アンマウントはサポートされない。
+<DT><B>-r</B>,<B> --read-only</B>
+
+<DD>
+
+アンマウントが失敗した場合、リードオンリーでファイルシステムの
+再マウントを試みる。
+<DT><B>-t</B>,<B> --types </B><I>type</I>...
+
+<DD>
+
+
+
+
+
+
+
+指定した
+<I>type</I>
+
+のファイルシステムにのみに対して動作を行う。
+複数のファイルシステムをコンマで区切ったリストで指定することも
+できる。
+ファイルシステムのリストに
+<B>no</B>
+
+を前置することもでき、
+この場合は動作を行わないファイルシステムのタイプを指定したことに
+なる。
+
+
+
+
+
+
+<B>umount</B>
+
+はマウントされているファイルシステムの情報をカーネル (/proc/mounts) から読み取り、
+そのファイルシステム名が、
+<I>/etc/fstab</I>
+
+で使われているファイルシステム名とは異なるかもしれない点に
+注意すること (例えば、&quot;nfs4&quot; と &quot;nfs&quot;)。
+<DT><B>-v</B>,<B> --verbose</B>
+
+<DD>
+
+詳細表示モード。
+<DT><B>-V</B>,<B> --version</B>
+
+<DD>
+
+バージョン情報を表示して、終了する。
+<DT><B>-h</B>,<B> --help</B>
+
+<DD>
+
+ヘルプを表示して、終了する。
+
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>スーパーユーザー以外による umount</H2>
+
+
+通常は、スーパーユーザーのみがファイルシステムを umount できる。
+
+
+
+
+
+
+
+しかし、
+<I>fstab</I>
+
+の行に
+<B>user</B>
+
+オプションが含まれている場合、対応するファイルシステムを誰でも umount できる。
+より詳細は、
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+の man ページを参照すること。
+<P>
+
+
+
+
+
+バージョン 2.34 以降では、カーネルのマウントテーブルにユーザーの ID が含まれる場合、
+<B>umount</B> コマンドは fuse ファイルシステムの
+umount 操作に使えるようになった。
+この場合、fstab の user= マウントオプションは必要ない。
+<P>
+
+
+
+
+バージョン 2.35 以降では、ユーザーの権限 (パーミッション) が
+libmount の内部セキュリティルールに基づいて不十分な場合でも、
+<B>umount</B> は終了しない。
+
+
+
+この挙動は、root 権限が必要ない場合
+(例えば、fuse ファイルシステム、ユーザー名前空間など) をサポートしている。
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>LOOP デバイス</H2>
+
+
+
+
+
+
+
+<B>umount</B>
+
+は、
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+コマンドで
+<I>/etc/mtab</I>
+
+とは関係なく以前に初期化されたループデバイスを、自動的に切り離す。
+<P>
+
+
+
+
+この場合、デバイスは &quot;autoclear&quot; フラグで初期化される
+(より詳細は
+<B><A HREF="../man8/losetup.8.html">losetup</A></B>(8)
+
+の出力を参照すること)。
+それ以外の場合、オプション <B> --detach-loop</B> の使用、または
+<B>losetup -d &lt;device&gt;</B> の呼び出しが必要である。
+autoclear 機能は Linux 2.6.25 以降でサポートされる。
+
+<A NAME="lbAH">&nbsp;</A>
+<H2>外部ヘルパー</H2>
+
+
+外部アンマウントのヘルパーの書式は以下の通り:
+<P>
+
+<DL COMPACT><DT><DD>
+<B>umount.</B><I>suffix</I>
+
+{<I>directory</I>|<I>device</I>}
+
+[<B>-flnrv</B>]
+
+[<B>-N</B>
+
+<I>namespace</I>]
+
+[<B>-t</B>
+
+<I>type</I>.<I>subtype</I>]
+
+</DL>
+
+<P>
+
+
+
+
+
+ここで <I>suffix</I> はファイルシステムタイプ
+(または <B>uhelper=</B> からの値、
+または mtab ファイルの <B>helper=</B> マーカーの値) である。
+<B>-t</B> オプションは、サブタイプをサポートするファイルシステムで使用できる。
+例えば:
+<P>
+
+<DL COMPACT><DT><DD>
+<B>umount.fuse -t fuse.sshfs</B>
+
+</DL>
+
+<P>
+
+
+
+
+
+(例えば、<B><A HREF="../man1/udisks.1.html">udisks</A></B>(1) でマウントされたデバイスなど)
+<I>/etc/fstab</I> に定義されていないマウントポイントを、
+通常のユーザーがアンマウントする必要がある場合、
+<B>uhelper=</B><I>something</I> マーカー (非特権ヘルパー) が、
+<I>/etc/mtab</I> ファイルに書かれている場合がある。
+<P>
+
+
+
+
+mtab ファイルに <B>helper=</B><I>type</I> マーカーがあると、
+UID に関係なく、全てのアンマウントリクエストは、
+<B>/sbin/umount.</B><I>type</I> ヘルパーに送られる。
+<P>
+
+
+
+<I>/etc/mtab</I> は現在では非推奨であり、
+helper= と他のユーザー空間のマウントオプションは libmount で管理されている点に注意すること。
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>環境変数</H2>
+
+<DL COMPACT>
+<DT>LIBMOUNT_FSTAB=&lt;path&gt;<DD>
+
+fstab ファイルのデフォルトの場所を上書きする (suid を無視する)。
+<DT>LIBMOUNT_MTAB=&lt;path&gt;<DD>
+
+mtab ファイルのデフォルトの場所を上書きする (suid を無視する)。
+<DT>LIBMOUNT_DEBUG=all<DD>
+
+libmount デバッグ出力を有効にする。
+
+</DL>
+<A NAME="lbAJ">&nbsp;</A>
+<H2>ファイル</H2>
+
+<DL COMPACT>
+<DT><I>/etc/mtab</I>
+
+<DD>
+
+
+
+マウントされているファイルシステムの一覧
+(非推奨であり、通常は
+<I>/proc/mounts</I>
+
+へのシンボリックリンクで置き換えられている)。
+<DT><I>/etc/fstab</I>
+
+<DD>
+
+既存のファイルシステムの一覧。
+<DT><I>/proc/self/mountinfo</I>
+
+<DD>
+
+カーネルによって生成された、マウントされているファイルシステムの
+一覧。
+
+</DL>
+<A NAME="lbAK">&nbsp;</A>
+<H2>履歴</H2>
+
+
+
+
+<B>umount</B>
+
+コマンドは Version 6 の AT&amp;T UNIX から導入された。
+
+<A NAME="lbAL">&nbsp;</A>
+<H2>関連項目</H2>
+
+<B><A HREF="../man2/umount.2.html">umount</A></B>(2),
+
+<B><A HREF="../man8/losetup.8.html">losetup</A></B>(8),
+
+<B><A HREF="../man7/mount_namespaces.7.html">mount_namespaces</A></B>(7)
+
+<B><A HREF="../man8/mount.8.html">mount</A></B>(8)
+
+
+<A NAME="lbAM">&nbsp;</A>
+<H2>入手方法</H2>
+
+
+
+
+
+umount コマンドは util-linux パッケージの一部であり、
+
+Linux Kernel Archive
+
+から入手できる。
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">名前</A><DD>
+<DT><A HREF="#lbAC">書式</A><DD>
+<DT><A HREF="#lbAD">説明</A><DD>
+<DT><A HREF="#lbAE">オプション</A><DD>
+<DT><A HREF="#lbAF">スーパーユーザー以外による umount</A><DD>
+<DT><A HREF="#lbAG">LOOP デバイス</A><DD>
+<DT><A HREF="#lbAH">外部ヘルパー</A><DD>
+<DT><A HREF="#lbAI">環境変数</A><DD>
+<DT><A HREF="#lbAJ">ファイル</A><DD>
+<DT><A HREF="#lbAK">履歴</A><DD>
+<DT><A HREF="#lbAL">関連項目</A><DD>
+<DT><A HREF="#lbAM">入手方法</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 11:33:48 GMT, February 07, 2021
+</BODY>
+</HTML>
