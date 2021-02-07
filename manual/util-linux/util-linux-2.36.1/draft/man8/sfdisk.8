@@ -22,6 +22,7 @@
 .\" Updated & Modified Mon May  9 03:21:52 JST 2005 by Yuichi SATO
 .\" Updated & Modified Fri Apr  3 00:37:30 JST 2020
 .\"         by Yuichi SATO <ysato444@ybb.ne.jp>
+.\" Updated & Modified Sun Feb  7 16:51:57 JST 2021 by Yuichi SATO
 .\"
 .TH SFDISK 8 "June 2015" "util-linux" "System Administration"
 .\"O .SH NAME
@@ -124,9 +125,13 @@ CHS は Linux では重要でなくなっており、このアドレス指定の
 衝突の可能性を回避するのに推奨される方法は、\fB\-\-lock\fR を使うことである。
 排他ロックを使うと、udevd がデバイスのイベントハンドリングをスキップする可能性がある。
 .PP
-The sfdisk prompt is only a hint for users and a displayed partition number does
-not mean that the same partition table entry will be created (if -N not
-specified), especially for tables with gaps.
+.\"O The sfdisk prompt is only a hint for users and a displayed partition number does
+.\"O not mean that the same partition table entry will be created (if -N not
+.\"O specified), especially for tables with gaps.
+sfdisk のプロンプトは、ユーザーへのヒントでしかなく、
+特にパーティションテーブルに間隙がある場合、
+(-N が指定されなければ) 表示されたパーティション番号と同じパーティションエントリが作成される
+という意味ではない。
 
 .\"O .SH COMMANDS
 .SH コマンド
@@ -171,7 +176,8 @@ specified), especially for tables with gaps.
 .\"O may be used instead of the partition numbers to switch off the bootable flag
 .\"O on all partitions.
 指定されたパーティションのブート可能フラグをオンにし、
-指定されていない全てのパーティションのブート可能フラグをオフにする。
+指定されていない全てのパーティションのブート可能フラグを
+オフにする。
 特別なプレースホルダー '\-' はパーティション番号の代わりに使われ、
 全てのパーティションのブート可能フラグをオフにする。
 
@@ -237,28 +243,53 @@ GPT パーティション属性ビットを変更する。
 現状サポートされている属性ビットは以下の通り:
 .RS
 .TP
-.BR "Bit 0 (RequiredPartition)"
-If this bit is set, the partition is required for the platform to function. The
-creator of the partition indicates that deletion or modification of the contents
-can result in loss of platform features or failure for the platform to boot or
-operate. The system cannot function normally if this partition is removed, and it
-should be considered part of the hardware of the system.
+.BR "ビット 0 (RequiredPartition)"
+.\"O .BR "Bit 0 (RequiredPartition)"
+.\"O If this bit is set, the partition is required for the platform to function. The
+.\"O creator of the partition indicates that deletion or modification of the contents
+.\"O can result in loss of platform features or failure for the platform to boot or
+.\"O operate. The system cannot function normally if this partition is removed, and it
+.\"O should be considered part of the hardware of the system.
+このビットを設定すると、プラットフォームが機能するために、
+このパーティションが必要になる。
+パーティションの内容を削除または変更すると、
+プラットフォームの機能を損ねたり、プラットフォームの
+ブートまたは操作が失敗することを、パーティションの作成者が
+示している。
+このパーティションを削除すると、システムが正常に機能せず、
+このパーティションがシステムのハードウェアの一部として
+扱われる。
 .TP
-.BR "Bit 1 (NoBlockIOProtocol)"
-EFI firmware should ignore the content of the partition and not try to read from it.
+.BR "ビット 1 (NoBlockIOProtocol)"
+.\"O .BR "Bit 1 (NoBlockIOProtocol)"
+.\"O EFI firmware should ignore the content of the partition and not try to read from it.
+EFI ファームウェアにパーティションの内容を無視させ、
+読み出しをさせない。
 .TP
-.BR "Bit 2 (LegacyBIOSBootable)"
-The partition may be bootable by legacy BIOS firmware.
+.BR "ビット 2 (LegacyBIOSBootable)"
+.\"O .BR "Bit 2 (LegacyBIOSBootable)"
+.\"O The partition may be bootable by legacy BIOS firmware.
+このパーティションは、昔の BIOS ファームウェアからブート可能である。
 .TP
-.BR "Bits 3-47"
-Undefined and must be zero. Reserved for expansion by future versions of the
-UEFI specification.
+.BR "ビット 3-47"
+.\"O .BR "Bits 3-47"
+.\"O Undefined and must be zero. Reserved for expansion by future versions of the
+.\"O UEFI specification.
+未定義であり、0 にすべきである。
+UEFI 仕様の将来の拡張ために予約されている。
 .TP
-.BR "Bits 48-63"
-Reserved for GUID specific use. The use of these bits will vary depending on
-the partition type.  For example Microsoft uses bit 60 to indicate read-only,
-61 for shadow copy of another partition, 62 for hidden partitions and 63 to
-disable automount.
+.BR "ビット 48-63"
+.\"O .BR "Bits 48-63"
+.\"O Reserved for GUID specific use. The use of these bits will vary depending on
+.\"O the partition type.  For example Microsoft uses bit 60 to indicate read-only,
+.\"O 61 for shadow copy of another partition, 62 for hidden partitions and 63 to
+.\"O disable automount.
+GUID が固有に使用するために予約されている。
+これらのビットの使い方は、パーティションタイプによって
+変わる。
+例えば、Microsoft は、ビット 60 を読み込みのみ、
+61 を他のパーティションのシャドーコピー、
+62 を隠しパーティション、63 を自動マウント不可を表すのに使っている。
 .RE
 .sp
 .TP
@@ -290,9 +321,12 @@ GPT パーティションの UUID を変更する。
 \fIuuid\fR が指定されない場合、現在のパーティション UUID を表示する。
 .TP
 .BR "\-\-disk\-id \fIdevice " [ \fIid ]
-Change the disk identifier.  If \fIid\fR is not specified,
-then print the current identifier.  The identifier is UUID for GPT
-or unsigned integer for MBR.
+.\"O Change the disk identifier.  If \fIid\fR is not specified,
+.\"O then print the current identifier.  The identifier is UUID for GPT
+.\"O or unsigned integer for MBR.
+ディスクの識別子を変更する。
+\fIid\fR が指定されない場合、現在の識別子を表示する。
+識別子は、GPT の場合は UUID で、MBR の場合は符号なし整数である。
 .TP
 .BR \-r , " \-\-reorder " \fIdevice
 .\"O Renumber the partitions, ordering them by their start offset.
@@ -319,17 +353,25 @@ or unsigned integer for MBR.
 テストする。
 .TP
 .BR "\-\-relocate \fIoper " \fIdevice
-Relocate partition table header. This command is currently supported for GPT header only.
-The argument \fIoper\fP can be:
+.\"O Relocate partition table header. This command is currently supported for GPT header only.
+パーティションテーブルヘッダを再配置する。
+このコマンドは、現在のところ、GPT ヘッダしかサポートしていない。
+.\"O The argument \fIoper\fP can be:
+引き数 \fIoper\fP は以下の通り:
 .RS
 .TP
 .B gpt-bak-std
-Move GPT backup header to the standard location at the end of the device.
+.\"O Move GPT backup header to the standard location at the end of the device.
+GPT バックアップヘッダを標準的な場所 (デバイスの最後) に移動する。
 .TP
 .B gpt-bak-mini
-Move GPT backup header behind the last partition. Note that UEFI
-standard requires the backup header at the end of the device and partitioning
-tools can automatically relocate the header to follow the standard.
+.\"O Move GPT backup header behind the last partition. Note that UEFI
+.\"O standard requires the backup header at the end of the device and partitioning
+.\"O tools can automatically relocate the header to follow the standard.
+GPT バックアップヘッダを最後のパーティションの後ろに移動する。
+UEFI 規格では、バックアップヘッダがデバイスの最後に置かれている
+必要があり、パーティショニングツールは、規格に従うために、
+自動的にヘッダを再配置する点に注意すること。
 .RE
 .\"O .SH OPTIONS
 .SH オプション
@@ -339,9 +381,14 @@ tools can automatically relocate the header to follow the standard.
 新しいパーティションテーブルを作成せず、指定したパーティションの
 追加のみを行う。
 .sp
-Note that unused partition maybe be re-used in this case although it is not the
-last partition in the partition table. See also \fB\-N\fR to specify entry in
-the partition table.
+.\"O Note that unused partition maybe be re-used in this case although it is not the
+.\"O last partition in the partition table. See also \fB\-N\fR to specify entry in
+.\"O the partition table.
+この場合、使用されていないパーティションが、パーティション
+テーブルの最後のパーティションであったとしても、再利用される点に
+注意すること。
+パーティションテーブルのエントリを指定するには、
+\fB\-N\fR を参照すること。
 .TP
 .BR \-b , " \-\-backup"
 .\"O Back up the current partition table sectors before starting the partitioning.
@@ -376,12 +423,19 @@ the partition table.
 Linux (と他の現代的な OS) と互換のパーティション作成は、デフォルトである。
 .TP
 \fB\-\-lock\fR[=\fImode\fR]
-Use exclusive BSD lock for device or file it operates.  The optional argument
-\fImode\fP can be \fByes\fR, \fBno\fR (or 1 and 0) or \fBnonblock\fR.  If the \fImode\fR
-argument is omitted, it defaults to \fB"yes"\fR.  This option overwrites
-environment variable \fB$LOCK_BLOCK_DEVICE\fR.  The default is not to use any
-lock at all, but it's recommended to avoid collisions with udevd or other
-tools.
+.\"O Use exclusive BSD lock for device or file it operates.  The optional argument
+.\"O \fImode\fP can be \fByes\fR, \fBno\fR (or 1 and 0) or \fBnonblock\fR.  If the \fImode\fR
+.\"O argument is omitted, it defaults to \fB"yes"\fR.  This option overwrites
+.\"O environment variable \fB$LOCK_BLOCK_DEVICE\fR.  The default is not to use any
+.\"O lock at all, but it's recommended to avoid collisions with udevd or other
+.\"O tools.
+操作するデバイスまたはファイルに、排他 BSD ロックを使う。
+オプションの引き数 \fImode\fP は \fByes\fR, \fBno\fR (または 1 と 0)
+または \fBnonblock\fR である。
+\fImode\fR 引き数が省略された場合、デフォルトは \fB"yes"\fR である。
+このオプションは環境変数 \fB$LOCK_BLOCK_DEVICE\fR を上書きする。
+デフォルトは、ロックを全く使わないが、
+udevd や他のツールとの衝突を避けるため、ロックを使うことを推奨する。
 .TP
 .BR \-n , " \-\-no\-act"
 .\"O Do everything except writing to the device.
@@ -461,8 +515,10 @@ sfdisk はログとして ~/sfdisk-<devname>.move を使う。
 
 .TP
 .B \-\-move\-use\-fsync
-Use fsync system call after each write when move data to a new location by
-\fB\-\-move\-data\fR.
+.\"O Use fsync system call after each write when move data to a new location by
+.\"O \fB\-\-move\-data\fR.
+\fB\-\-move\-data\fR でデータを新しい場所に移動した場合、
+書き込み毎に fsync システムコールを使う。
 .TP
 .BR \-o , " \-\-output " \fIlist
 .\"O Specify which output columns to print.  Use
@@ -580,7 +636,8 @@ Use fsync system call after each write when move data to a new location by
 .RS
 .\"O The optional header lines specify generic information that apply to the partition
 .\"O table.  The header-line format is:
-オプションのヘッダ行は、パーティションテーブルに適用されるジオメトリ情報を指定する。
+オプションのヘッダ行は、パーティションテーブルに適用される
+ジオメトリ情報を指定する。
 ヘッダ行の形式は以下の通り:
 .RS
 .sp
@@ -630,9 +687,14 @@ GPT パーティションの最大数を指定する。
 良く分からない場合は、この値を変更しないこと。
 .TP
 .B sector-size
-Specify sector size. This header is informative only and it is not used when
-sfdisk creates a new partition table, in this case the real device specific
-value is always used and sector size from the dump is ignored.
+.\"O Specify sector size. This header is informative only and it is not used when
+.\"O sfdisk creates a new partition table, in this case the real device specific
+.\"O value is always used and sector size from the dump is ignored.
+セクタサイズを指定する。
+このヘッダは情報を与えるだけで、sfdisk が新しいパーティションテーブルを作成する際には
+使われない。
+作成の際には、実際のデバイス固有の値が常に使われ、
+ダンプから取得したセクタサイズは無視される。
 .RE
 .sp
 .\"O Note that it is only possible to use header lines before the first partition
@@ -705,28 +767,36 @@ EiB, ZiB, YiB) を付けることができる。
 .sp
 .\"O The partition
 .\"O .I type
-.\"O is given in hex for MBR (DOS), without the 0x prefix, a GUID string for GPT, or
-.\"O a shortcut:
+.\"O is given in hex for MBR (DOS) where 0x prefix is optional; a GUID string for
+.\"O GPT; a shortcut or an alias. It's recommended to use two letters for MBR hex codes to
+.\"O avoid collision between deprecated shortcut 'E' and '0E' MBR hex code. For backward
+.\"O compatibility sfdisk tries to interpret
+.\"O .I type
+.\"O as a shortcut as a first possibility in partitioning scripts although on other places (e.g.
+.\"O \fB\-\-part-type command)\fR it tries shortcuts as the last possibility.
 パーティションタイプ
 .I type
-は、MBR (DOS) については、プレフィックス 0x を付けない 16 進数で指定する。
+は、MBR (DOS) については、プレフィックス 0x をオプションとした、16 進数で指定する。
 また、GPT については、GUID 文字列で指定する。
-もしくは、ショートカットで指定する:
-
-The partition
+もしくは、ショートカット、または別名で指定する。
+古いショートカット 'E' と、MBR 16 進数コード '0E' の衝突を避けるため、
+MBR の 16 進数コードは 2 文字で指定するのを推奨する。
+後方互換のため、sfdisk は、パーティショニングスクリプト内では、
 .I type
-is given in hex for MBR (DOS) where 0x prefix is optional; a GUID string for
-GPT; a shortcut or an alias. It's recommended to use two letters for MBR hex codes to
-avoid collision between deprecated shortcut 'E' and '0E' MBR hex code. For backward
-compatibility sfdisk tries to interpret
-.I type
-as a shortcut as a first possibility in partitioning scripts although on other places (e.g.
-\fB\-\-part-type command)\fR it tries shortcuts as the last possibility.
+がショートカットであるというのを、最初の可能性として考えて、
+解釈しようとする。
+一方で、他の場所 (例えば、\fB\-\-part-type コマンド\fR) では、
+ショートカットであるというのを、最後の可能性として考えて、
+解釈しようとする。
 
-Since v2.36 libfdisk supports partition type aliases as extension to shortcuts. The alias is a
-simple human readable word (e.g. "linux").
+.\"O Since v2.36 libfdisk supports partition type aliases as extension to shortcuts. The alias is a
+.\"O simple human readable word (e.g. "linux").
+v2.36 以降で libfdisk は、ショートカットの拡張として、パーティションタイプの
+別名をサポートするようになった。
+別名は、人が読み易い簡単な単語 (例、"linux") である。
 
-Supported shortcuts and aliases:
+.\"O Supported shortcuts and aliases:
+サポートされるショートカットと別名は、以下の通りである:
 .RS
 .TP
 .B L - 別名 'linux'
@@ -782,7 +852,8 @@ GPT では E6D6D379-F507-44C2-A23C-238F2A3DF928 である。
 .I linux
 である。
 .sp
-The shortcut 'X' for Linux extended partition (85) is deprecated in favour of 'Ex'.
+.\"O The shortcut 'X' for Linux extended partition (85) is deprecated in favour of 'Ex'.
+Linux 拡張パーティション (85) のショートカット 'X' は古いので、'Ex' を使うべきである。
 
 .\"O .I bootable
 .\"O is specified as [\fB*\fR|\fB-\fR], with as default not-bootable.  The
@@ -1024,7 +1095,10 @@ libblkid デバッグ出力を有効化する。
 .\"O enables libsmartcols debug output.
 libsmartcols デバッグ出力を有効化する。
 .IP LOCK_BLOCK_DEVICE=<mode>
-use exclusive BSD lock.  The mode is "1" or "0".  See \fB\-\-lock\fR for more details.
+.\"O use exclusive BSD lock.  The mode is "1" or "0".  See \fB\-\-lock\fR for more details.
+排他 BSD ロックを使う。
+mode は "1" または "0" である。
+より詳細は、\fB\-\-lock\fR を参照すること。
 
 .\"O .SH NOTES
 .SH 注意
