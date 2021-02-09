@@ -243,144 +243,245 @@ glibc の \fBclone\fP() ラッパー関数と、その裏で呼ばれるシス�
 .\"
 .SS clone3()
 .PP
-The
+.\"O The
+.\"O .BR clone3 ()
+.\"O system call provides a superset of the functionality of the older
+.\"O .BR clone ()
+.\"O interface.
 .BR clone3 ()
-system call provides a superset of the functionality of the older
+システムコールは、昔の
 .BR clone ()
-interface.
-It also provides a number of API improvements, including:
-space for additional flags bits;
-cleaner separation in the use of various arguments;
-and the ability to specify the size of the child's stack area.
+インタフェースの機能の上位セットを提供する。
+.\"O It also provides a number of API improvements, including:
+.\"O space for additional flags bits;
+.\"O cleaner separation in the use of various arguments;
+.\"O and the ability to specify the size of the child's stack area.
+また、次のような、いくつかの API の改良も加えられている:
+フラグビットのためのスペースの追加。
+いろいろな引き数の使い方を綺麗に分離。
+子プロセスのスタックエリアのサイズの指定。
 .PP
-As with
-.BR fork (2),
+.\"O As with
+.\"O .BR fork (2),
+.\"O .BR clone3 ()
+.\"O returns in both the parent and the child.
+.BR fork (2)
+と同じく
 .BR clone3 ()
-returns in both the parent and the child.
-It returns 0 in the child process and returns the PID of the child
-in the parent.
+は、親プロセスと子プロセスを返す。
+.\"O It returns 0 in the child process and returns the PID of the child
+.\"O in the parent.
+.BR clone3 ()
+は、子プロセスの 0 を返し、親プロセスに子プロセスの PID を返す。
 .PP
-The
+.\"O The
+.\"O .I cl_args
+.\"O argument of
+.\"O .BR clone3 ()
+.\"O is a structure of the following form:
+.BR clone3 ()
+の
 .I cl_args
-argument of
-.BR clone3 ()
-is a structure of the following form:
+引き数は、以下のような構造体である。
 .PP
 .in +4n
 .EX
 struct clone_args {
-    u64 flags;        /* Flags bit mask */
-    u64 pidfd;        /* Where to store PID file descriptor
-                         (\fIpid_t *\fP) */
-    u64 child_tid;    /* Where to store child TID,
-                         in child's memory (\fIpid_t *\fP) */
-    u64 parent_tid;   /* Where to store child TID,
-                         in parent's memory (\fIint *\fP) */
-    u64 exit_signal;  /* Signal to deliver to parent on
-                         child termination */
-    u64 stack;        /* Pointer to lowest byte of stack */
-    u64 stack_size;   /* Size of stack */
-    u64 tls;          /* Location of new TLS */
-    u64 set_tid;      /* Pointer to a \fIpid_t\fP array
-                         (since Linux 5.5) */
-    u64 set_tid_size; /* Number of elements in \fIset_tid\fP
-                         (since Linux 5.5) */
-    u64 cgroup;       /* File descriptor for target cgroup
-                         of child (since Linux 5.7) */
+.\"O     u64 flags;        /* Flags bit mask */
+    u64 flags;        /* フラグのビットマスク */
+.\"O     u64 pidfd;        /* Where to store PID file descriptor
+.\"O                          (\fIpid_t *\fP) */
+    u64 pidfd;        /* PID ファイルディスクリプターを
+                         格納する場所 (\fIpid_t *\fP) */
+.\"O     u64 child_tid;    /* Where to store child TID,
+.\"O                          in child's memory (\fIpid_t *\fP) */
+    u64 child_tid;    /* 子のメモリ内で、子の TID を
+                         格納する場所 (\fIpid_t *\fP) */
+.\"O     u64 parent_tid;   /* Where to store child TID,
+.\"O                          in parent's memory (\fIint *\fP) */
+    u64 parent_tid;   /* 親のメモリ内で、子の TID を
+                         格納する場所 (\fIint *\fP) */
+.\"O     u64 exit_signal;  /* Signal to deliver to parent on
+.\"O                          child termination */
+    u64 exit_signal;  /* 子が終了した時に親に送られるシグナル */
+.\"O     u64 stack;        /* Pointer to lowest byte of stack */
+    u64 stack;        /* スタックの最下位バイトへのポインター */
+.\"O     u64 stack_size;   /* Size of stack */
+    u64 stack_size;   /* スタックのサイズ */
+.\"O     u64 tls;          /* Location of new TLS */
+    u64 tls;          /* 新しい TLS の場所 */
+.\"O     u64 set_tid;      /* Pointer to a \fIpid_t\fP array
+.\"O                          (since Linux 5.5) */
+    u64 set_tid;      /* \fIpid_t\fP 配列へのポインター
+                         (Linux 5.5 以降) */
+.\"O     u64 set_tid_size; /* Number of elements in \fIset_tid\fP
+.\"O                          (since Linux 5.5) */
+    u64 set_tid_size; /* \fIset_tid\fP の要素数
+                         (Linux 5.5 以降) */
+.\"O     u64 cgroup;       /* File descriptor for target cgroup
+.\"O                          of child (since Linux 5.7) */
+    u64 cgroup;       /* 子の対象 cgroup のファイルディスクリプター
+                         (Linux 5.7 以降) */
 };
 .EE
 .in
 .PP
-The
+.\"O The
+.\"O .I size
+.\"O argument that is supplied to
+.\"O .BR clone3 ()
+.\"O should be initialized to the size of this structure.
 .I size
-argument that is supplied to
+引き数を
 .BR clone3 ()
-should be initialized to the size of this structure.
-(The existence of the
-.I size
-argument permits future extensions to the
+に指定することで、この構造体のサイズを初期化する。
+.\"O (The existence of the
+.\"O .I size
+.\"O argument permits future extensions to the
+.\"O .IR clone_args
+.\"O structure.)
+.RI ( size
+引き数が存在することで、将来の
 .IR clone_args
-structure.)
+構造体の拡張ができる。)
 .PP
-The stack for the child process is specified via
-.IR cl_args.stack ,
-which points to the lowest byte of the stack area,
-and
-.IR cl_args.stack_size ,
-which specifies the size of the stack in bytes.
-In the case where the
+.\"O The stack for the child process is specified via
+.\"O .IR cl_args.stack ,
+.\"O which points to the lowest byte of the stack area,
+.\"O and
+.\"O .IR cl_args.stack_size ,
+.\"O which specifies the size of the stack in bytes.
+子プロセスのスタックは
+.I cl_args.stack
+で指定され、スタック領域の最下位バイトを指す。
+また、
+.I cl_args.stack_size
+は、スタックサイズのバイト数を指定する。
+.\"O In the case where the
+.\"O .BR CLONE_VM
+.\"O flag (see below) is specified, a stack must be explicitly allocated
+.\"O and specified.
 .BR CLONE_VM
-flag (see below) is specified, a stack must be explicitly allocated
-and specified.
-Otherwise, these two fields can be specified as NULL and 0,
-which causes the child to use the same stack area as the parent
-(in the child's own virtual address space).
+フラグ (下記を参照) が指定された場合、スタックは明示的に確保されて指定されなければならない。
+.\"O Otherwise, these two fields can be specified as NULL and 0,
+.\"O which causes the child to use the same stack area as the parent
+.\"O (in the child's own virtual address space).
+そうでない場合は、この 2 つのフィールドに NULL と 0 を指定して、
+(子プロセス自身の仮想アドレス空間で)
+子プロセスに親と同じスタック領域を使わせるようにする。
 .PP
-The remaining fields in the
+.\"O The remaining fields in the
+.\"O .I cl_args
+.\"O argument are discussed below.
 .I cl_args
-argument are discussed below.
+引き数の残りのフィールドは、以下で説明する。
 .\"
-.SS Equivalence between clone() and clone3() arguments
+.\"O .SS Equivalence between clone() and clone3() arguments
+.SS clone() と clone3() の引き数の相違点
 .PP
-Unlike the older
+.\"O Unlike the older
+.\"O .BR clone ()
+.\"O interface, where arguments are passed individually, in the newer
+.\"O .BR clone3 ()
+.\"O interface the arguments are packaged into the
+.\"O .I clone_args
+.\"O structure shown above.
+以前の
 .BR clone ()
-interface, where arguments are passed individually, in the newer
+インタフェースでは、引き数が別々に渡されていたが、
+新しい
 .BR clone3 ()
-interface the arguments are packaged into the
+インタフェースでは、引き数が上記の
 .I clone_args
-structure shown above.
-This structure allows for a superset of the information passed via the
+構造体にパッケージングされている。
+.\"O This structure allows for a superset of the information passed via the
+.\"O .BR clone ()
+.\"O arguments.
+この構造体は、
 .BR clone ()
-arguments.
+引き数で渡される情報の上位セットになっている。
 .PP
-The following table shows the equivalence between the arguments of
+.\"O The following table shows the equivalence between the arguments of
+.\"O .BR clone ()
+.\"O and the fields in the
+.\"O .I clone_args
+.\"O argument supplied to
+.\"O .BR clone3 ():
+下記の表は、
 .BR clone ()
-and the fields in the
+の引き数と、
+.BR clone3 ()
+に与えられる
 .I clone_args
-argument supplied to
-.BR clone3 ():
+引き数のフィールドの相違点を表している:
 .RS
 .TS
 lb lb lb
 l l l
 li li l.
-clone()	clone3()	Notes
-	\fIcl_args\fP field
-flags & ~0xff	flags	For most flags; details below
-parent_tid	pidfd	See CLONE_PIDFD
-child_tid	child_tid	See CLONE_CHILD_SETTID
-parent_tid	parent_tid	See CLONE_PARENT_SETTID
+.\"O clone()	clone3()	Notes
+clone()	clone3()	注記
+.\"O 	\fIcl_args\fP field
+	\fIcl_args\fP フィールド
+.\"O flags & ~0xff	flags	For most flags; details below
+flags & ~0xff	flags	多くのフラグは下記を参照
+.\"O parent_tid	pidfd	See CLONE_PIDFD
+parent_tid	pidfd	CLONE_PIDFD を参照
+.\"O child_tid	child_tid	See CLONE_CHILD_SETTID
+child_tid	child_tid	CLONE_CHILD_SETTID を参照
+.\"O parent_tid	parent_tid	See CLONE_PARENT_SETTID
+parent_tid	parent_tid	CLONE_PARENT_SETTID を参照
 flags & 0xff	exit_signal
 stack	stack
 \fP---\fP	stack_size
-tls	tls	See CLONE_SETTLS
-\fP---\fP	set_tid	See below for details
+.\"O tls	tls	See CLONE_SETTLS
+tls	tls	CLONE_SETTLS を参照
+.\"O \fP---\fP	set_tid	See below for details
+\fP---\fP	set_tid	詳細は下記を参照
 \fP---\fP	set_tid_size
-\fP---\fP	cgroup	See CLONE_INTO_CGROUP
+.\"O \fP---\fP	cgroup	See CLONE_INTO_CGROUP
+\fP---\fP	cgroup	CLONE_INTO_CGROUP を参照
 .TE
 .RE
 .\"
-.SS The child termination signal
+.\"O .SS The child termination signal
+.SS 子の終了シグナル (termination signal)
 .PP
-When the child process terminates, a signal may be sent to the parent.
-The termination signal is specified in the low byte of
+.\"O When the child process terminates, a signal may be sent to the parent.
+子プロセスが終了した場合、親にシグナルが送られる。
+.\"O The termination signal is specified in the low byte of
+.\"O .I flags
+.\"O .RB ( clone ())
+.\"O or in
+.\"O .I cl_args.exit_signal
+.\"O .RB ( clone3 ()).
+終了シグナルは、
+.RB ( clone ()
+の場合)
 .I flags
-.RB ( clone ())
-or in
+の下位バイト、
+.RB ( clone3 ()
+の場合)
 .I cl_args.exit_signal
-.RB ( clone3 ()).
-If this signal is specified as anything other than
-.BR SIGCHLD ,
-then the parent process must specify the
-.B __WALL
-or
-.B __WCLONE
-options when waiting for the child with
-.BR wait (2).
-If no signal (i.e., zero) is specified, then the parent process is not signaled
-when the child terminates.
+で指定される。
+.\"O If this signal is specified as anything other than
+.\"O .BR SIGCHLD ,
+.\"O then the parent process must specify the
+.\"O .B __WALL
+.\"O or
+.\"O .B __WCLONE
+.\"O options when waiting for the child with
+.\"O .BR wait (2).
+このシグナルとして \fBSIGCHLD\fP 以外が指定された場合、
+親プロセスは、\fBwait\fP(2) で子プロセスを待つ際に、
+オプションとして \fB__WALL\fP または \fB__WCLONE\fP を指定しなければならない。
+.\"O If no signal (i.e., zero) is specified, then the parent process is not signaled
+.\"O when the child terminates.
+どのシグナルも指定されなかった場合 (つまり 0 の場合)、
+子プロセスが終了した時に親プロセスにシグナルは送られない。
 .\"
-.SS The set_tid array
+.\"O .SS The set_tid array
+.SS set_tid 配列
 .PP
 By default, the kernel chooses the next sequential PID for the new
 process in each of the PID namespaces where it is present.
