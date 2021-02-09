@@ -483,52 +483,81 @@ tls	tls	CLONE_SETTLS を参照
 .\"O .SS The set_tid array
 .SS set_tid 配列
 .PP
-By default, the kernel chooses the next sequential PID for the new
-process in each of the PID namespaces where it is present.
-When creating a process with
-.BR clone3 (),
-the
+.\"O By default, the kernel chooses the next sequential PID for the new
+.\"O process in each of the PID namespaces where it is present.
+デフォルトでは、カーネルは、プロセスが存在する PID 名前空間から、
+新しいプロセスに対して、連続する次の PID を選択する。
+.\"O When creating a process with
+.\"O .BR clone3 (),
+.\"O the
+.\"O .I set_tid
+.\"O array (available since Linux 5.5)
+.\"O can be used to select specific PIDs for the process in some
+.\"O or all of the PID namespaces where it is present.
+.BR clone3 ()
+でプロセスを作成する場合、(Linux 5.5 以降で利用可能な)
 .I set_tid
-array (available since Linux 5.5)
-can be used to select specific PIDs for the process in some
-or all of the PID namespaces where it is present.
-If the PID of the newly created process should be set only for the current
-PID namespace or in the newly created PID namespace (if
-.I flags
-contains
-.BR CLONE_NEWPID )
-then the first element in the
+配列を使って、プロセスが存在する同じ PID 名前空間、またはすべての PID 名前空間の
+プロセスに対して、特定の PID を選択する。
+.\"O If the PID of the newly created process should be set only for the current
+.\"O PID namespace or in the newly created PID namespace (if
+.\"O .I flags
+.\"O contains
+.\"O .BR CLONE_NEWPID )
+.\"O then the first element in the
+.\"O .I set_tid
+.\"O array has to be the desired PID and
+.\"O .I set_tid_size
+.\"O needs to be 1.
+新しく作成されるプロセスの PID を、現在の PID 名前空間、または
+.RI ( flags
+に
+.B CLONE_NEWPID
+が含まれる場合) 新しく作成された PID 名前空間のみで設定する場合、
 .I set_tid
-array has to be the desired PID and
+配列の最初の要素が設定される PID になり、
 .I set_tid_size
-needs to be 1.
+は 1 の必要がある。
 .PP
-If the PID of the newly created process should have a certain value in
-multiple PID namespaces, then the
+.\"O If the PID of the newly created process should have a certain value in
+.\"O multiple PID namespaces, then the
+.\"O .I set_tid
+.\"O array can have multiple entries.
+新しく作成されるプロセスが、複数の PID 名前空間で特定の値を持つ場合、
 .I set_tid
-array can have multiple entries.
-The first entry defines the PID in the most
-deeply nested PID namespace and each of the following entries contains
-the PID in the
-corresponding ancestor PID namespace.
-The number of PID namespaces in which a PID
-should be set is defined by
+配列は複数の要素を含む必要がある。
+.\"O The first entry defines the PID in the most
+.\"O deeply nested PID namespace and each of the following entries contains
+.\"O the PID in the
+.\"O corresponding ancestor PID namespace.
+最初の要素は、最も深く入れ子になった PID 名前空間での PID であり、
+それ以降の要素は、祖先の PID 名前空間での PID に対応する。
+.\"O The number of PID namespaces in which a PID
+.\"O should be set is defined by
+.\"O .I set_tid_size
+.\"O which cannot be larger than the number of currently nested PID namespaces.
+PID が設定される PID 名前空間の数は、
 .I set_tid_size
-which cannot be larger than the number of currently nested PID namespaces.
+で定義され、現在入れ子になっている PID 名前空間の数よりも大きくはできない。
 .PP
-To create a process with the following PIDs in a PID namespace hierarchy:
+.\"O To create a process with the following PIDs in a PID namespace hierarchy:
+PID 名前空間の階層で、以下の PID を持つプロセスを作る場合:
 .RS
 .TS
 lb lb lb
 l l l.
-PID NS level	Requested PID	Notes
-0	31496	Outermost PID namespace
+.\"O PID NS level	Requested PID	Notes
+PID NS レベル	要求される PID	注記
+.\"O 0	31496	Outermost PID namespace
+0	31496	一番外部の PID 名前空間
 1	42
-2	7	Innermost PID namespace
+.\"O 2	7	Innermost PID namespace
+2	7	一番内側の PID 名前空間
 .TE
 .RE
 .PP
-Set the array to:
+.\"O Set the array to:
+配列を以下のようにする:
 .PP
 .in +4n
 .EX
@@ -539,8 +568,9 @@ set_tid_size = 3;
 .EE
 .in
 .PP
-If only the PIDs in the two innermost PID namespaces
-need to be specified, set the array to:
+.\"O If only the PIDs in the two innermost PID namespaces
+.\"O need to be specified, set the array to:
+内側から 2 つの PID 名前空間のみ指定が必要な場合、配列を以下のようにする:
 .PP
 .in +4n
 .EX
@@ -550,81 +580,145 @@ set_tid_size = 2;
 .EE
 .in
 .PP
-The PID in the PID namespaces outside the two innermost PID namespaces
-will be selected the same way as any other PID is selected.
+.\"O The PID in the PID namespaces outside the two innermost PID namespaces
+.\"O will be selected the same way as any other PID is selected.
+内側から 2 つの PID 名前空間の外側にある PID 名前空間では、
+PID は他の PID と同じ方法で選択される。
 .PP
-The
+.\"O The
+.\"O .I set_tid
+.\"O feature requires
+.\"O .BR CAP_SYS_ADMIN
+.\"O in all owning user namespaces of the target PID namespaces.
 .I set_tid
-feature requires
+の機能を使うには、対象となる PID 名前空間を所有するすべてのユーザー名前空間で
 .BR CAP_SYS_ADMIN
-in all owning user namespaces of the target PID namespaces.
+が必要である。
 .PP
-Callers may only choose a PID greater than 1 in a given PID namespace
-if an
+.\"O Callers may only choose a PID greater than 1 in a given PID namespace
+.\"O if an
+.\"O .BR init
+.\"O process (i.e., a process with PID 1) already exists in that namespace.
 .BR init
-process (i.e., a process with PID 1) already exists in that namespace.
-Otherwise the PID
-entry for this PID namespace must be 1.
+プロセス (つまり、PID 1 のプロセス) が指定された PID 名前空間に既に存在する場合、
+呼び出し元は 1 より大きい PID のみを選択できる。
+.\"O Otherwise the PID
+.\"O entry for this PID namespace must be 1.
+そうでない場合、その PID 名前空間の PID 要素は 1 でなければならない。
 .\"
-.SS The flags mask
+.\"O .SS The flags mask
+.SS flags マスク
 .PP
-Both
+.\"O Both
+.\"O .BR clone ()
+.\"O and
+.\"O .BR clone3 ()
+.\"O allow a flags bit mask that modifies their behavior
+.\"O and allows the caller to specify what is shared between the calling process
+.\"O and the child process.
 .BR clone ()
-and
+と
 .BR clone3 ()
-allow a flags bit mask that modifies their behavior
-and allows the caller to specify what is shared between the calling process
-and the child process.
-This bit mask\(emthe
-.I flags
-argument of
+は、その挙動を変更する flags ビットマスクを使うことができる。
+このフラグで呼び出し元のプロセスと子プロセスの間で何を共有するかを
+指定できる。
+.\"O This bit mask\(emthe
+.\"O .I flags
+.\"O argument of
+.\"O .BR clone ()
+.\"O or the
+.\"O .I cl_args.flags
+.\"O field passed to
+.\"O .BR clone3 ()\(emis
+.\"O referred to as the
+.\"O .I flags
+.\"O mask in the remainder of this page.
+このビットマスク\(em
 .BR clone ()
-or the
+の
+.I flags
+引き数、または
+.BR clone3 ()
+に渡される
 .I cl_args.flags
-field passed to
-.BR clone3 ()\(emis
-referred to as the
+フィールド\(emは、
+このページの残りで記載されている
 .I flags
-mask in the remainder of this page.
+マスクを参照すること。
 .PP
-The
-.I flags
-mask is specified as a bitwise-OR of zero or more of
-the constants listed below.
-Except as noted below, these flags are available
-(and have the same effect) in both
+.\"O The
+.\"O .I flags
+.\"O mask is specified as a bitwise-OR of zero or more of
+.\"O the constants listed below.
+\fIflags\fP マスクには、以下の定数のうち 0 個以上の
+ビット毎の論理和 (bitwise\-or) をとったものを指定できる。
+.\"O Except as noted below, these flags are available
+.\"O (and have the same effect) in both
+.\"O .BR clone ()
+.\"O and
+.\"O .BR clone3 ().
+下記の注記以外、これらのフラグは
 .BR clone ()
-and
-.BR clone3 ().
+と
+.BR clone3 ()
+の両方で利用可能である (かつ、同じ効果がある)。
 .TP
-.BR CLONE_CHILD_CLEARTID " (since Linux 2.5.49)"
-Clear (zero) the child thread ID at the location pointed to by
+.BR CLONE_CHILD_CLEARTID " (Linux 2.5.49 以降)"
+.\"O .BR CLONE_CHILD_CLEARTID " (since Linux 2.5.49)"
+.\"O Clear (zero) the child thread ID at the location pointed to by
+.\"O .I child_tid
+.\"O .RB ( clone ())
+.\"O or
+.\"O .I cl_args.child_tid
+.\"O .RB ( clone3 ())
+.\"O in child memory when the child exits, and do a wakeup on the futex
+.\"O at that address.
+子プロセスが終了したときに、子プロセスのメモリー内の
+.RB ( clone ()
+の場合)
 .I child_tid
-.RB ( clone ())
-or
+または
+.RB ( clone3 ()
+の場合)
 .I cl_args.child_tid
-.RB ( clone3 ())
-in child memory when the child exits, and do a wakeup on the futex
-at that address.
-The address involved may be changed by the
-.BR set_tid_address (2)
-system call.
-This is used by threading libraries.
+が指す場所にある子プロセスのスレッド ID を消去し (0 にし)、
+そのアドレスで futex を wakeup (起床) させる。
+.\"O The address involved may be changed by the
+.\"O .BR set_tid_address (2)
+.\"O system call.
+このアドレスは \fBset_tid_address\fP(2) システムコールで変更することができる。
+.\"O This is used by threading libraries.
+この機能はスレッドライブラリで使用される。
 .TP
-.BR CLONE_CHILD_SETTID " (since Linux 2.5.49)"
-Store the child thread ID at the location pointed to by
+.BR CLONE_CHILD_SETTID " (Linux 2.5.49 以降)"
+.\"O .BR CLONE_CHILD_SETTID " (since Linux 2.5.49)"
+.\"O Store the child thread ID at the location pointed to by
+.\"O .I child_tid
+.\"O .RB ( clone ())
+.\"O or
+.\"O .I cl_args.child_tid
+.\"O .RB ( clone3 ())
+.\"O in the child's memory.
+子プロセスのメモリー内の、
+.RB ( clone ()
+の場合)
 .I child_tid
-.RB ( clone ())
-or
+または
+.RB ( clone3 ()
+の場合)
 .I cl_args.child_tid
-.RB ( clone3 ())
-in the child's memory.
-The store operation completes before the clone call
-returns control to user space in the child process.
-(Note that the store operation may not have completed before the clone call
-returns in the parent process, which will be relevant if the
+が指す場所に子プロセスのスレッド ID を格納する。
+.\"O The store operation completes before the clone call
+.\"O returns control to user space in the child process.
+格納の操作は、clone 呼び出しが子プロセスのユーザー空間に制御を返す前に、完了する。
+.\"O (Note that the store operation may not have completed before the clone call
+.\"O returns in the parent process, which will be relevant if the
+.\"O .BR CLONE_VM
+.\"O flag is also employed.)
+(格納の操作は、clone 呼び出しが親プロセスに戻る前には完了しない。
+これは
 .BR CLONE_VM
-flag is also employed.)
+フラグも設定されているかに関係する。)
 .TP
 .BR CLONE_CLEAR_SIGHAND " (since Linux 5.5)"
 .\" commit b612e5df4587c934bd056bf05f4a1deca4de4f75
